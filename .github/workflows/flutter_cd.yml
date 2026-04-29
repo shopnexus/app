@@ -37,12 +37,16 @@ jobs:
       - name: 📱 Build Android APK
         run: flutter build apk --release
 
+      # Đổi tên file APK theo tên của Git Tag
+      - name: 🏷️ Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/shopnexus-${{ github.ref_name }}.apk
+
       # Action này sẽ tự động lấy file APK vừa build và đăng lên mục "Releases" của GitHub
       - name: 🚀 Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           # Đường dẫn đến file APK sau khi build xong
-          files: build/app/outputs/flutter-apk/app-release.apk
+          files: build/app/outputs/flutter-apk/shopnexus-${{ github.ref_name }}.apk
           # Tự động tạo changelog dựa trên các commit
           generate_release_notes: true
         env:

@@ -52,9 +52,13 @@ jobs:
       - name: 📱 Build Android APK
         run: flutter build apk --release
 
-      # 9. Lưu file APK lại dưới dạng Artifact để có thể tải về từ GitHub
+      # 9. Đổi tên file APK chứa số thứ tự của lần build
+      - name: 🏷️ Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/shopnexus-ci-build-${{ github.run_number }}.apk
+
+      # 10. Lưu file APK lại dưới dạng Artifact để có thể tải về từ GitHub
       - name: 📥 Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ecommerce-app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: ecommerce-app-ci-build-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/shopnexus-ci-build-*.apk
