@@ -1,0 +1,50 @@
+name: Flutter CD - Auto Release APK
+
+# Kịch bản này CHỈ kích hoạt khi đẩy một Tag mới có tiền tố 'v' (ví dụ: v1.0.0, v2.1)
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_and_release:
+    name: Build and Create GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: 📦 Install Dependencies
+        run: flutter pub get
+
+      - name: ⚙️ Run Build Runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # Build APK bản Release (Đã được tối ưu hóa dung lượng và hiệu năng)
+      - name: 📱 Build Android APK
+        run: flutter build apk --release
+
+      # Action này sẽ tự động lấy file APK vừa build và đăng lên mục "Releases" của GitHub
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          # Đường dẫn đến file APK sau khi build xong
+          files: build/app/outputs/flutter-apk/app-release.apk
+          # Tự động tạo changelog dựa trên các commit
+          generate_release_notes: true
+        env:
+          # Cấp quyền cho GitHub Actions được phép tạo Release trên repo
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
