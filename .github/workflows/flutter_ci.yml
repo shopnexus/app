@@ -1,0 +1,60 @@
+name: Flutter CI/CD for E-Commerce App
+
+# Kích hoạt action khi có code push lên nhánh main hoặc có Pull Request
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    name: Build, Analyze, and Test
+    # Chạy trên môi trường Ubuntu mới nhất để tối ưu tốc độ
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Lấy source code từ GitHub về môi trường CI
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Cài đặt Java (Cần thiết cho quá trình build Android APK)
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. Cài đặt Flutter SDK
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true # Lưu cache để các lần chạy sau nhanh hơn
+
+      # 4. Tải các thư viện (dependencies)
+      - name: 📦 Install Dependencies
+        run: flutter pub get
+
+      # 5. Chạy Code Generation (BẮT BUỘC cho Riverpod, Freezed, Retrofit)
+      - name: ⚙️ Run Build Runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # 6. Kiểm tra format và lỗi cú pháp (Linting)
+      - name: 🔍 Analyze Code
+        run: flutter analyze
+
+      # 7. Chạy Unit Tests
+      - name: 🧪 Run Tests
+        run: flutter test
+
+      # 8. Build file APK
+      - name: 📱 Build Android APK
+        run: flutter build apk --release
+
+      # 9. Lưu file APK lại dưới dạng Artifact để có thể tải về từ GitHub
+      - name: 📥 Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecommerce-app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
