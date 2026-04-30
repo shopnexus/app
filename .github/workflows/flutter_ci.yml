@@ -1,4 +1,4 @@
-name: Flutter CI/CD for E-Commerce App
+name: Flutter CI for Shopnexus App
 
 # Kích hoạt action khi có code push lên nhánh main hoặc có Pull Request
 on:
