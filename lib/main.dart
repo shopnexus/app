@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/storage/hive_storage.dart';
+import 'core/routing/app_router.dart';
+import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,23 +23,25 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Lấy GoRouter instance từ Provider
+    final router = ref.watch(appRouterProvider);
+
+    return MaterialApp.router(
       title: 'ShopNexus',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('ShopNexus - Cấu hình Hive & Dio hoàn tất!'),
-        ),
-      ),
+      
+      // Áp dụng Theme (Light & Dark)
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system, // Tự động đổi theo thiết bị
+      
+      // Sử dụng GoRouter
+      routerConfig: router,
     );
   }
 }
