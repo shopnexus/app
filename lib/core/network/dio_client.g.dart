@@ -47,4 +47,4 @@ final class DioProvider extends $FunctionalProvider<Dio, Dio, Dio>
   }
 }
 
-String _$dioHash() => r'60f59573b253996dd071426bcec5e0c9db2bdf56';
+String _$dioHash() => r'ce36b78b1640fc7865a5a7d72edfd44fcf80985b';

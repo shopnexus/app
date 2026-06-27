@@ -10,7 +10,7 @@ Dio dio(Ref ref) {
   // Cấu hình cơ bản cho Dio
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'https://api.yourdomain.com/v1', // TODO: Thay bằng Base URL thực tế
+      baseUrl: 'https://shopnexus.hopto.org',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       headers: {

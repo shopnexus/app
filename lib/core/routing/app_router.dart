@@ -52,8 +52,8 @@ GoRouter appRouter(Ref ref) {
       ),
     ],
     redirect: (context, state) {
-      final isGoingToLogin = state.matchedLocation == '/login';
-      final isGoingToSplash = state.matchedLocation == '/splash';
+      final matchedLocation = state.matchedLocation;
+      final isGoingToSplash = matchedLocation == '/splash';
       
       // Kiểm tra Token từ Hive
       final token = hiveService.authBox.get('token');
@@ -62,13 +62,21 @@ GoRouter appRouter(Ref ref) {
       // Không redirect nếu đang ở Splash để ứng dụng xử lý logic khởi tạo
       if (isGoingToSplash) return null;
 
-      // Nếu không có token và không phải đang ở trang login => Đá về Login (Guard)
-      if (!isAuthenticated && !isGoingToLogin) {
+      // Định nghĩa các vùng cần bảo mật (yêu cầu đăng nhập)
+      final protectedPrefixes = ['/cart', '/checkout', '/account', '/seller', '/dispute', '/chat'];
+      final isGoingToProtected = protectedPrefixes.any((prefix) => matchedLocation.startsWith(prefix));
+
+      // Các trang phục vụ authentication
+      final authLocations = ['/login', '/register', '/forgot-password'];
+      final isGoingToAuth = authLocations.contains(matchedLocation);
+
+      // Nếu chưa đăng nhập và cố truy cập vùng bảo mật => Đá về Login
+      if (!isAuthenticated && isGoingToProtected) {
         return '/login';
       }
 
-      // Nếu đã có token mà lại đi vào trang login => Đá về Home
-      if (isAuthenticated && isGoingToLogin) {
+      // Nếu đã đăng nhập mà lại cố truy cập trang login/register => Đá về Home
+      if (isAuthenticated && isGoingToAuth) {
         return '/home';
       }
 
