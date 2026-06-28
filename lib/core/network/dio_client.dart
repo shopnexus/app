@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../storage/hive_storage.dart';
+import '../constants/api_endpoints.dart';
 import 'api_interceptors.dart';
 
 part 'dio_client.g.dart';
@@ -10,7 +11,7 @@ Dio dio(Ref ref) {
   // Cấu hình cơ bản cho Dio
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'https://shopnexus.hopto.org',
+      baseUrl: ApiEndpoints.baseUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       headers: {
