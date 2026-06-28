@@ -14,6 +14,7 @@ This project strictly follows a specific set of tools and libraries to maintain 
 * **Local Storage / Caching:** [Hive](https://pub.dev/packages/hive) (NoSQL)
 * **Routing:** [go_router](https://pub.dev/packages/go_router)
 * **JSON Serialization:** [Freezed](https://pub.dev/packages/freezed) + json_serializable
+* **Core Libraries:** `intl` (money conversion & localization), `cached_network_image` (media cache), `image_picker` (image evidence upload), `fl_chart` (dashboard statistics), `web_socket_channel` (real-time chat), `shimmer` (skeleton screens).
 
 ## 🏗️ Architecture & Folder Structure
 The app uses a **Feature-Driven Architecture** combined with a simplified Clean Architecture approach (excluding the Domain layer to optimize for UI/UX focus and rapid development).
@@ -22,25 +23,25 @@ Each feature is entirely self-contained and divided into `data` and `presentatio
 
 ```text
 lib/
-├── core/                       # App-wide shared resources
+├── core/                       # App-wide shared configurations & constants
+│   ├── constants/              # API endpoints, App configurations
 │   ├── network/                # Dio client setup, Interceptors
-│   ├── routing/                # go_router configurations
+│   ├── routing/                # go_router configurations & route guards
 │   ├── storage/                # Hive initialization & local DB keys
-│   ├── theme/                  # Colors, Typography, UI constants
-│   └── utils/                  # Helper functions, extensions
+│   ├── theme/                  # Colors, Typography, Material 3 configurations
+│   └── utils/                  # Helper functions, extensions, MoneyUtils
+├── shared/                     # Shared UI components & models used across features
+│   ├── widgets/                # CustomButton, CustomTextField, ProductCard
+│   └── models/                 # ResourceModel, RatingModel
 ├── features/                   # Self-contained feature modules
-│   ├── auth/                   
-│   │   ├── data/               
-│   │   │   ├── models/         # DTOs (Freezed/json_serializable)
-│   │   │   ├── data_sources/   # Retrofit API interfaces, Hive local sources
-│   │   │   └── repositories/   # Data fetching & error handling logic
-│   │   └── presentation/       
-│   │       ├── providers/      # Riverpod Notifiers/State management
-│   │       ├── screens/        # Full-page UI (e.g., LoginScreen)
-│   │       └── widgets/        # Feature-specific UI components
-│   ├── cart/                   # (Similar structure to auth)
-│   ├── product/                # (Similar structure to auth)
-│   └── user_profile/           # (Similar structure to auth)
+│   ├── auth/                   # Registration, login, forgot password
+│   ├── catalog/                # Search, categories browse, recommended products, details
+│   ├── cart/                   # Local cart state management with Hive sync
+│   ├── checkout/               # Multi-step checkout, quote transport & payment polling
+│   ├── account/                # Profile, addresses, wishlist, notifications, order history
+│   ├── seller/                 # Seller dashboard stats, charts, SPU/SKU CRUD, AI Video Wizard
+│   ├── dispute/                # Refunds & disputes state machine logic with evidence
+│   └── chat/                   # WebSocket-based real-time buyer-seller communication
 └── main.dart                   # Entry point, ProviderScope, initialization
 ```
 
