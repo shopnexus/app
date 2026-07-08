@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../storage/hive_storage.dart';
 import '../constants/api_endpoints.dart';
 import 'api_interceptors.dart';
 
@@ -21,14 +20,8 @@ Dio dio(Ref ref) {
     ),
   );
 
-  // Lấy HiveService từ Provider
-  final hiveService = ref.watch(hiveServiceProvider);
-
   // Thêm interceptors vào Dio instance
-  dio.interceptors.addAll([
-    AuthInterceptor(hiveService),
-    LoggingInterceptor(),
-  ]);
+  dio.interceptors.addAll([AuthInterceptor(ref, dio), LoggingInterceptor()]);
 
   return dio;
 }

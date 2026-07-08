@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../storage/hive_storage.dart';
+import '../constants/route_constants.dart';
+import '../../features/auth/presentation/screens/splash_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -18,11 +20,7 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/splash',
         name: 'splash',
-        // Tạm thời sử dụng Scaffold placeholder để test logic. 
-        // Sau này sẽ import SplashScreen từ feature.
-        builder: (context, state) => const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        ),
+        builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
         path: '/login',
@@ -63,8 +61,7 @@ GoRouter appRouter(Ref ref) {
       if (isGoingToSplash) return null;
 
       // Định nghĩa các vùng cần bảo mật (yêu cầu đăng nhập)
-      final protectedPrefixes = ['/cart', '/checkout', '/account', '/seller', '/dispute', '/chat'];
-      final isGoingToProtected = protectedPrefixes.any((prefix) => matchedLocation.startsWith(prefix));
+      final isGoingToProtected = RouteConstants.protectedPrefixes.any((prefix) => matchedLocation.startsWith(prefix));
 
       // Các trang phục vụ authentication
       final authLocations = ['/login', '/register', '/forgot-password'];

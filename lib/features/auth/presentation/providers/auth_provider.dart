@@ -107,4 +107,14 @@ class AuthNotifier extends _$AuthNotifier {
       state = AuthState.error(message: e.toString());
     }
   }
+
+  /// Buộc đăng xuất (khi refresh token thất bại hoặc hết hạn)
+  void forceLogout() {
+    state = const AuthState.unauthenticated();
+  }
+
+  /// Cập nhật lại token mới sau khi refresh thành công
+  void updateToken(AuthResponse response) {
+    state = AuthState.authenticated(authResponse: response);
+  }
 }
