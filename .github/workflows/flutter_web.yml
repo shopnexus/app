@@ -1,0 +1,74 @@
+name: Flutter Web - Deploy to GitHub Pages
+
+# Kích hoạt khi push lên nhánh main, hoặc chạy thủ công từ tab Actions
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+# Cấp quyền cho GITHUB_TOKEN để deploy lên GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Chỉ cho phép 1 lần deploy chạy tại một thời điểm (huỷ lần cũ nếu có lần mới)
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Flutter Web
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Lấy source code
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Cài đặt Flutter SDK
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      # 3. Tải các thư viện (dependencies)
+      - name: 📦 Install Dependencies
+        run: flutter pub get
+
+      # 4. Bật nền tảng Web (tạo thư mục web/ nếu dự án chưa có)
+      - name: 🌐 Enable Web Support
+        run: flutter create --platforms=web .
+
+      # 5. Chạy Code Generation (BẮT BUỘC cho Riverpod, Freezed, Retrofit)
+      - name: ⚙️ Run Build Runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # 6. Build bản web release
+      #    base-href phải là /<tên-repo>/ để đường dẫn tài nguyên đúng trên GitHub Pages
+      - name: 🏗️ Build Web
+        run: flutter build web --release --base-href /app/
+
+      # 7. Cấu hình GitHub Pages
+      - name: ⚙️ Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 8. Đóng gói thư mục build/web thành artifact cho Pages
+      - name: 📦 Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # 9. Đăng bản build lên GitHub Pages
+      - name: 🚀 Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
