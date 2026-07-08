@@ -1,0 +1,22 @@
+# Configuration for flutter_native_splash package
+flutter_native_splash:
+  # The color of the splash screen background.
+  color: "#ffffff"
+  # The path to the splash screen image.
+  image: assets/logo_shopnexus.jpg
+
+  # Dark mode customization
+  color_dark: "#121212"
+  image_dark: assets/logo_shopnexus.jpg
+
+  # Android 12+ customization
+  android_12:
+    image: assets/logo_shopnexus.jpg
+    color: "#ffffff"
+    image_dark: assets/logo_shopnexus.jpg
+    color_dark: "#121212"
+
+  # Optional Android / iOS flags
+  android: true
+  ios: true
+  web: false
