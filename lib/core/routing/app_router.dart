@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../storage/hive_storage.dart';
+import '../constants/route_constants.dart';
+import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -18,24 +23,22 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/splash',
         name: 'splash',
-        // Tạm thời sử dụng Scaffold placeholder để test logic. 
-        // Sau này sẽ import SplashScreen từ feature.
-        builder: (context, state) => const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        ),
+        builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => Scaffold(
-          appBar: AppBar(title: const Text('Đăng Nhập')),
-          body: const Center(
-            child: Text(
-              'Trang Login\n(Chưa có Token, bị Router guard chặn)', 
-              textAlign: TextAlign.center,
-            )
-          ),
-        ),
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        name: 'register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        name: 'forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
         path: '/home',
@@ -54,7 +57,7 @@ GoRouter appRouter(Ref ref) {
     redirect: (context, state) {
       final matchedLocation = state.matchedLocation;
       final isGoingToSplash = matchedLocation == '/splash';
-      
+
       // Kiểm tra Token từ Hive
       final token = hiveService.authBox.get('token');
       final isAuthenticated = token != null && token.toString().isNotEmpty;
@@ -63,8 +66,9 @@ GoRouter appRouter(Ref ref) {
       if (isGoingToSplash) return null;
 
       // Định nghĩa các vùng cần bảo mật (yêu cầu đăng nhập)
-      final protectedPrefixes = ['/cart', '/checkout', '/account', '/seller', '/dispute', '/chat'];
-      final isGoingToProtected = protectedPrefixes.any((prefix) => matchedLocation.startsWith(prefix));
+      final isGoingToProtected = RouteConstants.protectedPrefixes.any(
+        (prefix) => matchedLocation.startsWith(prefix),
+      );
 
       // Các trang phục vụ authentication
       final authLocations = ['/login', '/register', '/forgot-password'];
