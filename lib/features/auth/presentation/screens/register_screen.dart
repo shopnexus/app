@@ -155,7 +155,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'QUỐC GIA (BẮT BUỘC)',
+                            'QUỐC GIA',
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 12,
