@@ -18,9 +18,10 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Stitch Theme Colors: Primary #0F172A, Secondary #64748B
-    const primaryColor = Color(0xFF0F172A);
-    const secondaryColor = Color(0xFF64748B);
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final onPrimaryColor = theme.colorScheme.onPrimary;
+    final secondaryColor = theme.colorScheme.onSurfaceVariant;
     final disabledColor = isPrimary
         ? primaryColor.withAlpha(128)
         : Colors.transparent;
@@ -33,21 +34,21 @@ class CustomButton extends StatelessWidget {
           onPressed: isLoading ? null : onPressed,
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryColor,
-            foregroundColor: Colors.white,
+            foregroundColor: onPrimaryColor,
             disabledBackgroundColor: disabledColor,
-            disabledForegroundColor: Colors.white.withAlpha(179),
+            disabledForegroundColor: onPrimaryColor.withAlpha(179),
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(onPrimaryColor),
                   ),
                 )
               : Text(
@@ -69,13 +70,13 @@ class CustomButton extends StatelessWidget {
           onPressed: isLoading ? null : onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: secondaryColor,
-            side: const BorderSide(color: secondaryColor, width: 1.5),
+            side: BorderSide(color: secondaryColor, width: 1.5),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(

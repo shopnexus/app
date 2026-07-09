@@ -2,31 +2,36 @@ import 'package:flutter/material.dart';
 
 /// Màu sắc ứng dụng với phong cách Minimalist & Trustworthy
 class AppColors {
-  // --- Light Theme Colors ---
-  /// Màu chủ đạo (Navy Blue) - Tin cậy, chuyên nghiệp
-  static const Color primary = Color(0xFF001F3F); 
-  
-  /// Điểm nhấn (Coral Red) - Dành cho nút Add to Cart, Checkout, Sale
-  static const Color accent = Color(0xFFFF6F61); 
-  
-  /// Nền (Off-white/Grey 50) - Phân tách khối UI không cần viền
-  static const Color background = Color(0xFFF8F9FA); 
-  
+  // --- Light Theme Colors (Stitch Ethos Minimalist Commerce) ---
+  /// Màu chủ đạo (Charcoal Navy)
+  static const Color primary = Color(0xFF0F172A);
+
+  /// Điểm nhấn / Màu phụ (Slate Grey)
+  static const Color accent = Color(0xFF64748B);
+
+  /// Nền (Soft Grey)
+  static const Color background = Color(0xFFF8FAFC);
+
   /// Surface - Thường dùng cho các Card, BottomSheet
   static const Color surface = Colors.white;
-  
+
   /// Màu chữ chính
-  static const Color textPrimary = Color(0xFF111111);
-  
+  static const Color textPrimary = Color(0xFF0F172A);
+
   /// Màu chữ phụ
-  static const Color textSecondary = Color(0xFF666666);
+  static const Color textSecondary = Color(0xFF64748B);
 
   // --- Dark Theme Colors ---
-  static const Color darkPrimary = Color(0xFF336699); // Blue sáng hơn một chút
-  static const Color darkBackground = Color(0xFF121212);
-  static const Color darkSurface = Color(0xFF1E1E1E);
-  static const Color darkTextPrimary = Color(0xFFE0E0E0);
-  static const Color darkTextSecondary = Color(0xFFAAAAAA);
+  /// Màu chủ đạo tối (Thường dùng trắng nhạt để nổi bật trên nền tối)
+  static const Color darkPrimary = Color(0xFFF8FAFC);
+  static const Color darkBackground = Color(
+    0xFF0F172A,
+  ); // Sử dụng Charcoal làm màu nền tối
+  static const Color darkSurface = Color(
+    0xFF1E293B,
+  ); // Surface sáng hơn nền một chút
+  static const Color darkTextPrimary = Color(0xFFF8FAFC);
+  static const Color darkTextSecondary = Color(0xFF94A3B8);
 }
 
 /// ThemeExtension cho E-commerce (Màu đặc thù không thuộc Material)
@@ -63,7 +68,10 @@ class EcommerceColors extends ThemeExtension<EcommerceColors> {
   }
 
   @override
-  ThemeExtension<EcommerceColors> lerp(ThemeExtension<EcommerceColors>? other, double t) {
+  ThemeExtension<EcommerceColors> lerp(
+    ThemeExtension<EcommerceColors>? other,
+    double t,
+  ) {
     if (other is! EcommerceColors) return this;
     return EcommerceColors(
       statusDelivering: Color.lerp(statusDelivering, other.statusDelivering, t),
@@ -76,11 +84,15 @@ class EcommerceColors extends ThemeExtension<EcommerceColors> {
 
   // Khai báo sẵn các hằng số màu cho Light mode
   static const light = EcommerceColors(
-    statusDelivering: Color(0xFF2196F3), // Xanh lam
-    statusCanceled: Color(0xFFE53935),   // Đỏ
-    freeshipBadge: Color(0xFFE8F5E9),    // Nền xanh lá nhạt
-    freeshipText: Color(0xFF2E7D32),     // Chữ xanh lá đậm
-    saleBadge: AppColors.accent,         // Coral Red
+    statusDelivering: Color(0xFF2196F3),
+    // Xanh lam
+    statusCanceled: Color(0xFFE53935),
+    // Đỏ
+    freeshipBadge: Color(0xFFE8F5E9),
+    // Nền xanh lá nhạt
+    freeshipText: Color(0xFF2E7D32),
+    // Chữ xanh lá đậm
+    saleBadge: AppColors.accent, // Coral Red
   );
 
   // Khai báo sẵn các hằng số màu cho Dark mode
