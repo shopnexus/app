@@ -31,9 +31,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF0F172A);
-    const backgroundColor = Color(0xFFF8FAFC);
-    const labelColor = Color(0xFF64748B);
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final primaryColor = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onSurface;
+    final backgroundColor = isDarkMode
+        ? theme.colorScheme.surface
+        : const Color(0xFFF8FAFC);
+    final labelColor = theme.colorScheme.onSurfaceVariant;
+    final hintColor = isDarkMode
+        ? theme.colorScheme.onSurfaceVariant.withAlpha(128)
+        : const Color(0xFF94A3B8);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,7 +50,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         // Label above field in label-md
         Text(
           widget.label,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Inter',
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -56,17 +65,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
           keyboardType: widget.keyboardType,
           validator: widget.validator,
           enabled: widget.enabled,
-          style: const TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 16,
-            color: primaryColor,
-          ),
+          style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: textColor),
           decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: const TextStyle(
+            hintStyle: TextStyle(
               fontFamily: 'Inter',
               fontSize: 16,
-              color: Color(0xFF94A3B8),
+              color: hintColor,
             ),
             fillColor: backgroundColor,
             filled: true,
@@ -74,7 +79,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(
-                      _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      _obscureText
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
                       color: labelColor,
                     ),
                     onPressed: () {
@@ -95,17 +102,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: primaryColor, width: 1.5),
+              borderSide: BorderSide(color: primaryColor, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFBA1A1A), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFFBA1A1A),
+                width: 1.5,
+              ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFBA1A1A), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFFBA1A1A),
+                width: 1.5,
+              ),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
       ],

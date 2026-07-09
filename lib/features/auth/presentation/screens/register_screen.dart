@@ -97,17 +97,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
 
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    const primaryColor = Color(0xFF0F172A);
-    const backgroundColor = Color(0xFFF8FAFC);
-    const labelColor = Color(0xFF64748B);
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onSurface;
+    final labelColor = theme.colorScheme.onSurfaceVariant;
+    final backgroundColor = isDarkMode
+        ? theme.colorScheme.surface
+        : const Color(0xFFF8FAFC);
 
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: primaryColor),
+          icon: Icon(Icons.arrow_back, color: textColor),
           onPressed: isLoading ? null : () => context.pop(),
         ),
       ),
@@ -135,16 +138,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               context,
                             ).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: primaryColor,
+                              color: textColor,
                             ) ??
-                            const TextStyle(
+                            TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: primaryColor,
+                              color: textColor,
                             ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'Đăng ký tài khoản để bắt đầu trải nghiệm mua sắm không giới hạn.',
                         style: TextStyle(fontSize: 14, color: labelColor),
                       ),
@@ -154,7 +157,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'QUỐC GIA',
                             style: TextStyle(
                               fontFamily: 'Inter',
@@ -172,10 +175,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 value: country['code'],
                                 child: Text(
                                   country['name']!,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 16,
-                                    color: primaryColor,
+                                    color: textColor,
                                   ),
                                 ),
                               );
@@ -192,10 +195,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             decoration: InputDecoration(
                               fillColor: backgroundColor,
                               filled: true,
-                              prefixIcon: const Icon(
-                                Icons.public,
-                                color: labelColor,
-                              ),
+                              prefixIcon: Icon(Icons.public, color: labelColor),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -215,7 +215,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         label: 'HỌ VÀ TÊN',
                         hintText: 'Nhập họ và tên của bạn',
                         controller: _fullNameController,
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.person_outline,
                           color: labelColor,
                         ),
@@ -235,10 +235,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         hintText: 'john@example.com',
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        prefixIcon: const Icon(
-                          Icons.mail_outline,
-                          color: labelColor,
-                        ),
+                        prefixIcon: Icon(Icons.mail_outline, color: labelColor),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng nhập địa chỉ email';
@@ -261,10 +258,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         hintText: '••••••••',
                         controller: _passwordController,
                         isPassword: true,
-                        prefixIcon: const Icon(
-                          Icons.lock_outline,
-                          color: labelColor,
-                        ),
+                        prefixIcon: Icon(Icons.lock_outline, color: labelColor),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Vui lòng nhập mật khẩu';
@@ -284,10 +278,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         hintText: '••••••••',
                         controller: _confirmPasswordController,
                         isPassword: true,
-                        prefixIcon: const Icon(
-                          Icons.lock_outline,
-                          color: labelColor,
-                        ),
+                        prefixIcon: Icon(Icons.lock_outline, color: labelColor),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Vui lòng nhập lại mật khẩu';
@@ -323,7 +314,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
-                                color: isDarkMode ? Colors.white70 : labelColor,
+                                color: labelColor,
                               ),
                             ),
                           ),
@@ -343,13 +334,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             'Đã có tài khoản? ',
                             style: TextStyle(color: labelColor, fontSize: 14),
                           ),
                           GestureDetector(
                             onTap: isLoading ? null : () => context.pop(),
-                            child: const Text(
+                            child: Text(
                               'Đăng nhập ngay',
                               style: TextStyle(
                                 color: primaryColor,

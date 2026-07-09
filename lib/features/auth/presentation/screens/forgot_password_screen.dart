@@ -68,17 +68,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       orElse: () => false,
     );
 
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    const primaryColor = Color(0xFF0F172A);
-    const labelColor = Color(0xFF64748B);
+    final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onSurface;
+    final labelColor = theme.colorScheme.onSurfaceVariant;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: primaryColor),
+          icon: Icon(Icons.arrow_back, color: textColor),
           onPressed: isLoading ? null : () => context.pop(),
         ),
       ),
@@ -106,16 +105,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                               context,
                             ).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: primaryColor,
+                              color: textColor,
                             ) ??
-                            const TextStyle(
+                            TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: primaryColor,
+                              color: textColor,
                             ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'Nhập địa chỉ email đã đăng ký của bạn và chúng tôi sẽ gửi liên kết để khôi phục lại mật khẩu.',
                         style: TextStyle(fontSize: 14, color: labelColor),
                       ),
@@ -127,10 +126,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         hintText: 'Nhập địa chỉ email của bạn',
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        prefixIcon: const Icon(
-                          Icons.mail_outline,
-                          color: labelColor,
-                        ),
+                        prefixIcon: Icon(Icons.mail_outline, color: labelColor),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Vui lòng nhập địa chỉ email';

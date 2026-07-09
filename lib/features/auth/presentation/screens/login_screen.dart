@@ -64,10 +64,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       orElse: () => false,
     );
 
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryColor = Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -117,20 +118,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     context,
                                   ).textTheme.headlineMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF0F172A),
+                                    color: textColor,
                                   ) ??
-                                  const TextStyle(
+                                  TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0F172A),
+                                    color: textColor,
                                   ),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               'Đăng nhập để tiếp tục mua sắm',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Color(0xFF64748B),
+                                color: secondaryColor,
                               ),
                             ),
                           ],
@@ -144,9 +145,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         hintText:
                             'Nhập tên đăng nhập, email hoặc số điện thoại',
                         controller: _idController,
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.person_outline,
-                          color: Color(0xFF64748B),
+                          color: secondaryColor,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -164,9 +165,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         hintText: 'Nhập mật khẩu',
                         controller: _passwordController,
                         isPassword: true,
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.lock_outline,
-                          color: Color(0xFF64748B),
+                          color: secondaryColor,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -187,10 +188,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onPressed: isLoading
                               ? null
                               : () => context.push('/forgot-password'),
-                          child: const Text(
+                          child: Text(
                             'Quên mật khẩu?',
                             style: TextStyle(
-                              color: Color(0xFF64748B),
+                              color: secondaryColor,
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
@@ -211,10 +212,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             'Chưa có tài khoản? ',
                             style: TextStyle(
-                              color: Color(0xFF64748B),
+                              color: secondaryColor,
                               fontSize: 14,
                             ),
                           ),
@@ -222,10 +223,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             onTap: isLoading
                                 ? null
                                 : () => context.push('/register'),
-                            child: const Text(
+                            child: Text(
                               'Đăng ký ngay',
                               style: TextStyle(
-                                color: Color(0xFF0F172A),
+                                color: primaryColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
