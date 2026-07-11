@@ -3,9 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
-  /// Cấu hình Light Theme - Tối giản, nhiều khoảng trắng, chữ dễ đọc
+  /// Cấu hình Light Theme - Tối giản, font Manrope (Headlines) & Inter (Body)
   static ThemeData get lightTheme {
-    final baseTextTheme = GoogleFonts.manropeTextTheme();
+    final baseTextTheme = GoogleFonts.interTextTheme();
 
     return ThemeData(
       useMaterial3: true,
@@ -14,7 +14,7 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.accent,
         surface: AppColors.surface,
-        error: Colors.red,
+        error: Color(0xFFBA1A1A), // Màu error từ Stitch
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: AppColors.textPrimary,
@@ -22,30 +22,33 @@ class AppTheme {
       ).copyWith(surface: AppColors.surface),
       scaffoldBackgroundColor: AppColors.background,
 
-      // Cấu hình Typography bằng Google Fonts (Inter + Manrope)
+      // Cấu hình Typography: Manrope cho Tiêu đề, Inter cho nội dung
       textTheme: baseTextTheme.copyWith(
-        displayLarge: GoogleFonts.inter(
+        displayLarge: GoogleFonts.manrope(
           color: AppColors.textPrimary,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
         ),
-        titleLarge: GoogleFonts.inter(
+        titleLarge: GoogleFonts.manrope(
           color: AppColors.textPrimary,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
-        bodyLarge: GoogleFonts.manrope(color: AppColors.textPrimary),
-        bodyMedium: GoogleFonts.manrope(color: AppColors.textSecondary),
+        bodyLarge: GoogleFonts.inter(color: AppColors.textPrimary),
+        bodyMedium: GoogleFonts.inter(color: AppColors.textSecondary),
+        labelMedium: GoogleFonts.inter(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
       ),
 
-      // Nút nhấn (ElevatedButton) cho các Call-to-action (Add to cart, Checkout)
+      // Nút nhấn (ElevatedButton) bo góc 8px (0.5rem) theo chuẩn Nexus
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: const StadiumBorder(), // Pill shape
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
           textStyle: GoogleFonts.inter(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
         ),
@@ -58,32 +61,32 @@ class AppTheme {
         scrolledUnderElevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.manrope(
           color: AppColors.textPrimary,
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
       ),
 
-      // Text Field gọn gàng
+      // Text Field gọn gàng, viền 1px outline từ Stitch
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: Colors.white,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8), // Stitch rounded-lg (8px)
-          borderSide: const BorderSide(color: Color(0xFFE0E3E4)),
+          borderRadius: BorderRadius.circular(8), // Bo góc 8px
+          borderSide: const BorderSide(color: Color(0xFF6E7977), width: 1.0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFE0E3E4)),
+          borderSide: const BorderSide(color: Color(0xFFBEC9C6), width: 1.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2.0), // Viền 2px khi focus
         ),
       ),
 
@@ -94,7 +97,7 @@ class AppTheme {
 
   /// Cấu hình Dark Theme
   static ThemeData get darkTheme {
-    final baseTextTheme = GoogleFonts.manropeTextTheme(
+    final baseTextTheme = GoogleFonts.interTextTheme(
       ThemeData.dark().textTheme,
     );
 
@@ -114,16 +117,17 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.darkBackground,
 
       textTheme: baseTextTheme.copyWith(
-        displayLarge: GoogleFonts.inter(
+        displayLarge: GoogleFonts.manrope(
           color: AppColors.darkTextPrimary,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
         ),
-        titleLarge: GoogleFonts.inter(
+        titleLarge: GoogleFonts.manrope(
           color: AppColors.darkTextPrimary,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
-        bodyLarge: GoogleFonts.manrope(color: AppColors.darkTextPrimary),
-        bodyMedium: GoogleFonts.manrope(color: AppColors.darkTextSecondary),
+        bodyLarge: GoogleFonts.inter(color: AppColors.darkTextPrimary),
+        bodyMedium: GoogleFonts.inter(color: AppColors.darkTextSecondary),
+        labelMedium: GoogleFonts.inter(color: AppColors.darkTextSecondary, fontWeight: FontWeight.w600),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -132,9 +136,11 @@ class AppTheme {
           foregroundColor: AppColors.darkBackground,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: const StadiumBorder(), // Pill shape
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
           textStyle: GoogleFonts.inter(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
         ),
@@ -146,10 +152,10 @@ class AppTheme {
         scrolledUnderElevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.manrope(
           color: AppColors.darkTextPrimary,
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
       ),
 
@@ -161,18 +167,18 @@ class AppTheme {
           vertical: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8), // Stitch rounded-lg (8px)
-          borderSide: const BorderSide(color: Color(0xFF3E4949)),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF6E7977), width: 1.0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFF3E4949)),
+          borderSide: const BorderSide(color: Color(0xFFBEC9C6), width: 1.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(
             color: AppColors.darkPrimary,
-            width: 1.5,
+            width: 2.0,
           ),
         ),
       ),

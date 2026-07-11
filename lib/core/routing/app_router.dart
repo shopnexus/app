@@ -7,6 +7,9 @@ import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/catalog/presentation/screens/product_list_screen.dart';
+import '../../features/catalog/presentation/screens/categories_screen.dart';
+import '../../features/catalog/presentation/screens/search_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -43,15 +46,17 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => Scaffold(
-          appBar: AppBar(title: const Text('Trang Chủ')),
-          body: const Center(
-            child: Text(
-              'Trang Home\n(Đã xác thực thành công)',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
+        builder: (context, state) => const ProductListScreen(),
+      ),
+      GoRoute(
+        path: '/categories',
+        name: 'categories',
+        builder: (context, state) => const CategoriesScreen(),
+      ),
+      GoRoute(
+        path: '/search',
+        name: 'search',
+        builder: (context, state) => const SearchScreen(),
       ),
     ],
     redirect: (context, state) {
