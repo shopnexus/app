@@ -101,9 +101,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final primaryColor = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
     final labelColor = theme.colorScheme.onSurfaceVariant;
-    final backgroundColor = isDarkMode
-        ? theme.colorScheme.surface
-        : const Color(0xFFF8FAFC);
+    final backgroundColor = theme.colorScheme.surface;
 
     return Scaffold(
       appBar: AppBar(
@@ -197,13 +195,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               filled: true,
                               prefixIcon: Icon(Icons.public, color: labelColor),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: isDarkMode ? const Color(0xFF3E4949) : const Color(0xFFE0E3E4),
+                                ),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: isDarkMode ? const Color(0xFF3E4949) : const Color(0xFFE0E3E4),
+                                ),
                               ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: primaryColor, width: 1.5),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                             ),
                           ),
                         ],

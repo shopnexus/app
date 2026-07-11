@@ -38,9 +38,7 @@ class CustomButton extends StatelessWidget {
             disabledBackgroundColor: disabledColor,
             disabledForegroundColor: onPrimaryColor.withAlpha(179),
             elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: const StadiumBorder(),
           ),
           child: isLoading
               ? SizedBox(
@@ -71,9 +69,7 @@ class CustomButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             foregroundColor: secondaryColor,
             side: BorderSide(color: secondaryColor, width: 1.5),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: const StadiumBorder(),
           ),
           child: isLoading
               ? SizedBox(

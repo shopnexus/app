@@ -36,13 +36,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
     final primaryColor = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
-    final backgroundColor = isDarkMode
-        ? theme.colorScheme.surface
-        : const Color(0xFFF8FAFC);
+    final backgroundColor = theme.colorScheme.surface;
     final labelColor = theme.colorScheme.onSurfaceVariant;
     final hintColor = isDarkMode
         ? theme.colorScheme.onSurfaceVariant.withAlpha(128)
         : const Color(0xFF94A3B8);
+    final borderOutlineColor = isDarkMode ? const Color(0xFF3E4949) : const Color(0xFFE0E3E4);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +64,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
           keyboardType: widget.keyboardType,
           validator: widget.validator,
           enabled: widget.enabled,
-          style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: textColor),
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            color: textColor,
+          ),
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: TextStyle(
@@ -91,28 +94,28 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     },
                   )
                 : null,
-            // Borderless by default with rounded-lg (12px)
+            // Border with rounded-lg (8px)
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: borderOutlineColor),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: borderOutlineColor),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: primaryColor, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(
                 color: Color(0xFFBA1A1A),
                 width: 1.5,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(
                 color: Color(0xFFBA1A1A),
                 width: 1.5,

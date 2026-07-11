@@ -2,35 +2,31 @@ import 'package:flutter/material.dart';
 
 /// Màu sắc ứng dụng với phong cách Minimalist & Trustworthy
 class AppColors {
-  // --- Light Theme Colors (Stitch Ethos Minimalist Commerce) ---
-  /// Màu chủ đạo (Charcoal Navy)
-  static const Color primary = Color(0xFF0F172A);
-
+  // --- Light Theme Colors (Stitch Updated - Teal Theme) ---
+  /// Màu chủ đạo (Teal)
+  static const Color primary = Color(0xFF004E51); 
+  
   /// Điểm nhấn / Màu phụ (Slate Grey)
-  static const Color accent = Color(0xFF64748B);
-
-  /// Nền (Soft Grey)
-  static const Color background = Color(0xFFF8FAFC);
-
+  static const Color accent = Color(0xFF5E5E5D); 
+  
+  /// Nền (Soft Light Teal-ish white)
+  static const Color background = Color(0xFFF7FAFB); 
+  
   /// Surface - Thường dùng cho các Card, BottomSheet
   static const Color surface = Colors.white;
-
+  
   /// Màu chữ chính
-  static const Color textPrimary = Color(0xFF0F172A);
-
+  static const Color textPrimary = Color(0xFF181C1D);
+  
   /// Màu chữ phụ
-  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textSecondary = Color(0xFF5E5E5D);
 
-  // --- Dark Theme Colors ---
-  /// Màu chủ đạo tối (Thường dùng trắng nhạt để nổi bật trên nền tối)
-  static const Color darkPrimary = Color(0xFFF8FAFC);
-  static const Color darkBackground = Color(
-    0xFF0F172A,
-  ); // Sử dụng Charcoal làm màu nền tối
-  static const Color darkSurface = Color(
-    0xFF1E293B,
-  ); // Surface sáng hơn nền một chút
-  static const Color darkTextPrimary = Color(0xFFF8FAFC);
+  // --- Dark Theme Colors (Cohesive Dark Teal) ---
+  /// Màu chủ đạo tối (Soft Teal)
+  static const Color darkPrimary = Color(0xFF85D3D7); 
+  static const Color darkBackground = Color(0xFF0E1415); // Nền tối tông Teal
+  static const Color darkSurface = Color(0xFF1C2627);    // Surface sáng hơn nền một chút
+  static const Color darkTextPrimary = Color(0xFFE2E8F0);
   static const Color darkTextSecondary = Color(0xFF94A3B8);
 }
 
