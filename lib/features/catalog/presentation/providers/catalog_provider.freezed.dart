@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CatalogSearchFilters {
 
- String? get keyword; String? get categoryId; int? get priceMin; int? get priceMax; List<String>? get tags; String? get sort; int get page; int get size;
+ String? get keyword; String? get categoryId; int? get priceMin; int? get priceMax; List<String>? get tags; String? get sort; String? get location; int get page; int get size;
 /// Create a copy of CatalogSearchFilters
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $CatalogSearchFiltersCopyWith<CatalogSearchFilters> get copyWith => _$CatalogSea
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogSearchFilters&&(identical(other.keyword, keyword) || other.keyword == keyword)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.priceMin, priceMin) || other.priceMin == priceMin)&&(identical(other.priceMax, priceMax) || other.priceMax == priceMax)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.sort, sort) || other.sort == sort)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogSearchFilters&&(identical(other.keyword, keyword) || other.keyword == keyword)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.priceMin, priceMin) || other.priceMin == priceMin)&&(identical(other.priceMax, priceMax) || other.priceMax == priceMax)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.sort, sort) || other.sort == sort)&&(identical(other.location, location) || other.location == location)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,keyword,categoryId,priceMin,priceMax,const DeepCollectionEquality().hash(tags),sort,page,size);
+int get hashCode => Object.hash(runtimeType,keyword,categoryId,priceMin,priceMax,const DeepCollectionEquality().hash(tags),sort,location,page,size);
 
 @override
 String toString() {
-  return 'CatalogSearchFilters(keyword: $keyword, categoryId: $categoryId, priceMin: $priceMin, priceMax: $priceMax, tags: $tags, sort: $sort, page: $page, size: $size)';
+  return 'CatalogSearchFilters(keyword: $keyword, categoryId: $categoryId, priceMin: $priceMin, priceMax: $priceMax, tags: $tags, sort: $sort, location: $location, page: $page, size: $size)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $CatalogSearchFiltersCopyWith<$Res>  {
   factory $CatalogSearchFiltersCopyWith(CatalogSearchFilters value, $Res Function(CatalogSearchFilters) _then) = _$CatalogSearchFiltersCopyWithImpl;
 @useResult
 $Res call({
- String? keyword, String? categoryId, int? priceMin, int? priceMax, List<String>? tags, String? sort, int page, int size
+ String? keyword, String? categoryId, int? priceMin, int? priceMax, List<String>? tags, String? sort, String? location, int page, int size
 });
 
 
@@ -62,7 +62,7 @@ class _$CatalogSearchFiltersCopyWithImpl<$Res>
 
 /// Create a copy of CatalogSearchFilters
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tags = freezed,Object? sort = freezed,Object? page = null,Object? size = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tags = freezed,Object? sort = freezed,Object? location = freezed,Object? page = null,Object? size = null,}) {
   return _then(_self.copyWith(
 keyword: freezed == keyword ? _self.keyword : keyword // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
@@ -70,6 +70,7 @@ as String?,priceMin: freezed == priceMin ? _self.priceMin : priceMin // ignore: 
 as int?,priceMax: freezed == priceMax ? _self.priceMax : priceMax // ignore: cast_nullable_to_non_nullable
 as int?,tags: freezed == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>?,sort: freezed == sort ? _self.sort : sort // ignore: cast_nullable_to_non_nullable
+as String?,location: freezed == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as String?,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
 as int,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
 as int,
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  List<String>? tags,  String? sort,  int page,  int size)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  List<String>? tags,  String? sort,  String? location,  int page,  int size)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CatalogSearchFilters() when $default != null:
-return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tags,_that.sort,_that.page,_that.size);case _:
+return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tags,_that.sort,_that.location,_that.page,_that.size);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  List<String>? tags,  String? sort,  int page,  int size)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  List<String>? tags,  String? sort,  String? location,  int page,  int size)  $default,) {final _that = this;
 switch (_that) {
 case _CatalogSearchFilters():
-return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tags,_that.sort,_that.page,_that.size);case _:
+return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tags,_that.sort,_that.location,_that.page,_that.size);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  List<String>? tags,  String? sort,  int page,  int size)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  List<String>? tags,  String? sort,  String? location,  int page,  int size)?  $default,) {final _that = this;
 switch (_that) {
 case _CatalogSearchFilters() when $default != null:
-return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tags,_that.sort,_that.page,_that.size);case _:
+return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tags,_that.sort,_that.location,_that.page,_that.size);case _:
   return null;
 
 }
@@ -213,7 +214,7 @@ return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_th
 
 
 class _CatalogSearchFilters implements CatalogSearchFilters {
-  const _CatalogSearchFilters({this.keyword, this.categoryId, this.priceMin, this.priceMax, final  List<String>? tags, this.sort, this.page = 1, this.size = 20}): _tags = tags;
+  const _CatalogSearchFilters({this.keyword, this.categoryId, this.priceMin, this.priceMax, final  List<String>? tags, this.sort, this.location, this.page = 1, this.size = 20}): _tags = tags;
   
 
 @override final  String? keyword;
@@ -230,6 +231,7 @@ class _CatalogSearchFilters implements CatalogSearchFilters {
 }
 
 @override final  String? sort;
+@override final  String? location;
 @override@JsonKey() final  int page;
 @override@JsonKey() final  int size;
 
@@ -243,16 +245,16 @@ _$CatalogSearchFiltersCopyWith<_CatalogSearchFilters> get copyWith => __$Catalog
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogSearchFilters&&(identical(other.keyword, keyword) || other.keyword == keyword)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.priceMin, priceMin) || other.priceMin == priceMin)&&(identical(other.priceMax, priceMax) || other.priceMax == priceMax)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.sort, sort) || other.sort == sort)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogSearchFilters&&(identical(other.keyword, keyword) || other.keyword == keyword)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.priceMin, priceMin) || other.priceMin == priceMin)&&(identical(other.priceMax, priceMax) || other.priceMax == priceMax)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.sort, sort) || other.sort == sort)&&(identical(other.location, location) || other.location == location)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,keyword,categoryId,priceMin,priceMax,const DeepCollectionEquality().hash(_tags),sort,page,size);
+int get hashCode => Object.hash(runtimeType,keyword,categoryId,priceMin,priceMax,const DeepCollectionEquality().hash(_tags),sort,location,page,size);
 
 @override
 String toString() {
-  return 'CatalogSearchFilters(keyword: $keyword, categoryId: $categoryId, priceMin: $priceMin, priceMax: $priceMax, tags: $tags, sort: $sort, page: $page, size: $size)';
+  return 'CatalogSearchFilters(keyword: $keyword, categoryId: $categoryId, priceMin: $priceMin, priceMax: $priceMax, tags: $tags, sort: $sort, location: $location, page: $page, size: $size)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$CatalogSearchFiltersCopyWith<$Res> implements $CatalogSea
   factory _$CatalogSearchFiltersCopyWith(_CatalogSearchFilters value, $Res Function(_CatalogSearchFilters) _then) = __$CatalogSearchFiltersCopyWithImpl;
 @override @useResult
 $Res call({
- String? keyword, String? categoryId, int? priceMin, int? priceMax, List<String>? tags, String? sort, int page, int size
+ String? keyword, String? categoryId, int? priceMin, int? priceMax, List<String>? tags, String? sort, String? location, int page, int size
 });
 
 
@@ -280,7 +282,7 @@ class __$CatalogSearchFiltersCopyWithImpl<$Res>
 
 /// Create a copy of CatalogSearchFilters
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tags = freezed,Object? sort = freezed,Object? page = null,Object? size = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tags = freezed,Object? sort = freezed,Object? location = freezed,Object? page = null,Object? size = null,}) {
   return _then(_CatalogSearchFilters(
 keyword: freezed == keyword ? _self.keyword : keyword // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
@@ -288,6 +290,7 @@ as String?,priceMin: freezed == priceMin ? _self.priceMin : priceMin // ignore: 
 as int?,priceMax: freezed == priceMax ? _self.priceMax : priceMax // ignore: cast_nullable_to_non_nullable
 as int?,tags: freezed == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>?,sort: freezed == sort ? _self.sort : sort // ignore: cast_nullable_to_non_nullable
+as String?,location: freezed == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as String?,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
 as int,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
 as int,

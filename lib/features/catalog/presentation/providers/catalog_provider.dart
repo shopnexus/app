@@ -16,6 +16,7 @@ abstract class CatalogSearchFilters with _$CatalogSearchFilters {
     int? priceMax,
     List<String>? tags,
     String? sort,
+    String? location,
     @Default(1) int page,
     @Default(20) int size,
   }) = _CatalogSearchFilters;
@@ -50,6 +51,7 @@ class CatalogProducts extends _$CatalogProducts {
       priceMax: initialFilters.priceMax,
       tags: initialFilters.tags,
       sort: initialFilters.sort,
+      location: initialFilters.location,
       page: initialFilters.page,
       size: initialFilters.size,
     );
@@ -115,6 +117,7 @@ class CatalogProducts extends _$CatalogProducts {
         priceMax: newFilters.priceMax,
         tags: newFilters.tags,
         sort: newFilters.sort,
+        location: newFilters.location,
         page: newFilters.page,
         size: newFilters.size,
       );
@@ -149,6 +152,10 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
 
   void setSort(String? sort) {
     state = state.copyWith(sort: sort, page: 1);
+  }
+
+  void setLocation(String? location) {
+    state = state.copyWith(location: location, page: 1);
   }
 
   void reset() {

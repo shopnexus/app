@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/storage/hive_storage.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -10,7 +9,8 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -18,7 +18,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    
+
     // Khởi tạo Controller cho hiệu ứng xuất hiện của Logo
     _animationController = AnimationController(
       vsync: this,
@@ -57,23 +57,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
 
     if (!mounted) return;
 
-    // Kiểm tra trạng thái đăng nhập từ Hive
-    final hiveService = ref.read(hiveServiceProvider);
-    final token = hiveService.authBox.get('token');
-    final isAuthenticated = token != null && token.toString().isNotEmpty;
-
-    // Điều hướng dựa trên trạng thái xác thực
-    if (isAuthenticated) {
-      context.go('/home');
-    } else {
-      context.go('/login');
-    }
+    // Điều hướng trực tiếp tới Trang chủ Marketplace công khai
+    context.go('/home');
   }
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
       body: SafeArea(
@@ -121,24 +112,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                     // Tên ứng dụng
                     Text(
                       'ShopNexus',
-                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ) ?? const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.displayLarge?.copyWith(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ) ??
+                          const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     // Slogan phụ nhãn hiệu
                     Text(
                       'Nexus of Premium Shopping',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: 14,
-                        letterSpacing: 0.5,
-                      ) ?? const TextStyle(fontSize: 14),
+                      style:
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 14,
+                            letterSpacing: 0.5,
+                          ) ??
+                          const TextStyle(fontSize: 14),
                     ),
                   ],
                 ),
@@ -158,18 +153,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                       width: 120,
                       height: 3,
                       child: LinearProgressIndicator(
-                        backgroundColor: isDarkMode ? const Color(0xFF2C2C2C) : const Color(0xFFF0F0F0),
-                        color: Theme.of(context).colorScheme.secondary, // Sử dụng màu Accent từ Theme
+                        backgroundColor: isDarkMode
+                            ? const Color(0xFF2C2C2C)
+                            : const Color(0xFFF0F0F0),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.secondary, // Sử dụng màu Accent từ Theme
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Initializing...',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontSize: 12,
-                        color: isDarkMode ? const Color(0xFF666666) : const Color(0xFFAAAAAA),
-                      ) ?? const TextStyle(fontSize: 12),
+                      style:
+                          Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 12,
+                            color: isDarkMode
+                                ? const Color(0xFF666666)
+                                : const Color(0xFFAAAAAA),
+                          ) ??
+                          const TextStyle(fontSize: 12),
                     ),
                   ],
                 ),

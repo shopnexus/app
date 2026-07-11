@@ -20,6 +20,7 @@ abstract class CatalogApiService {
     @Query('price_max') int? priceMax,
     @Query('tags') List<String>? tags,
     @Query('sort') String? sort,
+    @Query('location') String? location,
     @Query('page') int? page,
     @Query('size') int? size,
   });

@@ -10,10 +10,16 @@ import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/catalog/presentation/screens/product_list_screen.dart';
 import '../../features/catalog/presentation/screens/categories_screen.dart';
 import '../../features/catalog/presentation/screens/search_screen.dart';
+import '../../shared/widgets/main_layout.dart';
+import '../../shared/widgets/placeholder_screens.dart';
 
 part 'app_router.g.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _shellNavigatorKey =
+    GlobalKey<NavigatorState>();
+
+String _lastPublicLocation = '/home';
 
 @riverpod
 GoRouter appRouter(Ref ref) {
@@ -43,20 +49,44 @@ GoRouter appRouter(Ref ref) {
         name: 'forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const ProductListScreen(),
-      ),
-      GoRoute(
-        path: '/categories',
-        name: 'categories',
-        builder: (context, state) => const CategoriesScreen(),
-      ),
-      GoRoute(
-        path: '/search',
-        name: 'search',
-        builder: (context, state) => const SearchScreen(),
+      // Cấu hình ShellRoute chứa Bottom Navigation Bar cho 5 tab chính
+      ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        builder: (context, state, child) {
+          return MainLayout(child: child);
+        },
+        routes: [
+          GoRoute(
+            path: '/home',
+            name: 'home',
+            builder: (context, state) => const ProductListScreen(),
+          ),
+          GoRoute(
+            path: '/categories',
+            name: 'categories',
+            builder: (context, state) => const CategoriesScreen(),
+          ),
+          GoRoute(
+            path: '/search',
+            name: 'search',
+            builder: (context, state) => const SearchScreen(),
+          ),
+          GoRoute(
+            path: '/seller',
+            name: 'seller',
+            builder: (context, state) => const SellerPlaceholderScreen(),
+          ),
+          GoRoute(
+            path: '/chat',
+            name: 'chat',
+            builder: (context, state) => const ChatPlaceholderScreen(),
+          ),
+          GoRoute(
+            path: '/account',
+            name: 'account',
+            builder: (context, state) => const AccountPlaceholderScreen(),
+          ),
+        ],
       ),
     ],
     redirect: (context, state) {
@@ -70,6 +100,12 @@ GoRouter appRouter(Ref ref) {
       // Không redirect nếu đang ở Splash để ứng dụng xử lý logic khởi tạo
       if (isGoingToSplash) return null;
 
+      // Lưu lại vị trí công khai cuối cùng (home, categories, search)
+      final publicLocations = ['/home', '/categories', '/search'];
+      if (publicLocations.any((loc) => matchedLocation.startsWith(loc))) {
+        _lastPublicLocation = state.uri.toString();
+      }
+
       // Định nghĩa các vùng cần bảo mật (yêu cầu đăng nhập)
       final isGoingToProtected = RouteConstants.protectedPrefixes.any(
         (prefix) => matchedLocation.startsWith(prefix),
@@ -79,9 +115,9 @@ GoRouter appRouter(Ref ref) {
       final authLocations = ['/login', '/register', '/forgot-password'];
       final isGoingToAuth = authLocations.contains(matchedLocation);
 
-      // Nếu chưa đăng nhập và cố truy cập vùng bảo mật => Đá về Login
+      // Nếu chưa đăng nhập và cố truy cập vùng bảo mật => Đá về Login kèm tham số from và target
       if (!isAuthenticated && isGoingToProtected) {
-        return '/login';
+        return '/login?from=${Uri.encodeComponent(_lastPublicLocation)}&target=${Uri.encodeComponent(state.uri.toString())}';
       }
 
       // Nếu đã đăng nhập mà lại cố truy cập trang login/register => Đá về Home

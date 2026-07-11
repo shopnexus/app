@@ -29,6 +29,7 @@ class _CatalogApiService implements CatalogApiService {
     int? priceMax,
     List<String>? tags,
     String? sort,
+    String? location,
     int? page,
     int? size,
   }) async {
@@ -40,6 +41,7 @@ class _CatalogApiService implements CatalogApiService {
       r'price_max': priceMax,
       r'tags': tags,
       r'sort': sort,
+      r'location': location,
       r'page': page,
       r'size': size,
     };

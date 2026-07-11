@@ -18,6 +18,7 @@ class CatalogRepository {
     int? priceMax,
     List<String>? tags,
     String? sort,
+    String? location,
     int? page,
     int? size,
   }) async {
@@ -29,6 +30,7 @@ class CatalogRepository {
         priceMax: priceMax,
         tags: tags,
         sort: sort,
+        location: location,
         page: page,
         size: size,
       );

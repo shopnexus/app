@@ -535,10 +535,23 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               label: const Text('Bộ lọc'),
               labelStyle: const TextStyle(fontFamily: 'Inter', color: Color(0xFF1A1C1B), fontWeight: FontWeight.bold),
               backgroundColor: const Color(0xFFF1F1EF),
-              selected: activeFilters.priceMin != null || activeFilters.priceMax != null || activeFilters.categoryId != null,
+              selected: activeFilters.priceMin != null || activeFilters.priceMax != null || activeFilters.categoryId != null || activeFilters.location != null,
               selectedColor: const Color(0xFFEEEEEB),
               onSelected: (_) => _showFilterBottomSheet(context, activeFilters, categoriesState),
             ),
+            if (activeFilters.location != null) ...[
+              const SizedBox(width: 8.0),
+              Chip(
+                avatar: const Icon(Icons.location_on_rounded, size: 14, color: Color(0xFF005049)),
+                label: Text(
+                  activeFilters.location!,
+                  style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
+                ),
+                onDeleted: () {
+                  ref.read(activeSearchFiltersProvider.notifier).setLocation(null);
+                },
+              ),
+            ],
             const SizedBox(width: 8.0),
             ActionChip(
               avatar: const Icon(Icons.sort_rounded, size: 16, color: Color(0xFF005049)),
@@ -632,6 +645,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     _minPriceController.text = activeFilters.priceMin?.toString() ?? '';
     _maxPriceController.text = activeFilters.priceMax?.toString() ?? '';
     String? localSelectedCategory = activeFilters.categoryId;
+    String? localSelectedLocation = activeFilters.location;
 
     showModalBottomSheet(
       context: context,
@@ -666,6 +680,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                 _minPriceController.clear();
                                 _maxPriceController.clear();
                                 localSelectedCategory = null;
+                                localSelectedLocation = null;
                               });
                             },
                             child: const Text('Đặt lại', style: TextStyle(fontFamily: 'Inter', color: Colors.red)),
@@ -673,6 +688,45 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         ],
                       ),
                       const SizedBox(height: 16.0),
+                      const Text(
+                        'Khu vực / Địa điểm',
+                        style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 14),
+                      ),
+                      const SizedBox(height: 8.0),
+                      SizedBox(
+                        height: 40.0,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            'Hà Nội',
+                            'TP. Hồ Chí Minh',
+                            'Đà Nẵng',
+                            'San Francisco',
+                            'New York',
+                          ].map((loc) {
+                            final isSelected = localSelectedLocation == loc;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: ChoiceChip(
+                                label: Text(loc),
+                                selected: isSelected,
+                                labelStyle: TextStyle(
+                                  fontFamily: 'Inter',
+                                  color: isSelected ? Colors.white : const Color(0xFF3E4947),
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                ),
+                                selectedColor: const Color(0xFF005049),
+                                onSelected: (selected) {
+                                  setModalState(() {
+                                    localSelectedLocation = selected ? loc : null;
+                                  });
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 20.0),
                       const Text(
                         'Danh mục sản phẩm',
                         style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 14),
@@ -775,6 +829,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             final maxVal = int.tryParse(_maxPriceController.text.trim());
                             
                             ref.read(activeSearchFiltersProvider.notifier).setCategory(localSelectedCategory);
+                            ref.read(activeSearchFiltersProvider.notifier).setLocation(localSelectedLocation);
                             ref.read(activeSearchFiltersProvider.notifier).setPriceRange(minVal, maxVal);
                             context.pop();
                           },
