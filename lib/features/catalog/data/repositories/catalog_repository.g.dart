@@ -54,4 +54,4 @@ final class CatalogRepositoryProvider
   }
 }
 
-String _$catalogRepositoryHash() => r'5c456aa310c2a4ef3ab9c35cbd1e53f3d568f472';
+String _$catalogRepositoryHash() => r'76609ef36c8334e35be681c987461972d8ba1f72';
