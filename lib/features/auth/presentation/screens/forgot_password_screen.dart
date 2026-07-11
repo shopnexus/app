@@ -75,11 +75,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final textColor = theme.colorScheme.onSurface;
     final labelColor = theme.colorScheme.onSurfaceVariant;
 
-    return PopScope(
-      canPop: Navigator.canPop(context),
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        context.go(from ?? '/home');
+    return BackButtonListener(
+      onBackButtonPressed: () async {
+        if (Navigator.canPop(context)) {
+          context.pop();
+          return true;
+        } else {
+          context.go(from ?? '/home');
+          return true;
+        }
       },
       child: Scaffold(
         appBar: AppBar(

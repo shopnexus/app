@@ -107,11 +107,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final labelColor = theme.colorScheme.onSurfaceVariant;
     final backgroundColor = theme.colorScheme.surface;
 
-    return PopScope(
-      canPop: Navigator.canPop(context),
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        context.go(from ?? '/home');
+    return BackButtonListener(
+      onBackButtonPressed: () async {
+        if (Navigator.canPop(context)) {
+          context.pop();
+          return true;
+        } else {
+          context.go(from ?? '/home');
+          return true;
+        }
       },
       child: Scaffold(
         appBar: AppBar(

@@ -72,11 +72,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final textColor = Theme.of(context).colorScheme.onSurface;
     final secondaryColor = Theme.of(context).colorScheme.onSurfaceVariant;
 
-    return PopScope(
-      canPop: Navigator.canPop(context),
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        context.go(from ?? '/home');
+    return BackButtonListener(
+      onBackButtonPressed: () async {
+        if (Navigator.canPop(context)) {
+          context.pop();
+          return true;
+        } else {
+          context.go(from ?? '/home');
+          return true;
+        }
       },
       child: Scaffold(
         body: SafeArea(
