@@ -62,6 +62,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       );
     });
 
+    final state = GoRouterState.of(context);
+    final from = state.uri.queryParameters['from'];
+
     final authState = ref.watch(authProvider);
     final isLoading = authState.maybeWhen(
       loading: () => true,
@@ -72,85 +75,104 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final textColor = theme.colorScheme.onSurface;
     final labelColor = theme.colorScheme.onSurfaceVariant;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: textColor),
-          onPressed: isLoading ? null : () => context.pop(),
+    return BackButtonListener(
+      onBackButtonPressed: () async {
+        if (Navigator.canPop(context)) {
+          context.pop();
+          return true;
+        } else {
+          context.go(from ?? '/home');
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: textColor),
+            onPressed: isLoading
+                ? null
+                : () {
+                    if (Navigator.canPop(context)) {
+                      context.pop();
+                    } else {
+                      context.go(from ?? '/home');
+                    }
+                  },
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24.0,
-              vertical: 24.0,
-            ),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Title
-                      Text(
-                        'Quên mật khẩu',
-                        style:
-                            Theme.of(
-                              context,
-                            ).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ) ??
-                            TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Nhập địa chỉ email đã đăng ký của bạn và chúng tôi sẽ gửi liên kết để khôi phục lại mật khẩu.',
-                        style: TextStyle(fontSize: 14, color: labelColor),
-                      ),
-                      const SizedBox(height: 36),
-
-                      // Email Input
-                      CustomTextField(
-                        label: 'ĐỊA CHỈ EMAIL',
-                        hintText: 'Nhập địa chỉ email của bạn',
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        prefixIcon: Icon(Icons.mail_outline, color: labelColor),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Vui lòng nhập địa chỉ email';
-                          }
-                          final emailRegex = RegExp(
-                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                          );
-                          if (!emailRegex.hasMatch(value.trim())) {
-                            return 'Định dạng email không hợp lệ';
-                          }
-                          return null;
-                        },
-                        enabled: !isLoading,
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Submit Button
-                      CustomButton(
-                        text: 'Gửi yêu cầu khôi phục',
-                        onPressed: _onSubmit,
-                        isLoading: isLoading,
-                      ),
-                      const SizedBox(height: 24),
-                    ],
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 24.0,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Title
+                        Text(
+                          'Quên mật khẩu',
+                          style:
+                              Theme.of(
+                                context,
+                              ).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ) ??
+                              TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Nhập địa chỉ email đã đăng ký của bạn và chúng tôi sẽ gửi liên kết để khôi phục lại mật khẩu.',
+                          style: TextStyle(fontSize: 14, color: labelColor),
+                        ),
+                        const SizedBox(height: 36),
+  
+                        // Email Input
+                        CustomTextField(
+                          label: 'ĐỊA CHỈ EMAIL',
+                          hintText: 'Nhập địa chỉ email của bạn',
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          prefixIcon: Icon(Icons.mail_outline, color: labelColor),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Vui lòng nhập địa chỉ email';
+                            }
+                            final emailRegex = RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            );
+                            if (!emailRegex.hasMatch(value.trim())) {
+                              return 'Định dạng email không hợp lệ';
+                            }
+                            return null;
+                          },
+                          enabled: !isLoading,
+                        ),
+                        const SizedBox(height: 32),
+  
+                        // Submit Button
+                        CustomButton(
+                          text: 'Gửi yêu cầu khôi phục',
+                          onPressed: _onSubmit,
+                          isLoading: isLoading,
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
                   ),
                 ),
               ),

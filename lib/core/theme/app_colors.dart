@@ -1,37 +1,41 @@
 import 'package:flutter/material.dart';
 
-/// Màu sắc ứng dụng với phong cách Minimalist & Trustworthy
+/// Màu sắc ứng dụng theo hệ thống Stitch mới nhất (Nexus Human-Centric Interface)
 class AppColors {
-  // --- Light Theme Colors (Stitch Ethos Minimalist Commerce) ---
-  /// Màu chủ đạo (Charcoal Navy)
-  static const Color primary = Color(0xFF0F172A);
-
-  /// Điểm nhấn / Màu phụ (Slate Grey)
-  static const Color accent = Color(0xFF64748B);
-
-  /// Nền (Soft Grey)
-  static const Color background = Color(0xFFF8FAFC);
-
-  /// Surface - Thường dùng cho các Card, BottomSheet
+  // --- Light Theme Colors ---
+  /// Màu chủ đạo (Trustworthy Teal)
+  static const Color primary = Color(0xFF005049); 
+  
+  /// Màu phụ / Muted Teal
+  static const Color accent = Color(0xFF216963); 
+  
+  /// Nền (Warm Off-white)
+  static const Color background = Color(0xFFF9F9F7); 
+  
+  /// Surface - Nền cho Card, BottomSheet (Sử dụng Pure White atop Base)
   static const Color surface = Colors.white;
-
-  /// Màu chữ chính
-  static const Color textPrimary = Color(0xFF0F172A);
-
-  /// Màu chữ phụ
-  static const Color textSecondary = Color(0xFF64748B);
+  
+  /// Màu chữ chính (On-Surface)
+  static const Color textPrimary = Color(0xFF1A1C1B);
+  
+  /// Màu chữ phụ (On-Surface-Variant)
+  static const Color textSecondary = Color(0xFF3E4947);
 
   // --- Dark Theme Colors ---
-  /// Màu chủ đạo tối (Thường dùng trắng nhạt để nổi bật trên nền tối)
-  static const Color darkPrimary = Color(0xFFF8FAFC);
-  static const Color darkBackground = Color(
-    0xFF0F172A,
-  ); // Sử dụng Charcoal làm màu nền tối
-  static const Color darkSurface = Color(
-    0xFF1E293B,
-  ); // Surface sáng hơn nền một chút
-  static const Color darkTextPrimary = Color(0xFFF8FAFC);
-  static const Color darkTextSecondary = Color(0xFF94A3B8);
+  /// Màu chủ đạo tối (Soft Teal)
+  static const Color darkPrimary = Color(0xFF85D5C9); 
+  
+  /// Nền tối (Teal-tinted Near Black)
+  static const Color darkBackground = Color(0xFF00201D); 
+  
+  /// Surface tối (Slightly lighter Teal)
+  static const Color darkSurface = Color(0xFF00302C);    
+  
+  /// Màu chữ chính tối (Off-white)
+  static const Color darkTextPrimary = Color(0xFFF1F1EF);
+  
+  /// Màu chữ phụ tối (Slate Teal)
+  static const Color darkTextSecondary = Color(0xFFBEC9C6);
 }
 
 /// ThemeExtension cho E-commerce (Màu đặc thù không thuộc Material)
@@ -84,23 +88,19 @@ class EcommerceColors extends ThemeExtension<EcommerceColors> {
 
   // Khai báo sẵn các hằng số màu cho Light mode
   static const light = EcommerceColors(
-    statusDelivering: Color(0xFF2196F3),
-    // Xanh lam
-    statusCanceled: Color(0xFFE53935),
-    // Đỏ
-    freeshipBadge: Color(0xFFE8F5E9),
-    // Nền xanh lá nhạt
-    freeshipText: Color(0xFF2E7D32),
-    // Chữ xanh lá đậm
-    saleBadge: AppColors.accent, // Coral Red
+    statusDelivering: Color(0xFF005049), // Đồng nhất với brand primary
+    statusCanceled: Color(0xFFBA1A1A), // Màu lỗi từ Stitch
+    freeshipBadge: Color(0xFFE6F4EA), 
+    freeshipText: Color(0xFF005049), 
+    saleBadge: Color(0xFF773115), // Tông màu tertiary của Stitch
   );
 
   // Khai báo sẵn các hằng số màu cho Dark mode
   static const dark = EcommerceColors(
-    statusDelivering: Color(0xFF64B5F6),
-    statusCanceled: Color(0xFFEF5350),
-    freeshipBadge: Color(0xFF1B5E20),
-    freeshipText: Color(0xFFA5D6A7),
-    saleBadge: Color(0xFFFF8A65),
+    statusDelivering: Color(0xFF85D5C9),
+    statusCanceled: Color(0xFFEF4444),
+    freeshipBadge: Color(0xFF00302C),
+    freeshipText: Color(0xFF85D5C9),
+    saleBadge: Color(0xFFBEC9C6),
   );
 }
