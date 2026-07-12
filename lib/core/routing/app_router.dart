@@ -12,6 +12,7 @@ import '../../features/catalog/presentation/screens/categories_screen.dart';
 import '../../features/catalog/presentation/screens/search_screen.dart';
 import '../../shared/widgets/main_layout.dart';
 import '../../shared/widgets/placeholder_screens.dart';
+import '../../features/catalog/presentation/screens/product_detail_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -60,6 +61,16 @@ GoRouter appRouter(Ref ref) {
             path: '/home',
             name: 'home',
             builder: (context, state) => const ProductListScreen(),
+            routes: [
+              GoRoute(
+                path: 'product/:id',
+                name: 'product_detail',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return ProductDetailScreen(productId: id);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/categories',

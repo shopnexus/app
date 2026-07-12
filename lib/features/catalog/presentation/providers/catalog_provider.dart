@@ -162,3 +162,24 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
     state = const CatalogSearchFilters();
   }
 }
+
+@riverpod
+Future<TProductDetail> productDetail(Ref ref, {required String id}) async {
+  final detail = await ref
+      .watch(catalogRepositoryProvider)
+      .getProductDetail(id: id);
+  ref.invalidate(recentlyViewedProductsProvider);
+  return detail;
+}
+
+@riverpod
+Future<List<ProductComment>> productComments(Ref ref, {required String spuId}) {
+  return ref
+      .watch(catalogRepositoryProvider)
+      .getComments(spuId: spuId, page: 1, size: 50);
+}
+
+@riverpod
+Future<List<TProductCard>> recentlyViewedProducts(Ref ref) {
+  return ref.watch(catalogRepositoryProvider).getRecentlyViewed();
+}

@@ -196,3 +196,197 @@ abstract class _$ActiveSearchFilters extends $Notifier<CatalogSearchFilters> {
     element.handleValue(ref, created);
   }
 }
+
+@ProviderFor(productDetail)
+const productDetailProvider = ProductDetailFamily._();
+
+final class ProductDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<TProductDetail>,
+          TProductDetail,
+          FutureOr<TProductDetail>
+        >
+    with $FutureModifier<TProductDetail>, $FutureProvider<TProductDetail> {
+  const ProductDetailProvider._({
+    required ProductDetailFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'productDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$productDetailHash();
+
+  @override
+  String toString() {
+    return r'productDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<TProductDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<TProductDetail> create(Ref ref) {
+    final argument = this.argument as String;
+    return productDetail(ref, id: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProductDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$productDetailHash() => r'588a4819ae32b58b9b6f5c1a01f90d1eb9a36eb2';
+
+final class ProductDetailFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<TProductDetail>, String> {
+  const ProductDetailFamily._()
+    : super(
+        retry: null,
+        name: r'productDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProductDetailProvider call({required String id}) =>
+      ProductDetailProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'productDetailProvider';
+}
+
+@ProviderFor(productComments)
+const productCommentsProvider = ProductCommentsFamily._();
+
+final class ProductCommentsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ProductComment>>,
+          List<ProductComment>,
+          FutureOr<List<ProductComment>>
+        >
+    with
+        $FutureModifier<List<ProductComment>>,
+        $FutureProvider<List<ProductComment>> {
+  const ProductCommentsProvider._({
+    required ProductCommentsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'productCommentsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$productCommentsHash();
+
+  @override
+  String toString() {
+    return r'productCommentsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ProductComment>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ProductComment>> create(Ref ref) {
+    final argument = this.argument as String;
+    return productComments(ref, spuId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProductCommentsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$productCommentsHash() => r'bf883f754b2b7fb42d3b6d13744eb1e088e4bbf6';
+
+final class ProductCommentsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<ProductComment>>, String> {
+  const ProductCommentsFamily._()
+    : super(
+        retry: null,
+        name: r'productCommentsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProductCommentsProvider call({required String spuId}) =>
+      ProductCommentsProvider._(argument: spuId, from: this);
+
+  @override
+  String toString() => r'productCommentsProvider';
+}
+
+@ProviderFor(recentlyViewedProducts)
+const recentlyViewedProductsProvider = RecentlyViewedProductsProvider._();
+
+final class RecentlyViewedProductsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<TProductCard>>,
+          List<TProductCard>,
+          FutureOr<List<TProductCard>>
+        >
+    with
+        $FutureModifier<List<TProductCard>>,
+        $FutureProvider<List<TProductCard>> {
+  const RecentlyViewedProductsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recentlyViewedProductsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recentlyViewedProductsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<TProductCard>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<TProductCard>> create(Ref ref) {
+    return recentlyViewedProducts(ref);
+  }
+}
+
+String _$recentlyViewedProductsHash() =>
+    r'86d3d90043e0314c91593e46e6d85059d2bb7710';
