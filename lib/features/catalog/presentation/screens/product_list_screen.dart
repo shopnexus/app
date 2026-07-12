@@ -268,15 +268,14 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                     );
                   }
 
-                  // Chia đôi danh sách cho 2 cột để tạo hiệu ứng Masonry
-                  final leftColumnProducts = <TProductCard>[];
-                  final rightColumnProducts = <TProductCard>[];
+                  // Tính toán số cột thích ứng dựa trên độ rộng màn hình thực tế
+                  final double width = MediaQuery.of(context).size.width;
+                  final int crossAxisCount = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
+
+                  // Chia danh sách sản phẩm thành các cột tương ứng
+                  final columns = List.generate(crossAxisCount, (_) => <TProductCard>[]);
                   for (int i = 0; i < products.length; i++) {
-                    if (i.isEven) {
-                      leftColumnProducts.add(products[i]);
-                    } else {
-                      rightColumnProducts.add(products[i]);
-                    }
+                    columns[i % crossAxisCount].add(products[i]);
                   }
 
                   return SliverPadding(
@@ -284,72 +283,42 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                     sliver: SliverToBoxAdapter(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Cột bên trái
-                          Expanded(
-                            child: Column(
-                              children: List.generate(
-                                leftColumnProducts.length,
-                                (index) {
-                                  final product = leftColumnProducts[index];
-                                  final double aspect = (index % 3 == 0)
-                                      ? 0.8
-                                      : 1.0;
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 12.0,
-                                    ),
-                                    child: SharedProductCard(
-                                      product: product,
-                                      aspectRatio: aspect,
-                                      onTap: () {
-                                        context.push(
-                                          '/home/product/${product.id}',
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
+                        children: List.generate(crossAxisCount, (colIndex) {
+                          final colProducts = columns[colIndex];
+                          return Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
+                              ),
+                              child: Column(
+                                children: List.generate(
+                                  colProducts.length,
+                                  (index) {
+                                    final product = colProducts[index];
+                                    final double aspect = ((index + colIndex) % 2 == 0) ? 0.8 : 1.0;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 12.0),
+                                      child: SharedProductCard(
+                                        product: product,
+                                        aspectRatio: aspect,
+                                        onTap: () {
+                                          context.push('/home/product/${product.id}');
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 12.0),
-                          // Cột bên phải
-                          Expanded(
-                            child: Column(
-                              children: List.generate(
-                                rightColumnProducts.length,
-                                (index) {
-                                  final product = rightColumnProducts[index];
-                                  final double aspect = (index % 3 == 0)
-                                      ? 1.0
-                                      : 0.8;
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 12.0,
-                                    ),
-                                    child: SharedProductCard(
-                                      product: product,
-                                      aspectRatio: aspect,
-                                      onTap: () {
-                                        context.push(
-                                          '/home/product/${product.id}',
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
+                          );
+                        }),
                       ),
                     ),
                   );
                 },
                 loading: () => SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  sliver: _buildProductShimmers(),
+                  sliver: _buildProductShimmers(context),
                 ),
                 error: (err, stack) => SliverFillRemaining(
                   hasScrollBody: false,
@@ -910,53 +879,41 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     );
   }
 
-  Widget _buildProductShimmers() {
+  Widget _buildProductShimmers(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    final int crossAxisCount = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
+
     return SliverToBoxAdapter(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              children: List.generate(2, (index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Shimmer.fromColors(
-                    baseColor: Colors.grey[200]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      height: index == 0 ? 240.0 : 180.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
+        children: List.generate(crossAxisCount, (colIndex) {
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(
+                right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
+              ),
+              child: Column(
+                children: List.generate(2, (index) {
+                  final double height = ((index + colIndex) % 2 == 0) ? 240.0 : 180.0;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[200]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        height: height,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
-          ),
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: Column(
-              children: List.generate(2, (index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Shimmer.fromColors(
-                    baseColor: Colors.grey[200]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      height: index == 0 ? 180.0 : 240.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-        ],
+          );
+        }),
       ),
     );
   }
