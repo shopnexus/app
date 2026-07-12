@@ -80,14 +80,6 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.menu_rounded,
-                          color: Color(0xFF1A1C1B),
-                          size: 24,
-                        ),
-                        onPressed: () {},
-                      ),
                       const Text(
                         'ShopNexus',
                         style: TextStyle(
@@ -100,13 +92,35 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                           letterSpacing: -0.5,
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.shopping_cart_outlined,
-                          color: Color(0xFF1A1C1B),
-                          size: 24,
-                        ),
-                        onPressed: () => context.push('/cart'),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.shopping_cart_outlined,
+                              color: Color(0xFF1A1C1B),
+                              size: 24,
+                            ),
+                            onPressed: () => context.push('/cart'),
+                          ),
+                          const SizedBox(width: 4.0),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.notifications_none_rounded,
+                              color: Color(0xFF1A1C1B),
+                              size: 24,
+                            ),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Tính năng thông báo đang được phát triển!',
+                                  ),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
