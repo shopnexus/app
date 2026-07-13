@@ -618,7 +618,7 @@ $RatingModelCopyWith<$Res>? get rating {
 /// @nodoc
 mixin _$ProductSpecification {
 
- String get key; String get value;
+@JsonKey(name: 'name') String get key; String get value;
 /// Create a copy of ProductSpecification
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -651,7 +651,7 @@ abstract mixin class $ProductSpecificationCopyWith<$Res>  {
   factory $ProductSpecificationCopyWith(ProductSpecification value, $Res Function(ProductSpecification) _then) = _$ProductSpecificationCopyWithImpl;
 @useResult
 $Res call({
- String key, String value
+@JsonKey(name: 'name') String key, String value
 });
 
 
@@ -757,7 +757,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String key,  String value)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'name')  String key,  String value)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductSpecification() when $default != null:
 return $default(_that.key,_that.value);case _:
@@ -778,7 +778,7 @@ return $default(_that.key,_that.value);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String key,  String value)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'name')  String key,  String value)  $default,) {final _that = this;
 switch (_that) {
 case _ProductSpecification():
 return $default(_that.key,_that.value);case _:
@@ -798,7 +798,7 @@ return $default(_that.key,_that.value);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String key,  String value)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'name')  String key,  String value)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductSpecification() when $default != null:
 return $default(_that.key,_that.value);case _:
@@ -813,10 +813,10 @@ return $default(_that.key,_that.value);case _:
 @JsonSerializable()
 
 class _ProductSpecification implements ProductSpecification {
-  const _ProductSpecification({required this.key, required this.value});
+  const _ProductSpecification({@JsonKey(name: 'name') required this.key, required this.value});
   factory _ProductSpecification.fromJson(Map<String, dynamic> json) => _$ProductSpecificationFromJson(json);
 
-@override final  String key;
+@override@JsonKey(name: 'name') final  String key;
 @override final  String value;
 
 /// Create a copy of ProductSpecification
@@ -852,7 +852,7 @@ abstract mixin class _$ProductSpecificationCopyWith<$Res> implements $ProductSpe
   factory _$ProductSpecificationCopyWith(_ProductSpecification value, $Res Function(_ProductSpecification) _then) = __$ProductSpecificationCopyWithImpl;
 @override @useResult
 $Res call({
- String key, String value
+@JsonKey(name: 'name') String key, String value
 });
 
 
@@ -1150,7 +1150,7 @@ as String,
 /// @nodoc
 mixin _$ProductSku {
 
- String get id;@JsonKey(name: 'spu_id') String get spuId; String get name; int get price;@JsonKey(name: 'original_price') int? get originalPrice; int get stock; List<ResourceModel>? get images; List<SkuAttribute>? get attributes;
+ String get id;@JsonKey(name: 'spu_id') String get spuId;@JsonKey(name: 'name') String get name; int get price;@JsonKey(name: 'original_price') int? get originalPrice; int get stock;@JsonKey(name: 'resources') List<ResourceModel>? get images; List<SkuAttribute>? get attributes;
 /// Create a copy of ProductSku
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1183,7 +1183,7 @@ abstract mixin class $ProductSkuCopyWith<$Res>  {
   factory $ProductSkuCopyWith(ProductSku value, $Res Function(ProductSku) _then) = _$ProductSkuCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'spu_id') String spuId, String name, int price,@JsonKey(name: 'original_price') int? originalPrice, int stock, List<ResourceModel>? images, List<SkuAttribute>? attributes
+ String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'name') String name, int price,@JsonKey(name: 'original_price') int? originalPrice, int stock,@JsonKey(name: 'resources') List<ResourceModel>? images, List<SkuAttribute>? attributes
 });
 
 
@@ -1295,7 +1295,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId,  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  List<ResourceModel>? images,  List<SkuAttribute>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<SkuAttribute>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductSku() when $default != null:
 return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,_that.stock,_that.images,_that.attributes);case _:
@@ -1316,7 +1316,7 @@ return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId,  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  List<ResourceModel>? images,  List<SkuAttribute>? attributes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<SkuAttribute>? attributes)  $default,) {final _that = this;
 switch (_that) {
 case _ProductSku():
 return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,_that.stock,_that.images,_that.attributes);case _:
@@ -1336,7 +1336,7 @@ return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'spu_id')  String spuId,  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  List<ResourceModel>? images,  List<SkuAttribute>? attributes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<SkuAttribute>? attributes)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductSku() when $default != null:
 return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,_that.stock,_that.images,_that.attributes);case _:
@@ -1351,17 +1351,17 @@ return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,
 @JsonSerializable()
 
 class _ProductSku implements ProductSku {
-  const _ProductSku({required this.id, @JsonKey(name: 'spu_id') required this.spuId, required this.name, required this.price, @JsonKey(name: 'original_price') this.originalPrice, required this.stock, final  List<ResourceModel>? images, final  List<SkuAttribute>? attributes}): _images = images,_attributes = attributes;
+  const _ProductSku({required this.id, @JsonKey(name: 'spu_id') this.spuId = '', @JsonKey(name: 'name') this.name = '', required this.price, @JsonKey(name: 'original_price') this.originalPrice, required this.stock, @JsonKey(name: 'resources') final  List<ResourceModel>? images, final  List<SkuAttribute>? attributes}): _images = images,_attributes = attributes;
   factory _ProductSku.fromJson(Map<String, dynamic> json) => _$ProductSkuFromJson(json);
 
 @override final  String id;
 @override@JsonKey(name: 'spu_id') final  String spuId;
-@override final  String name;
+@override@JsonKey(name: 'name') final  String name;
 @override final  int price;
 @override@JsonKey(name: 'original_price') final  int? originalPrice;
 @override final  int stock;
  final  List<ResourceModel>? _images;
-@override List<ResourceModel>? get images {
+@override@JsonKey(name: 'resources') List<ResourceModel>? get images {
   final value = _images;
   if (value == null) return null;
   if (_images is EqualUnmodifiableListView) return _images;
@@ -1412,7 +1412,7 @@ abstract mixin class _$ProductSkuCopyWith<$Res> implements $ProductSkuCopyWith<$
   factory _$ProductSkuCopyWith(_ProductSku value, $Res Function(_ProductSku) _then) = __$ProductSkuCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'spu_id') String spuId, String name, int price,@JsonKey(name: 'original_price') int? originalPrice, int stock, List<ResourceModel>? images, List<SkuAttribute>? attributes
+ String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'name') String name, int price,@JsonKey(name: 'original_price') int? originalPrice, int stock,@JsonKey(name: 'resources') List<ResourceModel>? images, List<SkuAttribute>? attributes
 });
 
 
@@ -1450,7 +1450,7 @@ as List<SkuAttribute>?,
 /// @nodoc
 mixin _$TProductDetail {
 
- String get id; String get name; String get slug; String? get description; int get price;@JsonKey(name: 'original_price') int? get originalPrice; RatingModel? get rating;@JsonKey(name: 'sold_count') int? get soldCount; List<ResourceModel>? get images; List<ProductSpecification>? get specifications; List<ProductSku>? get skus;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'vendor_avatar') String? get vendorAvatar;@JsonKey(name: 'category_id') String? get categoryId;
+ String get id; String get name; String get slug; String? get description; int get price;@JsonKey(name: 'original_price') int? get originalPrice; RatingModel? get rating;@JsonKey(name: 'sold_count') int? get soldCount;@JsonKey(name: 'resources') List<ResourceModel>? get images; List<ProductSpecification>? get specifications; List<ProductSku>? get skus;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'vendor_avatar') String? get vendorAvatar;@JsonKey(name: 'category_id') String? get categoryId;
 /// Create a copy of TProductDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1483,7 +1483,7 @@ abstract mixin class $TProductDetailCopyWith<$Res>  {
   factory $TProductDetailCopyWith(TProductDetail value, $Res Function(TProductDetail) _then) = _$TProductDetailCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String slug, String? description, int price,@JsonKey(name: 'original_price') int? originalPrice, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount, List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId
+ String id, String name, String slug, String? description, int price,@JsonKey(name: 'original_price') int? originalPrice, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount,@JsonKey(name: 'resources') List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId
 });
 
 
@@ -1614,7 +1614,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TProductDetail() when $default != null:
 return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId);case _:
@@ -1635,7 +1635,7 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)  $default,) {final _that = this;
 switch (_that) {
 case _TProductDetail():
 return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId);case _:
@@ -1655,7 +1655,7 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)?  $default,) {final _that = this;
 switch (_that) {
 case _TProductDetail() when $default != null:
 return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId);case _:
@@ -1670,19 +1670,19 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 @JsonSerializable()
 
 class _TProductDetail implements TProductDetail {
-  const _TProductDetail({required this.id, required this.name, required this.slug, this.description, required this.price, @JsonKey(name: 'original_price') this.originalPrice, this.rating, @JsonKey(name: 'sold_count') this.soldCount, final  List<ResourceModel>? images, final  List<ProductSpecification>? specifications, final  List<ProductSku>? skus, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'vendor_avatar') this.vendorAvatar, @JsonKey(name: 'category_id') this.categoryId}): _images = images,_specifications = specifications,_skus = skus;
+  const _TProductDetail({required this.id, required this.name, required this.slug, this.description, this.price = 0, @JsonKey(name: 'original_price') this.originalPrice, this.rating, @JsonKey(name: 'sold_count') this.soldCount, @JsonKey(name: 'resources') final  List<ResourceModel>? images, final  List<ProductSpecification>? specifications, final  List<ProductSku>? skus, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'vendor_avatar') this.vendorAvatar, @JsonKey(name: 'category_id') this.categoryId}): _images = images,_specifications = specifications,_skus = skus;
   factory _TProductDetail.fromJson(Map<String, dynamic> json) => _$TProductDetailFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override final  String slug;
 @override final  String? description;
-@override final  int price;
+@override@JsonKey() final  int price;
 @override@JsonKey(name: 'original_price') final  int? originalPrice;
 @override final  RatingModel? rating;
 @override@JsonKey(name: 'sold_count') final  int? soldCount;
  final  List<ResourceModel>? _images;
-@override List<ResourceModel>? get images {
+@override@JsonKey(name: 'resources') List<ResourceModel>? get images {
   final value = _images;
   if (value == null) return null;
   if (_images is EqualUnmodifiableListView) return _images;
@@ -1746,7 +1746,7 @@ abstract mixin class _$TProductDetailCopyWith<$Res> implements $TProductDetailCo
   factory _$TProductDetailCopyWith(_TProductDetail value, $Res Function(_TProductDetail) _then) = __$TProductDetailCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String slug, String? description, int price,@JsonKey(name: 'original_price') int? originalPrice, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount, List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId
+ String id, String name, String slug, String? description, int price,@JsonKey(name: 'original_price') int? originalPrice, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount,@JsonKey(name: 'resources') List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId
 });
 
 
@@ -1801,9 +1801,281 @@ $RatingModelCopyWith<$Res>? get rating {
 
 
 /// @nodoc
+mixin _$CommentProfile {
+
+ String get id; String? get username; String? get name;@JsonKey(name: 'avatar_url') String? get avatarUrl;
+/// Create a copy of CommentProfile
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CommentProfileCopyWith<CommentProfile> get copyWith => _$CommentProfileCopyWithImpl<CommentProfile>(this as CommentProfile, _$identity);
+
+  /// Serializes this CommentProfile to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CommentProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,username,name,avatarUrl);
+
+@override
+String toString() {
+  return 'CommentProfile(id: $id, username: $username, name: $name, avatarUrl: $avatarUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CommentProfileCopyWith<$Res>  {
+  factory $CommentProfileCopyWith(CommentProfile value, $Res Function(CommentProfile) _then) = _$CommentProfileCopyWithImpl;
+@useResult
+$Res call({
+ String id, String? username, String? name,@JsonKey(name: 'avatar_url') String? avatarUrl
+});
+
+
+
+
+}
+/// @nodoc
+class _$CommentProfileCopyWithImpl<$Res>
+    implements $CommentProfileCopyWith<$Res> {
+  _$CommentProfileCopyWithImpl(this._self, this._then);
+
+  final CommentProfile _self;
+  final $Res Function(CommentProfile) _then;
+
+/// Create a copy of CommentProfile
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = freezed,Object? name = freezed,Object? avatarUrl = freezed,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,username: freezed == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CommentProfile].
+extension CommentProfilePatterns on CommentProfile {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CommentProfile value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CommentProfile() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CommentProfile value)  $default,){
+final _that = this;
+switch (_that) {
+case _CommentProfile():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CommentProfile value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CommentProfile() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? username,  String? name, @JsonKey(name: 'avatar_url')  String? avatarUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CommentProfile() when $default != null:
+return $default(_that.id,_that.username,_that.name,_that.avatarUrl);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? username,  String? name, @JsonKey(name: 'avatar_url')  String? avatarUrl)  $default,) {final _that = this;
+switch (_that) {
+case _CommentProfile():
+return $default(_that.id,_that.username,_that.name,_that.avatarUrl);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? username,  String? name, @JsonKey(name: 'avatar_url')  String? avatarUrl)?  $default,) {final _that = this;
+switch (_that) {
+case _CommentProfile() when $default != null:
+return $default(_that.id,_that.username,_that.name,_that.avatarUrl);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CommentProfile implements CommentProfile {
+  const _CommentProfile({required this.id, this.username, this.name, @JsonKey(name: 'avatar_url') this.avatarUrl});
+  factory _CommentProfile.fromJson(Map<String, dynamic> json) => _$CommentProfileFromJson(json);
+
+@override final  String id;
+@override final  String? username;
+@override final  String? name;
+@override@JsonKey(name: 'avatar_url') final  String? avatarUrl;
+
+/// Create a copy of CommentProfile
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CommentProfileCopyWith<_CommentProfile> get copyWith => __$CommentProfileCopyWithImpl<_CommentProfile>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CommentProfileToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CommentProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,username,name,avatarUrl);
+
+@override
+String toString() {
+  return 'CommentProfile(id: $id, username: $username, name: $name, avatarUrl: $avatarUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CommentProfileCopyWith<$Res> implements $CommentProfileCopyWith<$Res> {
+  factory _$CommentProfileCopyWith(_CommentProfile value, $Res Function(_CommentProfile) _then) = __$CommentProfileCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String? username, String? name,@JsonKey(name: 'avatar_url') String? avatarUrl
+});
+
+
+
+
+}
+/// @nodoc
+class __$CommentProfileCopyWithImpl<$Res>
+    implements _$CommentProfileCopyWith<$Res> {
+  __$CommentProfileCopyWithImpl(this._self, this._then);
+
+  final _CommentProfile _self;
+  final $Res Function(_CommentProfile) _then;
+
+/// Create a copy of CommentProfile
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = freezed,Object? name = freezed,Object? avatarUrl = freezed,}) {
+  return _then(_CommentProfile(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,username: freezed == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$ProductComment {
 
- String get id;@JsonKey(name: 'spu_id') String get spuId;@JsonKey(name: 'user_id') String? get userId; String? get username;@JsonKey(name: 'user_avatar') String? get userAvatar; double get score; String? get content;@JsonKey(name: 'created_at') String? get createdAt; List<ResourceModel>? get attachments; List<SkuAttribute>? get attributes;
+ String get id;@JsonKey(name: 'ref_id') String get refId;@JsonKey(name: 'ref_type') String get refType;@JsonKey(name: 'account_id') String? get accountId;@JsonKey(name: 'order_id') String? get orderId; CommentProfile? get profile; String? get body; int? get upvote; int? get downvote; double get score;@JsonKey(name: 'date_created') String? get dateCreated;@JsonKey(name: 'date_updated') String? get dateUpdated;@JsonKey(name: 'resources') List<ResourceModel>? get attachments; List<SkuAttribute>? get attributes;
 /// Create a copy of ProductComment
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1816,16 +2088,16 @@ $ProductCommentCopyWith<ProductComment> get copyWith => _$ProductCommentCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductComment&&(identical(other.id, id) || other.id == id)&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.username, username) || other.username == username)&&(identical(other.userAvatar, userAvatar) || other.userAvatar == userAvatar)&&(identical(other.score, score) || other.score == score)&&(identical(other.content, content) || other.content == content)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.attachments, attachments)&&const DeepCollectionEquality().equals(other.attributes, attributes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductComment&&(identical(other.id, id) || other.id == id)&&(identical(other.refId, refId) || other.refId == refId)&&(identical(other.refType, refType) || other.refType == refType)&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.body, body) || other.body == body)&&(identical(other.upvote, upvote) || other.upvote == upvote)&&(identical(other.downvote, downvote) || other.downvote == downvote)&&(identical(other.score, score) || other.score == score)&&(identical(other.dateCreated, dateCreated) || other.dateCreated == dateCreated)&&(identical(other.dateUpdated, dateUpdated) || other.dateUpdated == dateUpdated)&&const DeepCollectionEquality().equals(other.attachments, attachments)&&const DeepCollectionEquality().equals(other.attributes, attributes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,spuId,userId,username,userAvatar,score,content,createdAt,const DeepCollectionEquality().hash(attachments),const DeepCollectionEquality().hash(attributes));
+int get hashCode => Object.hash(runtimeType,id,refId,refType,accountId,orderId,profile,body,upvote,downvote,score,dateCreated,dateUpdated,const DeepCollectionEquality().hash(attachments),const DeepCollectionEquality().hash(attributes));
 
 @override
 String toString() {
-  return 'ProductComment(id: $id, spuId: $spuId, userId: $userId, username: $username, userAvatar: $userAvatar, score: $score, content: $content, createdAt: $createdAt, attachments: $attachments, attributes: $attributes)';
+  return 'ProductComment(id: $id, refId: $refId, refType: $refType, accountId: $accountId, orderId: $orderId, profile: $profile, body: $body, upvote: $upvote, downvote: $downvote, score: $score, dateCreated: $dateCreated, dateUpdated: $dateUpdated, attachments: $attachments, attributes: $attributes)';
 }
 
 
@@ -1836,11 +2108,11 @@ abstract mixin class $ProductCommentCopyWith<$Res>  {
   factory $ProductCommentCopyWith(ProductComment value, $Res Function(ProductComment) _then) = _$ProductCommentCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'user_id') String? userId, String? username,@JsonKey(name: 'user_avatar') String? userAvatar, double score, String? content,@JsonKey(name: 'created_at') String? createdAt, List<ResourceModel>? attachments, List<SkuAttribute>? attributes
+ String id,@JsonKey(name: 'ref_id') String refId,@JsonKey(name: 'ref_type') String refType,@JsonKey(name: 'account_id') String? accountId,@JsonKey(name: 'order_id') String? orderId, CommentProfile? profile, String? body, int? upvote, int? downvote, double score,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'date_updated') String? dateUpdated,@JsonKey(name: 'resources') List<ResourceModel>? attachments, List<SkuAttribute>? attributes
 });
 
 
-
+$CommentProfileCopyWith<$Res>? get profile;
 
 }
 /// @nodoc
@@ -1853,22 +2125,38 @@ class _$ProductCommentCopyWithImpl<$Res>
 
 /// Create a copy of ProductComment
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? spuId = null,Object? userId = freezed,Object? username = freezed,Object? userAvatar = freezed,Object? score = null,Object? content = freezed,Object? createdAt = freezed,Object? attachments = freezed,Object? attributes = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? refId = null,Object? refType = null,Object? accountId = freezed,Object? orderId = freezed,Object? profile = freezed,Object? body = freezed,Object? upvote = freezed,Object? downvote = freezed,Object? score = null,Object? dateCreated = freezed,Object? dateUpdated = freezed,Object? attachments = freezed,Object? attributes = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,spuId: null == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
-as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String?,username: freezed == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
-as String?,userAvatar: freezed == userAvatar ? _self.userAvatar : userAvatar // ignore: cast_nullable_to_non_nullable
-as String?,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
-as double,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
-as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,refId: null == refId ? _self.refId : refId // ignore: cast_nullable_to_non_nullable
+as String,refType: null == refType ? _self.refType : refType // ignore: cast_nullable_to_non_nullable
+as String,accountId: freezed == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
+as String?,orderId: freezed == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
+as String?,profile: freezed == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
+as CommentProfile?,body: freezed == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
+as String?,upvote: freezed == upvote ? _self.upvote : upvote // ignore: cast_nullable_to_non_nullable
+as int?,downvote: freezed == downvote ? _self.downvote : downvote // ignore: cast_nullable_to_non_nullable
+as int?,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
+as double,dateCreated: freezed == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
+as String?,dateUpdated: freezed == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
 as String?,attachments: freezed == attachments ? _self.attachments : attachments // ignore: cast_nullable_to_non_nullable
 as List<ResourceModel>?,attributes: freezed == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
 as List<SkuAttribute>?,
   ));
 }
+/// Create a copy of ProductComment
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CommentProfileCopyWith<$Res>? get profile {
+    if (_self.profile == null) {
+    return null;
+  }
 
+  return $CommentProfileCopyWith<$Res>(_self.profile!, (value) {
+    return _then(_self.copyWith(profile: value));
+  });
+}
 }
 
 
@@ -1950,10 +2238,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'user_id')  String? userId,  String? username, @JsonKey(name: 'user_avatar')  String? userAvatar,  double score,  String? content, @JsonKey(name: 'created_at')  String? createdAt,  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'ref_id')  String refId, @JsonKey(name: 'ref_type')  String refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  String? body,  int? upvote,  int? downvote,  double score, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductComment() when $default != null:
-return $default(_that.id,_that.spuId,_that.userId,_that.username,_that.userAvatar,_that.score,_that.content,_that.createdAt,_that.attachments,_that.attributes);case _:
+return $default(_that.id,_that.refId,_that.refType,_that.accountId,_that.orderId,_that.profile,_that.body,_that.upvote,_that.downvote,_that.score,_that.dateCreated,_that.dateUpdated,_that.attachments,_that.attributes);case _:
   return orElse();
 
 }
@@ -1971,10 +2259,10 @@ return $default(_that.id,_that.spuId,_that.userId,_that.username,_that.userAvata
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'user_id')  String? userId,  String? username, @JsonKey(name: 'user_avatar')  String? userAvatar,  double score,  String? content, @JsonKey(name: 'created_at')  String? createdAt,  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'ref_id')  String refId, @JsonKey(name: 'ref_type')  String refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  String? body,  int? upvote,  int? downvote,  double score, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)  $default,) {final _that = this;
 switch (_that) {
 case _ProductComment():
-return $default(_that.id,_that.spuId,_that.userId,_that.username,_that.userAvatar,_that.score,_that.content,_that.createdAt,_that.attachments,_that.attributes);case _:
+return $default(_that.id,_that.refId,_that.refType,_that.accountId,_that.orderId,_that.profile,_that.body,_that.upvote,_that.downvote,_that.score,_that.dateCreated,_that.dateUpdated,_that.attachments,_that.attributes);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1991,10 +2279,10 @@ return $default(_that.id,_that.spuId,_that.userId,_that.username,_that.userAvata
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'user_id')  String? userId,  String? username, @JsonKey(name: 'user_avatar')  String? userAvatar,  double score,  String? content, @JsonKey(name: 'created_at')  String? createdAt,  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'ref_id')  String refId, @JsonKey(name: 'ref_type')  String refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  String? body,  int? upvote,  int? downvote,  double score, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductComment() when $default != null:
-return $default(_that.id,_that.spuId,_that.userId,_that.username,_that.userAvatar,_that.score,_that.content,_that.createdAt,_that.attachments,_that.attributes);case _:
+return $default(_that.id,_that.refId,_that.refType,_that.accountId,_that.orderId,_that.profile,_that.body,_that.upvote,_that.downvote,_that.score,_that.dateCreated,_that.dateUpdated,_that.attachments,_that.attributes);case _:
   return null;
 
 }
@@ -2006,19 +2294,23 @@ return $default(_that.id,_that.spuId,_that.userId,_that.username,_that.userAvata
 @JsonSerializable()
 
 class _ProductComment implements ProductComment {
-  const _ProductComment({required this.id, @JsonKey(name: 'spu_id') required this.spuId, @JsonKey(name: 'user_id') this.userId, this.username, @JsonKey(name: 'user_avatar') this.userAvatar, required this.score, this.content, @JsonKey(name: 'created_at') this.createdAt, final  List<ResourceModel>? attachments, final  List<SkuAttribute>? attributes}): _attachments = attachments,_attributes = attributes;
+  const _ProductComment({required this.id, @JsonKey(name: 'ref_id') required this.refId, @JsonKey(name: 'ref_type') required this.refType, @JsonKey(name: 'account_id') this.accountId, @JsonKey(name: 'order_id') this.orderId, this.profile, this.body, this.upvote, this.downvote, required this.score, @JsonKey(name: 'date_created') this.dateCreated, @JsonKey(name: 'date_updated') this.dateUpdated, @JsonKey(name: 'resources') final  List<ResourceModel>? attachments, final  List<SkuAttribute>? attributes}): _attachments = attachments,_attributes = attributes;
   factory _ProductComment.fromJson(Map<String, dynamic> json) => _$ProductCommentFromJson(json);
 
 @override final  String id;
-@override@JsonKey(name: 'spu_id') final  String spuId;
-@override@JsonKey(name: 'user_id') final  String? userId;
-@override final  String? username;
-@override@JsonKey(name: 'user_avatar') final  String? userAvatar;
+@override@JsonKey(name: 'ref_id') final  String refId;
+@override@JsonKey(name: 'ref_type') final  String refType;
+@override@JsonKey(name: 'account_id') final  String? accountId;
+@override@JsonKey(name: 'order_id') final  String? orderId;
+@override final  CommentProfile? profile;
+@override final  String? body;
+@override final  int? upvote;
+@override final  int? downvote;
 @override final  double score;
-@override final  String? content;
-@override@JsonKey(name: 'created_at') final  String? createdAt;
+@override@JsonKey(name: 'date_created') final  String? dateCreated;
+@override@JsonKey(name: 'date_updated') final  String? dateUpdated;
  final  List<ResourceModel>? _attachments;
-@override List<ResourceModel>? get attachments {
+@override@JsonKey(name: 'resources') List<ResourceModel>? get attachments {
   final value = _attachments;
   if (value == null) return null;
   if (_attachments is EqualUnmodifiableListView) return _attachments;
@@ -2049,16 +2341,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductComment&&(identical(other.id, id) || other.id == id)&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.username, username) || other.username == username)&&(identical(other.userAvatar, userAvatar) || other.userAvatar == userAvatar)&&(identical(other.score, score) || other.score == score)&&(identical(other.content, content) || other.content == content)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._attachments, _attachments)&&const DeepCollectionEquality().equals(other._attributes, _attributes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductComment&&(identical(other.id, id) || other.id == id)&&(identical(other.refId, refId) || other.refId == refId)&&(identical(other.refType, refType) || other.refType == refType)&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.body, body) || other.body == body)&&(identical(other.upvote, upvote) || other.upvote == upvote)&&(identical(other.downvote, downvote) || other.downvote == downvote)&&(identical(other.score, score) || other.score == score)&&(identical(other.dateCreated, dateCreated) || other.dateCreated == dateCreated)&&(identical(other.dateUpdated, dateUpdated) || other.dateUpdated == dateUpdated)&&const DeepCollectionEquality().equals(other._attachments, _attachments)&&const DeepCollectionEquality().equals(other._attributes, _attributes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,spuId,userId,username,userAvatar,score,content,createdAt,const DeepCollectionEquality().hash(_attachments),const DeepCollectionEquality().hash(_attributes));
+int get hashCode => Object.hash(runtimeType,id,refId,refType,accountId,orderId,profile,body,upvote,downvote,score,dateCreated,dateUpdated,const DeepCollectionEquality().hash(_attachments),const DeepCollectionEquality().hash(_attributes));
 
 @override
 String toString() {
-  return 'ProductComment(id: $id, spuId: $spuId, userId: $userId, username: $username, userAvatar: $userAvatar, score: $score, content: $content, createdAt: $createdAt, attachments: $attachments, attributes: $attributes)';
+  return 'ProductComment(id: $id, refId: $refId, refType: $refType, accountId: $accountId, orderId: $orderId, profile: $profile, body: $body, upvote: $upvote, downvote: $downvote, score: $score, dateCreated: $dateCreated, dateUpdated: $dateUpdated, attachments: $attachments, attributes: $attributes)';
 }
 
 
@@ -2069,11 +2361,11 @@ abstract mixin class _$ProductCommentCopyWith<$Res> implements $ProductCommentCo
   factory _$ProductCommentCopyWith(_ProductComment value, $Res Function(_ProductComment) _then) = __$ProductCommentCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'user_id') String? userId, String? username,@JsonKey(name: 'user_avatar') String? userAvatar, double score, String? content,@JsonKey(name: 'created_at') String? createdAt, List<ResourceModel>? attachments, List<SkuAttribute>? attributes
+ String id,@JsonKey(name: 'ref_id') String refId,@JsonKey(name: 'ref_type') String refType,@JsonKey(name: 'account_id') String? accountId,@JsonKey(name: 'order_id') String? orderId, CommentProfile? profile, String? body, int? upvote, int? downvote, double score,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'date_updated') String? dateUpdated,@JsonKey(name: 'resources') List<ResourceModel>? attachments, List<SkuAttribute>? attributes
 });
 
 
-
+@override $CommentProfileCopyWith<$Res>? get profile;
 
 }
 /// @nodoc
@@ -2086,23 +2378,39 @@ class __$ProductCommentCopyWithImpl<$Res>
 
 /// Create a copy of ProductComment
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? spuId = null,Object? userId = freezed,Object? username = freezed,Object? userAvatar = freezed,Object? score = null,Object? content = freezed,Object? createdAt = freezed,Object? attachments = freezed,Object? attributes = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? refId = null,Object? refType = null,Object? accountId = freezed,Object? orderId = freezed,Object? profile = freezed,Object? body = freezed,Object? upvote = freezed,Object? downvote = freezed,Object? score = null,Object? dateCreated = freezed,Object? dateUpdated = freezed,Object? attachments = freezed,Object? attributes = freezed,}) {
   return _then(_ProductComment(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,spuId: null == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
-as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String?,username: freezed == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
-as String?,userAvatar: freezed == userAvatar ? _self.userAvatar : userAvatar // ignore: cast_nullable_to_non_nullable
-as String?,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
-as double,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
-as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,refId: null == refId ? _self.refId : refId // ignore: cast_nullable_to_non_nullable
+as String,refType: null == refType ? _self.refType : refType // ignore: cast_nullable_to_non_nullable
+as String,accountId: freezed == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
+as String?,orderId: freezed == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
+as String?,profile: freezed == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
+as CommentProfile?,body: freezed == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
+as String?,upvote: freezed == upvote ? _self.upvote : upvote // ignore: cast_nullable_to_non_nullable
+as int?,downvote: freezed == downvote ? _self.downvote : downvote // ignore: cast_nullable_to_non_nullable
+as int?,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
+as double,dateCreated: freezed == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
+as String?,dateUpdated: freezed == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
 as String?,attachments: freezed == attachments ? _self._attachments : attachments // ignore: cast_nullable_to_non_nullable
 as List<ResourceModel>?,attributes: freezed == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable
 as List<SkuAttribute>?,
   ));
 }
 
+/// Create a copy of ProductComment
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CommentProfileCopyWith<$Res>? get profile {
+    if (_self.profile == null) {
+    return null;
+  }
 
+  return $CommentProfileCopyWith<$Res>(_self.profile!, (value) {
+    return _then(_self.copyWith(profile: value));
+  });
+}
 }
 
 // dart format on

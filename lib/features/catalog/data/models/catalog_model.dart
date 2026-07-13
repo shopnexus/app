@@ -38,13 +38,34 @@ abstract class TProductCard with _$TProductCard {
   }) = _TProductCard;
 
   factory TProductCard.fromJson(Map<String, dynamic> json) =>
-      _$TProductCardFromJson(json);
+      _$TProductCardFromJson(TProductCard._preprocessJson(json));
+
+  static Map<String, dynamic> _preprocessJson(Map<String, dynamic> json) {
+    // Trích xuất thumbnail từ resources nếu thumbnail null
+    String? thumb = json['thumbnail'] as String?;
+    if (thumb == null && json['resources'] != null) {
+      final resList = json['resources'] as List<dynamic>;
+      if (resList.isNotEmpty) {
+        final firstRes = resList.first as Map<String, dynamic>;
+        thumb = firstRes['url'] as String?;
+      }
+    }
+
+    // Ánh xạ seller_id sang vendor_id nếu vendor_id null
+    String? vId = json['vendor_id'] as String? ?? json['seller_id'] as String?;
+
+    final modifiedJson = Map<String, dynamic>.from(json);
+    modifiedJson['thumbnail'] = thumb;
+    modifiedJson['vendor_id'] = vId;
+
+    return modifiedJson;
+  }
 }
 
 @freezed
 abstract class ProductSpecification with _$ProductSpecification {
   const factory ProductSpecification({
-    required String key,
+    @JsonKey(name: 'name') required String key,
     required String value,
   }) = _ProductSpecification;
 
@@ -65,12 +86,12 @@ abstract class SkuAttribute with _$SkuAttribute {
 abstract class ProductSku with _$ProductSku {
   const factory ProductSku({
     required String id,
-    @JsonKey(name: 'spu_id') required String spuId,
-    required String name,
+    @JsonKey(name: 'spu_id') @Default('') String spuId,
+    @JsonKey(name: 'name') @Default('') String name,
     required int price,
     @JsonKey(name: 'original_price') int? originalPrice,
     required int stock,
-    List<ResourceModel>? images,
+    @JsonKey(name: 'resources') List<ResourceModel>? images,
     List<SkuAttribute>? attributes,
   }) = _ProductSku;
 
@@ -85,11 +106,11 @@ abstract class TProductDetail with _$TProductDetail {
     required String name,
     required String slug,
     String? description,
-    required int price,
+    @Default(0) int price,
     @JsonKey(name: 'original_price') int? originalPrice,
     RatingModel? rating,
     @JsonKey(name: 'sold_count') int? soldCount,
-    List<ResourceModel>? images,
+    @JsonKey(name: 'resources') List<ResourceModel>? images,
     List<ProductSpecification>? specifications,
     List<ProductSku>? skus,
     @JsonKey(name: 'vendor_id') String? vendorId,
@@ -99,21 +120,46 @@ abstract class TProductDetail with _$TProductDetail {
   }) = _TProductDetail;
 
   factory TProductDetail.fromJson(Map<String, dynamic> json) =>
-      _$TProductDetailFromJson(json);
+      _$TProductDetailFromJson(TProductDetail._preprocessJson(json));
+
+  static Map<String, dynamic> _preprocessJson(Map<String, dynamic> json) {
+    // Ánh xạ seller_id sang vendor_id nếu vendor_id null
+    String? vId = json['vendor_id'] as String? ?? json['seller_id'] as String?;
+    final modifiedJson = Map<String, dynamic>.from(json);
+    modifiedJson['vendor_id'] = vId;
+    return modifiedJson;
+  }
+}
+
+@freezed
+abstract class CommentProfile with _$CommentProfile {
+  const factory CommentProfile({
+    required String id,
+    String? username,
+    String? name,
+    @JsonKey(name: 'avatar_url') String? avatarUrl,
+  }) = _CommentProfile;
+
+  factory CommentProfile.fromJson(Map<String, dynamic> json) =>
+      _$CommentProfileFromJson(json);
 }
 
 @freezed
 abstract class ProductComment with _$ProductComment {
   const factory ProductComment({
     required String id,
-    @JsonKey(name: 'spu_id') required String spuId,
-    @JsonKey(name: 'user_id') String? userId,
-    String? username,
-    @JsonKey(name: 'user_avatar') String? userAvatar,
+    @JsonKey(name: 'ref_id') required String refId,
+    @JsonKey(name: 'ref_type') required String refType,
+    @JsonKey(name: 'account_id') String? accountId,
+    @JsonKey(name: 'order_id') String? orderId,
+    CommentProfile? profile,
+    String? body,
+    int? upvote,
+    int? downvote,
     required double score,
-    String? content,
-    @JsonKey(name: 'created_at') String? createdAt,
-    List<ResourceModel>? attachments,
+    @JsonKey(name: 'date_created') String? dateCreated,
+    @JsonKey(name: 'date_updated') String? dateUpdated,
+    @JsonKey(name: 'resources') List<ResourceModel>? attachments,
     List<SkuAttribute>? attributes,
   }) = _ProductComment;
 

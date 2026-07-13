@@ -10,7 +10,7 @@ _ResourceModel _$ResourceModelFromJson(Map<String, dynamic> json) =>
     _ResourceModel(
       id: json['id'] as String,
       url: json['url'] as String,
-      type: json['type'] as String,
+      type: json['type'] as String? ?? 'Image',
       description: json['description'] as String?,
     );
 
