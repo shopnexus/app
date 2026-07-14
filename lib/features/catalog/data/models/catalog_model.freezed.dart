@@ -884,7 +884,7 @@ as String,
 /// @nodoc
 mixin _$SkuAttribute {
 
- String get key; String get value;
+@JsonKey(name: 'name') String get key; String get value;
 /// Create a copy of SkuAttribute
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -917,7 +917,7 @@ abstract mixin class $SkuAttributeCopyWith<$Res>  {
   factory $SkuAttributeCopyWith(SkuAttribute value, $Res Function(SkuAttribute) _then) = _$SkuAttributeCopyWithImpl;
 @useResult
 $Res call({
- String key, String value
+@JsonKey(name: 'name') String key, String value
 });
 
 
@@ -1023,7 +1023,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String key,  String value)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'name')  String key,  String value)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SkuAttribute() when $default != null:
 return $default(_that.key,_that.value);case _:
@@ -1044,7 +1044,7 @@ return $default(_that.key,_that.value);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String key,  String value)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'name')  String key,  String value)  $default,) {final _that = this;
 switch (_that) {
 case _SkuAttribute():
 return $default(_that.key,_that.value);case _:
@@ -1064,7 +1064,7 @@ return $default(_that.key,_that.value);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String key,  String value)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'name')  String key,  String value)?  $default,) {final _that = this;
 switch (_that) {
 case _SkuAttribute() when $default != null:
 return $default(_that.key,_that.value);case _:
@@ -1079,10 +1079,10 @@ return $default(_that.key,_that.value);case _:
 @JsonSerializable()
 
 class _SkuAttribute implements SkuAttribute {
-  const _SkuAttribute({required this.key, required this.value});
+  const _SkuAttribute({@JsonKey(name: 'name') required this.key, required this.value});
   factory _SkuAttribute.fromJson(Map<String, dynamic> json) => _$SkuAttributeFromJson(json);
 
-@override final  String key;
+@override@JsonKey(name: 'name') final  String key;
 @override final  String value;
 
 /// Create a copy of SkuAttribute
@@ -1118,7 +1118,7 @@ abstract mixin class _$SkuAttributeCopyWith<$Res> implements $SkuAttributeCopyWi
   factory _$SkuAttributeCopyWith(_SkuAttribute value, $Res Function(_SkuAttribute) _then) = __$SkuAttributeCopyWithImpl;
 @override @useResult
 $Res call({
- String key, String value
+@JsonKey(name: 'name') String key, String value
 });
 
 

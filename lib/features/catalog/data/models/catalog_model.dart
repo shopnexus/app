@@ -75,8 +75,10 @@ abstract class ProductSpecification with _$ProductSpecification {
 
 @freezed
 abstract class SkuAttribute with _$SkuAttribute {
-  const factory SkuAttribute({required String key, required String value}) =
-      _SkuAttribute;
+  const factory SkuAttribute({
+    @JsonKey(name: 'name') required String key,
+    required String value,
+  }) = _SkuAttribute;
 
   factory SkuAttribute.fromJson(Map<String, dynamic> json) =>
       _$SkuAttributeFromJson(json);

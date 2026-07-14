@@ -212,26 +212,25 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
               ),
 
               // 3. Location and Categories Horizontal scroll chips
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: SizedBox(
-                    height: 32.0,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        children: isFiltered
-                            ? _buildActiveFilterChips(
-                                activeFilters,
-                                categoriesState,
-                              )
-                            : _buildDefaultCategoriesChips(categoriesState),
+              if (isFiltered)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: SizedBox(
+                      height: 32.0,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          children: _buildActiveFilterChips(
+                            activeFilters,
+                            categoriesState,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
 
               // 4. Tiêu đề mục
               SliverToBoxAdapter(
@@ -355,49 +354,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     );
   }
 
-  // Danh sách các chip mặc định của danh mục để hiển thị lúc trống lọc
-  List<Widget> _buildDefaultCategoriesChips(
-    AsyncValue<List<Category>> categoriesState,
-  ) {
-    return [
-      categoriesState.when(
-        data: (categories) {
-          return Row(
-            children: categories.take(6).map((category) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: ActionChip(
-                  label: Text(category.name),
-                  onPressed: () {
-                    ref
-                        .read(activeSearchFiltersProvider.notifier)
-                        .setCategory(category.id);
-                  },
-                  backgroundColor: const Color(0xFFEEEEEB),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(9999.0),
-                    side: const BorderSide(
-                      color: Color(0xFFBCC9C6),
-                      width: 0.5,
-                    ),
-                  ),
-                  labelStyle: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: Color(0xFF3D4947),
-                    fontWeight: FontWeight.w500,
-                  ),
-                  padding: EdgeInsets.zero,
-                ),
-              );
-            }).toList(),
-          );
-        },
-        loading: () => const SizedBox(),
-        error: (err, stack) => const SizedBox(),
-      ),
-    ];
-  }
+
 
   // Tạo động danh sách các chip đang kích hoạt bộ lọc
   List<Widget> _buildActiveFilterChips(

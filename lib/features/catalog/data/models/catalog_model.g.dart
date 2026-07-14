@@ -68,10 +68,10 @@ Map<String, dynamic> _$ProductSpecificationToJson(
 ) => <String, dynamic>{'name': instance.key, 'value': instance.value};
 
 _SkuAttribute _$SkuAttributeFromJson(Map<String, dynamic> json) =>
-    _SkuAttribute(key: json['key'] as String, value: json['value'] as String);
+    _SkuAttribute(key: json['name'] as String, value: json['value'] as String);
 
 Map<String, dynamic> _$SkuAttributeToJson(_SkuAttribute instance) =>
-    <String, dynamic>{'key': instance.key, 'value': instance.value};
+    <String, dynamic>{'name': instance.key, 'value': instance.value};
 
 _ProductSku _$ProductSkuFromJson(Map<String, dynamic> json) => _ProductSku(
   id: json['id'] as String,
