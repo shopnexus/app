@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RatingModel {
 
- double get score; int get count;
+ double get score;@JsonKey(name: 'total') int get count;
 /// Create a copy of RatingModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $RatingModelCopyWith<$Res>  {
   factory $RatingModelCopyWith(RatingModel value, $Res Function(RatingModel) _then) = _$RatingModelCopyWithImpl;
 @useResult
 $Res call({
- double score, int count
+ double score,@JsonKey(name: 'total') int count
 });
 
 
@@ -154,7 +154,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double score,  int count)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double score, @JsonKey(name: 'total')  int count)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RatingModel() when $default != null:
 return $default(_that.score,_that.count);case _:
@@ -175,7 +175,7 @@ return $default(_that.score,_that.count);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double score,  int count)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double score, @JsonKey(name: 'total')  int count)  $default,) {final _that = this;
 switch (_that) {
 case _RatingModel():
 return $default(_that.score,_that.count);case _:
@@ -195,7 +195,7 @@ return $default(_that.score,_that.count);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double score,  int count)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double score, @JsonKey(name: 'total')  int count)?  $default,) {final _that = this;
 switch (_that) {
 case _RatingModel() when $default != null:
 return $default(_that.score,_that.count);case _:
@@ -210,11 +210,11 @@ return $default(_that.score,_that.count);case _:
 @JsonSerializable()
 
 class _RatingModel implements RatingModel {
-  const _RatingModel({required this.score, required this.count});
+  const _RatingModel({required this.score, @JsonKey(name: 'total') required this.count});
   factory _RatingModel.fromJson(Map<String, dynamic> json) => _$RatingModelFromJson(json);
 
 @override final  double score;
-@override final  int count;
+@override@JsonKey(name: 'total') final  int count;
 
 /// Create a copy of RatingModel
 /// with the given fields replaced by the non-null parameter values.
@@ -249,7 +249,7 @@ abstract mixin class _$RatingModelCopyWith<$Res> implements $RatingModelCopyWith
   factory _$RatingModelCopyWith(_RatingModel value, $Res Function(_RatingModel) _then) = __$RatingModelCopyWithImpl;
 @override @useResult
 $Res call({
- double score, int count
+ double score,@JsonKey(name: 'total') int count
 });
 
 

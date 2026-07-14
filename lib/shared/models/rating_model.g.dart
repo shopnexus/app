@@ -8,8 +8,8 @@ part of 'rating_model.dart';
 
 _RatingModel _$RatingModelFromJson(Map<String, dynamic> json) => _RatingModel(
   score: (json['score'] as num).toDouble(),
-  count: (json['count'] as num).toInt(),
+  count: (json['total'] as num).toInt(),
 );
 
 Map<String, dynamic> _$RatingModelToJson(_RatingModel instance) =>
-    <String, dynamic>{'score': instance.score, 'count': instance.count};
+    <String, dynamic>{'score': instance.score, 'total': instance.count};

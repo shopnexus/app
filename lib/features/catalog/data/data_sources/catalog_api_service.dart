@@ -41,7 +41,8 @@ abstract class CatalogApiService {
 
   @GET(ApiEndpoints.comments)
   Future<DataResponse<List<ProductComment>>> getComments({
-    @Query('spu_id') String? spuId,
+    @Query('ref_type') required String refType,
+    @Query('ref_id') required String refId,
     @Query('page') int? page,
     @Query('size') int? size,
   });

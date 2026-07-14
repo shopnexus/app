@@ -213,12 +213,12 @@ return $default(_that.id,_that.url,_that.type,_that.description);case _:
 @JsonSerializable()
 
 class _ResourceModel implements ResourceModel {
-  const _ResourceModel({required this.id, required this.url, required this.type, this.description});
+  const _ResourceModel({required this.id, required this.url, this.type = 'Image', this.description});
   factory _ResourceModel.fromJson(Map<String, dynamic> json) => _$ResourceModelFromJson(json);
 
 @override final  String id;
 @override final  String url;
-@override final  String type;
+@override@JsonKey() final  String type;
 // E.g., 'Image', 'Video'
 @override final  String? description;
 

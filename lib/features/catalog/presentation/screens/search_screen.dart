@@ -308,53 +308,46 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               final products = stateData.products;
               if (products.isEmpty) return const SizedBox();
 
-              final left = <TProductCard>[];
-              final right = <TProductCard>[];
+              // Tính toán số cột thích ứng dựa trên độ rộng màn hình thực tế
+              final double width = MediaQuery.of(context).size.width;
+              final int crossAxisCount = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
+
+              final columns = List.generate(crossAxisCount, (_) => <TProductCard>[]);
               for (int i = 0; i < products.length; i++) {
-                if (i.isEven) {
-                  left.add(products[i]);
-                } else {
-                  right.add(products[i]);
-                }
+                columns[i % crossAxisCount].add(products[i]);
               }
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: List.generate(left.length, (idx) {
-                          final double aspect = (idx % 3 == 0) ? 0.8 : 1.0;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: SharedProductCard(
-                              product: left[idx],
-                              aspectRatio: aspect,
-                              onTap: () => context.push('/home/product/${left[idx].id}'),
-                            ),
-                          );
-                        }),
+                  children: List.generate(crossAxisCount, (colIndex) {
+                    final colProducts = columns[colIndex];
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
+                        ),
+                        child: Column(
+                          children: List.generate(
+                            colProducts.length,
+                            (index) {
+                              final product = colProducts[index];
+                              final double aspect = ((index + colIndex) % 2 == 0) ? 0.8 : 1.0;
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: SharedProductCard(
+                                  product: product,
+                                  aspectRatio: aspect,
+                                  onTap: () => context.push('/home/product/${product.id}'),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12.0),
-                    Expanded(
-                      child: Column(
-                        children: List.generate(right.length, (idx) {
-                          final double aspect = (idx % 3 == 0) ? 1.0 : 0.8;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: SharedProductCard(
-                              product: right[idx],
-                              aspectRatio: aspect,
-                              onTap: () => context.push('/home/product/${right[idx].id}'),
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
-                  ],
+                    );
+                  }),
                 ),
               );
             },
@@ -408,14 +401,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 );
               }
 
-              final left = <TProductCard>[];
-              final right = <TProductCard>[];
+              // Tính toán số cột thích ứng dựa trên độ rộng màn hình thực tế
+              final double width = MediaQuery.of(context).size.width;
+              final int crossAxisCount = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
+
+              final columns = List.generate(crossAxisCount, (_) => <TProductCard>[]);
               for (int i = 0; i < products.length; i++) {
-                if (i.isEven) {
-                  left.add(products[i]);
-                } else {
-                  right.add(products[i]);
-                }
+                columns[i % crossAxisCount].add(products[i]);
               }
 
               return CustomScrollView(
@@ -426,39 +418,33 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     sliver: SliverToBoxAdapter(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              children: List.generate(left.length, (idx) {
-                                final double aspect = (idx % 3 == 0) ? 0.8 : 1.0;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12.0),
-                                  child: SharedProductCard(
-                                    product: left[idx],
-                                    aspectRatio: aspect,
-                                    onTap: () => context.push('/home/product/${left[idx].id}'),
-                                  ),
-                                );
-                              }),
+                        children: List.generate(crossAxisCount, (colIndex) {
+                          final colProducts = columns[colIndex];
+                          return Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
+                              ),
+                              child: Column(
+                                children: List.generate(
+                                  colProducts.length,
+                                  (index) {
+                                    final product = colProducts[index];
+                                    final double aspect = ((index + colIndex) % 2 == 0) ? 0.8 : 1.0;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 12.0),
+                                      child: SharedProductCard(
+                                        product: product,
+                                        aspectRatio: aspect,
+                                        onTap: () => context.push('/home/product/${product.id}'),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12.0),
-                          Expanded(
-                            child: Column(
-                              children: List.generate(right.length, (idx) {
-                                final double aspect = (idx % 3 == 0) ? 1.0 : 0.8;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12.0),
-                                  child: SharedProductCard(
-                                    product: right[idx],
-                                    aspectRatio: aspect,
-                                    onTap: () => context.push('/home/product/${right[idx].id}'),
-                                  ),
-                                );
-                              }),
-                            ),
-                          ),
-                        ],
+                          );
+                        }),
                       ),
                     ),
                   ),

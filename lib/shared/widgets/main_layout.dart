@@ -41,9 +41,16 @@ class MainLayout extends StatelessWidget {
     final currentIndex = _getCurrentIndex(context);
 
     return Scaffold(
-      body: child,
+      backgroundColor: const Color(0xFFF9F9F6), // Đồng bộ nền sáng sữa Nexus toàn màn hình
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: child,
+        ),
+      ),
       bottomNavigationBar: Container(
-        height: 64 + MediaQuery.of(context).padding.bottom,
+        height: 64.0 + MediaQuery.of(context).padding.bottom,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
@@ -57,44 +64,52 @@ class MainLayout extends StatelessWidget {
         ),
         child: SafeArea(
           top: false,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildTabItem(
-                context,
-                index: 0,
-                currentIndex: currentIndex,
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home_rounded,
-                label: 'Home',
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: SizedBox(
+                height: 64.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildTabItem(
+                      context,
+                      index: 0,
+                      currentIndex: currentIndex,
+                      icon: Icons.home_outlined,
+                      activeIcon: Icons.home_rounded,
+                      label: 'Home',
+                    ),
+                    _buildTabItem(
+                      context,
+                      index: 1,
+                      currentIndex: currentIndex,
+                      icon: Icons.search_rounded,
+                      activeIcon: Icons.search_rounded,
+                      label: 'Search',
+                    ),
+                    // Nút Đăng bán (Sell) ở giữa nổi bật
+                    _buildSellButton(context, currentIndex: currentIndex),
+                    _buildTabItem(
+                      context,
+                      index: 3,
+                      currentIndex: currentIndex,
+                      icon: Icons.chat_bubble_outline_rounded,
+                      activeIcon: Icons.chat_bubble_rounded,
+                      label: 'Inbox',
+                    ),
+                    _buildTabItem(
+                      context,
+                      index: 4,
+                      currentIndex: currentIndex,
+                      icon: Icons.person_outline_rounded,
+                      activeIcon: Icons.person_rounded,
+                      label: 'You',
+                    ),
+                  ],
+                ),
               ),
-              _buildTabItem(
-                context,
-                index: 1,
-                currentIndex: currentIndex,
-                icon: Icons.search_rounded,
-                activeIcon: Icons.search_rounded,
-                label: 'Search',
-              ),
-              // Nút Đăng bán (Sell) ở giữa nổi bật
-              _buildSellButton(context, currentIndex: currentIndex),
-              _buildTabItem(
-                context,
-                index: 3,
-                currentIndex: currentIndex,
-                icon: Icons.chat_bubble_outline_rounded,
-                activeIcon: Icons.chat_bubble_rounded,
-                label: 'Inbox',
-              ),
-              _buildTabItem(
-                context,
-                index: 4,
-                currentIndex: currentIndex,
-                icon: Icons.person_outline_rounded,
-                activeIcon: Icons.person_rounded,
-                label: 'You',
-              ),
-            ],
+            ),
           ),
         ),
       ),

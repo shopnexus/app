@@ -94,7 +94,8 @@ class CatalogRepository {
   }) async {
     try {
       final response = await _apiService.getComments(
-        spuId: spuId,
+        refType: 'ProductSpu',
+        refId: spuId ?? '',
         page: page,
         size: size,
       );

@@ -1055,13 +1055,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             children: [
                               CircleAvatar(
                                 radius: 14,
-                                backgroundImage: comment.userAvatar != null
+                                backgroundImage:
+                                    comment.profile?.avatarUrl != null
                                     ? CachedNetworkImageProvider(
-                                        comment.userAvatar!,
+                                        comment.profile!.avatarUrl!,
                                       )
                                     : null,
                                 backgroundColor: const Color(0xFFEEEEEB),
-                                child: comment.userAvatar == null
+                                child: comment.profile?.avatarUrl == null
                                     ? const Icon(
                                         Icons.person,
                                         size: 14,
@@ -1071,7 +1072,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               ),
                               const SizedBox(width: 8.0),
                               Text(
-                                comment.username ?? 'Người dùng ẩn danh',
+                                comment.profile?.name ??
+                                    comment.profile?.username ??
+                                    'Người dùng ẩn danh',
                                 style: const TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 13,
@@ -1080,7 +1083,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               ),
                               const Spacer(),
                               Text(
-                                comment.createdAt?.split('T').first ?? '',
+                                comment.dateCreated?.split('T').first ?? '',
                                 style: const TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 11,
@@ -1113,11 +1116,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               ),
                             ),
                           ],
-                          if (comment.content != null &&
-                              comment.content!.isNotEmpty) ...[
+                          if (comment.body != null &&
+                              comment.body!.isNotEmpty) ...[
                             const SizedBox(height: 6.0),
                             Text(
-                              comment.content!,
+                              comment.body!,
                               style: const TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 13,

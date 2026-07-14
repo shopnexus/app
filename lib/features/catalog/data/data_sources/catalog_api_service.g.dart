@@ -180,13 +180,15 @@ class _CatalogApiService implements CatalogApiService {
 
   @override
   Future<DataResponse<List<ProductComment>>> getComments({
-    String? spuId,
+    required String refType,
+    required String refId,
     int? page,
     int? size,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'spu_id': spuId,
+      r'ref_type': refType,
+      r'ref_id': refId,
       r'page': page,
       r'size': size,
     };
