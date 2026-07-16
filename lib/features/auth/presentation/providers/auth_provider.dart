@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/storage/hive_storage.dart';
+import '../../../../core/utils/error_handler.dart';
 import '../../data/models/auth_model.dart';
 import '../../data/repositories/auth_repository.dart';
 
@@ -54,7 +55,7 @@ class AuthNotifier extends _$AuthNotifier {
       );
       state = AuthState.authenticated(authResponse: response);
     } catch (e) {
-      state = AuthState.error(message: e.toString());
+      state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
     }
   }
 
@@ -80,7 +81,7 @@ class AuthNotifier extends _$AuthNotifier {
       );
       state = AuthState.authenticated(authResponse: response);
     } catch (e) {
-      state = AuthState.error(message: e.toString());
+      state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
     }
   }
 
@@ -92,7 +93,7 @@ class AuthNotifier extends _$AuthNotifier {
       await repository.forgotPassword(ForgotPasswordRequest(email: email));
       state = const AuthState.unauthenticated();
     } catch (e) {
-      state = AuthState.error(message: e.toString());
+      state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
     }
   }
 
@@ -104,7 +105,7 @@ class AuthNotifier extends _$AuthNotifier {
       await repository.logout();
       state = const AuthState.unauthenticated();
     } catch (e) {
-      state = AuthState.error(message: e.toString());
+      state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
     }
   }
 
