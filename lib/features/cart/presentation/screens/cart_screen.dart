@@ -435,51 +435,6 @@ class CartScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Promo Code Row
-          Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: 44,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Promo Code',
-                      hintStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                      ),
-                      fillColor: const Color(0xFFF9F9F7),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFBEC9C6)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFBEC9C6)),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                height: 44,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD0E1FB),
-                    foregroundColor: const Color(0xFF54647A),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text('Apply', style: TextStyle(fontSize: 14)),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
           // Price Breakdown
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -569,11 +524,13 @@ class CartScreen extends ConsumerWidget {
                   );
                 }).toList();
 
-                ref.read(checkoutProvider.notifier).initialize(
-                  items: checkoutItems,
-                  resolvedItems: state.items,
-                  buyNow: false,
-                );
+                ref
+                    .read(checkoutProvider.notifier)
+                    .initialize(
+                      items: checkoutItems,
+                      resolvedItems: state.items,
+                      buyNow: false,
+                    );
 
                 context.push('/checkout');
               },

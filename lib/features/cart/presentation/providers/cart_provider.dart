@@ -74,7 +74,9 @@ class CartNotifier extends _$CartNotifier {
 
   Future<void> _initCart() async {
     Future.microtask(() async {
+      if (!ref.mounted) return;
       await fetchCart();
+      if (!ref.mounted) return;
       await fetchCurrencyAndRates();
     });
   }
@@ -82,14 +84,17 @@ class CartNotifier extends _$CartNotifier {
   /// Tải thông tin tiền tệ ưu tiên và tỷ giá hối đoái
   Future<void> fetchCurrencyAndRates() async {
     try {
+      if (!ref.mounted) return;
       final accountRepository = ref.read(accountRepositoryProvider);
       final profile = await accountRepository.getProfile();
       final preferredCurrency = profile.currency;
 
+      if (!ref.mounted) return;
       final commonApiService = ref.read(commonApiServiceProvider);
       final ratesResponse = await commonApiService.getExchangeRates();
       final rates = ratesResponse.data.rates;
 
+      if (!ref.mounted) return;
       state = state.copyWith(
         preferredCurrency: preferredCurrency,
         rates: rates,
@@ -101,15 +106,19 @@ class CartNotifier extends _$CartNotifier {
 
   /// Tải thông tin giỏ hàng từ server
   Future<void> fetchCart() async {
+    if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final repository = ref.read(cartRepositoryProvider);
       final remoteItems = await repository.getCart();
 
+      if (!ref.mounted) return;
       await repository.cacheCart(remoteItems);
 
+      if (!ref.mounted) return;
       state = state.copyWith(items: remoteItems, isLoading: false);
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: ErrorHandler.getErrorMessage(e),
@@ -119,6 +128,7 @@ class CartNotifier extends _$CartNotifier {
 
   /// Thêm item vào giỏ hàng
   Future<void> addItem(String skuId, int quantity) async {
+    if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final repository = ref.read(cartRepositoryProvider);
@@ -127,8 +137,10 @@ class CartNotifier extends _$CartNotifier {
         UpdateCartRequest(skuId: skuId, deltaQuantity: quantity),
       );
 
+      if (!ref.mounted) return;
       await fetchCart();
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: ErrorHandler.getErrorMessage(e),
@@ -138,14 +150,17 @@ class CartNotifier extends _$CartNotifier {
 
   /// Xóa item khỏi giỏ hàng
   Future<void> removeItem(String skuId) async {
+    if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final repository = ref.read(cartRepositoryProvider);
 
       await repository.updateCart(UpdateCartRequest(skuId: skuId, quantity: 0));
 
+      if (!ref.mounted) return;
       await fetchCart();
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: ErrorHandler.getErrorMessage(e),
@@ -155,6 +170,7 @@ class CartNotifier extends _$CartNotifier {
 
   /// Tăng hoặc giảm số lượng của một SKU
   Future<void> updateQuantity(String skuId, int deltaQuantity) async {
+    if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final repository = ref.read(cartRepositoryProvider);
@@ -171,9 +187,11 @@ class CartNotifier extends _$CartNotifier {
         await repository.updateCart(
           UpdateCartRequest(skuId: skuId, deltaQuantity: deltaQuantity),
         );
+        if (!ref.mounted) return;
         await fetchCart();
       }
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: ErrorHandler.getErrorMessage(e),
