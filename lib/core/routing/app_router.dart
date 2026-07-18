@@ -13,6 +13,8 @@ import '../../features/catalog/presentation/screens/search_screen.dart';
 import '../../shared/widgets/main_layout.dart';
 import '../../shared/widgets/placeholder_screens.dart';
 import '../../features/catalog/presentation/screens/product_detail_screen.dart';
+import '../../features/cart/presentation/screens/cart_screen.dart';
+import '../../features/checkout/presentation/screens/checkout_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -49,6 +51,16 @@ GoRouter appRouter(Ref ref) {
         path: '/forgot-password',
         name: 'forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/cart',
+        name: 'cart',
+        builder: (context, state) => const CartScreen(),
+      ),
+      GoRoute(
+        path: '/checkout',
+        name: 'checkout',
+        builder: (context, state) => const CheckoutScreen(),
       ),
       // Cấu hình ShellRoute chứa Bottom Navigation Bar cho 5 tab chính
       ShellRoute(

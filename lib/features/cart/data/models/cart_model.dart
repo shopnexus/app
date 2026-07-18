@@ -24,6 +24,7 @@ abstract class CartSku with _$CartSku {
   const factory CartSku({
     required String id,
     @JsonKey(name: 'spu_id') required String spuId,
+    @JsonKey(name: 'name') @Default('') String name,
     required int price,
     required int stock,
     List<SkuAttribute>? attributes,

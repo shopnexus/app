@@ -287,7 +287,7 @@ as int,
 /// @nodoc
 mixin _$CartSku {
 
- String get id;@JsonKey(name: 'spu_id') String get spuId; int get price; int get stock; List<SkuAttribute>? get attributes;@JsonKey(name: 'package_details') PackageDetails? get packageDetails;
+ String get id;@JsonKey(name: 'spu_id') String get spuId;@JsonKey(name: 'name') String get name; int get price; int get stock; List<SkuAttribute>? get attributes;@JsonKey(name: 'package_details') PackageDetails? get packageDetails;
 /// Create a copy of CartSku
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -300,16 +300,16 @@ $CartSkuCopyWith<CartSku> get copyWith => _$CartSkuCopyWithImpl<CartSku>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartSku&&(identical(other.id, id) || other.id == id)&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.price, price) || other.price == price)&&(identical(other.stock, stock) || other.stock == stock)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&(identical(other.packageDetails, packageDetails) || other.packageDetails == packageDetails));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartSku&&(identical(other.id, id) || other.id == id)&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.stock, stock) || other.stock == stock)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&(identical(other.packageDetails, packageDetails) || other.packageDetails == packageDetails));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,spuId,price,stock,const DeepCollectionEquality().hash(attributes),packageDetails);
+int get hashCode => Object.hash(runtimeType,id,spuId,name,price,stock,const DeepCollectionEquality().hash(attributes),packageDetails);
 
 @override
 String toString() {
-  return 'CartSku(id: $id, spuId: $spuId, price: $price, stock: $stock, attributes: $attributes, packageDetails: $packageDetails)';
+  return 'CartSku(id: $id, spuId: $spuId, name: $name, price: $price, stock: $stock, attributes: $attributes, packageDetails: $packageDetails)';
 }
 
 
@@ -320,7 +320,7 @@ abstract mixin class $CartSkuCopyWith<$Res>  {
   factory $CartSkuCopyWith(CartSku value, $Res Function(CartSku) _then) = _$CartSkuCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'spu_id') String spuId, int price, int stock, List<SkuAttribute>? attributes,@JsonKey(name: 'package_details') PackageDetails? packageDetails
+ String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'name') String name, int price, int stock, List<SkuAttribute>? attributes,@JsonKey(name: 'package_details') PackageDetails? packageDetails
 });
 
 
@@ -337,10 +337,11 @@ class _$CartSkuCopyWithImpl<$Res>
 
 /// Create a copy of CartSku
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? spuId = null,Object? price = null,Object? stock = null,Object? attributes = freezed,Object? packageDetails = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? spuId = null,Object? name = null,Object? price = null,Object? stock = null,Object? attributes = freezed,Object? packageDetails = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,spuId: null == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as int,stock: null == stock ? _self.stock : stock // ignore: cast_nullable_to_non_nullable
 as int,attributes: freezed == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
@@ -442,10 +443,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId,  int price,  int stock,  List<SkuAttribute>? attributes, @JsonKey(name: 'package_details')  PackageDetails? packageDetails)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price,  int stock,  List<SkuAttribute>? attributes, @JsonKey(name: 'package_details')  PackageDetails? packageDetails)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CartSku() when $default != null:
-return $default(_that.id,_that.spuId,_that.price,_that.stock,_that.attributes,_that.packageDetails);case _:
+return $default(_that.id,_that.spuId,_that.name,_that.price,_that.stock,_that.attributes,_that.packageDetails);case _:
   return orElse();
 
 }
@@ -463,10 +464,10 @@ return $default(_that.id,_that.spuId,_that.price,_that.stock,_that.attributes,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId,  int price,  int stock,  List<SkuAttribute>? attributes, @JsonKey(name: 'package_details')  PackageDetails? packageDetails)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price,  int stock,  List<SkuAttribute>? attributes, @JsonKey(name: 'package_details')  PackageDetails? packageDetails)  $default,) {final _that = this;
 switch (_that) {
 case _CartSku():
-return $default(_that.id,_that.spuId,_that.price,_that.stock,_that.attributes,_that.packageDetails);case _:
+return $default(_that.id,_that.spuId,_that.name,_that.price,_that.stock,_that.attributes,_that.packageDetails);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -483,10 +484,10 @@ return $default(_that.id,_that.spuId,_that.price,_that.stock,_that.attributes,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'spu_id')  String spuId,  int price,  int stock,  List<SkuAttribute>? attributes, @JsonKey(name: 'package_details')  PackageDetails? packageDetails)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price,  int stock,  List<SkuAttribute>? attributes, @JsonKey(name: 'package_details')  PackageDetails? packageDetails)?  $default,) {final _that = this;
 switch (_that) {
 case _CartSku() when $default != null:
-return $default(_that.id,_that.spuId,_that.price,_that.stock,_that.attributes,_that.packageDetails);case _:
+return $default(_that.id,_that.spuId,_that.name,_that.price,_that.stock,_that.attributes,_that.packageDetails);case _:
   return null;
 
 }
@@ -498,11 +499,12 @@ return $default(_that.id,_that.spuId,_that.price,_that.stock,_that.attributes,_t
 @JsonSerializable()
 
 class _CartSku implements CartSku {
-  const _CartSku({required this.id, @JsonKey(name: 'spu_id') required this.spuId, required this.price, required this.stock, final  List<SkuAttribute>? attributes, @JsonKey(name: 'package_details') this.packageDetails}): _attributes = attributes;
+  const _CartSku({required this.id, @JsonKey(name: 'spu_id') required this.spuId, @JsonKey(name: 'name') this.name = '', required this.price, required this.stock, final  List<SkuAttribute>? attributes, @JsonKey(name: 'package_details') this.packageDetails}): _attributes = attributes;
   factory _CartSku.fromJson(Map<String, dynamic> json) => _$CartSkuFromJson(json);
 
 @override final  String id;
 @override@JsonKey(name: 'spu_id') final  String spuId;
+@override@JsonKey(name: 'name') final  String name;
 @override final  int price;
 @override final  int stock;
  final  List<SkuAttribute>? _attributes;
@@ -529,16 +531,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CartSku&&(identical(other.id, id) || other.id == id)&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.price, price) || other.price == price)&&(identical(other.stock, stock) || other.stock == stock)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&(identical(other.packageDetails, packageDetails) || other.packageDetails == packageDetails));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CartSku&&(identical(other.id, id) || other.id == id)&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.stock, stock) || other.stock == stock)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&(identical(other.packageDetails, packageDetails) || other.packageDetails == packageDetails));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,spuId,price,stock,const DeepCollectionEquality().hash(_attributes),packageDetails);
+int get hashCode => Object.hash(runtimeType,id,spuId,name,price,stock,const DeepCollectionEquality().hash(_attributes),packageDetails);
 
 @override
 String toString() {
-  return 'CartSku(id: $id, spuId: $spuId, price: $price, stock: $stock, attributes: $attributes, packageDetails: $packageDetails)';
+  return 'CartSku(id: $id, spuId: $spuId, name: $name, price: $price, stock: $stock, attributes: $attributes, packageDetails: $packageDetails)';
 }
 
 
@@ -549,7 +551,7 @@ abstract mixin class _$CartSkuCopyWith<$Res> implements $CartSkuCopyWith<$Res> {
   factory _$CartSkuCopyWith(_CartSku value, $Res Function(_CartSku) _then) = __$CartSkuCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'spu_id') String spuId, int price, int stock, List<SkuAttribute>? attributes,@JsonKey(name: 'package_details') PackageDetails? packageDetails
+ String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'name') String name, int price, int stock, List<SkuAttribute>? attributes,@JsonKey(name: 'package_details') PackageDetails? packageDetails
 });
 
 
@@ -566,10 +568,11 @@ class __$CartSkuCopyWithImpl<$Res>
 
 /// Create a copy of CartSku
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? spuId = null,Object? price = null,Object? stock = null,Object? attributes = freezed,Object? packageDetails = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? spuId = null,Object? name = null,Object? price = null,Object? stock = null,Object? attributes = freezed,Object? packageDetails = freezed,}) {
   return _then(_CartSku(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,spuId: null == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as int,stock: null == stock ? _self.stock : stock // ignore: cast_nullable_to_non_nullable
 as int,attributes: freezed == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable

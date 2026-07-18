@@ -25,6 +25,7 @@ Map<String, dynamic> _$PackageDetailsToJson(_PackageDetails instance) =>
 _CartSku _$CartSkuFromJson(Map<String, dynamic> json) => _CartSku(
   id: json['id'] as String,
   spuId: json['spu_id'] as String,
+  name: json['name'] as String? ?? '',
   price: (json['price'] as num).toInt(),
   stock: (json['stock'] as num).toInt(),
   attributes: (json['attributes'] as List<dynamic>?)
@@ -40,6 +41,7 @@ _CartSku _$CartSkuFromJson(Map<String, dynamic> json) => _CartSku(
 Map<String, dynamic> _$CartSkuToJson(_CartSku instance) => <String, dynamic>{
   'id': instance.id,
   'spu_id': instance.spuId,
+  'name': instance.name,
   'price': instance.price,
   'stock': instance.stock,
   'attributes': instance.attributes,
