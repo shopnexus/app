@@ -14,6 +14,9 @@ abstract class AccountApiService {
 
   @GET(ApiEndpoints.profile)
   Future<DataResponse<AccountProfile>> getProfile();
+
+  @GET(ApiEndpoints.contacts)
+  Future<DataResponse<List<Contact>>> getContacts();
 }
 
 @riverpod

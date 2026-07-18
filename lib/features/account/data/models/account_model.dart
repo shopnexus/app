@@ -31,3 +31,25 @@ abstract class AccountProfile with _$AccountProfile {
   factory AccountProfile.fromJson(Map<String, dynamic> json) =>
       _$AccountProfileFromJson(json);
 }
+
+@freezed
+abstract class Contact with _$Contact {
+  const factory Contact({
+    required String id,
+    @JsonKey(name: 'account_id') required String accountId,
+    @JsonKey(name: 'full_name') required String fullName,
+    required String phone,
+    @JsonKey(name: 'phone_verified') required bool phoneVerified,
+    required String address,
+    @JsonKey(name: 'address_detail') String? addressDetail,
+    @JsonKey(name: 'address_type')
+    required String addressType, // 'Home' | 'Office' | 'Other'
+    double? latitude,
+    double? longitude,
+    @JsonKey(name: 'date_created') required String dateCreated,
+    @JsonKey(name: 'date_updated') required String dateUpdated,
+  }) = _Contact;
+
+  factory Contact.fromJson(Map<String, dynamic> json) =>
+      _$ContactFromJson(json);
+}

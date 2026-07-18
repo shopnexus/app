@@ -17,6 +17,15 @@ class AccountRepository {
       rethrow;
     }
   }
+
+  Future<List<Contact>> getContacts() async {
+    try {
+      final response = await _apiService.getContacts();
+      return response.data;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
 @riverpod

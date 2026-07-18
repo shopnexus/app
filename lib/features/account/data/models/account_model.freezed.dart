@@ -328,4 +328,302 @@ as int,
 
 }
 
+
+/// @nodoc
+mixin _$Contact {
+
+ String get id;@JsonKey(name: 'account_id') String get accountId;@JsonKey(name: 'full_name') String get fullName; String get phone;@JsonKey(name: 'phone_verified') bool get phoneVerified; String get address;@JsonKey(name: 'address_detail') String? get addressDetail;@JsonKey(name: 'address_type') String get addressType;// 'Home' | 'Office' | 'Other'
+ double? get latitude; double? get longitude;@JsonKey(name: 'date_created') String get dateCreated;@JsonKey(name: 'date_updated') String get dateUpdated;
+/// Create a copy of Contact
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ContactCopyWith<Contact> get copyWith => _$ContactCopyWithImpl<Contact>(this as Contact, _$identity);
+
+  /// Serializes this Contact to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Contact&&(identical(other.id, id) || other.id == id)&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.address, address) || other.address == address)&&(identical(other.addressDetail, addressDetail) || other.addressDetail == addressDetail)&&(identical(other.addressType, addressType) || other.addressType == addressType)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.dateCreated, dateCreated) || other.dateCreated == dateCreated)&&(identical(other.dateUpdated, dateUpdated) || other.dateUpdated == dateUpdated));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,accountId,fullName,phone,phoneVerified,address,addressDetail,addressType,latitude,longitude,dateCreated,dateUpdated);
+
+@override
+String toString() {
+  return 'Contact(id: $id, accountId: $accountId, fullName: $fullName, phone: $phone, phoneVerified: $phoneVerified, address: $address, addressDetail: $addressDetail, addressType: $addressType, latitude: $latitude, longitude: $longitude, dateCreated: $dateCreated, dateUpdated: $dateUpdated)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ContactCopyWith<$Res>  {
+  factory $ContactCopyWith(Contact value, $Res Function(Contact) _then) = _$ContactCopyWithImpl;
+@useResult
+$Res call({
+ String id,@JsonKey(name: 'account_id') String accountId,@JsonKey(name: 'full_name') String fullName, String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, double? latitude, double? longitude,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String dateUpdated
+});
+
+
+
+
+}
+/// @nodoc
+class _$ContactCopyWithImpl<$Res>
+    implements $ContactCopyWith<$Res> {
+  _$ContactCopyWithImpl(this._self, this._then);
+
+  final Contact _self;
+  final $Res Function(Contact) _then;
+
+/// Create a copy of Contact
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? accountId = null,Object? fullName = null,Object? phone = null,Object? phoneVerified = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? latitude = freezed,Object? longitude = freezed,Object? dateCreated = null,Object? dateUpdated = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,accountId: null == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
+as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
+as bool,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String,addressDetail: freezed == addressDetail ? _self.addressDetail : addressDetail // ignore: cast_nullable_to_non_nullable
+as String?,addressType: null == addressType ? _self.addressType : addressType // ignore: cast_nullable_to_non_nullable
+as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,dateCreated: null == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
+as String,dateUpdated: null == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [Contact].
+extension ContactPatterns on Contact {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Contact value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _Contact() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Contact value)  $default,){
+final _that = this;
+switch (_that) {
+case _Contact():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Contact value)?  $default,){
+final _that = this;
+switch (_that) {
+case _Contact() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _Contact() when $default != null:
+return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.latitude,_that.longitude,_that.dateCreated,_that.dateUpdated);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated)  $default,) {final _that = this;
+switch (_that) {
+case _Contact():
+return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.latitude,_that.longitude,_that.dateCreated,_that.dateUpdated);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated)?  $default,) {final _that = this;
+switch (_that) {
+case _Contact() when $default != null:
+return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.latitude,_that.longitude,_that.dateCreated,_that.dateUpdated);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _Contact implements Contact {
+  const _Contact({required this.id, @JsonKey(name: 'account_id') required this.accountId, @JsonKey(name: 'full_name') required this.fullName, required this.phone, @JsonKey(name: 'phone_verified') required this.phoneVerified, required this.address, @JsonKey(name: 'address_detail') this.addressDetail, @JsonKey(name: 'address_type') required this.addressType, this.latitude, this.longitude, @JsonKey(name: 'date_created') required this.dateCreated, @JsonKey(name: 'date_updated') required this.dateUpdated});
+  factory _Contact.fromJson(Map<String, dynamic> json) => _$ContactFromJson(json);
+
+@override final  String id;
+@override@JsonKey(name: 'account_id') final  String accountId;
+@override@JsonKey(name: 'full_name') final  String fullName;
+@override final  String phone;
+@override@JsonKey(name: 'phone_verified') final  bool phoneVerified;
+@override final  String address;
+@override@JsonKey(name: 'address_detail') final  String? addressDetail;
+@override@JsonKey(name: 'address_type') final  String addressType;
+// 'Home' | 'Office' | 'Other'
+@override final  double? latitude;
+@override final  double? longitude;
+@override@JsonKey(name: 'date_created') final  String dateCreated;
+@override@JsonKey(name: 'date_updated') final  String dateUpdated;
+
+/// Create a copy of Contact
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ContactCopyWith<_Contact> get copyWith => __$ContactCopyWithImpl<_Contact>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ContactToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Contact&&(identical(other.id, id) || other.id == id)&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.address, address) || other.address == address)&&(identical(other.addressDetail, addressDetail) || other.addressDetail == addressDetail)&&(identical(other.addressType, addressType) || other.addressType == addressType)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.dateCreated, dateCreated) || other.dateCreated == dateCreated)&&(identical(other.dateUpdated, dateUpdated) || other.dateUpdated == dateUpdated));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,accountId,fullName,phone,phoneVerified,address,addressDetail,addressType,latitude,longitude,dateCreated,dateUpdated);
+
+@override
+String toString() {
+  return 'Contact(id: $id, accountId: $accountId, fullName: $fullName, phone: $phone, phoneVerified: $phoneVerified, address: $address, addressDetail: $addressDetail, addressType: $addressType, latitude: $latitude, longitude: $longitude, dateCreated: $dateCreated, dateUpdated: $dateUpdated)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ContactCopyWith<$Res> implements $ContactCopyWith<$Res> {
+  factory _$ContactCopyWith(_Contact value, $Res Function(_Contact) _then) = __$ContactCopyWithImpl;
+@override @useResult
+$Res call({
+ String id,@JsonKey(name: 'account_id') String accountId,@JsonKey(name: 'full_name') String fullName, String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, double? latitude, double? longitude,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String dateUpdated
+});
+
+
+
+
+}
+/// @nodoc
+class __$ContactCopyWithImpl<$Res>
+    implements _$ContactCopyWith<$Res> {
+  __$ContactCopyWithImpl(this._self, this._then);
+
+  final _Contact _self;
+  final $Res Function(_Contact) _then;
+
+/// Create a copy of Contact
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? accountId = null,Object? fullName = null,Object? phone = null,Object? phoneVerified = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? latitude = freezed,Object? longitude = freezed,Object? dateCreated = null,Object? dateUpdated = null,}) {
+  return _then(_Contact(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,accountId: null == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
+as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
+as bool,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String,addressDetail: freezed == addressDetail ? _self.addressDetail : addressDetail // ignore: cast_nullable_to_non_nullable
+as String?,addressType: null == addressType ? _self.addressType : addressType // ignore: cast_nullable_to_non_nullable
+as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,dateCreated: null == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
+as String,dateUpdated: null == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 // dart format on

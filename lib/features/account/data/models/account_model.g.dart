@@ -51,3 +51,33 @@ Map<String, dynamic> _$AccountProfileToJson(_AccountProfile instance) =>
       'currency': instance.currency,
       'internal_balance': instance.internalBalance,
     };
+
+_Contact _$ContactFromJson(Map<String, dynamic> json) => _Contact(
+  id: json['id'] as String,
+  accountId: json['account_id'] as String,
+  fullName: json['full_name'] as String,
+  phone: json['phone'] as String,
+  phoneVerified: json['phone_verified'] as bool,
+  address: json['address'] as String,
+  addressDetail: json['address_detail'] as String?,
+  addressType: json['address_type'] as String,
+  latitude: (json['latitude'] as num?)?.toDouble(),
+  longitude: (json['longitude'] as num?)?.toDouble(),
+  dateCreated: json['date_created'] as String,
+  dateUpdated: json['date_updated'] as String,
+);
+
+Map<String, dynamic> _$ContactToJson(_Contact instance) => <String, dynamic>{
+  'id': instance.id,
+  'account_id': instance.accountId,
+  'full_name': instance.fullName,
+  'phone': instance.phone,
+  'phone_verified': instance.phoneVerified,
+  'address': instance.address,
+  'address_detail': instance.addressDetail,
+  'address_type': instance.addressType,
+  'latitude': instance.latitude,
+  'longitude': instance.longitude,
+  'date_created': instance.dateCreated,
+  'date_updated': instance.dateUpdated,
+};
