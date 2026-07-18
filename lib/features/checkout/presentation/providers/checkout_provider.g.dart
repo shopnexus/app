@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_provider.dart';
+part of 'checkout_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,52 +9,52 @@ part of 'auth_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(AuthNotifier)
-const authProvider = AuthNotifierProvider._();
+@ProviderFor(CheckoutNotifier)
+const checkoutProvider = CheckoutNotifierProvider._();
 
-final class AuthNotifierProvider
-    extends $NotifierProvider<AuthNotifier, AuthState> {
-  const AuthNotifierProvider._()
+final class CheckoutNotifierProvider
+    extends $NotifierProvider<CheckoutNotifier, CheckoutState> {
+  const CheckoutNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'authProvider',
+        name: r'checkoutProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$authNotifierHash();
+  String debugGetCreateSourceHash() => _$checkoutNotifierHash();
 
   @$internal
   @override
-  AuthNotifier create() => AuthNotifier();
+  CheckoutNotifier create() => CheckoutNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AuthState value) {
+  Override overrideWithValue(CheckoutState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<AuthState>(value),
+      providerOverride: $SyncValueProvider<CheckoutState>(value),
     );
   }
 }
 
-String _$authNotifierHash() => r'3944d03a33a42e852fa1b12aa8dc095cd687eb7a';
+String _$checkoutNotifierHash() => r'01d8dc313dd420f70832365f66bf014f32df3d65';
 
-abstract class _$AuthNotifier extends $Notifier<AuthState> {
-  AuthState build();
+abstract class _$CheckoutNotifier extends $Notifier<CheckoutState> {
+  CheckoutState build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<AuthState, AuthState>;
+    final ref = this.ref as $Ref<CheckoutState, CheckoutState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AuthState, AuthState>,
-              AuthState,
+              AnyNotifier<CheckoutState, CheckoutState>,
+              CheckoutState,
               Object?,
               Object?
             >;
