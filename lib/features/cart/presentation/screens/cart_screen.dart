@@ -569,9 +569,11 @@ class CartScreen extends ConsumerWidget {
                   );
                 }).toList();
 
-                ref
-                    .read(checkoutProvider.notifier)
-                    .initialize(items: checkoutItems, buyNow: false);
+                ref.read(checkoutProvider.notifier).initialize(
+                  items: checkoutItems,
+                  resolvedItems: state.items,
+                  buyNow: false,
+                );
 
                 context.push('/checkout');
               },

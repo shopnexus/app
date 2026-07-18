@@ -414,24 +414,23 @@ class CheckoutScreen extends ConsumerWidget {
     CheckoutState state,
   ) {
     final notifier = ref.read(checkoutProvider.notifier);
-    final cartState = ref.watch(cartProvider);
 
-    // Tính toán tổng tiền hàng quy đổi từ giỏ hàng
-    final subtotal = cartState.calculatedTotal;
+    // Tính toán tổng tiền hàng quy đổi
+    final subtotal = state.calculatedSubtotal;
     final shipping = state.totalShippingCost;
     final total = subtotal + shipping;
 
     final subtotalFormatted = MoneyUtils.format(
       subtotal,
-      currency: cartState.preferredCurrency,
+      currency: state.preferredCurrency,
     );
     final shippingFormatted = MoneyUtils.format(
       shipping,
-      currency: cartState.preferredCurrency,
+      currency: state.preferredCurrency,
     );
     final totalFormatted = MoneyUtils.format(
       total,
-      currency: cartState.preferredCurrency,
+      currency: state.preferredCurrency,
     );
 
     return Column(

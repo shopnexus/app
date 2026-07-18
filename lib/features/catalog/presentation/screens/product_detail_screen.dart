@@ -8,6 +8,10 @@ import '../../../../shared/models/resource_model.dart';
 import '../../../../shared/widgets/shared_product_card.dart';
 import '../../data/models/catalog_model.dart';
 import '../providers/catalog_provider.dart';
+import '../../../cart/presentation/providers/cart_provider.dart';
+import '../../../cart/data/models/cart_model.dart';
+import '../../../checkout/presentation/providers/checkout_provider.dart';
+import '../../../checkout/data/models/checkout_model.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -1306,19 +1310,55 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ),
               onPressed: isOutOfStock
                   ? null
-                  : () {
-                      final skuName = _selectedSku != null
-                          ? ' (${_selectedSku!.name})'
-                          : '';
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Đã thêm $_quantity x ${detail.name}$skuName vào giỏ hàng!',
+                  : () async {
+                      if (_selectedSku == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Vui lòng chọn phân loại sản phẩm trước!',
+                            ),
+                            backgroundColor: Colors.orange,
                           ),
-                          backgroundColor: Colors.green,
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
+                        );
+                        return;
+                      }
+
+                      try {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Đang thêm vào giỏ hàng...'),
+                            duration: Duration(milliseconds: 500),
+                          ),
+                        );
+
+                        await ref
+                            .read(cartProvider.notifier)
+                            .addItem(_selectedSku!.id, _quantity);
+
+                        if (!mounted) return;
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Đã thêm $_quantity x ${detail.name} vào giỏ hàng!',
+                            ),
+                            backgroundColor: Colors.green,
+                            action: SnackBarAction(
+                              label: 'Xem giỏ hàng',
+                              textColor: Colors.white,
+                              onPressed: () => context.push('/cart'),
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Lỗi thêm giỏ hàng: ${e.toString()}'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     },
             ),
           ),
@@ -1332,18 +1372,51 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 onPressed: isOutOfStock
                     ? null
                     : () {
-                        final skuName = _selectedSku != null
-                            ? ' (${_selectedSku!.name})'
-                            : '';
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Mua ngay $_quantity x ${detail.name}$skuName! Chuyển hướng thanh toán...',
+                        if (_selectedSku == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Vui lòng chọn phân loại sản phẩm trước!',
+                              ),
+                              backgroundColor: Colors.orange,
                             ),
-                            backgroundColor: const Color(0xFF005049),
-                            duration: const Duration(seconds: 2),
+                          );
+                          return;
+                        }
+
+                        // Tạo CartItem giả lập từ chi tiết SKU và SPU hiện tại
+                        final buyNowCartItem = CartItem(
+                          spuId: detail.id,
+                          sku: CartSku(
+                            id: _selectedSku!.id,
+                            spuId: detail.id,
+                            name: detail.name,
+                            price: _selectedSku!.price,
+                            stock: _selectedSku!.stock,
+                            attributes: _selectedSku!.attributes,
                           ),
+                          quantity: _quantity,
+                          currency: 'USD',
+                          resource:
+                              _selectedSku!.images?.firstOrNull ??
+                              detail.images?.firstOrNull,
                         );
+
+                        ref
+                            .read(checkoutProvider.notifier)
+                            .initialize(
+                              items: [
+                                CheckoutItem(
+                                  skuId: _selectedSku!.id,
+                                  quantity: _quantity,
+                                  transportOption: 'Standard',
+                                ),
+                              ],
+                              resolvedItems: [buyNowCartItem],
+                              buyNow: true,
+                            );
+
+                        context.push('/checkout');
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF005049), // Trustworthy Teal

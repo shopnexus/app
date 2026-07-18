@@ -4,6 +4,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../../../account/data/models/account_model.dart';
 import '../../../account/data/repositories/account_repository.dart';
+import '../../../cart/data/models/cart_model.dart';
+import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../data/models/checkout_model.dart';
 import '../../data/repositories/checkout_repository.dart';
 
@@ -22,6 +24,7 @@ abstract class CheckoutState with _$CheckoutState {
     @Default([]) List<Contact> contacts,
     Contact? selectedContact,
     @Default([]) List<CheckoutItem> items,
+    @Default([]) List<CartItem> resolvedItems,
     @Default(false) bool buyNow,
     @Default('Standard') String shippingOption,
     QuoteTransportResponse? quoteResponse,
@@ -32,6 +35,8 @@ abstract class CheckoutState with _$CheckoutState {
     CheckoutSummary? checkoutSummary,
     @Default(false) bool isLoading,
     String? errorMessage,
+    @Default('USD') String preferredCurrency,
+    @Default({}) Map<String, double> rates,
   }) = _CheckoutState;
 
   List<Contact> get homeContacts =>
@@ -46,6 +51,34 @@ abstract class CheckoutState with _$CheckoutState {
   int get totalShippingCost {
     if (quoteResponse == null) return 0;
     return quoteResponse!.items.fold(0, (sum, item) => sum + item.cost);
+  }
+
+  int get calculatedSubtotal {
+    double totalUsd = 0.0;
+    for (final item in resolvedItems) {
+      final price = item.sku.price;
+      final currency = item.currency.toUpperCase();
+      final qty = item.quantity;
+
+      double priceUsd = price.toDouble();
+      if (currency == 'USD') {
+        priceUsd = price / 100.0;
+      } else {
+        final rate = rates[currency] ?? 1.0;
+        priceUsd = price / rate;
+      }
+      totalUsd += priceUsd * qty;
+    }
+
+    final prefCurrency = preferredCurrency.toUpperCase();
+    final prefRate = rates[prefCurrency] ?? 1.0;
+    final converted = totalUsd * prefRate;
+
+    if (prefCurrency == 'USD') {
+      return (converted * 100.0).round();
+    } else {
+      return converted.round();
+    }
   }
 }
 
@@ -64,9 +97,18 @@ class CheckoutNotifier extends _$CheckoutNotifier {
   /// Khởi tạo luồng thanh toán với các sản phẩm được chọn
   Future<void> initialize({
     required List<CheckoutItem> items,
+    required List<CartItem> resolvedItems,
     required bool buyNow,
   }) async {
-    state = CheckoutState(items: items, buyNow: buyNow, isLoading: true);
+    final cartState = ref.read(cartProvider);
+    state = CheckoutState(
+      items: items,
+      resolvedItems: resolvedItems,
+      buyNow: buyNow,
+      preferredCurrency: cartState.preferredCurrency,
+      rates: cartState.rates,
+      isLoading: true,
+    );
 
     await _loadAddresses();
   }
