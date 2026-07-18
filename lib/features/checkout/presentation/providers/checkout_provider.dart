@@ -123,12 +123,14 @@ class CheckoutNotifier extends _$CheckoutNotifier {
           ? list.firstWhere((c) => c.phoneVerified)
           : list.firstOrNull;
 
+      if (!ref.mounted) return;
       state = state.copyWith(
         contacts: list,
         selectedContact: defaultContact,
         isLoading: false,
       );
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: ErrorHandler.getErrorMessage(e),
@@ -148,6 +150,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
   /// Chọn phương thức vận chuyển và tự động lấy báo giá
   Future<void> selectShippingOption(String option) async {
+    if (!ref.mounted) return;
     state = state.copyWith(
       shippingOption: option,
       isLoading: true,
@@ -155,6 +158,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     );
 
     if (state.selectedContact == null) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Vui lòng chọn địa chỉ nhận hàng trước',
@@ -181,8 +185,10 @@ class CheckoutNotifier extends _$CheckoutNotifier {
         ),
       );
 
+      if (!ref.mounted) return;
       state = state.copyWith(quoteResponse: quote, isLoading: false);
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: ErrorHandler.getErrorMessage(e),
@@ -202,10 +208,12 @@ class CheckoutNotifier extends _$CheckoutNotifier {
   /// Thực hiện đặt hàng và bắt đầu polling kết quả thanh toán
   Future<void> placeOrder() async {
     if (state.selectedContact == null) {
+      if (!ref.mounted) return;
       state = state.copyWith(errorMessage: 'Vui lòng chọn địa chỉ nhận hàng');
       return;
     }
 
+    if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
@@ -229,6 +237,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
         ),
       );
 
+      if (!ref.mounted) return;
       state = state.copyWith(
         checkoutResponse: checkoutRes,
         step: CheckoutStep.processing,
@@ -237,6 +246,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
       // Bắt đầu polling kết quả dựa trên checkout_session_id
       _startPolling(checkoutRes.checkoutSessionId);
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: ErrorHandler.getErrorMessage(e),
@@ -251,6 +261,11 @@ class CheckoutNotifier extends _$CheckoutNotifier {
       try {
         final checkoutRepo = ref.read(checkoutRepositoryProvider);
         final summary = await checkoutRepo.getCheckoutSummary(txID);
+
+        if (!ref.mounted) {
+          timer.cancel();
+          return;
+        }
 
         final status = summary.session.status.toUpperCase();
         if (status == 'SUCCESS') {
