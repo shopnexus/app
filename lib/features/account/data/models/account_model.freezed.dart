@@ -1150,8 +1150,8 @@ as String,
 /// @nodoc
 mixin _$Contact {
 
- String get id;@JsonKey(name: 'account_id') String get accountId;@JsonKey(name: 'full_name') String get fullName; String get phone;@JsonKey(name: 'phone_verified') bool get phoneVerified; String get address;@JsonKey(name: 'address_detail') String? get addressDetail;@JsonKey(name: 'address_type') String get addressType;// 'Home' | 'Office' | 'Other'
- double? get latitude; double? get longitude;@JsonKey(name: 'date_created') String get dateCreated;@JsonKey(name: 'date_updated') String get dateUpdated;
+ String get id;@JsonKey(name: 'account_id') String get accountId;@JsonKey(name: 'full_name') String get fullName;@JsonKey(fromJson: _parsePhone) String get phone;@JsonKey(name: 'phone_verified') bool get phoneVerified; String get address;@JsonKey(name: 'address_detail') String? get addressDetail;@JsonKey(name: 'address_type') String get addressType;// 'Home' | 'Office' | 'Other'
+ double? get latitude; double? get longitude;@JsonKey(name: 'date_created') String get dateCreated;@JsonKey(name: 'date_updated') String? get dateUpdated;
 /// Create a copy of Contact
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1184,7 +1184,7 @@ abstract mixin class $ContactCopyWith<$Res>  {
   factory $ContactCopyWith(Contact value, $Res Function(Contact) _then) = _$ContactCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'account_id') String accountId,@JsonKey(name: 'full_name') String fullName, String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, double? latitude, double? longitude,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String dateUpdated
+ String id,@JsonKey(name: 'account_id') String accountId,@JsonKey(name: 'full_name') String fullName,@JsonKey(fromJson: _parsePhone) String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, double? latitude, double? longitude,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String? dateUpdated
 });
 
 
@@ -1201,7 +1201,7 @@ class _$ContactCopyWithImpl<$Res>
 
 /// Create a copy of Contact
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? accountId = null,Object? fullName = null,Object? phone = null,Object? phoneVerified = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? latitude = freezed,Object? longitude = freezed,Object? dateCreated = null,Object? dateUpdated = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? accountId = null,Object? fullName = null,Object? phone = null,Object? phoneVerified = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? latitude = freezed,Object? longitude = freezed,Object? dateCreated = null,Object? dateUpdated = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,accountId: null == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
@@ -1214,8 +1214,8 @@ as String?,addressType: null == addressType ? _self.addressType : addressType //
 as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double?,dateCreated: null == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
-as String,dateUpdated: null == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
-as String,
+as String,dateUpdated: freezed == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -1300,7 +1300,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName, @JsonKey(fromJson: _parsePhone)  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Contact() when $default != null:
 return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.latitude,_that.longitude,_that.dateCreated,_that.dateUpdated);case _:
@@ -1321,7 +1321,7 @@ return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneV
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName, @JsonKey(fromJson: _parsePhone)  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated)  $default,) {final _that = this;
 switch (_that) {
 case _Contact():
 return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.latitude,_that.longitude,_that.dateCreated,_that.dateUpdated);case _:
@@ -1341,7 +1341,7 @@ return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneV
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'full_name')  String fullName, @JsonKey(fromJson: _parsePhone)  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  double? latitude,  double? longitude, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated)?  $default,) {final _that = this;
 switch (_that) {
 case _Contact() when $default != null:
 return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.latitude,_that.longitude,_that.dateCreated,_that.dateUpdated);case _:
@@ -1356,13 +1356,13 @@ return $default(_that.id,_that.accountId,_that.fullName,_that.phone,_that.phoneV
 @JsonSerializable()
 
 class _Contact implements Contact {
-  const _Contact({required this.id, @JsonKey(name: 'account_id') required this.accountId, @JsonKey(name: 'full_name') required this.fullName, required this.phone, @JsonKey(name: 'phone_verified') required this.phoneVerified, required this.address, @JsonKey(name: 'address_detail') this.addressDetail, @JsonKey(name: 'address_type') required this.addressType, this.latitude, this.longitude, @JsonKey(name: 'date_created') required this.dateCreated, @JsonKey(name: 'date_updated') required this.dateUpdated});
+  const _Contact({required this.id, @JsonKey(name: 'account_id') required this.accountId, @JsonKey(name: 'full_name') required this.fullName, @JsonKey(fromJson: _parsePhone) required this.phone, @JsonKey(name: 'phone_verified') required this.phoneVerified, required this.address, @JsonKey(name: 'address_detail') this.addressDetail, @JsonKey(name: 'address_type') required this.addressType, this.latitude, this.longitude, @JsonKey(name: 'date_created') required this.dateCreated, @JsonKey(name: 'date_updated') this.dateUpdated});
   factory _Contact.fromJson(Map<String, dynamic> json) => _$ContactFromJson(json);
 
 @override final  String id;
 @override@JsonKey(name: 'account_id') final  String accountId;
 @override@JsonKey(name: 'full_name') final  String fullName;
-@override final  String phone;
+@override@JsonKey(fromJson: _parsePhone) final  String phone;
 @override@JsonKey(name: 'phone_verified') final  bool phoneVerified;
 @override final  String address;
 @override@JsonKey(name: 'address_detail') final  String? addressDetail;
@@ -1371,7 +1371,7 @@ class _Contact implements Contact {
 @override final  double? latitude;
 @override final  double? longitude;
 @override@JsonKey(name: 'date_created') final  String dateCreated;
-@override@JsonKey(name: 'date_updated') final  String dateUpdated;
+@override@JsonKey(name: 'date_updated') final  String? dateUpdated;
 
 /// Create a copy of Contact
 /// with the given fields replaced by the non-null parameter values.
@@ -1406,7 +1406,7 @@ abstract mixin class _$ContactCopyWith<$Res> implements $ContactCopyWith<$Res> {
   factory _$ContactCopyWith(_Contact value, $Res Function(_Contact) _then) = __$ContactCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'account_id') String accountId,@JsonKey(name: 'full_name') String fullName, String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, double? latitude, double? longitude,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String dateUpdated
+ String id,@JsonKey(name: 'account_id') String accountId,@JsonKey(name: 'full_name') String fullName,@JsonKey(fromJson: _parsePhone) String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, double? latitude, double? longitude,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String? dateUpdated
 });
 
 
@@ -1423,7 +1423,7 @@ class __$ContactCopyWithImpl<$Res>
 
 /// Create a copy of Contact
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? accountId = null,Object? fullName = null,Object? phone = null,Object? phoneVerified = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? latitude = freezed,Object? longitude = freezed,Object? dateCreated = null,Object? dateUpdated = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? accountId = null,Object? fullName = null,Object? phone = null,Object? phoneVerified = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? latitude = freezed,Object? longitude = freezed,Object? dateCreated = null,Object? dateUpdated = freezed,}) {
   return _then(_Contact(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,accountId: null == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
@@ -1436,8 +1436,8 @@ as String?,addressType: null == addressType ? _self.addressType : addressType //
 as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double?,dateCreated: null == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
-as String,dateUpdated: null == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
-as String,
+as String,dateUpdated: freezed == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

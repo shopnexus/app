@@ -106,7 +106,7 @@ _Contact _$ContactFromJson(Map<String, dynamic> json) => _Contact(
   id: json['id'] as String,
   accountId: json['account_id'] as String,
   fullName: json['full_name'] as String,
-  phone: json['phone'] as String,
+  phone: _parsePhone(json['phone']),
   phoneVerified: json['phone_verified'] as bool,
   address: json['address'] as String,
   addressDetail: json['address_detail'] as String?,
@@ -114,7 +114,7 @@ _Contact _$ContactFromJson(Map<String, dynamic> json) => _Contact(
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
   dateCreated: json['date_created'] as String,
-  dateUpdated: json['date_updated'] as String,
+  dateUpdated: json['date_updated'] as String?,
 );
 
 Map<String, dynamic> _$ContactToJson(_Contact instance) => <String, dynamic>{

@@ -85,13 +85,18 @@ abstract class UpdateCountryResponse with _$UpdateCountryResponse {
   Map<String, dynamic> toJson();
 }
 
+String _parsePhone(dynamic value) {
+  if (value == null) return '';
+  return value.toString();
+}
+
 @freezed
 abstract class Contact with _$Contact {
   const factory Contact({
     required String id,
     @JsonKey(name: 'account_id') required String accountId,
     @JsonKey(name: 'full_name') required String fullName,
-    required String phone,
+    @JsonKey(fromJson: _parsePhone) required String phone,
     @JsonKey(name: 'phone_verified') required bool phoneVerified,
     required String address,
     @JsonKey(name: 'address_detail') String? addressDetail,
@@ -100,7 +105,7 @@ abstract class Contact with _$Contact {
     double? latitude,
     double? longitude,
     @JsonKey(name: 'date_created') required String dateCreated,
-    @JsonKey(name: 'date_updated') required String dateUpdated,
+    @JsonKey(name: 'date_updated') String? dateUpdated,
   }) = _Contact;
 
   factory Contact.fromJson(Map<String, dynamic> json) =>
