@@ -627,13 +627,16 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
     _phoneController = TextEditingController(text: widget.profile.phone);
     _emailController = TextEditingController(text: widget.profile.email);
 
-    // Map gender từ int? sang String?
-    if (widget.profile.gender == 0) {
+    // Gán gender trực tiếp từ String? với cơ chế tương thích ngược cho '0'/'1'/'2' hoặc int
+    final profileGender = widget.profile.gender;
+    if (profileGender == 'Male' || profileGender == '0') {
       _gender = 'Male';
-    } else if (widget.profile.gender == 1) {
+    } else if (profileGender == 'Female' || profileGender == '1') {
       _gender = 'Female';
-    } else if (widget.profile.gender == 2) {
+    } else if (profileGender == 'Other' || profileGender == '2') {
       _gender = 'Other';
+    } else {
+      _gender = profileGender;
     }
 
     if (widget.profile.dateOfBirth != null) {

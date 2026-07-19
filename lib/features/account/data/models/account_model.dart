@@ -18,7 +18,7 @@ abstract class AccountProfile with _$AccountProfile {
     String? phone,
     String? email,
     String? username,
-    int? gender,
+    String? gender,
     String? name,
     @JsonKey(name: 'date_of_birth') String? dateOfBirth,
     @JsonKey(name: 'email_verified') required bool emailVerified,

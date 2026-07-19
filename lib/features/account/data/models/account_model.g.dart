@@ -16,7 +16,7 @@ _AccountProfile _$AccountProfileFromJson(Map<String, dynamic> json) =>
       phone: json['phone'] as String?,
       email: json['email'] as String?,
       username: json['username'] as String?,
-      gender: (json['gender'] as num?)?.toInt(),
+      gender: json['gender'] as String?,
       name: json['name'] as String?,
       dateOfBirth: json['date_of_birth'] as String?,
       emailVerified: json['email_verified'] as bool,

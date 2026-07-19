@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AccountProfile {
 
- String get id;@JsonKey(name: 'date_created') String get dateCreated;@JsonKey(name: 'date_updated') String get dateUpdated; String get status; String get role; String? get phone; String? get email; String? get username; int? get gender; String? get name;@JsonKey(name: 'date_of_birth') String? get dateOfBirth;@JsonKey(name: 'email_verified') bool get emailVerified;@JsonKey(name: 'phone_verified') bool get phoneVerified;@JsonKey(name: 'default_contact_id') String? get defaultContactId;@JsonKey(name: 'avatar_url') String? get avatarUrl; String? get description; String get country; String get currency;@JsonKey(name: 'internal_balance') int get internalBalance;
+ String get id;@JsonKey(name: 'date_created') String get dateCreated;@JsonKey(name: 'date_updated') String get dateUpdated; String get status; String get role; String? get phone; String? get email; String? get username; String? get gender; String? get name;@JsonKey(name: 'date_of_birth') String? get dateOfBirth;@JsonKey(name: 'email_verified') bool get emailVerified;@JsonKey(name: 'phone_verified') bool get phoneVerified;@JsonKey(name: 'default_contact_id') String? get defaultContactId;@JsonKey(name: 'avatar_url') String? get avatarUrl; String? get description; String get country; String get currency;@JsonKey(name: 'internal_balance') int get internalBalance;
 /// Create a copy of AccountProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $AccountProfileCopyWith<$Res>  {
   factory $AccountProfileCopyWith(AccountProfile value, $Res Function(AccountProfile) _then) = _$AccountProfileCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String dateUpdated, String status, String role, String? phone, String? email, String? username, int? gender, String? name,@JsonKey(name: 'date_of_birth') String? dateOfBirth,@JsonKey(name: 'email_verified') bool emailVerified,@JsonKey(name: 'phone_verified') bool phoneVerified,@JsonKey(name: 'default_contact_id') String? defaultContactId,@JsonKey(name: 'avatar_url') String? avatarUrl, String? description, String country, String currency,@JsonKey(name: 'internal_balance') int internalBalance
+ String id,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String dateUpdated, String status, String role, String? phone, String? email, String? username, String? gender, String? name,@JsonKey(name: 'date_of_birth') String? dateOfBirth,@JsonKey(name: 'email_verified') bool emailVerified,@JsonKey(name: 'phone_verified') bool phoneVerified,@JsonKey(name: 'default_contact_id') String? defaultContactId,@JsonKey(name: 'avatar_url') String? avatarUrl, String? description, String country, String currency,@JsonKey(name: 'internal_balance') int internalBalance
 });
 
 
@@ -76,7 +76,7 @@ as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,username: freezed == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String?,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as int?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
 as String?,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
 as bool,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
@@ -171,7 +171,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated,  String status,  String role,  String? phone,  String? email,  String? username,  int? gender,  String? name, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'email_verified')  bool emailVerified, @JsonKey(name: 'phone_verified')  bool phoneVerified, @JsonKey(name: 'default_contact_id')  String? defaultContactId, @JsonKey(name: 'avatar_url')  String? avatarUrl,  String? description,  String country,  String currency, @JsonKey(name: 'internal_balance')  int internalBalance)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated,  String status,  String role,  String? phone,  String? email,  String? username,  String? gender,  String? name, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'email_verified')  bool emailVerified, @JsonKey(name: 'phone_verified')  bool phoneVerified, @JsonKey(name: 'default_contact_id')  String? defaultContactId, @JsonKey(name: 'avatar_url')  String? avatarUrl,  String? description,  String country,  String currency, @JsonKey(name: 'internal_balance')  int internalBalance)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AccountProfile() when $default != null:
 return $default(_that.id,_that.dateCreated,_that.dateUpdated,_that.status,_that.role,_that.phone,_that.email,_that.username,_that.gender,_that.name,_that.dateOfBirth,_that.emailVerified,_that.phoneVerified,_that.defaultContactId,_that.avatarUrl,_that.description,_that.country,_that.currency,_that.internalBalance);case _:
@@ -192,7 +192,7 @@ return $default(_that.id,_that.dateCreated,_that.dateUpdated,_that.status,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated,  String status,  String role,  String? phone,  String? email,  String? username,  int? gender,  String? name, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'email_verified')  bool emailVerified, @JsonKey(name: 'phone_verified')  bool phoneVerified, @JsonKey(name: 'default_contact_id')  String? defaultContactId, @JsonKey(name: 'avatar_url')  String? avatarUrl,  String? description,  String country,  String currency, @JsonKey(name: 'internal_balance')  int internalBalance)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated,  String status,  String role,  String? phone,  String? email,  String? username,  String? gender,  String? name, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'email_verified')  bool emailVerified, @JsonKey(name: 'phone_verified')  bool phoneVerified, @JsonKey(name: 'default_contact_id')  String? defaultContactId, @JsonKey(name: 'avatar_url')  String? avatarUrl,  String? description,  String country,  String currency, @JsonKey(name: 'internal_balance')  int internalBalance)  $default,) {final _that = this;
 switch (_that) {
 case _AccountProfile():
 return $default(_that.id,_that.dateCreated,_that.dateUpdated,_that.status,_that.role,_that.phone,_that.email,_that.username,_that.gender,_that.name,_that.dateOfBirth,_that.emailVerified,_that.phoneVerified,_that.defaultContactId,_that.avatarUrl,_that.description,_that.country,_that.currency,_that.internalBalance);case _:
@@ -212,7 +212,7 @@ return $default(_that.id,_that.dateCreated,_that.dateUpdated,_that.status,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated,  String status,  String role,  String? phone,  String? email,  String? username,  int? gender,  String? name, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'email_verified')  bool emailVerified, @JsonKey(name: 'phone_verified')  bool phoneVerified, @JsonKey(name: 'default_contact_id')  String? defaultContactId, @JsonKey(name: 'avatar_url')  String? avatarUrl,  String? description,  String country,  String currency, @JsonKey(name: 'internal_balance')  int internalBalance)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'date_created')  String dateCreated, @JsonKey(name: 'date_updated')  String dateUpdated,  String status,  String role,  String? phone,  String? email,  String? username,  String? gender,  String? name, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'email_verified')  bool emailVerified, @JsonKey(name: 'phone_verified')  bool phoneVerified, @JsonKey(name: 'default_contact_id')  String? defaultContactId, @JsonKey(name: 'avatar_url')  String? avatarUrl,  String? description,  String country,  String currency, @JsonKey(name: 'internal_balance')  int internalBalance)?  $default,) {final _that = this;
 switch (_that) {
 case _AccountProfile() when $default != null:
 return $default(_that.id,_that.dateCreated,_that.dateUpdated,_that.status,_that.role,_that.phone,_that.email,_that.username,_that.gender,_that.name,_that.dateOfBirth,_that.emailVerified,_that.phoneVerified,_that.defaultContactId,_that.avatarUrl,_that.description,_that.country,_that.currency,_that.internalBalance);case _:
@@ -238,7 +238,7 @@ class _AccountProfile implements AccountProfile {
 @override final  String? phone;
 @override final  String? email;
 @override final  String? username;
-@override final  int? gender;
+@override final  String? gender;
 @override final  String? name;
 @override@JsonKey(name: 'date_of_birth') final  String? dateOfBirth;
 @override@JsonKey(name: 'email_verified') final  bool emailVerified;
@@ -283,7 +283,7 @@ abstract mixin class _$AccountProfileCopyWith<$Res> implements $AccountProfileCo
   factory _$AccountProfileCopyWith(_AccountProfile value, $Res Function(_AccountProfile) _then) = __$AccountProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String dateUpdated, String status, String role, String? phone, String? email, String? username, int? gender, String? name,@JsonKey(name: 'date_of_birth') String? dateOfBirth,@JsonKey(name: 'email_verified') bool emailVerified,@JsonKey(name: 'phone_verified') bool phoneVerified,@JsonKey(name: 'default_contact_id') String? defaultContactId,@JsonKey(name: 'avatar_url') String? avatarUrl, String? description, String country, String currency,@JsonKey(name: 'internal_balance') int internalBalance
+ String id,@JsonKey(name: 'date_created') String dateCreated,@JsonKey(name: 'date_updated') String dateUpdated, String status, String role, String? phone, String? email, String? username, String? gender, String? name,@JsonKey(name: 'date_of_birth') String? dateOfBirth,@JsonKey(name: 'email_verified') bool emailVerified,@JsonKey(name: 'phone_verified') bool phoneVerified,@JsonKey(name: 'default_contact_id') String? defaultContactId,@JsonKey(name: 'avatar_url') String? avatarUrl, String? description, String country, String currency,@JsonKey(name: 'internal_balance') int internalBalance
 });
 
 
@@ -311,7 +311,7 @@ as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,username: freezed == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String?,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as int?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
 as String?,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
 as bool,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
