@@ -66,7 +66,7 @@ final class BuyerPendingItemsProvider
   }
 }
 
-String _$buyerPendingItemsHash() => r'1f64bca822bc3d976f012fbe71ace56be43ebf95';
+String _$buyerPendingItemsHash() => r'3d0ad6b48dea56c8315b559382ce7810e5151fa1';
 
 final class BuyerPendingItemsFamily extends $Family
     with
@@ -149,7 +149,7 @@ final class BuyerPendingOrdersProvider
 }
 
 String _$buyerPendingOrdersHash() =>
-    r'bec68a1116c920ead4e901184a318cc35ea3a3f6';
+    r'93e98be11900cd0b0870b7625d118f847b68cc0a';
 
 final class BuyerPendingOrdersFamily extends $Family
     with
@@ -236,7 +236,7 @@ final class BuyerCompletedOrdersProvider
 }
 
 String _$buyerCompletedOrdersHash() =>
-    r'2e9c457bcf22944e21d172a65940148f944b9be9';
+    r'320affb118c3da93e34125be347592a046250e33';
 
 final class BuyerCompletedOrdersFamily extends $Family
     with
@@ -323,7 +323,7 @@ final class BuyerCancelledOrdersProvider
 }
 
 String _$buyerCancelledOrdersHash() =>
-    r'f50d138a0ad4c635e44b985cc42da931ff8492b2';
+    r'1a720be8635fbcadfe12509687e886ffd41d9794';
 
 final class BuyerCancelledOrdersFamily extends $Family
     with
@@ -408,7 +408,7 @@ final class BuyerCancelledItemsProvider
 }
 
 String _$buyerCancelledItemsHash() =>
-    r'7e8a045d56e006188a3d664129094a9eced7e7d9';
+    r'01d9ef3e2a433c0a28618c7694561d2edf25c31f';
 
 final class BuyerCancelledItemsFamily extends $Family
     with
@@ -489,7 +489,7 @@ final class BuyerOrderDetailProvider
   }
 }
 
-String _$buyerOrderDetailHash() => r'993c10f6cc4c22312df4828c7109010fa2248fac';
+String _$buyerOrderDetailHash() => r'298f7e9b2168cc9548a3f3e7ccf7aa4bd520209b';
 
 final class BuyerOrderDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<BuyerOrder>, String> {

@@ -1,16 +1,144 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/utils/money_utils.dart';
+import '../../../../shared/data_sources/common_api_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../data/models/account_model.dart';
 import '../providers/account_provider.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  bool _isUploadingAvatar = false;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickAndUploadAvatar(AccountProfile profile) async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 512,
+      maxHeight: 512,
+    );
+
+    if (image == null) return;
+
+    setState(() {
+      _isUploadingAvatar = true;
+    });
+
+    try {
+      final fileBytes = await image.readAsBytes();
+      final multipartFile = MultipartFile.fromBytes(
+        fileBytes,
+        filename: image.name,
+      );
+
+      final commonApi = ref.read(commonApiServiceProvider);
+      final response = await commonApi.uploadFile(multipartFile);
+
+      final rsId = response.data.rsId;
+
+      // Cập nhật Profile với rs_id mới
+      await ref
+          .read(accountControllerProvider.notifier)
+          .updateProfile(UpdateProfileRequest(avatarRsId: rsId));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Cập nhật ảnh đại diện thành công!'),
+            backgroundColor: Color(0xFF10B981),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi upload ảnh: $e'),
+            backgroundColor: const Color(0xFFBA1A1A),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploadingAvatar = false;
+        });
+      }
+    }
+  }
+
+  void _showEditProfileBottomSheet(AccountProfile profile) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => _EditProfileFormSheet(profile: profile),
+    );
+  }
+
+  void _showCountrySelectionDialog(AccountProfile profile) {
+    final List<Map<String, String>> countries = [
+      {'code': 'VN', 'name': 'Việt Nam (VND)'},
+      {'code': 'US', 'name': 'United States (USD)'},
+      {'code': 'JP', 'name': 'Japan (JPY)'},
+      {'code': 'SG', 'name': 'Singapore (SGD)'},
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Chọn quốc gia ưu tiên',
+          style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Inter'),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: countries.map((c) {
+            final isSelected = profile.country == c['code'];
+            return ListTile(
+              title: Text(
+                c['name']!,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected
+                      ? const Color(0xFF0F172A)
+                      : const Color(0xFF475569),
+                ),
+              ),
+              trailing: isSelected
+                  ? const Icon(Icons.check_rounded, color: Color(0xFF0F172A))
+                  : null,
+              onTap: () {
+                Navigator.of(context).pop();
+                ref
+                    .read(accountControllerProvider.notifier)
+                    .updateProfileCountry(c['code']!);
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profileAsync = ref.watch(profileProvider);
 
     return Scaffold(
@@ -27,6 +155,18 @@ class ProfileScreen extends ConsumerWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
+        actions: [
+          profileAsync.whenOrNull(
+                data: (profile) => IconButton(
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    color: Color(0xFF0F172A),
+                  ),
+                  onPressed: () => _showEditProfileBottomSheet(profile),
+                ),
+              ) ??
+              const SizedBox(),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(profileProvider.future),
@@ -41,19 +181,53 @@ class ProfileScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(24.0),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 36,
-                        backgroundColor: const Color(0xFFE2E8F0),
-                        backgroundImage: profile.avatarUrl != null
-                            ? NetworkImage(profile.avatarUrl!)
-                            : null,
-                        child: profile.avatarUrl == null
-                            ? const Icon(
-                                Icons.person_rounded,
-                                size: 36,
-                                color: Color(0xFF64748B),
-                              )
-                            : null,
+                      GestureDetector(
+                        onTap: _isUploadingAvatar
+                            ? null
+                            : () => _pickAndUploadAvatar(profile),
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 36,
+                              backgroundColor: const Color(0xFFE2E8F0),
+                              backgroundImage: profile.avatarUrl != null
+                                  ? NetworkImage(profile.avatarUrl!)
+                                  : null,
+                              child: profile.avatarUrl == null
+                                  ? const Icon(
+                                      Icons.person_rounded,
+                                      size: 36,
+                                      color: Color(0xFF64748B),
+                                    )
+                                  : null,
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF0F172A),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: _isUploadingAvatar
+                                    ? const SizedBox(
+                                        width: 12,
+                                        height: 12,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.camera_alt_rounded,
+                                        size: 12,
+                                        color: Colors.white,
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(width: 20),
                       Expanded(
@@ -82,25 +256,37 @@ class ProfileScreen extends ConsumerWidget {
                                 fontFamily: 'Inter',
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF1F5F9),
-                                borderRadius: BorderRadius.circular(
-                                  12,
-                                ), // Standard UI bo góc
-                              ),
-                              child: Text(
-                                'Quốc gia: ${profile.country}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF0F172A),
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'Inter',
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () => _showCountrySelectionDialog(profile),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF1F5F9),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Quốc gia: ${profile.country}',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Color(0xFF0F172A),
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const Icon(
+                                      Icons.arrow_drop_down_rounded,
+                                      size: 16,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -112,7 +298,7 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // Wallet / Balance Card - Đổi bo góc sang 24px theo chuẩn Stitch Card
+                // Wallet / Balance Card - Bo góc Card 24px
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Container(
@@ -121,7 +307,6 @@ class ProfileScreen extends ConsumerWidget {
                       color: const Color(0xFF0F172A),
                       // Charcoal Stitch Primary
                       borderRadius: BorderRadius.circular(24),
-                      // Bo góc Card 24px
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF0F172A).withValues(alpha: 0.1),
@@ -195,13 +380,7 @@ class ProfileScreen extends ConsumerWidget {
                       _buildMenuItem(
                         icon: Icons.location_on_rounded,
                         title: 'Sổ địa chỉ nhận hàng',
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Tính năng địa chỉ đang mở...'),
-                            ),
-                          );
-                        },
+                        onTap: () => context.push('/account/addresses'),
                       ),
                       const Divider(
                         height: 1,
@@ -211,13 +390,7 @@ class ProfileScreen extends ConsumerWidget {
                       _buildMenuItem(
                         icon: Icons.favorite_rounded,
                         title: 'Sản phẩm yêu thích',
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Tính năng yêu thích đang mở...'),
-                            ),
-                          );
-                        },
+                        onTap: () => context.push('/account/wishlist'),
                       ),
                       const Divider(
                         height: 1,
@@ -227,13 +400,7 @@ class ProfileScreen extends ConsumerWidget {
                       _buildMenuItem(
                         icon: Icons.notifications_rounded,
                         title: 'Thông báo hệ thống',
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Tính năng thông báo đang mở...'),
-                            ),
-                          );
-                        },
+                        onTap: () => context.push('/account/notifications'),
                       ),
                       const Divider(
                         height: 1,
@@ -244,7 +411,6 @@ class ProfileScreen extends ConsumerWidget {
                         icon: Icons.logout_rounded,
                         title: 'Đăng xuất tài khoản',
                         titleColor: const Color(0xFFBA1A1A),
-                        // Đổi sang màu Error Stitch #ba1a1a
                         onTap: () => _handleLogout(context, ref),
                       ),
                     ],
@@ -265,7 +431,7 @@ class ProfileScreen extends ConsumerWidget {
                     Icons.error_outline_rounded,
                     size: 48,
                     color: Color(0xFFBA1A1A),
-                  ), // Stitch Error Color
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     'Không thể tải thông tin cá nhân',
@@ -286,7 +452,6 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Nút bấm cao 48px và bo góc 12px theo chuẩn Stitch Button
                   SizedBox(
                     height: 48,
                     width: 140,
@@ -379,7 +544,7 @@ class ProfileScreen extends ConsumerWidget {
             child: const Text(
               'Đăng xuất',
               style: TextStyle(color: Color(0xFFBA1A1A), fontFamily: 'Inter'),
-            ), // Đổi sang màu Error Stitch
+            ),
           ),
         ],
       ),
@@ -393,7 +558,6 @@ class ProfileScreen extends ConsumerWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            // Shimmer Header
             Container(
               color: Colors.white,
               padding: const EdgeInsets.all(24.0),
@@ -417,7 +581,6 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 12),
-            // Shimmer Balance Card - Bo góc 24px
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Container(
@@ -429,9 +592,340 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
-            // Shimmer Menu Items
             Container(color: Colors.white, height: 300),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ======================== EDIT PROFILE SHEET WIDGET ========================
+class _EditProfileFormSheet extends ConsumerStatefulWidget {
+  final AccountProfile profile;
+
+  const _EditProfileFormSheet({required this.profile});
+
+  @override
+  ConsumerState<_EditProfileFormSheet> createState() =>
+      _EditProfileFormSheetState();
+}
+
+class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _phoneController;
+  late TextEditingController _emailController;
+
+  String? _gender;
+  DateTime? _dob;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.profile.name);
+    _phoneController = TextEditingController(text: widget.profile.phone);
+    _emailController = TextEditingController(text: widget.profile.email);
+
+    // Map gender từ int? sang String?
+    if (widget.profile.gender == 0) {
+      _gender = 'Male';
+    } else if (widget.profile.gender == 1) {
+      _gender = 'Female';
+    } else if (widget.profile.gender == 2) {
+      _gender = 'Other';
+    }
+
+    if (widget.profile.dateOfBirth != null) {
+      _dob = DateTime.tryParse(widget.profile.dateOfBirth!);
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _dob ?? DateTime(2000),
+      firstDate: DateTime(1930),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _dob) {
+      setState(() {
+        _dob = picked;
+      });
+    }
+  }
+
+  void _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final String? dobString = _dob != null
+        ? '${_dob!.year}-${_dob!.month.toString().padLeft(2, '0')}-${_dob!.day.toString().padLeft(2, '0')}'
+        : null;
+
+    ref
+        .read(accountControllerProvider.notifier)
+        .updateProfile(
+          UpdateProfileRequest(
+            name: _nameController.text.trim(),
+            phone: _phoneController.text.trim().isNotEmpty
+                ? _phoneController.text.trim()
+                : null,
+            email: _emailController.text.trim().isNotEmpty
+                ? _emailController.text.trim()
+                : null,
+            gender: _gender,
+            dateOfBirth: dobString,
+          ),
+        );
+
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 24,
+        bottom: 24 + bottomInset,
+      ),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Chỉnh sửa thông tin cá nhân',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: Color(0xFF64748B),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Name Field
+              TextFormField(
+                controller: _nameController,
+                style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                decoration: InputDecoration(
+                  labelText: 'Họ và tên',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: Color(0xFF64748B),
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0F172A),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'Vui lòng nhập họ tên'
+                    : null,
+              ),
+              const SizedBox(height: 16),
+
+              // Phone Field
+              TextFormField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                decoration: InputDecoration(
+                  labelText: 'Số điện thoại',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: Color(0xFF64748B),
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0F172A),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Email Field
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: Color(0xFF64748B),
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0F172A),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Gender Selection Dropdown
+              DropdownButtonFormField<String>(
+                initialValue: _gender,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  color: Color(0xFF0F172A),
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Giới tính',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: Color(0xFF64748B),
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'Male',
+                    child: Text('Nam', style: TextStyle(fontFamily: 'Inter')),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Female',
+                    child: Text('Nữ', style: TextStyle(fontFamily: 'Inter')),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Other',
+                    child: Text('Khác', style: TextStyle(fontFamily: 'Inter')),
+                  ),
+                ],
+                onChanged: (val) {
+                  setState(() {
+                    _gender = val;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Date of Birth Selection Box
+              InkWell(
+                onTap: () => _selectDate(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _dob == null
+                            ? 'Chọn ngày sinh'
+                            : 'Ngày sinh: ${_dob!.day}/${_dob!.month}/${_dob!.year}',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          color: _dob == null
+                              ? const Color(0xFF64748B)
+                              : const Color(0xFF0F172A),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.calendar_today_rounded,
+                        size: 18,
+                        color: Color(0xFF64748B),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Action button
+              SizedBox(
+                height: 48,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0F172A),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Lưu thông tin',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

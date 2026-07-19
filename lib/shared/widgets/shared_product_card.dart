@@ -7,13 +7,17 @@ import '../../features/catalog/data/models/catalog_model.dart';
 class SharedProductCard extends StatelessWidget {
   final TProductCard product;
   final VoidCallback? onTap;
-  final double aspectRatio; // Tỷ lệ ảnh động để phục vụ Masonry layout
+  final double aspectRatio;
+  final bool isFavorite;
+  final VoidCallback? onFavoriteTap;
 
   const SharedProductCard({
     super.key,
     required this.product,
     this.onTap,
     this.aspectRatio = 1.0,
+    this.isFavorite = false,
+    this.onFavoriteTap,
   });
 
   @override
@@ -26,14 +30,17 @@ class SharedProductCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16.0), // Cấu hình bo góc 16px (1rem) từ Nexus Card
+          borderRadius: BorderRadius.circular(16.0),
+          // Cấu hình bo góc 16px (1rem) từ Nexus Card
           border: Border.all(
-            color: const Color(0xFFE2E8F0), // Viền nhạt từ Stitch (surface-variant)
+            color: const Color(0xFFE2E8F0),
+            // Viền nhạt từ Stitch (surface-variant)
             width: 1.0,
           ),
           boxShadow: const [
             BoxShadow(
-              color: Color.fromRGBO(0, 104, 95, 0.02), // Shadow nhạt từ thiết kế mới
+              color: Color.fromRGBO(0, 104, 95, 0.02),
+              // Shadow nhạt từ thiết kế mới
               offset: Offset(0, 4),
               blurRadius: 20.0,
             ),
@@ -53,22 +60,33 @@ class SharedProductCard extends StatelessWidget {
                         top: Radius.circular(16.0),
                       ),
                       child: Container(
-                        color: const Color(0xFFF1F5F9), // Nền xám nhạt normalize ảnh
-                        child: product.thumbnail != null && product.thumbnail!.isNotEmpty
+                        color: const Color(0xFFF1F5F9),
+                        // Nền xám nhạt normalize ảnh
+                        child:
+                            product.thumbnail != null &&
+                                product.thumbnail!.isNotEmpty
                             ? CachedNetworkImage(
                                 imageUrl: product.thumbnail!,
                                 fit: BoxFit.cover,
-                                placeholder: (context, url) => Shimmer.fromColors(
-                                  baseColor: Colors.grey[200]!,
-                                  highlightColor: Colors.grey[100]!,
-                                  child: Container(color: Colors.white),
-                                ),
-                                errorWidget: (context, url, error) => const Center(
-                                  child: Icon(Icons.broken_image_outlined, color: Colors.grey),
-                                ),
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                      baseColor: Colors.grey[200]!,
+                                      highlightColor: Colors.grey[100]!,
+                                      child: Container(color: Colors.white),
+                                    ),
+                                errorWidget: (context, url, error) =>
+                                    const Center(
+                                      child: Icon(
+                                        Icons.broken_image_outlined,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                               )
                             : const Center(
-                                child: Icon(Icons.image_outlined, color: Colors.grey),
+                                child: Icon(
+                                  Icons.image_outlined,
+                                  color: Colors.grey,
+                                ),
                               ),
                       ),
                     ),
@@ -78,36 +96,39 @@ class SharedProductCard extends StatelessWidget {
                     top: 8.0,
                     right: 8.0,
                     child: GestureDetector(
-                      onTap: () {
-                        // Logic yêu thích sẽ xử lý sau
-                      },
+                      onTap: onFavoriteTap,
                       child: Container(
                         padding: const EdgeInsets.all(6.0),
                         decoration: BoxDecoration(
                           color: Colors.white.withAlpha(230),
                           shape: BoxShape.circle,
                           boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4.0,
-                            ),
+                            BoxShadow(color: Colors.black12, blurRadius: 4.0),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.favorite_border_rounded,
+                        child: Icon(
+                          isFavorite
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
                           size: 18,
-                          color: Color(0xFF64748B),
+                          color: isFavorite
+                              ? const Color(0xFFBA1A1A)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ),
                   ),
                   // Nhãn giảm giá (nếu có)
-                  if (product.originalPrice != null && product.originalPrice! > product.price)
+                  if (product.originalPrice != null &&
+                      product.originalPrice! > product.price)
                     Positioned(
                       top: 8.0,
                       left: 8.0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 4.0,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFEF4444),
                           borderRadius: BorderRadius.circular(6.0),
@@ -160,9 +181,10 @@ class SharedProductCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
+
                   // Giá gốc hiển thị mờ có gạch ngang (nếu giảm giá)
-                  if (product.originalPrice != null && product.originalPrice! > product.price) ...[
+                  if (product.originalPrice != null &&
+                      product.originalPrice! > product.price) ...[
                     const SizedBox(height: 4.0),
                     Align(
                       alignment: Alignment.centerRight,
@@ -180,10 +202,7 @@ class SharedProductCard extends StatelessWidget {
 
                   const SizedBox(height: 10.0),
                   // Đường kẻ phân cách mờ nhẹ
-                  Container(
-                    height: 1.0,
-                    color: const Color(0xFFF1F5F9),
-                  ),
+                  Container(height: 1.0, color: const Color(0xFFF1F5F9)),
                   const SizedBox(height: 8.0),
 
                   // Thông tin nhà bán hàng
