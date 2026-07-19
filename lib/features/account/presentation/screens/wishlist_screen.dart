@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../shared/widgets/shared_product_card.dart';
+import '../../../../core/utils/money_utils.dart';
+import '../../../catalog/data/models/catalog_model.dart';
 import '../providers/wishlist_provider.dart';
 
 class WishlistScreen extends ConsumerWidget {
@@ -19,7 +21,7 @@ class WishlistScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Thao tác thất bại: $err'),
-              backgroundColor: const Color(0xFFBA1A1A), // Stitch Error
+              backgroundColor: const Color(0xFFBA1A1A),
             ),
           );
         },
@@ -35,17 +37,19 @@ class WishlistScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFF9F9F7),
+      // Stitch Warm Neutral Background
       appBar: AppBar(
         title: const Text(
-          'Sản phẩm yêu thích',
+          'Wishlist',
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.bold,
             fontFamily: 'Inter',
+            fontSize: 20,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF9F9F7),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
@@ -55,6 +59,16 @@ class WishlistScreen extends ConsumerWidget {
           ),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.shopping_bag_outlined,
+              color: Color(0xFF0F172A),
+              size: 24,
+            ),
+            onPressed: () => context.push('/cart'),
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -65,33 +79,57 @@ class WishlistScreen extends ConsumerWidget {
                 if (products.isEmpty) {
                   return const _EmptyWishlist();
                 }
-                return GridView.builder(
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.64,
-                  ),
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    final product = products[index];
-                    return SharedProductCard(
-                      product: product,
-                      isFavorite: true,
-                      onFavoriteTap: () {
-                        ref
-                            .read(wishlistControllerProvider.notifier)
-                            .removeFavorite(product.id.toString());
+                  children: [
+                    // Header items counter
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${products.length} Items saved',
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                            color: Color(0xFF64748B),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.sort_rounded,
+                            color: Color(0xFF0F172A),
+                            size: 18,
+                          ),
+                          label: const Text(
+                            'Sort',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              color: Color(0xFF0F172A),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Products List
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        final product = products[index];
+                        return _buildRowProductCard(context, ref, product);
                       },
-                      onTap: () {
-                        context.push('/home/product/${product.id}');
-                      },
-                    );
-                  },
+                    ),
+                  ],
                 );
               },
-              loading: () => _buildShimmerGrid(),
+              loading: () => _buildShimmerList(),
               error: (err, stack) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
@@ -163,23 +201,143 @@ class WishlistScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShimmerGrid() {
+  Widget _buildRowProductCard(
+    BuildContext context,
+    WidgetRef ref,
+    TProductCard product,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16), // Bo góc 16px cho bento item
+        border: Border.all(color: const Color(0xFFEEEEEC)),
+      ),
+      child: Row(
+        children: [
+          // Product Thumbnail
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: 96,
+              height: 96,
+              color: const Color(0xFFF4F4F1),
+              child: product.thumbnail != null && product.thumbnail!.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: product.thumbnail!,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.broken_image_outlined,
+                        color: Colors.grey,
+                      ),
+                    )
+                  : const Icon(Icons.image_outlined, color: Colors.grey),
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Product Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        product.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1C1B),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Close button to remove
+                    GestureDetector(
+                      onTap: () {
+                        ref
+                            .read(wishlistControllerProvider.notifier)
+                            .removeFavorite(product.id.toString());
+                      },
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                        color: Color(0xFF3E4947),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Shop: @${product.vendorName ?? "shop"}',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: Color(0xFF3E4947),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      MoneyUtils.format(product.price),
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    // Circular cart button
+                    GestureDetector(
+                      onTap: () {
+                        context.push('/home/product/${product.id}');
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF0F172A), // Primary Charcoal
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add_shopping_cart_rounded,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerList() {
     return Shimmer.fromColors(
       baseColor: const Color(0xFFF1F5F9),
       highlightColor: const Color(0xFFF8FAFC),
-      child: GridView.builder(
+      child: ListView.builder(
         padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.64,
-        ),
-        itemCount: 6,
+        itemCount: 4,
         itemBuilder: (context, index) => Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          height: 120,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),

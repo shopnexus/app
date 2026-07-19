@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/utils/money_utils.dart';
 import '../../../../shared/data_sources/common_api_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/account_model.dart';
@@ -47,7 +46,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       final rsId = response.data.rsId;
 
-      // Cập nhật Profile với rs_id mới
       await ref
           .read(accountControllerProvider.notifier)
           .updateProfile(UpdateProfileRequest(avatarRsId: rsId));
@@ -142,30 +140,33 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final profileAsync = ref.watch(profileProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Stitch Background Grey
+      backgroundColor: const Color(0xFFF9F9F9), // Stitch Background
       appBar: AppBar(
         title: const Text(
-          'Cá nhân',
+          'Profile',
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.bold,
             fontFamily: 'Inter',
+            fontSize: 20,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
         centerTitle: false,
         actions: [
-          profileAsync.whenOrNull(
-                data: (profile) => IconButton(
-                  icon: const Icon(
-                    Icons.edit_outlined,
-                    color: Color(0xFF0F172A),
-                  ),
-                  onPressed: () => _showEditProfileBottomSheet(profile),
-                ),
-              ) ??
-              const SizedBox(),
+          IconButton(
+            icon: const Icon(
+              Icons.settings_outlined,
+              color: Color(0xFF45464D),
+              size: 24,
+            ),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Tính năng cài đặt đang mở...')),
+              );
+            },
+          ),
         ],
       ),
       body: RefreshIndicator(
@@ -174,13 +175,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           data: (profile) => SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // User Info Card
-                Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.all(24.0),
+                // Compact Profile Info (Header)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 16.0,
+                  ),
                   child: Row(
                     children: [
+                      // Avatar
                       GestureDetector(
                         onTap: _isUploadingAvatar
                             ? null
@@ -188,15 +193,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         child: Stack(
                           children: [
                             CircleAvatar(
-                              radius: 36,
-                              backgroundColor: const Color(0xFFE2E8F0),
+                              radius: 32,
+                              backgroundColor: const Color(0xFFEEEEEE),
                               backgroundImage: profile.avatarUrl != null
                                   ? NetworkImage(profile.avatarUrl!)
                                   : null,
                               child: profile.avatarUrl == null
                                   ? const Icon(
                                       Icons.person_rounded,
-                                      size: 36,
+                                      size: 32,
                                       color: Color(0xFF64748B),
                                     )
                                   : null,
@@ -205,23 +210,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               bottom: 0,
                               right: 0,
                               child: Container(
-                                padding: const EdgeInsets.all(4),
+                                padding: const EdgeInsets.all(3),
                                 decoration: const BoxDecoration(
                                   color: Color(0xFF0F172A),
                                   shape: BoxShape.circle,
                                 ),
                                 child: _isUploadingAvatar
                                     ? const SizedBox(
-                                        width: 12,
-                                        height: 12,
+                                        width: 10,
+                                        height: 10,
                                         child: CircularProgressIndicator(
-                                          strokeWidth: 2,
+                                          strokeWidth: 1.5,
                                           color: Colors.white,
                                         ),
                                       )
                                     : const Icon(
                                         Icons.camera_alt_rounded,
-                                        size: 12,
+                                        size: 10,
                                         color: Colors.white,
                                       ),
                               ),
@@ -229,194 +234,326 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 16),
+                      // Info Text
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              profile.name ??
-                                  profile.username ??
-                                  'Chưa đặt tên',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF0F172A),
-                                fontFamily: 'Inter',
+                            GestureDetector(
+                              onTap: () => _showEditProfileBottomSheet(profile),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      profile.name ??
+                                          profile.username ??
+                                          'Chưa đặt tên',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF0F172A),
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(
+                                    Icons.edit_outlined,
+                                    size: 16,
+                                    color: Color(0xFF64748B),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
                             Text(
                               profile.email ??
                                   profile.phone ??
                                   'Chưa liên kết email',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontSize: 14,
+                                fontSize: 13,
                                 color: Color(0xFF64748B),
                                 fontFamily: 'Inter',
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: () => _showCountrySelectionDialog(profile),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF1F5F9),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Quốc gia: ${profile.country}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Color(0xFF0F172A),
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: 'Inter',
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    const Icon(
-                                      Icons.arrow_drop_down_rounded,
-                                      size: 16,
-                                      color: Color(0xFF0F172A),
-                                    ),
-                                  ],
-                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
+                      // Country Badge
+                      GestureDetector(
+                        onTap: () => _showCountrySelectionDialog(profile),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD0E1FB),
+                            // secondary_container
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            profile.country,
+                            style: const TextStyle(
+                              color: Color(0xFF54647A),
+                              // on_secondary_container
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                const Divider(height: 1, color: Color(0xFFEEEEEE)),
 
-                // Wallet / Balance Card - Bo góc Card 24px
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(20.0),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A),
-                      // Charcoal Stitch Primary
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF0F172A).withValues(alpha: 0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                // BUSINESS SECTION
+                _buildSectionHeader('BUSINESS'),
+                Container(
+                  color: Colors.white,
+                  child: ListTile(
+                    tileColor: const Color(0xFFD0E1FB).withValues(alpha: 0.35),
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F172A),
+                        // Charcoal Stitch Primary
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.storefront_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    title: const Text(
+                      'Switch to Seller Mode',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Manage your shop and listings',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: Color(0xFF54647A),
+                      ),
+                    ),
+                    trailing: const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Color(0xFF0F172A),
+                      size: 22,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Chuyển sang chế độ người bán...'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const Divider(height: 1, color: Color(0xFFEEEEEE)),
+
+                // SHOPPING SECTION
+                _buildSectionHeader('SHOPPING'),
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      // My Orders Row Link
+                      ListTile(
+                        leading: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3F3F4),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.local_mall_outlined,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                        title: const Text(
+                          'My Orders',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                        trailing: const Icon(
+                          Icons.chevron_right_rounded,
+                          color: Color(0xFF64748B),
+                          size: 22,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 2,
+                        ),
+                        onTap: () => context.push('/account/orders?tab=0'),
+                      ),
+                      // 4 Quick Buttons (Row)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          bottom: 12,
+                        ),
+                        child: Row(
                           children: [
-                            const Text(
-                              'Số dư ví nội bộ',
-                              style: TextStyle(
-                                color: Color(0xFF94A3B8),
-                                fontSize: 13,
-                                fontFamily: 'Inter',
-                              ),
+                            _buildQuickOrderButton(
+                              icon: Icons.schedule_rounded,
+                              label: 'Pending',
+                              onTap: () =>
+                                  context.push('/account/orders?tab=1'),
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              MoneyUtils.format(
-                                profile.internalBalance,
-                                currency: profile.currency,
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Inter',
-                              ),
+                            const SizedBox(width: 8),
+                            _buildQuickOrderButton(
+                              icon: Icons.local_shipping_outlined,
+                              label: 'Shipping',
+                              onTap: () =>
+                                  context.push('/account/orders?tab=2'),
+                            ),
+                            const SizedBox(width: 8),
+                            _buildQuickOrderButton(
+                              icon: Icons.check_circle_outline_rounded,
+                              label: 'Completed',
+                              onTap: () =>
+                                  context.push('/account/orders?tab=3'),
+                            ),
+                            const SizedBox(width: 8),
+                            _buildQuickOrderButton(
+                              icon: Icons.history_rounded,
+                              label: 'Refund',
+                              onTap: () =>
+                                  context.push('/account/orders?tab=5'),
                             ),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.account_balance_wallet_rounded,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const Divider(
+                        height: 1,
+                        color: Color(0xFFF1F5F9),
+                        indent: 56,
+                      ),
+                      // Wishlist Link
+                      _buildMenuItem(
+                        icon: Icons.favorite_border_rounded,
+                        title: 'Wishlist',
+                        onTap: () => context.push('/account/wishlist'),
+                      ),
+                      const Divider(
+                        height: 1,
+                        color: Color(0xFFF1F5F9),
+                        indent: 56,
+                      ),
+                      // Saved Addresses Link
+                      _buildMenuItem(
+                        icon: Icons.location_on_outlined,
+                        title: 'Saved Addresses',
+                        onTap: () => context.push('/account/addresses'),
+                      ),
+                      const Divider(
+                        height: 1,
+                        color: Color(0xFFF1F5F9),
+                        indent: 56,
+                      ),
+                      // Payment Methods Link
+                      _buildMenuItem(
+                        icon: Icons.credit_card_rounded,
+                        title: 'Payment Methods',
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Tính năng ví & thanh toán đang mở...',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
 
-                // Account Operations Directory
+                const Divider(height: 1, color: Color(0xFFEEEEEE)),
+
+                // SUPPORT SECTION
+                _buildSectionHeader('SUPPORT'),
                 Container(
                   color: Colors.white,
                   child: Column(
                     children: [
                       _buildMenuItem(
-                        icon: Icons.receipt_long_rounded,
-                        title: 'Đơn mua hàng của tôi',
-                        onTap: () => context.push('/account/orders'),
+                        icon: Icons.help_outline_rounded,
+                        title: 'Help Center',
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Tính năng hỗ trợ đang mở...'),
+                            ),
+                          );
+                        },
                       ),
                       const Divider(
                         height: 1,
-                        indent: 56,
                         color: Color(0xFFF1F5F9),
-                      ),
-                      _buildMenuItem(
-                        icon: Icons.location_on_rounded,
-                        title: 'Sổ địa chỉ nhận hàng',
-                        onTap: () => context.push('/account/addresses'),
-                      ),
-                      const Divider(
-                        height: 1,
                         indent: 56,
-                        color: Color(0xFFF1F5F9),
                       ),
-                      _buildMenuItem(
-                        icon: Icons.favorite_rounded,
-                        title: 'Sản phẩm yêu thích',
-                        onTap: () => context.push('/account/wishlist'),
-                      ),
-                      const Divider(
-                        height: 1,
-                        indent: 56,
-                        color: Color(0xFFF1F5F9),
-                      ),
-                      _buildMenuItem(
-                        icon: Icons.notifications_rounded,
-                        title: 'Thông báo hệ thống',
-                        onTap: () => context.push('/account/notifications'),
-                      ),
-                      const Divider(
-                        height: 1,
-                        indent: 56,
-                        color: Color(0xFFF1F5F9),
-                      ),
-                      _buildMenuItem(
-                        icon: Icons.logout_rounded,
-                        title: 'Đăng xuất tài khoản',
-                        titleColor: const Color(0xFFBA1A1A),
+                      // Sign Out
+                      ListTile(
+                        leading: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFDAD6),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.logout_rounded,
+                            color: Color(0xFFBA1A1A),
+                          ),
+                        ),
+                        title: const Text(
+                          'Sign Out',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFFBA1A1A),
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 2,
+                        ),
                         onTap: () => _handleLogout(context, ref),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 48),
               ],
             ),
           ),
@@ -483,35 +620,88 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF64748B),
+          letterSpacing: 0.8,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickOrderButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F3F4), // surface-container-low
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: const Color(0xFF45464D), size: 20),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 11,
+                  color: Color(0xFF45464D),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMenuItem({
     required IconData icon,
     required String title,
-    Color titleColor = const Color(0xFF0F172A),
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: titleColor == const Color(0xFFBA1A1A)
-            ? titleColor
-            : const Color(0xFF64748B),
-        size: 22,
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF3F3F4),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: const Color(0xFF64748B)),
       ),
       title: Text(
         title,
-        style: TextStyle(
-          color: titleColor,
+        style: const TextStyle(
+          fontFamily: 'Inter',
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Inter',
+          color: Color(0xFF0F172A),
         ),
       ),
       trailing: const Icon(
         Icons.chevron_right_rounded,
-        color: Color(0xFF94A3B8),
-        size: 20,
+        color: Color(0xFF64748B),
+        size: 22,
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       onTap: onTap,
     );
   }
@@ -558,13 +748,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(24.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  const CircleAvatar(radius: 36, backgroundColor: Colors.white),
-                  const SizedBox(width: 20),
+                  const CircleAvatar(radius: 32, backgroundColor: Colors.white),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,23 +761,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         Container(width: 140, height: 20, color: Colors.white),
                         const SizedBox(height: 8),
                         Container(width: 180, height: 14, color: Colors.white),
-                        const SizedBox(height: 8),
-                        Container(width: 90, height: 18, color: Colors.white),
                       ],
                     ),
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -627,7 +803,6 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
     _phoneController = TextEditingController(text: widget.profile.phone);
     _emailController = TextEditingController(text: widget.profile.email);
 
-    // Gán gender trực tiếp từ String? với cơ chế tương thích ngược cho '0'/'1'/'2' hoặc int
     final profileGender = widget.profile.gender;
     if (profileGender == 'Male' || profileGender == '0') {
       _gender = 'Male';

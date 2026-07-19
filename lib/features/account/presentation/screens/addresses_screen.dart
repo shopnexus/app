@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../shared/data_sources/common_api_service.dart';
 import '../../../../shared/models/geocode_model.dart';
 import '../../data/models/account_model.dart';
 import '../providers/account_provider.dart';
@@ -9,6 +10,22 @@ import '../providers/addresses_provider.dart';
 
 class AddressesScreen extends ConsumerWidget {
   const AddressesScreen({super.key});
+
+  void _showAddressFormSheet(
+    BuildContext context,
+    WidgetRef ref, {
+    Contact? contact,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => _AddressFormSheet(contact: contact),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,29 +43,22 @@ class AddressesScreen extends ConsumerWidget {
             ),
           );
         },
-        data: (_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Cập nhật sổ địa chỉ thành công!'),
-              backgroundColor: Color(0xFF10B981),
-            ),
-          );
-        },
       );
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFF9F9F7), // Stitch Background
       appBar: AppBar(
         title: const Text(
-          'Địa chỉ nhận hàng',
+          'Saved Addresses',
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.bold,
             fontFamily: 'Inter',
+            fontSize: 20,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF9F9F7),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
@@ -58,6 +68,12 @@ class AddressesScreen extends ConsumerWidget {
           ),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF64748B)),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -72,14 +88,53 @@ class AddressesScreen extends ConsumerWidget {
                 if (contacts.isEmpty) {
                   return const _EmptyAddresses();
                 }
-                return ListView.builder(
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
-                  itemCount: contacts.length,
-                  itemBuilder: (context, index) {
-                    final contact = contacts[index];
-                    final isDefault = contact.id == defaultContactId;
-                    return _buildContactCard(context, ref, contact, isDefault);
-                  },
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: contacts.length,
+                      itemBuilder: (context, index) {
+                        final contact = contacts[index];
+                        final isDefault = contact.id == defaultContactId;
+                        return _buildContactCard(
+                          context,
+                          ref,
+                          contact,
+                          isDefault,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    // Add New Address Button at the bottom
+                    SizedBox(
+                      height: 52,
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showAddressFormSheet(context, ref),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0F172A), // Charcoal
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.add_rounded, size: 20),
+                        label: const Text(
+                          'Add New Address',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+                  ],
                 );
               },
               loading: () => _buildShimmerList(),
@@ -99,8 +154,8 @@ class AddressesScreen extends ConsumerWidget {
                         'Không thể tải danh sách địa chỉ',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
                           fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -150,33 +205,6 @@ class AddressesScreen extends ConsumerWidget {
             ),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SizedBox(
-            height: 48,
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => _showAddressFormBottomSheet(context, ref),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0F172A),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Thêm địa chỉ mới',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Inter',
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -186,168 +214,207 @@ class AddressesScreen extends ConsumerWidget {
     Contact contact,
     bool isDefault,
   ) {
+    IconData typeIcon = Icons.location_on_rounded;
+    bool isFillIcon = false;
+
+    if (contact.addressType == 'Home') {
+      typeIcon = Icons.home_rounded;
+      isFillIcon = true;
+    } else if (contact.addressType == 'Office') {
+      typeIcon = Icons.work_rounded;
+      isFillIcon = false;
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24), // Bo góc Card 24px
-        border: Border.all(
-          color: isDefault ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
-          width: isDefault ? 1.5 : 1.0,
-        ),
+        borderRadius: BorderRadius.circular(24), // Stitch Card Bo góc 24px
+        border: Border.all(color: const Color(0xFFEEEEEC)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      _getAddressTypeIcon(contact.addressType),
-                      color: const Color(0xFF64748B),
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      contact.fullName,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.edit_outlined,
-                        color: Color(0xFF64748B),
-                        size: 20,
-                      ),
-                      onPressed: () => _showAddressFormBottomSheet(
-                        context,
-                        ref,
-                        contact: contact,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.delete_outline_rounded,
-                        color: Color(0xFFBA1A1A),
-                        size: 20,
-                      ),
-                      onPressed: () => _confirmDelete(context, ref, contact),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              contact.phone,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Color(0xFF64748B),
-                fontFamily: 'Inter',
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              contact.address,
-              style: const TextStyle(
-                fontSize: 13,
-                height: 1.5,
-                color: Color(0xFF334155),
-                fontFamily: 'Inter',
-              ),
-            ),
-            if (contact.addressDetail != null &&
-                contact.addressDetail!.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                'Chi tiết: ${contact.addressDetail}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF64748B),
-                  fontStyle: FontStyle.italic,
-                  fontFamily: 'Inter',
-                ),
-              ),
-            ],
-            const Divider(height: 24, color: Color(0xFFF1F5F9)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
+            // Default Badge ở góc trên bên phải
+            if (isDefault)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                    horizontal: 12,
+                    vertical: 6,
                   ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(8),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFD0E1FB), // secondary_container
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                    ),
                   ),
-                  child: Text(
-                    contact.addressType == 'Home'
-                        ? 'Nhà riêng'
-                        : contact.addressType == 'Office'
-                        ? 'Văn phòng'
-                        : 'Khác',
-                    style: const TextStyle(
+                  child: const Text(
+                    'Default',
+                    style: TextStyle(
+                      color: Color(0xFF54647A), // on_secondary_container
                       fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF0F172A),
+                      fontWeight: FontWeight.bold,
                       fontFamily: 'Inter',
                     ),
                   ),
                 ),
-                if (isDefault)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text(
-                      'Mặc định',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
-                        fontFamily: 'Inter',
+              ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title Row with Icon
+                  Row(
+                    children: [
+                      Icon(
+                        typeIcon,
+                        color: isFillIcon
+                            ? const Color(0xFF0F172A)
+                            : const Color(0xFF64748B),
+                        size: 20,
                       ),
-                    ),
-                  )
-                else
-                  TextButton(
-                    onPressed: () {
-                      ref
-                          .read(accountControllerProvider.notifier)
-                          .updateProfile(
-                            UpdateProfileRequest(defaultContactId: contact.id),
-                          );
-                    },
-                    child: const Text(
-                      'Đặt làm mặc định',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
-                        fontFamily: 'Inter',
+                      const SizedBox(width: 8),
+                      Text(
+                        contact.addressType,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1C1B),
+                          fontFamily: 'Inter',
+                        ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Recipient & Address Details
+                  Text(
+                    contact.fullName,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF45464D),
+                      fontFamily: 'Inter',
                     ),
                   ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    '${contact.address}${contact.addressDetail != null && contact.addressDetail!.isNotEmpty ? ", ${contact.addressDetail}" : ""}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: Color(0xFF64748B),
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    contact.phone,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF64748B),
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Divider
+                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                  const SizedBox(height: 12),
+                  // Actions Row
+                  Row(
+                    children: [
+                      // Edit Button
+                      InkWell(
+                        onTap: () => _showAddressFormSheet(
+                          context,
+                          ref,
+                          contact: contact,
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.edit_outlined,
+                                size: 16,
+                                color: Color(0xFF0F172A),
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Edit',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 13,
+                                  color: Color(0xFF0F172A),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Set Default Button
+                      if (!isDefault)
+                        InkWell(
+                          onTap: () {
+                            ref
+                                .read(accountControllerProvider.notifier)
+                                .updateProfile(
+                                  UpdateProfileRequest(
+                                    defaultContactId: contact.id,
+                                  ),
+                                );
+                          },
+                          borderRadius: BorderRadius.circular(6),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            child: Text(
+                              'Set as Default',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 13,
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      const Spacer(),
+                      // Delete Button
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete_outline_rounded,
+                          size: 18,
+                          color: Color(0xFFBA1A1A),
+                        ),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        onPressed: () =>
+                            _confirmDelete(context, ref, contact.id),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -355,18 +422,7 @@ class AddressesScreen extends ConsumerWidget {
     );
   }
 
-  IconData _getAddressTypeIcon(String type) {
-    switch (type) {
-      case 'Home':
-        return Icons.home_work_outlined;
-      case 'Office':
-        return Icons.business_outlined;
-      default:
-        return Icons.location_on_outlined;
-    }
-  }
-
-  void _confirmDelete(BuildContext context, WidgetRef ref, Contact contact) {
+  void _confirmDelete(BuildContext context, WidgetRef ref, String id) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -374,9 +430,9 @@ class AddressesScreen extends ConsumerWidget {
           'Xóa địa chỉ',
           style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Inter'),
         ),
-        content: Text(
-          'Bạn có chắc chắn muốn xóa địa chỉ của "${contact.fullName}" khỏi sổ địa chỉ?',
-          style: const TextStyle(fontFamily: 'Inter'),
+        content: const Text(
+          'Bạn có chắc muốn xóa địa chỉ nhận hàng này?',
+          style: TextStyle(fontFamily: 'Inter'),
         ),
         actions: [
           TextButton(
@@ -389,9 +445,7 @@ class AddressesScreen extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              ref
-                  .read(addressesControllerProvider.notifier)
-                  .deleteContact(contact.id);
+              ref.read(addressesControllerProvider.notifier).deleteContact(id);
             },
             child: const Text(
               'Xóa',
@@ -400,22 +454,6 @@ class AddressesScreen extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _showAddressFormBottomSheet(
-    BuildContext context,
-    WidgetRef ref, {
-    Contact? contact,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => _AddressFormSheet(contact: contact),
     );
   }
 
@@ -439,7 +477,7 @@ class AddressesScreen extends ConsumerWidget {
   }
 }
 
-// ======================== BOTTOM SHEET FORM WIDGET ========================
+// ======================== ADDRESS FORM SHEET WIDGET ========================
 class _AddressFormSheet extends ConsumerStatefulWidget {
   final Contact? contact;
 
@@ -457,11 +495,12 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
   late TextEditingController _detailController;
 
   String _addressType = 'Home'; // 'Home' | 'Office' | 'Other'
-  double _latitude = 0.0;
-  double _longitude = 0.0;
+  double? _latitude;
+  double? _longitude;
 
-  List<GeocodeSuggestion> _suggestions = [];
   bool _isSearching = false;
+  List<dynamic> _suggestions = [];
+  final FocusNode _addressFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -472,12 +511,21 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
     _detailController = TextEditingController(
       text: widget.contact?.addressDetail,
     );
+    _addressType = widget.contact?.addressType ?? 'Home';
+    _latitude = widget.contact?.latitude;
+    _longitude = widget.contact?.longitude;
 
-    if (widget.contact != null) {
-      _addressType = widget.contact!.addressType;
-      _latitude = widget.contact!.latitude ?? 0.0;
-      _longitude = widget.contact!.longitude ?? 0.0;
-    }
+    _addressFocusNode.addListener(() {
+      if (!_addressFocusNode.hasFocus) {
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (mounted) {
+            setState(() {
+              _suggestions = [];
+            });
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -486,11 +534,12 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
     _phoneController.dispose();
     _addressController.dispose();
     _detailController.dispose();
+    _addressFocusNode.dispose();
     super.dispose();
   }
 
   void _onAddressChanged(String query) async {
-    if (query.length < 3) {
+    if (query.trim().length < 3) {
       setState(() {
         _suggestions = [];
       });
@@ -502,55 +551,62 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
     });
 
     try {
-      final results = await ref.read(searchGeocodeProvider(query).future);
-      if (mounted) {
-        setState(() {
-          _suggestions = results;
-          _isSearching = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _isSearching = false;
-        });
-      }
+      final commonApi = ref.read(commonApiServiceProvider);
+      final response = await commonApi.searchGeocode(query, 5);
+      setState(() {
+        _suggestions = response.data;
+      });
+    } catch (e) {
+      // Bỏ qua
+    } finally {
+      setState(() {
+        _isSearching = false;
+      });
     }
   }
 
-  void _submit() {
+  void _selectSuggestion(GeocodeSuggestion suggestion) {
+    setState(() {
+      _addressController.text = suggestion.displayName;
+      _latitude = suggestion.latitude;
+      _longitude = suggestion.longitude;
+      _suggestions = [];
+    });
+    _addressFocusNode.unfocus();
+  }
+
+  void _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
+    final address = _addressController.text.trim();
+    final detail = _detailController.text.trim();
+
     if (widget.contact == null) {
-      // Create new
-      ref
+      await ref
           .read(addressesControllerProvider.notifier)
           .createContact(
             CreateContactRequest(
-              fullName: _nameController.text.trim(),
-              phone: _phoneController.text.trim(),
-              address: _addressController.text.trim(),
-              addressDetail: _detailController.text.trim().isNotEmpty
-                  ? _detailController.text.trim()
-                  : null,
+              fullName: name,
+              phone: phone,
+              address: address,
+              addressDetail: detail.isNotEmpty ? detail : null,
               addressType: _addressType,
-              latitude: _latitude,
-              longitude: _longitude,
+              latitude: _latitude ?? 0.0,
+              longitude: _longitude ?? 0.0,
             ),
           );
     } else {
-      // Update existing
-      ref
+      await ref
           .read(addressesControllerProvider.notifier)
           .updateContact(
             UpdateContactRequest(
               contactId: widget.contact!.id,
-              fullName: _nameController.text.trim(),
-              phone: _phoneController.text.trim(),
-              address: _addressController.text.trim(),
-              addressDetail: _detailController.text.trim().isNotEmpty
-                  ? _detailController.text.trim()
-                  : null,
+              fullName: name,
+              phone: phone,
+              address: address,
+              addressDetail: detail.isNotEmpty ? detail : null,
               addressType: _addressType,
               latitude: _latitude,
               longitude: _longitude,
@@ -558,7 +614,9 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
           );
     }
 
-    Navigator.of(context).pop();
+    if (mounted && !ref.read(addressesControllerProvider).hasError) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -583,7 +641,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.contact == null ? 'Thêm địa chỉ mới' : 'Sửa địa chỉ',
+                    widget.contact == null ? 'Add New Address' : 'Edit Address',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -602,12 +660,12 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
               ),
               const SizedBox(height: 16),
 
-              // Full Name Field
+              // Full Name
               TextFormField(
                 controller: _nameController,
                 style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: 'Họ và tên người nhận',
+                  labelText: 'Recipient Full Name',
                   labelStyle: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -628,18 +686,18 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                   ),
                 ),
                 validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'Vui lòng điền họ tên'
+                    ? 'Please enter recipient name'
                     : null,
               ),
               const SizedBox(height: 16),
 
-              // Phone Field
+              // Phone Number
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: 'Số điện thoại',
+                  labelText: 'Phone Number',
                   labelStyle: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -660,110 +718,105 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                   ),
                 ),
                 validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'Vui lòng điền số điện thoại'
+                    ? 'Please enter phone number'
                     : null,
               ),
               const SizedBox(height: 16),
 
-              // Address Field with Geocoding Auto Suggestions
-              TextFormField(
-                controller: _addressController,
-                style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
-                decoration: InputDecoration(
-                  labelText: 'Địa chỉ nhận hàng (Tìm kiếm/Nhập địa chỉ)',
-                  labelStyle: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    color: Color(0xFF64748B),
-                  ),
-                  suffixIcon: _isSearching
-                      ? const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Color(0xFF0F172A),
+              // Address Search Autocomplete Field
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  TextFormField(
+                    controller: _addressController,
+                    focusNode: _addressFocusNode,
+                    style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                    decoration: InputDecoration(
+                      labelText: 'Address (Search / Autocomplete)',
+                      labelStyle: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        color: Color(0xFF64748B),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xFFF8FAFC),
+                      suffixIcon: _isSearching
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Padding(
+                                padding: EdgeInsets.all(12.0),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Color(0xFF0F172A),
+                                ),
+                              ),
+                            )
+                          : const Icon(
+                              Icons.map_rounded,
+                              color: Color(0xFF64748B),
                             ),
-                          ),
-                        )
-                      : const Icon(
-                          Icons.search_rounded,
-                          color: Color(0xFF64748B),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF0F172A),
+                          width: 1.5,
                         ),
-                  filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF0F172A),
-                      width: 1.5,
+                      ),
                     ),
+                    onChanged: _onAddressChanged,
+                    validator: (val) => (val == null || val.trim().isEmpty)
+                        ? 'Please enter address'
+                        : null,
                   ),
-                ),
-                onChanged: _onAddressChanged,
-                validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'Vui lòng nhập hoặc chọn địa chỉ'
-                    : null,
-              ),
 
-              // Search Suggestions list UI
-              if (_suggestions.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Container(
-                  constraints: const BoxConstraints(maxHeight: 180),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    itemCount: _suggestions.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    itemBuilder: (context, index) {
-                      final item = _suggestions[index];
-                      return ListTile(
-                        leading: const Icon(
-                          Icons.location_on_outlined,
-                          size: 18,
-                          color: Color(0xFF64748B),
-                        ),
-                        title: Text(
-                          item.displayName,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontFamily: 'Inter',
+                  // Suggestions list overlay
+                  if (_suggestions.isNotEmpty)
+                    Positioned(
+                      top: 60,
+                      left: 0,
+                      right: 0,
+                      child: Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white,
+                        child: Container(
+                          constraints: const BoxConstraints(maxHeight: 200),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _suggestions.length,
+                            itemBuilder: (context, idx) {
+                              final GeocodeSuggestion sug = _suggestions[idx];
+                              return ListTile(
+                                dense: true,
+                                title: Text(
+                                  sug.displayName,
+                                  style: const TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                onTap: () => _selectSuggestion(sug),
+                              );
+                            },
                           ),
                         ),
-                        onTap: () {
-                          setState(() {
-                            _addressController.text = item.displayName;
-                            _latitude = item.latitude;
-                            _longitude = item.longitude;
-                            _suggestions = []; // Ẩn gợi ý
-                          });
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
+                      ),
+                    ),
+                ],
+              ),
               const SizedBox(height: 16),
 
-              // Address Detail Field
+              // Detail Address
               TextFormField(
                 controller: _detailController,
                 style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: 'Chi tiết căn hộ, số nhà, tầng... (Tùy chọn)',
+                  labelText: 'Address Details (Apartment, Suite, etc.)',
                   labelStyle: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -784,31 +837,32 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // Address Type Chips Selection
+              // Address Type Chips
               const Text(
-                'Loại địa chỉ',
+                'Address Type',
                 style: TextStyle(
+                  fontFamily: 'Inter',
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
-                  fontFamily: 'Inter',
+                  color: Color(0xFF64748B),
                 ),
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  _buildTypeChip('Home', 'Nhà riêng'),
-                  const SizedBox(width: 10),
-                  _buildTypeChip('Office', 'Văn phòng'),
-                  const SizedBox(width: 10),
-                  _buildTypeChip('Other', 'Khác'),
+                  _buildTypeChip('Home', 'Home'),
+                  const SizedBox(width: 8),
+                  _buildTypeChip('Office', 'Office'),
+                  const SizedBox(width: 8),
+                  _buildTypeChip('Other', 'Other'),
                 ],
               ),
+
               const SizedBox(height: 32),
 
-              // Action Buttons
+              // Action button
               SizedBox(
                 height: 48,
                 width: double.infinity,
@@ -822,7 +876,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                     ),
                   ),
                   child: Text(
-                    widget.contact == null ? 'Thêm địa chỉ' : 'Cập nhật',
+                    widget.contact == null ? 'Save Address' : 'Update Address',
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
