@@ -10,6 +10,12 @@ import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/catalog/presentation/screens/product_list_screen.dart';
 import '../../features/catalog/presentation/screens/categories_screen.dart';
 import '../../features/catalog/presentation/screens/search_screen.dart';
+import '../../features/account/presentation/screens/profile_screen.dart';
+import '../../features/account/presentation/screens/orders_screen.dart';
+import '../../features/account/presentation/screens/order_detail_screen.dart';
+import '../../features/account/presentation/screens/addresses_screen.dart';
+import '../../features/account/presentation/screens/wishlist_screen.dart';
+import '../../features/account/presentation/screens/notifications_screen.dart';
 import '../../shared/widgets/main_layout.dart';
 import '../../shared/widgets/placeholder_screens.dart';
 import '../../features/catalog/presentation/screens/product_detail_screen.dart';
@@ -107,7 +113,41 @@ GoRouter appRouter(Ref ref) {
           GoRoute(
             path: '/account',
             name: 'account',
-            builder: (context, state) => const AccountPlaceholderScreen(),
+            builder: (context, state) => const ProfileScreen(),
+            routes: [
+              GoRoute(
+                path: 'orders',
+                name: 'buyer_orders',
+                builder: (context, state) {
+                  final tabString = state.uri.queryParameters['tab'];
+                  final initialTab = int.tryParse(tabString ?? '0') ?? 0;
+                  return OrdersScreen(initialTab: initialTab);
+                },
+              ),
+              GoRoute(
+                path: 'order-detail/:id',
+                name: 'buyer_order_detail',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return OrderDetailScreen(orderId: id);
+                },
+              ),
+              GoRoute(
+                path: 'addresses',
+                name: 'buyer_addresses',
+                builder: (context, state) => const AddressesScreen(),
+              ),
+              GoRoute(
+                path: 'wishlist',
+                name: 'buyer_wishlist',
+                builder: (context, state) => const WishlistScreen(),
+              ),
+              GoRoute(
+                path: 'notifications',
+                name: 'buyer_notifications',
+                builder: (context, state) => const NotificationsScreen(),
+              ),
+            ],
           ),
         ],
       ),

@@ -148,98 +148,105 @@ class CheckoutScreen extends ConsumerWidget {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        final contact = list[index];
-        final isSelected = selected?.id == contact.id;
+    return RadioGroup<String>(
+      groupValue: selected?.id,
+      onChanged: (val) {
+        if (val != null) {
+          final contact = list.firstWhere((c) => c.id == val);
+          ref.read(checkoutProvider.notifier).selectContact(contact);
+        }
+      },
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          final contact = list[index];
+          final isSelected = selected?.id == contact.id;
 
-        return GestureDetector(
-          onTap: () =>
-              ref.read(checkoutProvider.notifier).selectContact(contact),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected ? AppColors.primary : const Color(0xFFE2E3E0),
-                width: isSelected ? 2.0 : 1.0,
+          return GestureDetector(
+            onTap: () =>
+                ref.read(checkoutProvider.notifier).selectContact(contact),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected
+                      ? AppColors.primary
+                      : const Color(0xFFE2E3E0),
+                  width: isSelected ? 2.0 : 1.0,
+                ),
               ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            contact.fullName,
-                            style: const TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          if (contact.phoneVerified)
-                            const Padding(
-                              padding: EdgeInsets.only(left: 6),
-                              child: Icon(
-                                Icons.verified_user_rounded,
-                                size: 16,
-                                color: AppColors.primary,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              contact.fullName,
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
                               ),
                             ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        contact.address,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
+                            if (contact.phoneVerified)
+                              const Padding(
+                                padding: EdgeInsets.only(left: 6),
+                                child: Icon(
+                                  Icons.verified_user_rounded,
+                                  size: 16,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                          ],
                         ),
-                      ),
-                      if (contact.addressDetail != null)
+                        const SizedBox(height: 6),
                         Text(
-                          contact.addressDetail!,
+                          contact.address,
                           style: const TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 12,
+                            fontSize: 13,
                             color: AppColors.textSecondary,
                           ),
                         ),
-                      const SizedBox(height: 4),
-                      Text(
-                        contact.phone,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
+                        if (contact.addressDetail != null)
+                          Text(
+                            contact.addressDetail!,
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        const SizedBox(height: 4),
+                        Text(
+                          contact.phone,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Radio<String>(
-                  value: contact.id,
-                  groupValue: selected?.id,
-                  activeColor: AppColors.primary,
-                  onChanged: (_) => ref
-                      .read(checkoutProvider.notifier)
-                      .selectContact(contact),
-                ),
-              ],
+                  Radio<String>(
+                    value: contact.id,
+                    activeColor: AppColors.primary,
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -254,83 +261,91 @@ class CheckoutScreen extends ConsumerWidget {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildShippingOptionCard(
-                ref,
-                title: 'Standard Delivery',
-                description: 'Estimated arrival: 3 - 5 business days',
-                value: 'Standard',
-                groupValue: state.shippingOption,
-                costDisplay: state.quoteResponse != null
-                    ? 'Calculated'
-                    : 'Select to calculate',
-              ),
-              const SizedBox(height: 12),
-              _buildShippingOptionCard(
-                ref,
-                title: 'Express Delivery',
-                description: 'Estimated arrival: 1 - 2 business days',
-                value: 'Express',
-                groupValue: state.shippingOption,
-                costDisplay: state.quoteResponse != null
-                    ? 'Calculated'
-                    : 'Select to calculate',
-              ),
-              if (state.quoteResponse != null) ...[
-                const SizedBox(height: 24),
-                const Text(
-                  'Shipping Cost Details',
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+          child: RadioGroup<String>(
+            groupValue: state.shippingOption,
+            onChanged: (val) {
+              if (val != null) {
+                ref.read(checkoutProvider.notifier).selectShippingOption(val);
+              }
+            },
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _buildShippingOptionCard(
+                  ref,
+                  title: 'Standard Delivery',
+                  description: 'Estimated arrival: 3 - 5 business days',
+                  value: 'Standard',
+                  isSelected: state.shippingOption == 'Standard',
+                  costDisplay: state.quoteResponse != null
+                      ? 'Calculated'
+                      : 'Select to calculate',
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE2E3E0)),
-                  ),
-                  child: Column(
-                    children: state.quoteResponse!.items.map((quote) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Item SKU #${quote.skuId.substring(0, 8)}...',
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            Text(
-                              MoneyUtils.format(
-                                quote.cost,
-                                currency: quote.currency,
-                              ),
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                const SizedBox(height: 12),
+                _buildShippingOptionCard(
+                  ref,
+                  title: 'Express Delivery',
+                  description: 'Estimated arrival: 1 - 2 business days',
+                  value: 'Express',
+                  isSelected: state.shippingOption == 'Express',
+                  costDisplay: state.quoteResponse != null
+                      ? 'Calculated'
+                      : 'Select to calculate',
                 ),
+                if (state.quoteResponse != null) ...[
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Shipping Cost Details',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE2E3E0)),
+                    ),
+                    child: Column(
+                      children: state.quoteResponse!.items.map((quote) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Item SKU #${quote.skuId.substring(0, 8)}...',
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 13,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              Text(
+                                MoneyUtils.format(
+                                  quote.cost,
+                                  currency: quote.currency,
+                                ),
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         _buildStepCTA(
@@ -348,11 +363,9 @@ class CheckoutScreen extends ConsumerWidget {
     required String title,
     required String description,
     required String value,
-    required String groupValue,
+    required bool isSelected,
     required String costDisplay,
   }) {
-    final isSelected = value == groupValue;
-
     return GestureDetector(
       onTap: () =>
           ref.read(checkoutProvider.notifier).selectShippingOption(value),
@@ -393,14 +406,7 @@ class CheckoutScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            Radio<String>(
-              value: value,
-              groupValue: groupValue,
-              activeColor: AppColors.primary,
-              onChanged: (val) => ref
-                  .read(checkoutProvider.notifier)
-                  .selectShippingOption(val!),
-            ),
+            Radio<String>(value: value, activeColor: AppColors.primary),
           ],
         ),
       ),
