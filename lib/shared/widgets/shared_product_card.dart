@@ -10,6 +10,7 @@ class SharedProductCard extends StatelessWidget {
   final double aspectRatio;
   final bool isFavorite;
   final VoidCallback? onFavoriteTap;
+  final bool showVendor;
 
   const SharedProductCard({
     super.key,
@@ -18,6 +19,7 @@ class SharedProductCard extends StatelessWidget {
     this.aspectRatio = 1.0,
     this.isFavorite = false,
     this.onFavoriteTap,
+    this.showVendor = true,
   });
 
   @override
@@ -200,47 +202,49 @@ class SharedProductCard extends StatelessWidget {
                     ),
                   ],
 
-                  const SizedBox(height: 10.0),
-                  // Đường kẻ phân cách mờ nhẹ
-                  Container(height: 1.0, color: const Color(0xFFF1F5F9)),
-                  const SizedBox(height: 8.0),
+                  if (showVendor) ...[
+                    const SizedBox(height: 10.0),
+                    // Đường kẻ phân cách mờ nhẹ
+                    Container(height: 1.0, color: const Color(0xFFF1F5F9)),
+                    const SizedBox(height: 8.0),
 
-                  // Thông tin nhà bán hàng
-                  Row(
-                    children: [
-                      // Avatar tròn của Vendor
-                      Container(
-                        width: 20.0,
-                        height: 20.0,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE2E8F0),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.person_rounded,
-                            size: 12,
-                            color: Color(0xFF64748B),
+                    // Thông tin nhà bán hàng
+                    Row(
+                      children: [
+                        // Avatar tròn của Vendor
+                        Container(
+                          width: 20.0,
+                          height: 20.0,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE2E8F0),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.person_rounded,
+                              size: 12,
+                              color: Color(0xFF64748B),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 6.0),
-                      // Tên và Đánh giá sao của Vendor
-                      Expanded(
-                        child: Text(
-                          '@${product.vendorName ?? "shop"} • ${product.rating?.score.toStringAsFixed(1) ?? "5.0"} ★',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            fontFamily: 'Inter',
-                            color: const Color(0xFF64748B),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
+                        const SizedBox(width: 6.0),
+                        // Tên và Đánh giá sao của Vendor
+                        Expanded(
+                          child: Text(
+                            '@${product.vendorName ?? "shop"} • ${product.rating?.score.toStringAsFixed(1) ?? "5.0"} ★',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontFamily: 'Inter',
+                              color: const Color(0xFF64748B),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

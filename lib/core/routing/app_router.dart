@@ -21,6 +21,7 @@ import '../../shared/widgets/placeholder_screens.dart';
 import '../../features/catalog/presentation/screens/product_detail_screen.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/checkout/presentation/screens/checkout_screen.dart';
+import '../../features/seller/presentation/screens/seller_profile_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -99,6 +100,14 @@ GoRouter appRouter(Ref ref) {
             path: '/search',
             name: 'search',
             builder: (context, state) => const SearchScreen(),
+          ),
+          GoRoute(
+            path: '/vendor/:id',
+            name: 'seller_profile',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return SellerProfileScreen(vendorId: id);
+            },
           ),
           GoRoute(
             path: '/seller',

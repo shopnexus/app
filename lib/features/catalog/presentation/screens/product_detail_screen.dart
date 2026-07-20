@@ -13,6 +13,7 @@ import '../../../cart/data/models/cart_model.dart';
 import '../../../checkout/presentation/providers/checkout_provider.dart';
 import '../../../checkout/data/models/checkout_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../account/presentation/providers/account_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -704,45 +705,81 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // 4. Thông tin người bán (Vendor Info)
   Widget _buildVendorSection(TProductDetail detail) {
+    final sellerProfileState = detail.vendorId != null
+        ? ref.watch(publicProfileProvider(detail.vendorId!))
+        : null;
+
+    final String name =
+        sellerProfileState?.when(
+          data: (profile) =>
+              profile.name ?? profile.username ?? 'Cửa hàng đối tác',
+          loading: () => 'Đang tải...',
+          error: (_, _) => detail.vendorName ?? 'Shop đối tác',
+        ) ??
+        detail.vendorName ??
+        'Shop đối tác';
+
+    final String? avatarUrl =
+        sellerProfileState?.when(
+          data: (profile) => profile.avatarUrl,
+          loading: () => null,
+          error: (_, _) => detail.vendorAvatar,
+        ) ??
+        detail.vendorAvatar;
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundImage: detail.vendorAvatar != null
-                ? CachedNetworkImageProvider(detail.vendorAvatar!)
+          GestureDetector(
+            onTap: detail.vendorId != null
+                ? () => context.push('/vendor/${detail.vendorId}')
                 : null,
-            backgroundColor: const Color(0xFFEEEEEB),
-            child: detail.vendorAvatar == null
-                ? const Icon(Icons.storefront_rounded, color: Color(0xFF6D7A77))
-                : null,
+            child: CircleAvatar(
+              radius: 24,
+              backgroundImage: avatarUrl != null
+                  ? CachedNetworkImageProvider(avatarUrl)
+                  : null,
+              backgroundColor: const Color(0xFFEEEEEB),
+              child: avatarUrl == null
+                  ? const Icon(
+                      Icons.storefront_rounded,
+                      color: Color(0xFF6D7A77),
+                    )
+                  : null,
+            ),
           ),
           const SizedBox(width: 12.0),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  detail.vendorName ?? 'Shop đối tác',
-                  style: const TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A1C1B),
+            child: GestureDetector(
+              onTap: detail.vendorId != null
+                  ? () => context.push('/vendor/${detail.vendorId}')
+                  : null,
+              behavior: HitTestBehavior.opaque,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A1C1B),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4.0),
-                const Text(
-                  'Đối tác uy tín | Phản hồi 99%',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: Color(0xFF6D7A77),
+                  const SizedBox(height: 4.0),
+                  const Text(
+                    'Đối tác uy tín | Phản hồi 99%',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      color: Color(0xFF6D7A77),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           OutlinedButton.icon(
