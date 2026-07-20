@@ -348,41 +348,80 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                 ),
               );
             }
-            return GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: products.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.78,
-              ),
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return SharedProductCard(
-                  product: product,
-                  aspectRatio: 0.95,
-                  showVendor: false,
-                  onTap: () {
-                    context.push('/home/product/${product.id}');
-                  },
+            // MASONRY LAYOUT
+            final double width = MediaQuery.of(context).size.width;
+            final int crossAxisCount = width >= 900
+                ? 4
+                : (width >= 600 ? 3 : 2);
+
+            final columns = List.generate(
+              crossAxisCount,
+              (_) => <TProductCard>[],
+            );
+            for (int i = 0; i < products.length; i++) {
+              columns[i % crossAxisCount].add(products[i]);
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(crossAxisCount, (colIndex) {
+                final colProducts = columns[colIndex];
+                return Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
+                    ),
+                    child: Column(
+                      children: List.generate(colProducts.length, (index) {
+                        final product = colProducts[index];
+                        final double aspect = ((index + colIndex) % 2 == 0)
+                            ? 0.8
+                            : 1.0;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: SharedProductCard(
+                            product: product,
+                            aspectRatio: aspect,
+                            showVendor: false,
+                            onTap: () {
+                              context.push('/home/product/${product.id}');
+                            },
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
                 );
-              },
+              }),
             );
           },
-          loading: () => GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.78,
-            ),
-            itemBuilder: (context, index) => _buildShimmerProductCard(),
-          ),
+          loading: () {
+            // MASONRY SHIMMER
+            final double width = MediaQuery.of(context).size.width;
+            final int crossAxisCount = width >= 900
+                ? 4
+                : (width >= 600 ? 3 : 2);
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(crossAxisCount, (colIndex) {
+                return Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
+                    ),
+                    child: Column(
+                      children: List.generate(2, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: _buildShimmerProductCard(),
+                        );
+                      }),
+                    ),
+                  ),
+                );
+              }),
+            );
+          },
           error: (err, stack) => Center(
             child: Text(
               'Lỗi tải sản phẩm: $err',
@@ -454,17 +493,34 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 4,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.78,
-              ),
-              itemBuilder: (context, index) => _buildShimmerProductCard(),
+            child: Builder(
+              builder: (context) {
+                final double width = MediaQuery.of(context).size.width;
+                final int crossAxisCount = width >= 900
+                    ? 4
+                    : (width >= 600 ? 3 : 2);
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(crossAxisCount, (colIndex) {
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
+                        ),
+                        child: Column(
+                          children: List.generate(
+                            2,
+                            (index) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: _buildShimmerProductCard(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                );
+              },
             ),
           ),
         ],
