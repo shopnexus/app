@@ -447,7 +447,7 @@ class SellerDashboardScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => context.push('/seller/ai-wizard'),
                   icon: const Icon(Icons.videocam_outlined, size: 18),
                   label: const Text('Video to SPU'),
                   style: OutlinedButton.styleFrom(
@@ -464,7 +464,7 @@ class SellerDashboardScreen extends ConsumerWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => context.push('/seller/ai-wizard'),
                   icon: const Icon(Icons.mic_none_outlined, size: 18),
                   label: const Text('Voice AI Description'),
                   style: ElevatedButton.styleFrom(
