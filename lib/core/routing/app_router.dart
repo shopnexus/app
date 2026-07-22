@@ -22,6 +22,7 @@ import '../../features/catalog/presentation/screens/product_detail_screen.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/checkout/presentation/screens/checkout_screen.dart';
 import '../../features/seller/presentation/screens/seller_profile_screen.dart';
+import '../../features/seller/presentation/screens/seller_dashboard_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -112,7 +113,7 @@ GoRouter appRouter(Ref ref) {
           GoRoute(
             path: '/seller',
             name: 'seller',
-            builder: (context, state) => const SellerPlaceholderScreen(),
+            builder: (context, state) => const SellerDashboardScreen(),
           ),
           GoRoute(
             path: '/chat',
