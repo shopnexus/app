@@ -193,7 +193,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                   context,
                   title: 'Orders',
                   onSeeAll: () {
-                    context.push('/account/orders');
+                    context.push('/seller/orders');
                   },
                 ),
                 const SizedBox(height: 10),
@@ -207,7 +207,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                         0xFFF59E0B,
                       ).withValues(alpha: 0.12),
                       count: stats.pendingOrders,
-                      onTap: () => context.push('/account/orders?tab=0'),
+                      onTap: () => context.push('/seller/orders?tab=0'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
@@ -218,7 +218,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                         0xFF3B82F6,
                       ).withValues(alpha: 0.12),
                       count: stats.shippingOrders,
-                      onTap: () => context.push('/account/orders?tab=1'),
+                      onTap: () => context.push('/seller/orders?tab=2'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
@@ -229,7 +229,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                         0xFF10B981,
                       ).withValues(alpha: 0.12),
                       count: stats.completedOrders,
-                      onTap: () => context.push('/account/orders?tab=2'),
+                      onTap: () => context.push('/seller/orders?tab=3'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
@@ -240,7 +240,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                         0xFFEF4444,
                       ).withValues(alpha: 0.12),
                       count: stats.disputingOrders,
-                      onTap: () => context.push('/account/orders?tab=3'),
+                      onTap: () => context.push('/seller/orders?tab=4'),
                     ),
                   ],
                 ),
@@ -250,7 +250,9 @@ class SellerDashboardScreen extends ConsumerWidget {
                 _buildSectionHeader(
                   context,
                   title: 'Products',
-                  onSeeAll: () {},
+                  onSeeAll: () {
+                    context.push('/seller/products');
+                  },
                 ),
                 const SizedBox(height: 10),
                 Column(
@@ -261,6 +263,8 @@ class SellerDashboardScreen extends ConsumerWidget {
                       iconColor: AppColors.primary,
                       iconBgColor: AppColors.primary.withValues(alpha: 0.12),
                       count: stats.activeProducts,
+                      onTap: () =>
+                          context.push('/seller/products?status=active'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
@@ -271,6 +275,8 @@ class SellerDashboardScreen extends ConsumerWidget {
                         0xFF64748B,
                       ).withValues(alpha: 0.12),
                       count: stats.inactiveProducts,
+                      onTap: () =>
+                          context.push('/seller/products?status=inactive'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
@@ -281,6 +287,8 @@ class SellerDashboardScreen extends ConsumerWidget {
                         0xFFEF4444,
                       ).withValues(alpha: 0.12),
                       count: stats.violatedProducts,
+                      onTap: () =>
+                          context.push('/seller/products?status=violated'),
                     ),
                   ],
                 ),
