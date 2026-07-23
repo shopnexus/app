@@ -67,294 +67,318 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           },
           color: const Color(0xFF006A61),
           // Tông màu xanh mòng két (primary) mới
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              // 1. Mobile Header (Menu, Title, Cart) theo Stitch
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 12.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'ShopNexus',
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          // ExtraBold từ Stitch Display
-                          color: Color(0xFF006A61),
-                          // Primary brand color mới
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.shopping_cart_outlined,
-                              color: Color(0xFF1A1C1B),
-                              size: 24,
-                            ),
-                            onPressed: () => context.push('/cart'),
-                          ),
-                          const SizedBox(width: 4.0),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.notifications_none_rounded,
-                              color: Color(0xFF1A1C1B),
-                              size: 24,
-                            ),
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Tính năng thông báo đang được phát triển!',
-                                  ),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // 2. Search and Filter Bar
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 4.0,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => context.push('/search'),
-                          child: Container(
-                            height: 48.0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEEEEEB),
-                              // surface-container của Stitch
-                              borderRadius: BorderRadius.circular(9999.0),
-                              // Bo tròn tối đa (rounded-full)
-                              border: Border.all(
-                                color: const Color(0xFFBCC9C6),
-                                // outline-variant
-                                width: 1.0,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.search_rounded,
-                                  color: Color(0xFF6D7A77), // outline
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 10.0),
-                                Text(
-                                  activeFilters.keyword ??
-                                      'Search for vintage, tech, furniture...',
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(
-                                        fontFamily: 'Inter',
-                                        color: const Color(0xFF6D7A77),
-                                        fontSize: 14,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      // Nút lọc nhanh (Tune Button) - Mở bộ lọc ngay tại trang chủ
-                      GestureDetector(
-                        onTap: () => _showFilterBottomSheet(
-                          context,
-                          activeFilters,
-                          categoriesState,
-                        ),
-                        child: Container(
-                          height: 48.0,
-                          width: 48.0,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEEEEEB),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0xFFBCC9C6),
-                              width: 1.0,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.tune_rounded,
-                            color: isFiltered
-                                ? const Color(0xFF006A61)
-                                : const Color(0xFF1A1C1B),
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // 3. Location and Categories Horizontal scroll chips
-              if (isFiltered)
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (scrollInfo) {
+              if (scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 300) {
+                ref
+                    .read(catalogProductsProvider(activeFilters).notifier)
+                    .loadNextPage();
+              }
+              return false;
+            },
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                // 1. Mobile Header (Menu, Title, Cart) theo Stitch
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: SizedBox(
-                      height: 32.0,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Row(
-                          children: _buildActiveFilterChips(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'ShopNexus',
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            // ExtraBold từ Stitch Display
+                            color: Color(0xFF006A61),
+                            // Primary brand color mới
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.shopping_cart_outlined,
+                                color: Color(0xFF1A1C1B),
+                                size: 24,
+                              ),
+                              onPressed: () => context.push('/cart'),
+                            ),
+                            const SizedBox(width: 4.0),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.notifications_none_rounded,
+                                color: Color(0xFF1A1C1B),
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Tính năng thông báo đang được phát triển!',
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 2. Search and Filter Bar
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 4.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => context.push('/search'),
+                            child: Container(
+                              height: 48.0,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEEEEEB),
+                                // surface-container của Stitch
+                                borderRadius: BorderRadius.circular(9999.0),
+                                // Bo tròn tối đa (rounded-full)
+                                border: Border.all(
+                                  color: const Color(0xFFBCC9C6),
+                                  // outline-variant
+                                  width: 1.0,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.search_rounded,
+                                    color: Color(0xFF6D7A77), // outline
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 10.0),
+                                  Text(
+                                    activeFilters.keyword ??
+                                        'Search for vintage, tech, furniture...',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          fontFamily: 'Inter',
+                                          color: const Color(0xFF6D7A77),
+                                          fontSize: 14,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        // Nút lọc nhanh (Tune Button) - Mở bộ lọc ngay tại trang chủ
+                        GestureDetector(
+                          onTap: () => _showFilterBottomSheet(
+                            context,
                             activeFilters,
                             categoriesState,
                           ),
+                          child: Container(
+                            height: 48.0,
+                            width: 48.0,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEEEEEB),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFFBCC9C6),
+                                width: 1.0,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.tune_rounded,
+                              color: isFiltered
+                                  ? const Color(0xFF006A61)
+                                  : const Color(0xFF1A1C1B),
+                              size: 20,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
 
-              // 4. Tiêu đề mục
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
-                  child: Text(
-                    isFiltered ? 'Kết quả lọc' : 'For You',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1A1C1B),
-                      fontSize: 20.0,
-                    ),
-                  ),
-                ),
-              ),
-
-              // 5. Masonry Grid cho danh sách sản phẩm
-              productsState.when(
-                data: (stateData) {
-                  final products = stateData.products;
-                  if (products.isEmpty) {
-                    return const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Text(
-                          'Không có sản phẩm nào phù hợp bộ lọc',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            color: Color(0xFF6D7A77),
+                // 3. Location and Categories Horizontal scroll chips
+                if (isFiltered)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: SizedBox(
+                        height: 32.0,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Row(
+                            children: _buildActiveFilterChips(
+                              activeFilters,
+                              categoriesState,
+                            ),
                           ),
                         ),
                       ),
+                    ),
+                  ),
+
+                // 4. Tiêu đề mục
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
+                    child: Text(
+                      isFiltered ? 'Kết quả lọc' : 'For You',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontFamily: 'Manrope',
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1A1C1B),
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // 5. Masonry Grid cho danh sách sản phẩm
+                productsState.when(
+                  data: (stateData) {
+                    final products = stateData.products;
+                    if (products.isEmpty) {
+                      return const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Text(
+                            'Không có sản phẩm nào phù hợp bộ lọc',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              color: Color(0xFF6D7A77),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    // Tính toán số cột thích ứng dựa trên độ rộng màn hình thực tế
+                    final double width = MediaQuery.of(context).size.width;
+                    final int crossAxisCount = width >= 900
+                        ? 4
+                        : (width >= 600 ? 3 : 2);
+
+                    // Chia danh sách sản phẩm thành các cột tương ứng
+                    final columns = List.generate(
+                      crossAxisCount,
+                      (_) => <TProductCard>[],
                     );
-                  }
+                    for (int i = 0; i < products.length; i++) {
+                      columns[i % crossAxisCount].add(products[i]);
+                    }
 
-                  // Tính toán số cột thích ứng dựa trên độ rộng màn hình thực tế
-                  final double width = MediaQuery.of(context).size.width;
-                  final int crossAxisCount = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
-
-                  // Chia danh sách sản phẩm thành các cột tương ứng
-                  final columns = List.generate(crossAxisCount, (_) => <TProductCard>[]);
-                  for (int i = 0; i < products.length; i++) {
-                    columns[i % crossAxisCount].add(products[i]);
-                  }
-
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    sliver: SliverToBoxAdapter(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: List.generate(crossAxisCount, (colIndex) {
-                          final colProducts = columns[colIndex];
-                          return Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
-                              ),
-                              child: Column(
-                                children: List.generate(
-                                  colProducts.length,
-                                  (index) {
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      sliver: SliverToBoxAdapter(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: List.generate(crossAxisCount, (colIndex) {
+                            final colProducts = columns[colIndex];
+                            return Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  right: colIndex < crossAxisCount - 1
+                                      ? 12.0
+                                      : 0.0,
+                                ),
+                                child: Column(
+                                  children: List.generate(colProducts.length, (
+                                    index,
+                                  ) {
                                     final product = colProducts[index];
-                                    final double aspect = ((index + colIndex) % 2 == 0) ? 0.8 : 1.0;
+                                    final double aspect =
+                                        ((index + colIndex) % 2 == 0)
+                                        ? 0.8
+                                        : 1.0;
                                     return Padding(
-                                      padding: const EdgeInsets.only(bottom: 12.0),
+                                      padding: const EdgeInsets.only(
+                                        bottom: 12.0,
+                                      ),
                                       child: SharedProductCard(
                                         product: product,
                                         aspectRatio: aspect,
                                         onTap: () {
-                                          context.push('/home/product/${product.id}');
+                                          context.push(
+                                            '/home/product/${product.id}',
+                                          );
                                         },
                                       ),
                                     );
-                                  },
+                                  }),
                                 ),
                               ),
-                            ),
-                          );
-                        }),
+                            );
+                          }),
+                        ),
                       ),
-                    ),
-                  );
-                },
-                loading: () => SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  sliver: _buildProductShimmers(context),
+                    );
+                  },
+                  loading: () => SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    sliver: _buildProductShimmers(context),
+                  ),
+                  error: (err, stack) => SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: Text('Lỗi tải sản phẩm: $err')),
+                  ),
                 ),
-                error: (err, stack) => SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(child: Text('Lỗi tải sản phẩm: $err')),
-                ),
-              ),
 
-              // Chỉ báo loading khi kéo tải thêm (Infinite Scroll)
-              if (productsState.asData?.value.isLoadingMore ?? false)
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24.0),
-                    child: Center(
-                      child: SizedBox(
-                        height: 24.0,
-                        width: 24.0,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFF006A61),
+                // Chỉ báo loading khi kéo tải thêm (Infinite Scroll)
+                if (productsState.asData?.value.isLoadingMore ?? false)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24.0),
+                      child: Center(
+                        child: SizedBox(
+                          height: 24.0,
+                          width: 24.0,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFF006A61),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-              // Khoảng đệm cuối danh sách
-              const SliverToBoxAdapter(child: SizedBox(height: 80.0)),
-            ],
+                // Khoảng đệm cuối danh sách
+                const SliverToBoxAdapter(child: SizedBox(height: 80.0)),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-
-
 
   // Tạo động danh sách các chip đang kích hoạt bộ lọc
   List<Widget> _buildActiveFilterChips(
@@ -851,7 +875,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
               ),
               child: Column(
                 children: List.generate(2, (index) {
-                  final double height = ((index + colIndex) % 2 == 0) ? 240.0 : 180.0;
+                  final double height = ((index + colIndex) % 2 == 0)
+                      ? 240.0
+                      : 180.0;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Shimmer.fromColors(

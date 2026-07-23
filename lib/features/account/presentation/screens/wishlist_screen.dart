@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/money_utils.dart';
 import '../../../catalog/data/models/catalog_model.dart';
 import '../providers/wishlist_provider.dart';
@@ -37,24 +38,23 @@ class WishlistScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F7),
-      // Stitch Warm Neutral Background
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           'Wishlist',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             fontWeight: FontWeight.bold,
-            fontFamily: 'Inter',
+            fontFamily: 'Manrope',
             fontSize: 20,
           ),
         ),
-        backgroundColor: const Color(0xFFF9F9F7),
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             size: 20,
           ),
           onPressed: () => context.pop(),
@@ -63,7 +63,7 @@ class WishlistScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(
               Icons.shopping_bag_outlined,
-              color: Color(0xFF0F172A),
+              color: Color(0xFF1A1C1B),
               size: 24,
             ),
             onPressed: () => context.push('/cart'),
@@ -100,14 +100,14 @@ class WishlistScreen extends ConsumerWidget {
                           onPressed: () {},
                           icon: const Icon(
                             Icons.sort_rounded,
-                            color: Color(0xFF0F172A),
+                            color: AppColors.primary,
                             size: 18,
                           ),
                           label: const Text(
                             'Sort',
                             style: TextStyle(
                               fontFamily: 'Inter',
-                              color: Color(0xFF0F172A),
+                              color: AppColors.primary,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -168,7 +168,7 @@ class WishlistScreen extends ConsumerWidget {
                           onPressed: () =>
                               ref.refresh(wishlistProductsProvider),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0F172A),
+                            backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -193,7 +193,7 @@ class WishlistScreen extends ConsumerWidget {
             Container(
               color: Colors.black.withValues(alpha: 0.2),
               child: const Center(
-                child: CircularProgressIndicator(color: Color(0xFF0F172A)),
+                child: CircularProgressIndicator(color: AppColors.primary),
               ),
             ),
         ],
@@ -293,7 +293,7 @@ class WishlistScreen extends ConsumerWidget {
                         fontFamily: 'Inter',
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
+                        color: AppColors.primary,
                       ),
                     ),
                     // Circular cart button
@@ -305,7 +305,7 @@ class WishlistScreen extends ConsumerWidget {
                         width: 40,
                         height: 40,
                         decoration: const BoxDecoration(
-                          color: Color(0xFF0F172A), // Primary Charcoal
+                          color: AppColors.primary, // Stitch Primary Teal
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -367,7 +367,7 @@ class _EmptyWishlist extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                color: Color(0xFF1A1C1B),
                 fontFamily: 'Inter',
               ),
             ),
@@ -388,7 +388,7 @@ class _EmptyWishlist extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => context.go('/home'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F172A),
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

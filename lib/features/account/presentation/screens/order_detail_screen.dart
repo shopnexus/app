@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/money_utils.dart';
 import '../../data/models/account_model.dart';
 import '../providers/buyer_orders_provider.dart';
@@ -16,14 +17,14 @@ class OrderDetailScreen extends ConsumerWidget {
     final orderDetailAsync = ref.watch(buyerOrderDetailProvider(orderId));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           'Chi tiết đơn hàng',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             fontWeight: FontWeight.bold,
-            fontFamily: 'Inter',
+            fontFamily: 'Manrope',
           ),
         ),
         backgroundColor: Colors.white,
@@ -31,7 +32,7 @@ class OrderDetailScreen extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             size: 20,
           ),
           onPressed: () => context.pop(),
@@ -109,7 +110,7 @@ class OrderDetailScreen extends ConsumerWidget {
                       onPressed: () =>
                           ref.refresh(buyerOrderDetailProvider(orderId)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0F172A),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -380,7 +381,7 @@ class OrderDetailScreen extends ConsumerWidget {
             MoneyUtils.format(order.totalAmount),
             isBold: true,
             fontSize: 16,
-            valueColor: const Color(0xFF0F172A),
+            valueColor: AppColors.primary,
           ),
         ],
       ),
@@ -392,7 +393,7 @@ class OrderDetailScreen extends ConsumerWidget {
     String value, {
     bool isBold = false,
     double fontSize = 13,
-    Color valueColor = const Color(0xFF0F172A),
+    Color valueColor = const Color(0xFF1A1C1B),
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

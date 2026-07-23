@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../core/constants/app_config.dart';
 import '../../data/models/seller_model.dart';
 import '../../data/repositories/seller_repository.dart';
 
@@ -25,76 +26,32 @@ abstract class SellerOrdersState with _$SellerOrdersState {
 class SellerOrdersNotifier extends _$SellerOrdersNotifier {
   @override
   SellerOrdersState build() {
-    _loadData();
-    return const SellerOrdersState();
+    if (AppConfig.useMockData) {
+      final repository = ref.read(sellerRepositoryProvider);
+      return SellerOrdersState(
+        isLoading: false,
+        pendingItems: repository.getSellerPendingItemsSync(),
+        confirmedOrders: repository.getSellerConfirmedOrdersSync(),
+      );
+    }
+    Future.microtask(() => _loadData());
+    return const SellerOrdersState(isLoading: true);
   }
 
   Future<void> _loadData() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final repository = ref.read(sellerRepositoryProvider);
-
       final pending = await repository.getSellerPendingItems();
       final confirmed = await repository.getSellerConfirmedOrders();
 
-      // Fallback demo items if backend response is empty
-      final finalPending = pending.isNotEmpty
-          ? pending
-          : const [
-              SellerPendingItem(
-                id: 'pending_1',
-                orderId: 'DH8472',
-                buyerName: 'Minh Anh',
-                productName:
-                    'Cốc gốm thủ công tráng men xanh ngọc bích, phong cách tối giản',
-                skuName: 'Xanh Ngọc Bích - 350ml',
-                quantity: 2,
-                price: 150000,
-                status: 'pending',
-              ),
-              SellerPendingItem(
-                id: 'pending_2',
-                orderId: 'DH8475',
-                buyerName: 'Hoàng Nam',
-                productName: 'Ví da bò sáp thủ công Classic',
-                skuName: 'Nâu Dark Brown',
-                quantity: 1,
-                price: 850000,
-                status: 'pending',
-              ),
-            ];
-
-      final finalConfirmed = confirmed.isNotEmpty
-          ? confirmed
-          : const [
-              SellerOrder(
-                id: 'DH8470',
-                buyerName: 'Thanh Tùng',
-                totalAmount: 450000,
-                status: 'shipping',
-                shippingAddress: '123 Nguyễn Huệ, Q.1, TP.HCM',
-                items: [
-                  SellerPendingItem(
-                    id: 'pi_1',
-                    productName:
-                        'Khay để bàn bằng gỗ sồi tự nhiên, thiết kế module',
-                    quantity: 1,
-                    price: 450000,
-                  ),
-                ],
-              ),
-            ];
-
       state = state.copyWith(
         isLoading: false,
-        pendingItems: finalPending,
-        confirmedOrders: finalConfirmed,
+        pendingItems: pending,
+        confirmedOrders: confirmed,
       );
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Không thể tải dữ liệu đơn hàng: $e',
-      );
+    } catch (_) {
+      state = state.copyWith(isLoading: false);
     }
   }
 

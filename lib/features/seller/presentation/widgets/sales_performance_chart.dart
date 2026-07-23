@@ -5,14 +5,14 @@ import '../../data/models/seller_model.dart';
 
 class SalesPerformanceChart extends StatelessWidget {
   final List<SalesChartPoint> chartPoints;
-  final String selectedPeriod;
-  final ValueChanged<String> onPeriodChanged;
+  final String? selectedPeriod;
+  final ValueChanged<String>? onPeriodChanged;
 
   const SalesPerformanceChart({
     super.key,
     required this.chartPoints,
-    required this.selectedPeriod,
-    required this.onPeriodChanged,
+    this.selectedPeriod,
+    this.onPeriodChanged,
   });
 
   @override
@@ -57,32 +57,26 @@ class SalesPerformanceChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Sales Performance',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _getPeriodSubtitle(selectedPeriod),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B),
-                    ),
-                  ),
-                ],
+              Text(
+                'Sales Performance',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
               ),
-              _buildPeriodSelector(context),
+              const SizedBox(height: 2),
+              Text(
+                'Recent Performance',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 24),
@@ -117,13 +111,13 @@ class SalesPerformanceChart extends StatelessWidget {
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: 30,
+                      reservedSize: 44,
                       interval: 1,
                       getTitlesWidget: (value, meta) {
                         final index = value.toInt();
                         if (index >= 0 && index < points.length) {
                           return Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
+                            padding: const EdgeInsets.only(top: 4.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -202,74 +196,5 @@ class SalesPerformanceChart extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Widget _buildPeriodSelector(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    final periods = [
-      {'key': '7d', 'label': '7D'},
-      {'key': '1m', 'label': '1M'},
-      {'key': '3m', 'label': '3M'},
-      {'key': '1y', 'label': '1Y'},
-    ];
-
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : const Color(0xFFE2E8F0),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: periods.map((period) {
-          final isSelected = selectedPeriod == period['key'];
-          return GestureDetector(
-            onTap: () => onPeriodChanged(period['key']!),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : Colors.transparent,
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: Text(
-                period['label']!,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected
-                      ? Colors.white
-                      : (isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B)),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  String _getPeriodSubtitle(String period) {
-    switch (period) {
-      case '7d':
-        return 'Last 7 Days';
-      case '1m':
-        return 'Last 30 Days';
-      case '3m':
-        return 'Last 3 Months';
-      case '1y':
-        return 'Last 12 Months';
-      default:
-        return 'Recent Performance';
-    }
   }
 }

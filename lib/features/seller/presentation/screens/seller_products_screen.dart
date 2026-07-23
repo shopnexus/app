@@ -46,7 +46,44 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     final state = ref.watch(sellerProductsProvider);
     final notifier = ref.read(sellerProductsProvider.notifier);
 
+    final activeCount = state.spuList
+        .where(
+          (p) =>
+              p.skus != null &&
+              p.skus!.any((s) => s.stock > 0) &&
+              !p.id.contains('violated'),
+        )
+        .length;
+    final inactiveCount = state.spuList
+        .where((p) => p.skus != null && p.skus!.every((s) => s.stock == 0))
+        .length;
+    final violatedCount = state.spuList
+        .where(
+          (p) => p.id.contains('violated') || p.skus == null || p.skus!.isEmpty,
+        )
+        .length;
+
     final filteredList = state.spuList.where((product) {
+      if (state.selectedStatus == 'active') {
+        final isOut =
+            product.skus != null && product.skus!.every((s) => s.stock == 0);
+        final isViolated =
+            product.id.contains('violated') ||
+            product.skus == null ||
+            product.skus!.isEmpty;
+        if (isOut || isViolated) return false;
+      } else if (state.selectedStatus == 'inactive') {
+        final isOut =
+            product.skus != null && product.skus!.every((s) => s.stock == 0);
+        if (!isOut) return false;
+      } else if (state.selectedStatus == 'violated') {
+        final isViolated =
+            product.id.contains('violated') ||
+            product.skus == null ||
+            product.skus!.isEmpty;
+        if (!isViolated) return false;
+      }
+
       if (state.searchQuery.isEmpty) return true;
       return product.name.toLowerCase().contains(
         state.searchQuery.toLowerCase(),
@@ -107,36 +144,40 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
         },
         child: Column(
           children: [
-            // Filter Chips Horizontal List
+            // Filter Chips Horizontal List matching SellerOrdersScreen UI
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  _buildFilterChip(
+                  _buildTabChip(
                     context,
                     label: 'Tất cả',
+                    count: state.spuList.length,
                     isSelected: state.selectedStatus == null,
                     onTap: () => notifier.setStatusFilter(null),
                   ),
                   const SizedBox(width: 8),
-                  _buildFilterChip(
+                  _buildTabChip(
                     context,
                     label: 'Đang bán',
+                    count: activeCount,
                     isSelected: state.selectedStatus == 'active',
                     onTap: () => notifier.setStatusFilter('active'),
                   ),
                   const SizedBox(width: 8),
-                  _buildFilterChip(
+                  _buildTabChip(
                     context,
                     label: 'Hết hàng',
+                    count: inactiveCount,
                     isSelected: state.selectedStatus == 'inactive',
                     onTap: () => notifier.setStatusFilter('inactive'),
                   ),
                   const SizedBox(width: 8),
-                  _buildFilterChip(
+                  _buildTabChip(
                     context,
-                    label: 'Chờ duyệt',
+                    label: 'Chờ duyệt / Vi phạm',
+                    count: violatedCount,
                     isSelected: state.selectedStatus == 'violated',
                     onTap: () => notifier.setStatusFilter('violated'),
                   ),
@@ -165,29 +206,61 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     );
   }
 
-  Widget _buildFilterChip(
+  Widget _buildTabChip(
     BuildContext context, {
     required String label,
+    int? count,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      selectedColor: AppColors.primary,
-      backgroundColor: isDark
-          ? const Color(0xFF1E293B)
-          : const Color(0xFFECEEED),
-      labelStyle: TextStyle(
-        color: isSelected
-            ? Colors.white
-            : (isDark ? Colors.white70 : const Color(0xFF3F4947)),
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-        fontSize: 13,
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFECEEED)),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF3F4947)),
+              ),
+            ),
+            if (count != null && count > 0) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : const Color(0xFFEF4444),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? AppColors.primary : Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
-      onSelected: (_) => onTap(),
     );
   }
 

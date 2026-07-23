@@ -24,8 +24,10 @@ class _CatalogApiService implements CatalogApiService {
   @override
   Future<DataResponse<List<TProductCard>>> getProductCards({
     String? keyword,
+    String? search,
     String? categoryId,
     String? vendorId,
+    String? sellerId,
     int? priceMin,
     int? priceMax,
     List<String>? tags,
@@ -33,12 +35,15 @@ class _CatalogApiService implements CatalogApiService {
     String? location,
     int? page,
     int? size,
+    int? limit,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'keyword': keyword,
+      r'search': search,
       r'category_id': categoryId,
       r'vendor_id': vendorId,
+      r'seller_id': sellerId,
       r'price_min': priceMin,
       r'price_max': priceMax,
       r'tags': tags,
@@ -46,6 +51,7 @@ class _CatalogApiService implements CatalogApiService {
       r'location': location,
       r'page': page,
       r'size': size,
+      r'limit': limit,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};

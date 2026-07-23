@@ -87,6 +87,7 @@ class CatalogProducts extends _$CatalogProducts {
         priceMax: nextFilters.priceMax,
         tags: nextFilters.tags,
         sort: nextFilters.sort,
+        location: nextFilters.location,
         page: nextFilters.page,
         size: nextFilters.size,
       );
@@ -100,8 +101,10 @@ class CatalogProducts extends _$CatalogProducts {
           filters: nextFilters,
         ),
       );
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
+    } catch (e) {
+      state = AsyncValue.data(
+        currentState.copyWith(isLoadingMore: false, hasMore: false),
+      );
     }
   }
 

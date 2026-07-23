@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -218,7 +217,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Mode Toggle Tabs
+          // Mode Selector Tabs (Image + Audio vs Image + Raw Text)
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -229,12 +228,12 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => notifier.setInputMode('video'),
+                    onTap: () => notifier.setInputMode('image_audio'),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: state.inputMode == 'video'
+                        color: state.inputMode == 'image_audio'
                             ? AppColors.primary
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
@@ -243,9 +242,9 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.videocam_outlined,
+                            Icons.mic_none_outlined,
                             size: 18,
-                            color: state.inputMode == 'video'
+                            color: state.inputMode == 'image_audio'
                                 ? Colors.white
                                 : (isDark
                                       ? const Color(0xFF94A3B8)
@@ -253,11 +252,11 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Video to SPU',
+                            'Image + Audio 🎙️',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: state.inputMode == 'video'
+                              color: state.inputMode == 'image_audio'
                                   ? Colors.white
                                   : (isDark
                                         ? const Color(0xFF94A3B8)
@@ -271,12 +270,12 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                 ),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => notifier.setInputMode('voice'),
+                    onTap: () => notifier.setInputMode('image_text'),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: state.inputMode == 'voice'
+                        color: state.inputMode == 'image_text'
                             ? AppColors.primary
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
@@ -285,9 +284,9 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.mic_none_outlined,
+                            Icons.edit_note_outlined,
                             size: 18,
-                            color: state.inputMode == 'voice'
+                            color: state.inputMode == 'image_text'
                                 ? Colors.white
                                 : (isDark
                                       ? const Color(0xFF94A3B8)
@@ -295,11 +294,11 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Voice & Photos AI',
+                            'Image + Raw Text 📝',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: state.inputMode == 'voice'
+                              color: state.inputMode == 'image_text'
                                   ? Colors.white
                                   : (isDark
                                         ? const Color(0xFF94A3B8)
@@ -316,280 +315,219 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
           ),
           const SizedBox(height: 20),
 
-          if (state.inputMode == 'video') ...[
-            // Video Upload Box
+          // Image Picker Grid
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Hình ảnh sản phẩm (${state.selectedImagePaths.length})',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: notifier.pickImages,
+                icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
+                label: const Text('Thêm ảnh'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (state.selectedImagePaths.isEmpty)
             GestureDetector(
-              onTap: notifier.pickVideo,
+              onTap: notifier.pickImages,
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 36,
-                  horizontal: 20,
-                ),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    width: 2,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.12),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.cloud_upload_outlined,
-                        size: 32,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      state.selectedVideoPath != null
-                          ? 'Đã chọn 1 Video sản phẩm'
-                          : 'Tải video giới thiệu sản phẩm lên',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : const Color(0xFF0F172A),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      state.selectedVideoPath != null
-                          ? state.selectedVideoPath!
-                                .split('/')
-                                .last
-                                .split('\\')
-                                .last
-                          : 'Bấm để chọn file MP4, MOV từ thư viện (Tối đa 5 phút)',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ] else ...[
-            // Image Picker Grid
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Hình ảnh sản phẩm (${state.selectedImagePaths.length})',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: notifier.pickImages,
-                  icon: const Icon(
-                    Icons.add_photo_alternate_outlined,
-                    size: 18,
-                  ),
-                  label: const Text('Thêm ảnh'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (state.selectedImagePaths.isEmpty)
-              GestureDetector(
-                onTap: notifier.pickImages,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.1)
-                          : const Color(0xFFE2E8F0),
-                    ),
-                  ),
-                  child: Column(
-                    children: const [
-                      Icon(
-                        Icons.photo_library_outlined,
-                        size: 32,
-                        color: Color(0xFF94A3B8),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Chưa chọn ảnh nào. Bấm để tải ảnh sản phẩm',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF94A3B8),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else
-              SizedBox(
-                height: 100,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: state.selectedImagePaths.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == state.selectedImagePaths.length) {
-                      return GestureDetector(
-                        onTap: notifier.pickImages,
-                        child: Container(
-                          width: 90,
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF1E293B)
-                                : const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: const Color(0xFFCBD5E1)),
-                          ),
-                          child: const Icon(
-                            Icons.add,
-                            color: Color(0xFF64748B),
-                          ),
-                        ),
-                      );
-                    }
-                    final path = state.selectedImagePaths[index];
-                    return Stack(
-                      children: [
-                        Container(
-                          width: 90,
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            image: DecorationImage(
-                              image: FileImage(File(path)),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 4,
-                          right: 12,
-                          child: GestureDetector(
-                            onTap: () => notifier.removeImage(index),
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: Colors.black54,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.close,
-                                size: 14,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-
-            const SizedBox(height: 20),
-
-            // Voice & Audio Input Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Thu âm / Nhập mô tả thô (Voice AI)',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () {
-                    _voiceInputController.text =
-                        'Ly sứ cao cấp màu trắng kem 350ml, chất liệu gốm nung cao cấp giữ nhiệt tốt, dùng cho cà phê trà bánh.';
-                  },
-                  icon: const Icon(Icons.record_voice_over_outlined, size: 16),
-                  label: const Text('Điền mẫu'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            TextField(
-              controller: _voiceInputController,
-              maxLines: 4,
-              decoration: InputDecoration(
-                hintText:
-                    'Nhập hoặc dán nội dung thu âm bằng giọng nói về sản phẩm (Ví dụ: "Sản phẩm ly sứ này nung ở 1300 độ C, tay cầm tiện lợi, màu men lì...")',
-                filled: true,
-                fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-                border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
+                  border: Border.all(
                     color: isDark
                         ? Colors.white.withValues(alpha: 0.1)
                         : const Color(0xFFE2E8F0),
                   ),
                 ),
+                child: Column(
+                  children: const [
+                    Icon(
+                      Icons.photo_library_outlined,
+                      size: 32,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Chưa chọn ảnh nào. Bấm để tải ảnh sản phẩm',
+                      style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              height: 100,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.selectedImagePaths.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == state.selectedImagePaths.length) {
+                    return GestureDetector(
+                      onTap: notifier.pickImages,
+                      child: Container(
+                        width: 90,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFFCBD5E1)),
+                        ),
+                        child: const Icon(Icons.add, color: Color(0xFF64748B)),
+                      ),
+                    );
+                  }
+                  final path = state.selectedImagePaths[index];
+                  return Stack(
+                    children: [
+                      Container(
+                        width: 90,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFF1F5F9),
+                          image: DecorationImage(
+                            image: NetworkImage(path),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 4,
+                        right: 12,
+                        child: GestureDetector(
+                          onTap: () => notifier.removeImage(index),
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: Colors.black54,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-            const SizedBox(height: 16),
 
-            // AI Tone Selection Chips
-            Text(
-              'Chọn phong cách tinh chỉnh AI (Tone)',
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: isDark
-                    ? const Color(0xFF94A3B8)
-                    : const Color(0xFF64748B),
+          const SizedBox(height: 20),
+
+          // Audio / Raw Text Input Section based on mode
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                state.inputMode == 'image_audio'
+                    ? 'Nội dung Audio / Giọng nói thô 🎙️'
+                    : 'Văn bản thô / Ghi chú sản phẩm 📝',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () {
+                  if (state.inputMode == 'image_audio') {
+                    _voiceInputController.text =
+                        'Ly sứ cao cấp màu trắng kem 350ml, chất liệu gốm nung cao cấp giữ nhiệt tốt, dùng cho cà phê trà bánh.';
+                  } else {
+                    _voiceInputController.text =
+                        'Khay đựng mút trang điểm bằng silicone nguyên khối, chống bẩn, lỗ thoáng khí sấy khô chống mốc.';
+                  }
+                },
+                icon: Icon(
+                  state.inputMode == 'image_audio'
+                      ? Icons.record_voice_over_outlined
+                      : Icons.edit_note_outlined,
+                  size: 16,
+                ),
+                label: const Text('Điền mẫu'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          TextField(
+            controller: _voiceInputController,
+            maxLines: 4,
+            decoration: InputDecoration(
+              hintText: state.inputMode == 'image_audio'
+                  ? 'Bấm biểu tượng micro hoặc dán nội dung từ ghi âm sản phẩm (Ví dụ: "Sản phẩm này làm từ gốm sứ thủ công nung 1300 độ C...")'
+                  : 'Nhập các ý tưởng, thông số thô hoặc ghi chú nháp sản phẩm (Ví dụ: "Ví da bò sáp, 6 ngăn thẻ, khâu tay patina...")',
+              filled: true,
+              fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : const Color(0xFFE2E8F0),
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: [
-                _buildToneChip(
-                  context,
-                  'professional',
-                  'Chuyên nghiệp 💼',
-                  state,
-                  notifier,
-                ),
-                _buildToneChip(
-                  context,
-                  'persuasive',
-                  'Thuyết phục 🔥',
-                  state,
-                  notifier,
-                ),
-                _buildToneChip(
-                  context,
-                  'minimalist',
-                  'Tối giản ✨',
-                  state,
-                  notifier,
-                ),
-                _buildToneChip(
-                  context,
-                  'enthusiastic',
-                  'Sôi nổi 🎉',
-                  state,
-                  notifier,
-                ),
-              ],
+          ),
+          const SizedBox(height: 16),
+
+          // AI Tone Selection Chips
+          Text(
+            'Chọn phong cách tinh chỉnh AI (Tone)',
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
             ),
-          ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              _buildToneChip(
+                context,
+                'professional',
+                'Chuyên nghiệp 💼',
+                state,
+                notifier,
+              ),
+              _buildToneChip(
+                context,
+                'persuasive',
+                'Thuyết phục 🔥',
+                state,
+                notifier,
+              ),
+              _buildToneChip(
+                context,
+                'minimalist',
+                'Tối giản ✨',
+                state,
+                notifier,
+              ),
+              _buildToneChip(
+                context,
+                'enthusiastic',
+                'Sôi nổi 🎉',
+                state,
+                notifier,
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -640,9 +578,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              state.inputMode == 'video'
-                  ? 'AI đang phân tích Video & Khung hình...'
-                  : 'AI đang chuyển đổi Audio & Tinh chỉnh mô tả...',
+              'AI đang phân tích Hình ảnh & Tinh chỉnh Audio...',
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,

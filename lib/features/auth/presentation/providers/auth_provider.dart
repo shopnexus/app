@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../account/presentation/providers/account_provider.dart';
 import '../../../../core/storage/hive_storage.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../../data/models/auth_model.dart';
@@ -103,6 +104,7 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       final repository = ref.read(authRepositoryProvider);
       await repository.logout();
+      ref.invalidate(profileProvider);
       state = const AuthState.unauthenticated();
     } catch (e) {
       state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
@@ -111,6 +113,7 @@ class AuthNotifier extends _$AuthNotifier {
 
   /// Buộc đăng xuất (khi refresh token thất bại hoặc hết hạn)
   void forceLogout() {
+    ref.invalidate(profileProvider);
     state = const AuthState.unauthenticated();
   }
 

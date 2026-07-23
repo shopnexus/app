@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../providers/notifications_provider.dart';
 import '../../data/models/account_model.dart' as model;
 
@@ -16,14 +17,14 @@ class NotificationsScreen extends ConsumerWidget {
     final controllerState = ref.watch(notificationsControllerProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           'Thông báo',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             fontWeight: FontWeight.bold,
-            fontFamily: 'Inter',
+            fontFamily: 'Manrope',
           ),
         ),
         backgroundColor: Colors.white,
@@ -31,7 +32,7 @@ class NotificationsScreen extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             size: 20,
           ),
           onPressed: () => context.pop(),
@@ -46,7 +47,7 @@ class NotificationsScreen extends ConsumerWidget {
             child: const Text(
               'Đọc tất cả',
               style: TextStyle(
-                color: Color(0xFF0F172A),
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Inter',
                 fontSize: 13,
@@ -114,7 +115,7 @@ class NotificationsScreen extends ConsumerWidget {
                             notificationsProvider(page: 1, limit: 100),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0F172A),
+                            backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -139,7 +140,7 @@ class NotificationsScreen extends ConsumerWidget {
             Container(
               color: Colors.black.withValues(alpha: 0.2),
               child: const Center(
-                child: CircularProgressIndicator(color: Color(0xFF0F172A)),
+                child: CircularProgressIndicator(color: AppColors.primary),
               ),
             ),
         ],
@@ -157,13 +158,13 @@ class NotificationsScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isUnread ? const Color(0xFFF8FAFC) : Colors.white,
+        color: isUnread ? const Color(0xFFF4F4F1) : Colors.white,
         // Tone-on-tone highlight cho unread
         borderRadius: BorderRadius.circular(24),
         // Bo góc Card 24px
         border: Border.all(
           color: isUnread
-              ? const Color(0xFF0F172A).withValues(alpha: 0.1)
+              ? AppColors.primary.withValues(alpha: 0.3)
               : const Color(0xFFF1F5F9),
           width: isUnread ? 1.5 : 1.0,
         ),
@@ -174,13 +175,13 @@ class NotificationsScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: isUnread
-                ? const Color(0xFF0F172A).withValues(alpha: 0.05)
+                ? AppColors.primary.withValues(alpha: 0.1)
                 : const Color(0xFFF1F5F9),
             shape: BoxShape.circle,
           ),
           child: Icon(
             _getNotificationIcon(item.title),
-            color: isUnread ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+            color: isUnread ? AppColors.primary : const Color(0xFF64748B),
             size: 22,
           ),
         ),
@@ -193,7 +194,7 @@ class NotificationsScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
                   fontSize: 14,
-                  color: const Color(0xFF0F172A),
+                  color: const Color(0xFF1A1C1B),
                   fontFamily: 'Inter',
                 ),
               ),
@@ -310,7 +311,7 @@ class _EmptyNotifications extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                color: Color(0xFF1A1C1B),
                 fontFamily: 'Inter',
               ),
             ),

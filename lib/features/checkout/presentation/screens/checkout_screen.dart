@@ -5,9 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/money_utils.dart';
 import '../../../account/data/models/account_model.dart';
-import '../../data/models/checkout_model.dart';
-import '../providers/checkout_provider.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
+import '../providers/checkout_provider.dart';
 
 class CheckoutScreen extends ConsumerWidget {
   const CheckoutScreen({super.key});
@@ -20,11 +19,19 @@ class CheckoutScreen extends ConsumerWidget {
       backgroundColor: const Color(0xFFF9F9F7),
       appBar: _buildAppBar(context, checkoutState),
       body: _buildBody(context, ref, checkoutState),
+      bottomNavigationBar: _shouldShowBottomCTA(checkoutState)
+          ? _buildFixedBottomCTA(context, ref, checkoutState)
+          : null,
     );
   }
 
+  bool _shouldShowBottomCTA(CheckoutState state) {
+    return state.step != CheckoutStep.processing &&
+        state.step != CheckoutStep.success &&
+        state.step != CheckoutStep.failed;
+  }
+
   PreferredSizeWidget _buildAppBar(BuildContext context, CheckoutState state) {
-    // Ẩn thanh AppBar mặc định khi đang processing hoặc thành công để giữ tính tập trung giao dịch
     final isTransactional =
         state.step == CheckoutStep.processing ||
         state.step == CheckoutStep.success ||
@@ -32,12 +39,19 @@ class CheckoutScreen extends ConsumerWidget {
 
     return AppBar(
       backgroundColor: Colors.white,
+      elevation: 0,
+      scrolledUnderElevation: 0,
       title: Text(
         state.step == CheckoutStep.success
             ? 'Success'
             : state.step == CheckoutStep.failed
             ? 'Payment Failed'
             : 'Checkout',
+        style: const TextStyle(
+          fontFamily: 'Manrope',
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
+        ),
       ),
       leading: isTransactional
           ? null
@@ -49,92 +63,323 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref, CheckoutState state) {
-    if (state.isLoading && state.contacts.isEmpty) {
+    if (state.isLoading &&
+        state.contacts.isEmpty &&
+        state.quoteResponse == null) {
       return const Center(
         child: CircularProgressIndicator(color: AppColors.primary),
       );
     }
 
     switch (state.step) {
-      case CheckoutStep.address:
-        return _buildAddressStep(context, ref, state);
-      case CheckoutStep.shipping:
-        return _buildShippingStep(context, ref, state);
-      case CheckoutStep.payment:
-        return _buildPaymentStep(context, ref, state);
       case CheckoutStep.processing:
         return _buildProcessingStep(context, ref, state);
       case CheckoutStep.success:
         return _buildSuccessStep(context, ref, state);
       case CheckoutStep.failed:
         return _buildFailedStep(context, ref, state);
+      default:
+        return _buildSinglePageBentoLayout(context, ref, state);
     }
   }
 
-  // --- BƯỚC 1: CHỌN ĐỊA CHỈ NHẬN HÀNG ---
-  Widget _buildAddressStep(
+  // --- STITCH BENTO SINGLE PAGE LAYOUT ---
+  Widget _buildSinglePageBentoLayout(
     BuildContext context,
     WidgetRef ref,
     CheckoutState state,
   ) {
-    final notifier = ref.read(checkoutProvider.notifier);
-
-    return DefaultTabController(
-      length: 3,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Material(
-            color: Colors.white,
-            child: TabBar(
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondary,
-              indicatorColor: AppColors.primary,
-              indicatorSize: TabBarIndicatorSize.tab,
-              tabs: [
-                Tab(icon: Icon(Icons.home_outlined), text: 'Home'),
-                Tab(icon: Icon(Icons.work_outline), text: 'Office'),
-                Tab(icon: Icon(Icons.more_horiz_outlined), text: 'Other'),
-              ],
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                _buildAddressList(
-                  ref,
-                  state.homeContacts,
-                  state.selectedContact,
-                ),
-                _buildAddressList(
-                  ref,
-                  state.officeContacts,
-                  state.selectedContact,
-                ),
-                _buildAddressList(
-                  ref,
-                  state.otherContacts,
-                  state.selectedContact,
-                ),
-              ],
-            ),
-          ),
-          _buildStepCTA(
-            context,
-            title: 'Continue to Shipping',
-            enabled: state.selectedContact != null,
-            onPressed: () {
-              notifier.setStep(CheckoutStep.shipping);
-              notifier.selectShippingOption(
-                state.shippingOption,
-              ); // Lấy báo giá phí vận chuyển mặc định
-            },
-          ),
+          // 1. Delivery Address Section (Bento Style)
+          _buildAddressBentoCard(context, ref, state),
+          const SizedBox(height: 16),
+
+          // 2. Delivery Speed Section
+          _buildDeliverySpeedCard(ref, state),
+          const SizedBox(height: 16),
+
+          // 3. Payment Method Section
+          _buildPaymentMethodCard(ref, state),
+          const SizedBox(height: 16),
+
+          // 4. Order Items Section
+          _buildOrderItemsCard(context, ref, state),
+          const SizedBox(height: 16),
+
+          // 5. Order Summary Card
+          _buildOrderSummaryCard(state),
+          const SizedBox(height: 32),
         ],
       ),
     );
   }
 
-  Widget _buildAddressList(
+  // --- 1. DELIVERY ADDRESS BENTO CARD ---
+  Widget _buildAddressBentoCard(
+    BuildContext context,
+    WidgetRef ref,
+    CheckoutState state,
+  ) {
+    final contact = state.selectedContact;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E3E0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Delivery Address',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              TextButton(
+                onPressed: () =>
+                    _showAddressSelectionModal(context, ref, state),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                ),
+                child: const Text(
+                  'Change',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (contact != null) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                color: const Color(0xFFF9F9F7),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  contact.fullName,
+                                  style: const TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                if (contact.phoneVerified)
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 4),
+                                    child: Icon(
+                                      Icons.verified_rounded,
+                                      size: 15,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              contact.address,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            if (contact.addressDetail != null &&
+                                contact.addressDetail!.isNotEmpty)
+                              Text(
+                                contact.addressDetail!,
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 11,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            const SizedBox(height: 4),
+                            Text(
+                              contact.phone,
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Map Placeholder Image Overlay
+                    Expanded(
+                      flex: 4,
+                      child: SizedBox(
+                        height: 100,
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuCcht0CZm9E6p76WuIc7ot1PwtrnGodafyW8t2fimE-d9JTZHAJqnAFZkNqu_YDVfIuQ3XbG0T8muYuvnRu9GUxWYQoGNFOyf9AKqBWereVEnA8odf3HWfIkyl8z_lhpVwRSlqrKtgPgD43PJYJMdfkBofhBf4nvcXypUCsYLU55Xm8ytunYl83-KCYEFRJXzq4J2WyWDgx2zx1EOagubS-S6YON9e8fvE_7JaqvTufreotJtYG0M2ba0oIMGdyj6YXgSNplZcO3iE',
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              Container(color: const Color(0xFFE2E3E0)),
+                          errorWidget: (context, url, error) => Container(
+                            color: const Color(0xFFE2E3E0),
+                            child: const Icon(
+                              Icons.map_outlined,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ] else ...[
+            const Text(
+              'No address selected. Please tap Change to select an address.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // Address Selection BottomSheet Modal
+  void _showAddressSelectionModal(
+    BuildContext context,
+    WidgetRef ref,
+    CheckoutState state,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return DefaultTabController(
+          length: 3,
+          child: SizedBox(
+            height: 400,
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 8, bottom: 4),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E3E0),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    'Select Shipping Address',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const TabBar(
+                  labelColor: AppColors.primary,
+                  unselectedLabelColor: AppColors.textSecondary,
+                  indicatorColor: AppColors.primary,
+                  tabs: [
+                    Tab(text: 'Home'),
+                    Tab(text: 'Office'),
+                    Tab(text: 'Other'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildModalAddressList(
+                        context,
+                        ref,
+                        state.homeContacts,
+                        state.selectedContact,
+                      ),
+                      _buildModalAddressList(
+                        context,
+                        ref,
+                        state.officeContacts,
+                        state.selectedContact,
+                      ),
+                      _buildModalAddressList(
+                        context,
+                        ref,
+                        state.otherContacts,
+                        state.selectedContact,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildModalAddressList(
+    BuildContext context,
     WidgetRef ref,
     List<Contact> list,
     Contact? selected,
@@ -142,245 +387,176 @@ class CheckoutScreen extends ConsumerWidget {
     if (list.isEmpty) {
       return const Center(
         child: Text(
-          'No addresses found in this category.',
+          'No addresses in this category.',
           style: TextStyle(fontFamily: 'Inter', color: AppColors.textSecondary),
         ),
       );
     }
 
-    return RadioGroup<String>(
-      groupValue: selected?.id,
-      onChanged: (val) {
-        if (val != null) {
-          final contact = list.firstWhere((c) => c.id == val);
-          ref.read(checkoutProvider.notifier).selectContact(contact);
-        }
-      },
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: list.length,
-        itemBuilder: (context, index) {
-          final contact = list[index];
-          final isSelected = selected?.id == contact.id;
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        final contact = list[index];
+        final isSelected = selected?.id == contact.id;
 
-          return GestureDetector(
-            onTap: () =>
-                ref.read(checkoutProvider.notifier).selectContact(contact),
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.primary
-                      : const Color(0xFFE2E3E0),
-                  width: isSelected ? 2.0 : 1.0,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              contact.fullName,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            if (contact.phoneVerified)
-                              const Padding(
-                                padding: EdgeInsets.only(left: 6),
-                                child: Icon(
-                                  Icons.verified_user_rounded,
-                                  size: 16,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          contact.address,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        if (contact.addressDetail != null)
-                          Text(
-                            contact.addressDetail!,
-                            style: const TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        const SizedBox(height: 4),
-                        Text(
-                          contact.phone,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Radio<String>(
-                    value: contact.id,
-                    activeColor: AppColors.primary,
-                  ),
-                ],
+        return InkWell(
+          onTap: () {
+            ref.read(checkoutProvider.notifier).selectContact(contact);
+            Navigator.pop(context);
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color(0xFFE6F4EA)
+                  : const Color(0xFFF9F9F7),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected ? AppColors.primary : const Color(0xFFE2E3E0),
+                width: isSelected ? 1.5 : 1.0,
               ),
             ),
-          );
-        },
+            child: Row(
+              children: [
+                Icon(
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        contact.fullName,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        contact.address,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // --- 2. DELIVERY SPEED CARD ---
+  Widget _buildDeliverySpeedCard(WidgetRef ref, CheckoutState state) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E3E0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(
+                Icons.local_shipping_outlined,
+                color: AppColors.primary,
+                size: 22,
+              ),
+              SizedBox(width: 8),
+              Text(
+                'Delivery Speed',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildDeliveryOptionTile(
+            ref,
+            title: 'Standard Delivery',
+            description: 'Estimated arrival: 3 - 5 business days',
+            value: 'Standard',
+            groupValue: state.shippingOption,
+            badge: 'Standard',
+          ),
+          const SizedBox(height: 8),
+          _buildDeliveryOptionTile(
+            ref,
+            title: 'Express Delivery',
+            description: 'Estimated arrival: 1 - 2 business days',
+            value: 'Express',
+            groupValue: state.shippingOption,
+            badge: 'Fast',
+          ),
+        ],
       ),
     );
   }
 
-  // --- BƯỚC 2: CHỌN HÌNH THỨC VẬN CHUYỂN ---
-  Widget _buildShippingStep(
-    BuildContext context,
-    WidgetRef ref,
-    CheckoutState state,
-  ) {
-    final notifier = ref.read(checkoutProvider.notifier);
-
-    return Column(
-      children: [
-        Expanded(
-          child: RadioGroup<String>(
-            groupValue: state.shippingOption,
-            onChanged: (val) {
-              if (val != null) {
-                ref.read(checkoutProvider.notifier).selectShippingOption(val);
-              }
-            },
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _buildShippingOptionCard(
-                  ref,
-                  title: 'Standard Delivery',
-                  description: 'Estimated arrival: 3 - 5 business days',
-                  value: 'Standard',
-                  isSelected: state.shippingOption == 'Standard',
-                  costDisplay: state.quoteResponse != null
-                      ? 'Calculated'
-                      : 'Select to calculate',
-                ),
-                const SizedBox(height: 12),
-                _buildShippingOptionCard(
-                  ref,
-                  title: 'Express Delivery',
-                  description: 'Estimated arrival: 1 - 2 business days',
-                  value: 'Express',
-                  isSelected: state.shippingOption == 'Express',
-                  costDisplay: state.quoteResponse != null
-                      ? 'Calculated'
-                      : 'Select to calculate',
-                ),
-                if (state.quoteResponse != null) ...[
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Shipping Cost Details',
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E3E0)),
-                    ),
-                    child: Column(
-                      children: state.quoteResponse!.items.map((quote) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Item SKU #${quote.skuId.substring(0, 8)}...',
-                                style: const TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 13,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              Text(
-                                MoneyUtils.format(
-                                  quote.cost,
-                                  currency: quote.currency,
-                                ),
-                                style: const TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-        _buildStepCTA(
-          context,
-          title: 'Continue to Payment',
-          enabled: state.quoteResponse != null && !state.isLoading,
-          onPressed: () => notifier.setStep(CheckoutStep.payment),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildShippingOptionCard(
+  Widget _buildDeliveryOptionTile(
     WidgetRef ref, {
     required String title,
     required String description,
     required String value,
-    required bool isSelected,
-    required String costDisplay,
+    required String groupValue,
+    required String badge,
   }) {
-    return GestureDetector(
+    final isSelected = value == groupValue;
+
+    return InkWell(
       onTap: () =>
           ref.read(checkoutProvider.notifier).selectShippingOption(value),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE6F4EA) : Colors.white,
+          color: isSelected ? const Color(0xFFE6F4EA) : const Color(0xFFF9F9F7),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.primary : const Color(0xFFE2E3E0),
-            width: isSelected ? 2.0 : 1.0,
+            width: isSelected ? 1.5 : 1.0,
           ),
         ),
         child: Row(
           children: [
+            Icon(
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,12 +565,12 @@ class CheckoutScreen extends ConsumerWidget {
                     title,
                     style: const TextStyle(
                       fontFamily: 'Inter',
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     description,
                     style: const TextStyle(
@@ -406,22 +582,291 @@ class CheckoutScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            Radio<String>(value: value, activeColor: AppColors.primary),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.primary.withAlpha(25)
+                    : const Color(0xFFE2E3E0),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                badge,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  // --- BƯỚC 3: PHƯƠNG THỨC THANH TOÁN & ĐẶT HÀNG ---
-  Widget _buildPaymentStep(
+  // --- 3. PAYMENT METHOD CARD ---
+  Widget _buildPaymentMethodCard(WidgetRef ref, CheckoutState state) {
+    final notifier = ref.read(checkoutProvider.notifier);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E3E0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.payment_outlined, color: AppColors.primary, size: 22),
+              SizedBox(width: 8),
+              Text(
+                'Payment Method',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildPaymentPill(
+                  ref,
+                  label: 'Card (Stripe)',
+                  icon: Icons.credit_card_rounded,
+                  value: 'Stripe',
+                  groupValue: state.paymentOption,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildPaymentPill(
+                  ref,
+                  label: 'Platform Wallet',
+                  icon: Icons.account_balance_wallet_outlined,
+                  value: 'Wallet',
+                  groupValue: state.paymentOption,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          InkWell(
+            onTap: () => notifier.selectPaymentOption(
+              state.paymentOption,
+              useWallet: !state.useWallet,
+            ),
+            borderRadius: BorderRadius.circular(8),
+            child: Row(
+              children: [
+                Checkbox(
+                  value: state.useWallet,
+                  activeColor: AppColors.primary,
+                  onChanged: (val) => notifier.selectPaymentOption(
+                    state.paymentOption,
+                    useWallet: val,
+                  ),
+                ),
+                const Text(
+                  'Use wallet balance first',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentPill(
+    WidgetRef ref, {
+    required String label,
+    required IconData icon,
+    required String value,
+    required String groupValue,
+  }) {
+    final isSelected = value == groupValue;
+
+    return InkWell(
+      onTap: () =>
+          ref.read(checkoutProvider.notifier).selectPaymentOption(value),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFE6F4EA) : const Color(0xFFF9F9F7),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : const Color(0xFFE2E3E0),
+            width: isSelected ? 1.5 : 1.0,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // --- 4. ORDER ITEMS CARD ---
+  Widget _buildOrderItemsCard(
     BuildContext context,
     WidgetRef ref,
     CheckoutState state,
   ) {
-    final notifier = ref.read(checkoutProvider.notifier);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E3E0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(
+                Icons.shopping_bag_outlined,
+                color: AppColors.primary,
+                size: 22,
+              ),
+              SizedBox(width: 8),
+              Text(
+                'Order Items',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...state.resolvedItems.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CachedNetworkImage(
+                      imageUrl: item.resource?.url ?? '',
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          Container(color: const Color(0xFFF9F9F7)),
+                      errorWidget: (context, url, error) => Container(
+                        color: const Color(0xFFF9F9F7),
+                        child: const Icon(
+                          Icons.image_not_supported_outlined,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.sku.name.isNotEmpty
+                              ? item.sku.name
+                              : 'Product Sku',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          'Qty: ${item.quantity}',
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    MoneyUtils.format(item.sku.price, currency: item.currency),
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    // Tính toán tổng tiền hàng quy đổi
+  // --- 5. ORDER SUMMARY CARD ---
+  Widget _buildOrderSummaryCard(CheckoutState state) {
     final subtotal = state.calculatedSubtotal;
     final shipping = state.totalShippingCost;
     final total = subtotal + shipping;
@@ -439,318 +884,176 @@ class CheckoutScreen extends ConsumerWidget {
       currency: state.preferredCurrency,
     );
 
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E3E0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Order Summary',
+            style: TextStyle(
+              fontFamily: 'Manrope',
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Payment Method',
+                'Items Subtotal',
                 style: TextStyle(
-                  fontFamily: 'Manrope',
-                  fontSize: 16,
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Text(
+                subtotalFormatted,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildPaymentOptionButton(
-                      ref,
-                      label: 'Stripe Card',
-                      icon: Icons.credit_card_rounded,
-                      value: 'Stripe',
-                      groupValue: state.paymentOption,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildPaymentOptionButton(
-                      ref,
-                      label: 'Platform Wallet',
-                      icon: Icons.account_balance_wallet_outlined,
-                      value: 'Wallet',
-                      groupValue: state.paymentOption,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Option to use wallet as priority
-              CheckboxListTile(
-                value: state.useWallet,
-                activeColor: AppColors.primary,
-                title: const Text(
-                  'Use wallet balance first',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                onChanged: (val) => notifier.selectPaymentOption(
-                  state.paymentOption,
-                  useWallet: val,
-                ),
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsets.zero,
-              ),
-              const SizedBox(height: 24),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               const Text(
-                'Order Summary',
+                'Delivery Fee',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Text(
+                shippingFormatted,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Divider(color: Color(0xFFE2E3E0), height: 1),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Total Amount',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 12),
-              // Render list of items
-              ...state.items.map(
-                (item) => _buildSummaryItem(context, ref, item, state.buyNow),
-              ),
-              const SizedBox(height: 24),
-              // Breakdown Cost Table
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE2E3E0)),
+              Text(
+                totalFormatted,
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
                 ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Items subtotal',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        Text(
-                          subtotalFormatted,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Shipping cost',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        Text(
-                          shippingFormatted,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    const Divider(color: Color(0xFFE2E3E0), height: 1),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Total amount',
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          totalFormatted,
-                          style: const TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- FIXED BOTTOM CTA ---
+  Widget _buildFixedBottomCTA(
+    BuildContext context,
+    WidgetRef ref,
+    CheckoutState state,
+  ) {
+    final subtotal = state.calculatedSubtotal;
+    final shipping = state.totalShippingCost;
+    final total = subtotal + shipping;
+    final totalFormatted = MoneyUtils.format(
+      total,
+      currency: state.preferredCurrency,
+    );
+
+    return Container(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 12,
+        bottom: 12 + MediaQuery.of(context).padding.bottom,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: const Border(top: BorderSide(color: Color(0xFFE2E3E0))),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(10),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SizedBox(
+        height: 50,
+        child: ElevatedButton(
+          onPressed: state.isLoading
+              ? null
+              : () => ref.read(checkoutProvider.notifier).placeOrder(),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: const Color(0xFFBEC9C6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            elevation: 0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.lock_outline_rounded, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                'Place Order • $totalFormatted',
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
         ),
-        _buildStepCTA(
-          context,
-          title: 'Place Order',
-          enabled: !state.isLoading,
-          onPressed: () => notifier.placeOrder(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPaymentOptionButton(
-    WidgetRef ref, {
-    required String label,
-    required IconData icon,
-    required String value,
-    required String groupValue,
-  }) {
-    final isSelected = value == groupValue;
-
-    return ElevatedButton(
-      onPressed: () =>
-          ref.read(checkoutProvider.notifier).selectPaymentOption(value),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? const Color(0xFFE6F4EA) : Colors.white,
-        foregroundColor: isSelected
-            ? AppColors.primary
-            : AppColors.textSecondary,
-        elevation: 0,
-        side: BorderSide(
-          color: isSelected ? AppColors.primary : const Color(0xFFE2E3E0),
-          width: isSelected ? 2.0 : 1.0,
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 8),
-          Text(label, style: const TextStyle(fontSize: 14)),
-        ],
       ),
     );
   }
 
-  Widget _buildSummaryItem(
-    BuildContext context,
-    WidgetRef ref,
-    CheckoutItem item,
-    bool buyNow,
-  ) {
-    if (!buyNow) {
-      final cartState = ref.watch(cartProvider);
-      final matchingItems = cartState.items
-          .where((c) => c.sku.id == item.skuId)
-          .toList();
-      if (matchingItems.isNotEmpty) {
-        final cartItem = matchingItems.first;
-        return _buildItemCard(
-          name: cartItem.sku.name,
-          imageUrl: cartItem.resource?.url ?? '',
-          quantity: item.quantity,
-          price: cartItem.sku.price,
-          currency: cartItem.currency,
-          attributes: cartItem.sku.attributes,
-        );
-      }
-    }
-
-    return _buildItemCard(
-      name: 'Product SKU #${item.skuId.substring(0, 8)}...',
-      imageUrl: '',
-      quantity: item.quantity,
-      price: 0,
-      currency: 'USD',
-    );
-  }
-
-  Widget _buildItemCard({
-    required String name,
-    required String imageUrl,
-    required int quantity,
-    required int price,
-    required String currency,
-    dynamic attributes,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE2E3E0)),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: CachedNetworkImage(
-              imageUrl: imageUrl,
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-              placeholder: (context, url) =>
-                  Container(color: const Color(0xFFF4F4F1)),
-              errorWidget: (context, url, error) => Container(
-                color: const Color(0xFFF4F4F1),
-                child: const Icon(Icons.image, size: 20, color: Colors.grey),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                Text(
-                  'Quantity: $quantity',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            MoneyUtils.format(price, currency: currency),
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- BƯỚC 4: ĐANG THANH TOÁN (POLLING) ---
+  // --- TRANSACTIONAL STATES (PROCESSING, SUCCESS, FAILED) ---
   Widget _buildProcessingStep(
     BuildContext context,
     WidgetRef ref,
@@ -786,16 +1089,6 @@ class CheckoutScreen extends ConsumerWidget {
                 color: AppColors.textSecondary,
               ),
             ),
-            if (state.checkoutResponse?.paymentUrl != null &&
-                state.checkoutResponse!.paymentUrl!.isNotEmpty) ...[
-              const SizedBox(height: 32),
-              OutlinedButton(
-                onPressed: () {
-                  // Mở link thanh toán Stripe bằng trình duyệt ngoài
-                },
-                child: const Text('Open Stripe Link Again'),
-              ),
-            ],
             const SizedBox(height: 24),
             TextButton(
               onPressed: () =>
@@ -811,7 +1104,6 @@ class CheckoutScreen extends ConsumerWidget {
     );
   }
 
-  // --- BƯỚC 5: GIAO DỊCH THÀNH CÔNG ---
   Widget _buildSuccessStep(
     BuildContext context,
     WidgetRef ref,
@@ -892,29 +1184,6 @@ class CheckoutScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Payment Time',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        Text(
-                          summary.session.datePaid ??
-                              summary.session.dateCreated,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -924,7 +1193,6 @@ class CheckoutScreen extends ConsumerWidget {
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  // Đăng xuất và dọn dẹp Cart
                   ref.read(cartProvider.notifier).fetchCart();
                   context.go('/home');
                 },
@@ -943,7 +1211,6 @@ class CheckoutScreen extends ConsumerWidget {
     );
   }
 
-  // --- BƯỚC 6: GIAO DỊCH THẤT BẠI ---
   Widget _buildFailedStep(
     BuildContext context,
     WidgetRef ref,
@@ -995,7 +1262,7 @@ class CheckoutScreen extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () => ref
                     .read(checkoutProvider.notifier)
-                    .setStep(CheckoutStep.payment),
+                    .setStep(CheckoutStep.address),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
@@ -1006,49 +1273,6 @@ class CheckoutScreen extends ConsumerWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // Helper CTA bottom bar
-  Widget _buildStepCTA(
-    BuildContext context, {
-    required String title,
-    required bool enabled,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: 16 + MediaQuery.of(context).padding.bottom,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: const Border(top: BorderSide(color: Color(0xFFE2E3E0))),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(8),
-            offset: const Offset(0, -4),
-            blurRadius: 16.0,
-          ),
-        ],
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 52,
-        child: ElevatedButton(
-          onPressed: enabled ? onPressed : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            disabledBackgroundColor: const Color(0xFFBEC9C6),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: Text(title),
         ),
       ),
     );
