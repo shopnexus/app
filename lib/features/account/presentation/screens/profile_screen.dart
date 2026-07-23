@@ -91,6 +91,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      next.maybeWhen(
+        unauthenticated: () {
+          if (mounted) {
+            context.go('/home');
+          }
+        },
+        orElse: () {},
+      );
+    });
+
     final profileAsync = ref.watch(profileProvider);
 
     return Scaffold(
@@ -652,9 +663,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
-              ref.read(authProvider.notifier).logout();
+              await ref.read(authProvider.notifier).logout();
+              if (context.mounted) {
+                context.go('/home');
+              }
             },
             child: const Text(
               'Đăng xuất',
