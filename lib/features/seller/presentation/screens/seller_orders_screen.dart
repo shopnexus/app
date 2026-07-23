@@ -81,6 +81,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   _buildTabChip(
                     context,
                     label: 'Đang xử lý',
+                    count: state.confirmedOrders
+                        .where((o) => o.status == 'processing')
+                        .length,
                     isSelected: state.selectedTab == 1,
                     onTap: () => notifier.setTab(1),
                   ),
@@ -88,6 +91,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   _buildTabChip(
                     context,
                     label: 'Đang giao',
+                    count: state.confirmedOrders
+                        .where((o) => o.status == 'shipping')
+                        .length,
                     isSelected: state.selectedTab == 2,
                     onTap: () => notifier.setTab(2),
                   ),
@@ -95,6 +101,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   _buildTabChip(
                     context,
                     label: 'Đã giao',
+                    count: state.confirmedOrders
+                        .where((o) => o.status == 'completed')
+                        .length,
                     isSelected: state.selectedTab == 3,
                     onTap: () => notifier.setTab(3),
                   ),
@@ -102,6 +111,13 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   _buildTabChip(
                     context,
                     label: 'Khiếu nại / Hủy',
+                    count: state.confirmedOrders
+                        .where(
+                          (o) =>
+                              o.status == 'disputing' ||
+                              o.status == 'cancelled',
+                        )
+                        .length,
                     isSelected: state.selectedTab == 4,
                     onTap: () => notifier.setTab(4),
                   ),
@@ -429,15 +445,39 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     BuildContext context,
     SellerOrdersState state,
   ) {
-    if (state.confirmedOrders.isEmpty) {
+    String? targetStatus;
+    switch (state.selectedTab) {
+      case 1:
+        targetStatus = 'processing';
+        break;
+      case 2:
+        targetStatus = 'shipping';
+        break;
+      case 3:
+        targetStatus = 'completed';
+        break;
+      case 4:
+        targetStatus = 'disputing';
+        break;
+    }
+
+    final filtered = state.confirmedOrders.where((order) {
+      if (targetStatus == null) return true;
+      if (targetStatus == 'disputing') {
+        return order.status == 'disputing' || order.status == 'cancelled';
+      }
+      return order.status == targetStatus;
+    }).toList();
+
+    if (filtered.isEmpty) {
       return _buildEmptyView(context, 'Không có đơn hàng nào trong mục này');
     }
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: state.confirmedOrders.length,
+      itemCount: filtered.length,
       itemBuilder: (context, index) {
-        final order = state.confirmedOrders[index];
+        final order = filtered[index];
         return _buildConfirmedOrderCard(context, order);
       },
     );
