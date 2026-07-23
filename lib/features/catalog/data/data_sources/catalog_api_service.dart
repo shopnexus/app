@@ -15,8 +15,10 @@ abstract class CatalogApiService {
   @GET(ApiEndpoints.productCards)
   Future<DataResponse<List<TProductCard>>> getProductCards({
     @Query('keyword') String? keyword,
+    @Query('search') String? search,
     @Query('category_id') String? categoryId,
     @Query('vendor_id') String? vendorId,
+    @Query('seller_id') String? sellerId,
     @Query('price_min') int? priceMin,
     @Query('price_max') int? priceMax,
     @Query('tags') List<String>? tags,
@@ -24,6 +26,7 @@ abstract class CatalogApiService {
     @Query('location') String? location,
     @Query('page') int? page,
     @Query('size') int? size,
+    @Query('limit') int? limit,
   });
 
   @GET(ApiEndpoints.productCardDetailTemplate)

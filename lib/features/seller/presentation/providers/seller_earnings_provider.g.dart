@@ -42,7 +42,7 @@ final class SellerEarningsNotifierProvider
 }
 
 String _$sellerEarningsNotifierHash() =>
-    r'dcb68250408e98a626f7f6ac4b1cbb0c273a8340';
+    r'7c724c2c0221f6591b4cbc01f19346cadb5d838c';
 
 abstract class _$SellerEarningsNotifier extends $Notifier<SellerEarningsState> {
   SellerEarningsState build();

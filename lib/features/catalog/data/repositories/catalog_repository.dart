@@ -26,8 +26,10 @@ class CatalogRepository {
     try {
       final response = await _apiService.getProductCards(
         keyword: keyword,
+        search: keyword,
         categoryId: categoryId,
         vendorId: vendorId,
+        sellerId: vendorId,
         priceMin: priceMin,
         priceMax: priceMax,
         tags: tags,
@@ -35,6 +37,7 @@ class CatalogRepository {
         location: location,
         page: page,
         size: size,
+        limit: size,
       );
       return response.data;
     } catch (e) {
