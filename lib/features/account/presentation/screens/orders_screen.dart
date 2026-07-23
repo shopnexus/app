@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/money_utils.dart';
 import '../../data/models/account_model.dart';
 import '../providers/buyer_orders_provider.dart';
@@ -19,14 +20,28 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  final List<String> _tabs = const [
+    'Tất cả',
+    'Chờ duyệt',
+    'Đang xử lý',
+    'Hoàn thành',
+    'Đã hủy',
+    'Hoàn tiền',
+  ];
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 6,
+      length: _tabs.length,
       vsync: this,
       initialIndex: widget.initialTab,
     );
+    _tabController.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -54,9 +69,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Hủy sản phẩm thất bại: $err'),
-              backgroundColor: const Color(
-                0xFFBA1A1A,
-              ), // Đổi sang màu Error Stitch
+              backgroundColor: const Color(0xFFBA1A1A),
             ),
           );
         },
@@ -73,51 +86,83 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
+      // Stitch Light Neutral Background
       appBar: AppBar(
         title: const Text(
           'Đơn hàng của tôi',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             fontWeight: FontWeight.bold,
-            fontFamily: 'Inter',
+            fontFamily: 'Manrope',
+            fontSize: 18,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0.5,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             size: 20,
           ),
           onPressed: () => context.pop(),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabAlignment: TabAlignment.start,
-          labelColor: const Color(0xFF0F172A),
-          unselectedLabelColor: const Color(0xFF64748B),
-          indicatorColor: const Color(0xFF0F172A),
-          indicatorWeight: 2,
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 13,
-            fontFamily: 'Inter',
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56.0),
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: List.generate(_tabs.length, (index) {
+                  final isSelected = _tabController.index == index;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      child: Material(
+                        color: isSelected
+                            ? AppColors
+                                  .primary // Stitch Primary Teal #005049
+                            : const Color(0xFFF1F5F9), // Stitch Neutral Low
+                        borderRadius: BorderRadius.circular(20),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () {
+                            _tabController.animateTo(index);
+                            setState(() {});
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            child: Text(
+                              _tabs[index],
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF64748B),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
           ),
-          unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.normal,
-            fontSize: 13,
-            fontFamily: 'Inter',
-          ),
-          tabs: const [
-            Tab(text: 'Tất cả'),
-            Tab(text: 'Chờ duyệt'),
-            Tab(text: 'Đang xử lý'),
-            Tab(text: 'Hoàn thành'),
-            Tab(text: 'Đã hủy'),
-            Tab(text: 'Hoàn tiền'),
-          ],
         ),
       ),
       body: TabBarView(
@@ -184,24 +229,24 @@ class _AllOrdersTab extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           if (pendingItems.isNotEmpty) ...[
-            _buildSectionTitle('Sản phẩm chờ duyệt'),
+            _buildSectionHeader('SẢN PHẨM CHỜ DUYỆT GOM ĐƠN'),
             ...pendingItems.map(
-              (item) => _buildPendingItemRow(context, ref, item),
+              (item) => _buildPendingItemCard(context, ref, item),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
           ],
           if (pendingOrders.isNotEmpty) ...[
-            _buildSectionTitle('Đơn hàng đang xử lý'),
+            _buildSectionHeader('ĐƠN HÀNG ĐANG XỬ LÝ / VẬN CHUYỂN'),
             ...pendingOrders.map((order) => _buildOrderCard(context, order)),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
           ],
           if (completedOrders.isNotEmpty) ...[
-            _buildSectionTitle('Đơn hàng đã hoàn thành'),
+            _buildSectionHeader('ĐƠN HÀNG ĐÃ HOÀN THÀNH'),
             ...completedOrders.map((order) => _buildOrderCard(context, order)),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
           ],
           if (cancelledOrders.isNotEmpty) ...[
-            _buildSectionTitle('Đơn hàng đã hủy'),
+            _buildSectionHeader('ĐƠN HÀNG ĐÃ HỦY'),
             ...cancelledOrders.map((order) => _buildOrderCard(context, order)),
           ],
         ],
@@ -209,189 +254,18 @@ class _AllOrdersTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0, top: 4.0),
+      padding: const EdgeInsets.only(bottom: 10.0, top: 6.0, left: 4),
       child: Text(
         title,
         style: const TextStyle(
           fontFamily: 'Inter',
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
           color: Color(0xFF64748B),
-          letterSpacing: 0.5,
+          letterSpacing: 0.6,
         ),
-      ),
-    );
-  }
-
-  Widget _buildPendingItemRow(
-    BuildContext context,
-    WidgetRef ref,
-    BuyerOrderItem item,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: 72,
-                    height: 72,
-                    color: const Color(0xFFF1F5F9),
-                    child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                        ? Image.network(item.imageUrl!, fit: BoxFit.cover)
-                        : const Icon(
-                            Icons.image_rounded,
-                            color: Color(0xFF94A3B8),
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.skuName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF0F172A),
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'SL: x${item.quantity}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF64748B),
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                          Text(
-                            MoneyUtils.format(item.totalAmount),
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF0F172A),
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1, color: Color(0xFFF1F5F9)),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      color: Color(0xFF64748B),
-                      size: 16,
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      'Chờ gom đơn lẻ',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF64748B),
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ],
-                ),
-                TextButton(
-                  onPressed: () => _confirmCancelItem(context, ref, item),
-                  style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xFFBA1A1A),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: const Text(
-                    'Hủy',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Inter',
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmCancelItem(
-    BuildContext context,
-    WidgetRef ref,
-    BuyerOrderItem item,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          'Hủy đơn sản phẩm',
-          style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Inter'),
-        ),
-        content: const Text(
-          'Bạn có chắc chắn muốn hủy sản phẩm này? Tiền thanh toán sẽ được hoàn trả tự động về ví nội bộ của bạn.',
-          style: TextStyle(fontFamily: 'Inter'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
-              'Hủy bỏ',
-              style: TextStyle(color: Color(0xFF64748B), fontFamily: 'Inter'),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              ref
-                  .read(buyerOrderControllerProvider.notifier)
-                  .cancelPendingItem(item.id.toString());
-            },
-            child: const Text(
-              'Đồng ý',
-              style: TextStyle(color: Color(0xFFBA1A1A), fontFamily: 'Inter'),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -434,182 +308,6 @@ class _PendingItemsTab extends ConsumerWidget {
           error: err,
           onRetry: () => ref.refresh(buyerPendingItemsProvider()),
         ),
-      ),
-    );
-  }
-
-  Widget _buildPendingItemCard(
-    BuildContext context,
-    WidgetRef ref,
-    BuyerOrderItem item,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        // Đổi sang 24px theo chuẩn Stitch Card
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: 72,
-                    height: 72,
-                    color: const Color(0xFFF1F5F9),
-                    child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                        ? Image.network(item.imageUrl!, fit: BoxFit.cover)
-                        : const Icon(
-                            Icons.image_rounded,
-                            color: Color(0xFF94A3B8),
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.skuName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF0F172A),
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'SL: x${item.quantity}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF64748B),
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                          Text(
-                            MoneyUtils.format(item.totalAmount),
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF0F172A),
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1, color: Color(0xFFF1F5F9)),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      color: Color(0xFF64748B),
-                      size: 16,
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      'Đang chờ gom đơn',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF64748B),
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ],
-                ),
-                // Nút bấm cao 48px và bo góc 12px theo chuẩn Stitch
-                SizedBox(
-                  height: 48,
-                  child: OutlinedButton(
-                    onPressed: () => _confirmCancelItem(context, ref, item),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFFBA1A1A)),
-                      // Màu Error Stitch
-                      foregroundColor: const Color(0xFFBA1A1A),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                    ),
-                    child: const Text(
-                      'Hủy sản phẩm',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmCancelItem(
-    BuildContext context,
-    WidgetRef ref,
-    BuyerOrderItem item,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          'Hủy đơn sản phẩm',
-          style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Inter'),
-        ),
-        content: const Text(
-          'Bạn có chắc chắn muốn hủy sản phẩm này? Tiền thanh toán sẽ được hoàn trả tự động về ví nội bộ của bạn.',
-          style: TextStyle(fontFamily: 'Inter'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
-              'Hủy bỏ',
-              style: TextStyle(color: Color(0xFF64748B), fontFamily: 'Inter'),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              ref
-                  .read(buyerOrderControllerProvider.notifier)
-                  .cancelPendingItem(item.id.toString());
-            },
-            child: const Text(
-              'Đồng ý',
-              style: TextStyle(color: Color(0xFFBA1A1A), fontFamily: 'Inter'),
-            ), // Đổi sang màu Error Stitch
-          ),
-        ],
       ),
     );
   }
@@ -707,31 +405,37 @@ class _CancelledOrdersTab extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Section 1: Official Cancelled Orders
-            const Text(
-              'Đơn hàng chính thức bị hủy',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
-                fontFamily: 'Inter',
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 8),
+              child: Text(
+                'ĐƠN HÀNG ĐÃ HỦY',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF64748B),
+                  letterSpacing: 0.6,
+                  fontFamily: 'Inter',
+                ),
               ),
             ),
-            const SizedBox(height: 12),
             cancelledOrdersAsync.when(
               data: (orders) {
                 if (orders.isEmpty) {
-                  return const Card(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: EdgeInsets.all(24.0),
-                      child: Center(
-                        child: Text(
-                          'Không có đơn hàng chính thức nào bị hủy',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF64748B),
-                            fontFamily: 'Inter',
-                          ),
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Không có đơn hàng chính thức nào bị hủy',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF64748B),
+                          fontFamily: 'Inter',
                         ),
                       ),
                     ),
@@ -748,34 +452,40 @@ class _CancelledOrdersTab extends ConsumerWidget {
               loading: () => const _LoadingShimmerBox(),
               error: (err, stack) => const Text('Lỗi tải danh sách đơn hủy'),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Section 2: Cancelled Pending Items
-            const Text(
-              'Sản phẩm chờ đã hủy / từ chối',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
-                fontFamily: 'Inter',
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 8),
+              child: Text(
+                'SẢN PHẨM CHỜ ĐÃ HỦY / TỪ CHỐI',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF64748B),
+                  letterSpacing: 0.6,
+                  fontFamily: 'Inter',
+                ),
               ),
             ),
-            const SizedBox(height: 12),
             cancelledItemsAsync.when(
               data: (items) {
                 if (items.isEmpty) {
-                  return const Card(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: EdgeInsets.all(24.0),
-                      child: Center(
-                        child: Text(
-                          'Không có sản phẩm chờ gom nào bị hủy',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF64748B),
-                            fontFamily: 'Inter',
-                          ),
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Không có sản phẩm chờ gom nào bị hủy',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF64748B),
+                          fontFamily: 'Inter',
                         ),
                       ),
                     ),
@@ -803,139 +513,233 @@ class _CancelledOrdersTab extends ConsumerWidget {
   Widget _buildCancelledItemCard(BuyerOrderItem item) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24), // Bo góc Card 24px
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: 60,
-              height: 60,
-              color: const Color(0xFFF1F5F9),
-              child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                  ? Image.network(item.imageUrl!, fit: BoxFit.cover)
-                  : const Icon(Icons.image_rounded, color: Color(0xFF94A3B8)),
-            ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.skuName,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF0F172A),
-                    fontFamily: 'Inter',
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    color: const Color(0xFFF1F5F9),
+                    child: item.imageUrl != null && item.imageUrl!.isNotEmpty
+                        ? Image.network(item.imageUrl!, fit: BoxFit.cover)
+                        : const Icon(
+                            Icons.image_rounded,
+                            color: Color(0xFF94A3B8),
+                          ),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'SL: x${item.quantity}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF64748B),
-                        fontFamily: 'Inter',
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.skuName,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF0F172A),
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _buildStatusBadge('Đã hủy'),
+                        ],
                       ),
-                    ),
-                    Text(
-                      MoneyUtils.format(item.totalAmount),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFBA1A1A), // Đổi sang màu Error Stitch
-                        fontFamily: 'Inter',
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'SL: x${item.quantity}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF64748B),
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          Text(
+                            MoneyUtils.format(item.totalAmount),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF0F172A),
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-// ======================== COMMON CARD BUILDERS & WIDGETS ========================
+// ======================== TAB 5: REFUNDS ========================
+class _RefundsTab extends StatelessWidget {
+  const _RefundsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFDAD6),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.history_rounded,
+                size: 38,
+                color: Color(0xFFBA1A1A),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Chưa có yêu cầu hoàn tiền',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
+                fontFamily: 'Inter',
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Lịch sử các đơn hàng được yêu cầu hoàn tiền hoặc tranh chấp khiếu nại của bạn sẽ xuất hiện tại đây.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: Color(0xFF64748B),
+                fontFamily: 'Inter',
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ======================== COMMON STITCH CARD BUILDERS ========================
+
+/// Xây dựng thẻ đơn hàng chính (Order Card) theo phong cách Stitch/Seller Center
 Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
   final firstItem = order.items.isNotEmpty ? order.items.first : null;
   final totalItems = order.items.fold<int>(
     0,
     (prev, element) => prev + element.quantity,
   );
+  final rawStatus = order.transport?.status ?? 'Đang xử lý';
 
-  return GestureDetector(
-    onTap: () => context.push('/account/order-detail/${order.id}'),
-    child: Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24), // Bo góc Card 24px
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-      ),
+  return Container(
+    margin: const EdgeInsets.only(bottom: 16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: const Color(0xFFE2E8F0)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.03),
+          blurRadius: 10,
+          offset: const Offset(0, 3),
+        ),
+      ],
+    ),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () => context.push('/account/order-detail/${order.id}'),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Top Header: Shop Avatar / Order Code & Status Badge
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Mã đơn: #${order.id.substring(0, 8)}...',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
-                    fontFamily: 'Inter',
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    order.transport?.status ?? 'Chuẩn bị hàng',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF0F172A),
-                      fontFamily: 'Inter',
+                Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.storefront_rounded,
+                        size: 18,
+                        color: Color(0xFF0F172A),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Mã đơn: #${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0F172A),
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                  ],
                 ),
+                _buildStatusBadge(rawStatus),
               ],
             ),
-            const Divider(height: 24, color: Color(0xFFF1F5F9)),
+            const SizedBox(height: 12),
+            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            const SizedBox(height: 12),
+
+            // Item Details
             if (firstItem != null)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                     child: Container(
-                      width: 64,
-                      height: 64,
+                      width: 76,
+                      height: 76,
                       color: const Color(0xFFF1F5F9),
                       child:
                           firstItem.imageUrl != null &&
@@ -950,7 +754,7 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                             ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -960,31 +764,46 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF0F172A),
                             fontFamily: 'Inter',
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text(
-                          'Mã biến thể: ${firstItem.skuId.substring(0, 8)}...',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF94A3B8),
-                            fontFamily: 'Inter',
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'SL: x${firstItem.quantity}',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF64748B),
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                            Text(
+                              MoneyUtils.format(firstItem.totalAmount),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF64748B),
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
+
             if (order.items.length > 1) ...[
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Xem thêm ${order.items.length - 1} sản phẩm khác',
+                  'Xem thêm ${order.items.length - 1} sản phẩm khác...',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xFF64748B),
@@ -993,43 +812,295 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                 ),
               ),
             ],
-            const Divider(height: 24, color: Color(0xFFF1F5F9)),
+
+            const SizedBox(height: 12),
+            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            const SizedBox(height: 12),
+
+            // Footer Summary & Action Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Tổng số lượng: $totalItems',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF64748B),
-                    fontFamily: 'Inter',
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      color: Color(0xFF64748B),
+                    ),
+                    children: [
+                      TextSpan(text: '$totalItems sản phẩm: '),
+                      TextSpan(
+                        text: MoneyUtils.format(order.totalAmount),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Row(
-                  children: [
-                    const Text(
-                      'Thành tiền: ',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF64748B),
-                        fontFamily: 'Inter',
-                      ),
+                // Action Pill Button
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary, // Stitch Primary Teal #005049
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'Chi tiết',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Inter',
                     ),
-                    Text(
-                      MoneyUtils.format(order.totalAmount),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ],
         ),
+      ),
+    ),
+  );
+}
+
+/// Xây dựng thẻ sản phẩm chờ gom đơn lẻ (Pending Item Card)
+Widget _buildPendingItemCard(
+  BuildContext context,
+  WidgetRef ref,
+  BuyerOrderItem item,
+) {
+  return Container(
+    margin: const EdgeInsets.only(bottom: 16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: const Color(0xFFE2E8F0)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.03),
+          blurRadius: 10,
+          offset: const Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Item details row
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: 76,
+                  height: 76,
+                  color: const Color(0xFFF1F5F9),
+                  child: item.imageUrl != null && item.imageUrl!.isNotEmpty
+                      ? Image.network(item.imageUrl!, fit: BoxFit.cover)
+                      : const Icon(
+                          Icons.image_rounded,
+                          color: Color(0xFF94A3B8),
+                        ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.skuName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF0F172A),
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        _buildStatusBadge('Chờ gom đơn'),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'SL: x${item.quantity}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF64748B),
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        Text(
+                          MoneyUtils.format(item.totalAmount),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0F172A),
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    color: Color(0xFF64748B),
+                    size: 16,
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    'Chờ shop xác nhận',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF64748B),
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ],
+              ),
+              // Nút bấm Hủy dạng Outlined Pill
+              InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => _confirmCancelItem(context, ref, item),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF1F2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFFECDD3)),
+                  ),
+                  child: const Text(
+                    'Hủy sản phẩm',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFE11D48),
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+void _confirmCancelItem(
+  BuildContext context,
+  WidgetRef ref,
+  BuyerOrderItem item,
+) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text(
+        'Hủy đơn sản phẩm',
+        style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Inter'),
+      ),
+      content: const Text(
+        'Bạn có chắc chắn muốn hủy sản phẩm này? Tiền thanh toán sẽ được hoàn trả tự động về ví nội bộ của bạn.',
+        style: TextStyle(fontFamily: 'Inter'),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text(
+            'Hủy bỏ',
+            style: TextStyle(color: Color(0xFF64748B), fontFamily: 'Inter'),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            ref
+                .read(buyerOrderControllerProvider.notifier)
+                .cancelPendingItem(item.id.toString());
+          },
+          child: const Text(
+            'Đồng ý',
+            style: TextStyle(color: Color(0xFFBA1A1A), fontFamily: 'Inter'),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+/// Tag/Badge hiển thị trạng thái sản phẩm hay đơn hàng theo màu Stitch
+Widget _buildStatusBadge(String status) {
+  Color bgColor = const Color(0xFFF1F5F9);
+  Color textColor = const Color(0xFF475569);
+
+  if (status.contains('Chờ') || status.contains('pending')) {
+    bgColor = const Color(0xFFFEF3C7);
+    textColor = const Color(0xFFD97706);
+  } else if (status.contains('giao') ||
+      status.contains('xử lý') ||
+      status.contains('Shipping')) {
+    bgColor = const Color(0xFFDBEAFE);
+    textColor = const Color(0xFF0284C7);
+  } else if (status.contains('thành') || status.contains('Completed')) {
+    bgColor = const Color(0xFFD1FAE5);
+    textColor = const Color(0xFF059669);
+  } else if (status.contains('hủy') || status.contains('Cancelled')) {
+    bgColor = const Color(0xFFFEE2E2);
+    textColor = const Color(0xFFDC2626);
+  } else if (status.contains('tiền') || status.contains('Refund')) {
+    bgColor = const Color(0xFFFFDAD6);
+    textColor = const Color(0xFFBA1A1A);
+  }
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    decoration: BoxDecoration(
+      color: bgColor,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Text(
+      status,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.bold,
+        color: textColor,
+        fontFamily: 'Inter',
       ),
     ),
   );
@@ -1054,8 +1125,16 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 56, color: const Color(0xFF94A3B8)),
-            const SizedBox(height: 16),
+            Container(
+              width: 72,
+              height: 72,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF1F5F9),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 36, color: const Color(0xFF94A3B8)),
+            ),
+            const SizedBox(height: 20),
             Text(
               title,
               style: const TextStyle(
@@ -1073,6 +1152,7 @@ class _EmptyState extends StatelessWidget {
                 fontSize: 13,
                 color: Color(0xFF64748B),
                 fontFamily: 'Inter',
+                height: 1.4,
               ),
             ),
           ],
@@ -1098,15 +1178,15 @@ class _ErrorState extends StatelessWidget {
           children: [
             const Icon(
               Icons.error_outline_rounded,
-              size: 40,
+              size: 44,
               color: Color(0xFFBA1A1A),
-            ), // Màu Error Stitch
-            const SizedBox(height: 12),
+            ),
+            const SizedBox(height: 14),
             const Text(
               'Không thể tải dữ liệu đơn hàng',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 15,
                 fontFamily: 'Inter',
               ),
             ),
@@ -1121,17 +1201,16 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            // Nút bấm cao 48px và bo góc 12px theo chuẩn Stitch
             SizedBox(
-              height: 48,
-              width: 120,
-              child: OutlinedButton(
+              height: 44,
+              width: 130,
+              child: ElevatedButton(
                 onPressed: onRetry,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF0F172A)),
-                  foregroundColor: const Color(0xFF0F172A),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 child: const Text(
@@ -1139,6 +1218,7 @@ class _ErrorState extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Inter',
+                    fontSize: 14,
                   ),
                 ),
               ),
@@ -1162,7 +1242,7 @@ Widget _buildShimmerList() {
         height: 160,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24), // Bo góc 24px
+          borderRadius: BorderRadius.circular(20),
         ),
       ),
     ),
@@ -1181,7 +1261,7 @@ class _LoadingShimmerBox extends StatelessWidget {
         height: 120,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24), // Bo góc 24px
+          borderRadius: BorderRadius.circular(20),
         ),
       ),
     );
@@ -1196,60 +1276,7 @@ class ContainerOverlayLoading extends StatelessWidget {
     return Container(
       color: Colors.black.withValues(alpha: 0.2),
       child: const Center(
-        child: CircularProgressIndicator(color: Color(0xFF0F172A)),
-      ),
-    );
-  }
-}
-
-// ======================== TAB 5: REFUNDS ========================
-class _RefundsTab extends StatelessWidget {
-  const _RefundsTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFDAD6), // error-container
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.history_rounded,
-                size: 40,
-                color: Color(0xFFBA1A1A), // error
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Chưa có yêu cầu hoàn tiền',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
-                fontFamily: 'Inter',
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Lịch sử các đơn hàng được yêu cầu hoàn tiền hoặc tranh chấp khiếu nại của bạn sẽ xuất hiện tại đây.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: Color(0xFF64748B),
-                fontFamily: 'Inter',
-                height: 1.4,
-              ),
-            ),
-          ],
-        ),
+        child: CircularProgressIndicator(color: AppColors.primary),
       ),
     );
   }

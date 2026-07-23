@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/data_sources/common_api_service.dart';
 import '../../../../shared/models/geocode_model.dart';
 import '../../data/models/account_model.dart';
@@ -47,23 +48,23 @@ class AddressesScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F7), // Stitch Background
+      backgroundColor: AppColors.background, // Stitch Background #F9F9F7
       appBar: AppBar(
         title: const Text(
           'Saved Addresses',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             fontWeight: FontWeight.bold,
-            fontFamily: 'Inter',
+            fontFamily: 'Manrope',
             fontSize: 20,
           ),
         ),
-        backgroundColor: const Color(0xFFF9F9F7),
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             size: 20,
           ),
           onPressed: () => context.pop(),
@@ -115,7 +116,7 @@ class AddressesScreen extends ConsumerWidget {
                       child: ElevatedButton.icon(
                         onPressed: () => _showAddressFormSheet(context, ref),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0F172A), // Charcoal
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -175,7 +176,7 @@ class AddressesScreen extends ConsumerWidget {
                         child: ElevatedButton(
                           onPressed: () => ref.refresh(buyerContactsProvider),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0F172A),
+                            backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -200,7 +201,7 @@ class AddressesScreen extends ConsumerWidget {
             Container(
               color: Colors.black.withValues(alpha: 0.2),
               child: const Center(
-                child: CircularProgressIndicator(color: Color(0xFF0F172A)),
+                child: CircularProgressIndicator(color: AppColors.primary),
               ),
             ),
         ],
@@ -254,7 +255,8 @@ class AddressesScreen extends ConsumerWidget {
                     vertical: 6,
                   ),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFD0E1FB), // secondary_container
+                    color: Color(0xFFA8ECE4),
+                    // Stitch secondary-container (Soft Teal)
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(12),
                     ),
@@ -262,7 +264,7 @@ class AddressesScreen extends ConsumerWidget {
                   child: const Text(
                     'Default',
                     style: TextStyle(
-                      color: Color(0xFF54647A), // on_secondary_container
+                      color: Color(0xFF005049), // Stitch on-secondary-container
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Inter',
@@ -281,7 +283,7 @@ class AddressesScreen extends ConsumerWidget {
                       Icon(
                         typeIcon,
                         color: isFillIcon
-                            ? const Color(0xFF0F172A)
+                            ? AppColors.primary
                             : const Color(0xFF64748B),
                         size: 20,
                       ),
@@ -352,7 +354,7 @@ class AddressesScreen extends ConsumerWidget {
                               Icon(
                                 Icons.edit_outlined,
                                 size: 16,
-                                color: Color(0xFF0F172A),
+                                color: AppColors.primary,
                               ),
                               SizedBox(width: 4),
                               Text(
@@ -360,7 +362,7 @@ class AddressesScreen extends ConsumerWidget {
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 13,
-                                  color: Color(0xFF0F172A),
+                                  color: AppColors.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -645,8 +647,8 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F172A),
-                      fontFamily: 'Inter',
+                      color: Color(0xFF1A1C1B),
+                      fontFamily: 'Manrope',
                     ),
                   ),
                   IconButton(
@@ -672,7 +674,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                     color: Color(0xFF64748B),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: const Color(0xFFF4F4F1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -680,7 +682,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF0F172A),
+                      color: AppColors.primary,
                       width: 1.5,
                     ),
                   ),
@@ -704,7 +706,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                     color: Color(0xFF64748B),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: const Color(0xFFF4F4F1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -712,7 +714,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF0F172A),
+                      color: AppColors.primary,
                       width: 1.5,
                     ),
                   ),
@@ -739,7 +741,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                         color: Color(0xFF64748B),
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFF8FAFC),
+                      fillColor: const Color(0xFFF4F4F1),
                       suffixIcon: _isSearching
                           ? const SizedBox(
                               width: 20,
@@ -748,7 +750,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                                 padding: EdgeInsets.all(12.0),
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Color(0xFF0F172A),
+                                  color: AppColors.primary,
                                 ),
                               ),
                             )
@@ -763,7 +765,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Color(0xFF0F172A),
+                          color: AppColors.primary,
                           width: 1.5,
                         ),
                       ),
@@ -823,7 +825,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                     color: Color(0xFF64748B),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: const Color(0xFFF4F4F1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -831,7 +833,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF0F172A),
+                      color: AppColors.primary,
                       width: 1.5,
                     ),
                   ),
@@ -869,7 +871,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                 child: ElevatedButton(
                   onPressed: _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0F172A),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -910,7 +912,7 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
         fontFamily: 'Inter',
         fontSize: 13,
       ),
-      selectedColor: const Color(0xFF0F172A),
+      selectedColor: AppColors.primary,
       backgroundColor: const Color(0xFFF1F5F9),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       side: BorderSide.none,
@@ -941,7 +943,7 @@ class _EmptyAddresses extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                color: Color(0xFF1A1C1B),
                 fontFamily: 'Inter',
               ),
             ),

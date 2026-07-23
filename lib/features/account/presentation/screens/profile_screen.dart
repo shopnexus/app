@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../shared/data_sources/common_api_service.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/account_model.dart';
 import '../providers/account_provider.dart';
@@ -88,70 +89,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  void _showCountrySelectionDialog(AccountProfile profile) {
-    final List<Map<String, String>> countries = [
-      {'code': 'VN', 'name': 'Việt Nam (VND)'},
-      {'code': 'US', 'name': 'United States (USD)'},
-      {'code': 'JP', 'name': 'Japan (JPY)'},
-      {'code': 'SG', 'name': 'Singapore (SGD)'},
-    ];
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          'Chọn quốc gia ưu tiên',
-          style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Inter'),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: countries.map((c) {
-            final isSelected = profile.country == c['code'];
-            return ListTile(
-              title: Text(
-                c['name']!,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected
-                      ? const Color(0xFF0F172A)
-                      : const Color(0xFF475569),
-                ),
-              ),
-              trailing: isSelected
-                  ? const Icon(Icons.check_rounded, color: Color(0xFF0F172A))
-                  : null,
-              onTap: () {
-                Navigator.of(context).pop();
-                ref
-                    .read(accountControllerProvider.notifier)
-                    .updateProfileCountry(c['code']!);
-              },
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(profileProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9), // Stitch Background
+      backgroundColor: AppColors.background, // Stitch Background #F9F9F7
       appBar: AppBar(
         title: const Text(
           'Profile',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Color(0xFF1A1C1B),
             fontWeight: FontWeight.bold,
-            fontFamily: 'Inter',
+            fontFamily: 'Manrope',
             fontSize: 20,
           ),
         ),
-        backgroundColor: const Color(0xFFF9F9F9),
+        backgroundColor: AppColors.background,
         elevation: 0,
         centerTitle: false,
         actions: [
@@ -212,7 +166,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(3),
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFF0F172A),
+                                  color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
                                 child: _isUploadingAvatar
@@ -255,8 +209,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
-                                        fontFamily: 'Inter',
+                                        color: Color(0xFF1A1C1B),
+                                        fontFamily: 'Manrope',
                                       ),
                                     ),
                                   ),
@@ -285,31 +239,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ],
                         ),
                       ),
-                      // Country Badge
-                      GestureDetector(
-                        onTap: () => _showCountrySelectionDialog(profile),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD0E1FB),
-                            // secondary_container
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            profile.country,
-                            style: const TextStyle(
-                              color: Color(0xFF54647A),
-                              // on_secondary_container
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -320,13 +249,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 Container(
                   color: Colors.white,
                   child: ListTile(
-                    tileColor: const Color(0xFFD0E1FB).withValues(alpha: 0.35),
+                    tileColor: const Color(0xFFA8ECE4).withValues(alpha: 0.35),
                     leading: Container(
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
-                        // Charcoal Stitch Primary
+                        color: AppColors.primary,
+                        // Stitch Primary Teal #005049
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -341,7 +270,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         fontFamily: 'Inter',
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
+                        color: Color(0xFF1A1C1B),
                       ),
                     ),
                     subtitle: const Text(
@@ -349,12 +278,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
-                        color: Color(0xFF54647A),
+                        color: Color(0xFF3E4947),
                       ),
                     ),
                     trailing: const Icon(
                       Icons.chevron_right_rounded,
-                      color: Color(0xFF0F172A),
+                      color: AppColors.primary,
                       size: 22,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
@@ -381,12 +310,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF3F3F4),
+                            color: const Color(0xFFEEEEEC),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.local_mall_outlined,
-                            color: Color(0xFF64748B),
+                            color: Color(0xFF3E4947),
                           ),
                         ),
                         title: const Text(
@@ -395,7 +324,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             fontFamily: 'Inter',
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF0F172A),
+                            color: Color(0xFF1A1C1B),
                           ),
                         ),
                         trailing: const Icon(
@@ -591,7 +520,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: ElevatedButton(
                       onPressed: () => ref.refresh(profileProvider),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0F172A),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -644,20 +573,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F3F4), // surface-container-low
+            color: const Color(0xFFF4F4F1), // Stitch surface-container-low
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: const Color(0xFF45464D), size: 20),
+              Icon(icon, color: const Color(0xFF3E4947), size: 20),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: const TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 11,
-                  color: Color(0xFF45464D),
+                  color: Color(0xFF3E4947),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -678,10 +607,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: const Color(0xFFF3F3F4),
+          color: const Color(0xFFEEEEEC), // Stitch surface-container
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: const Color(0xFF64748B)),
+        child: Icon(icon, color: const Color(0xFF3E4947)),
       ),
       title: Text(
         title,
@@ -689,7 +618,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           fontFamily: 'Inter',
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: Color(0xFF0F172A),
+          color: Color(0xFF1A1C1B),
         ),
       ),
       trailing: const Icon(
@@ -889,8 +818,8 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F172A),
-                      fontFamily: 'Inter',
+                      color: Color(0xFF1A1C1B),
+                      fontFamily: 'Manrope',
                     ),
                   ),
                   IconButton(
@@ -916,7 +845,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                     color: Color(0xFF64748B),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: const Color(0xFFF4F4F1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -924,7 +853,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF0F172A),
+                      color: AppColors.primary,
                       width: 1.5,
                     ),
                   ),
@@ -948,7 +877,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                     color: Color(0xFF64748B),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: const Color(0xFFF4F4F1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -956,7 +885,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF0F172A),
+                      color: AppColors.primary,
                       width: 1.5,
                     ),
                   ),
@@ -977,7 +906,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                     color: Color(0xFF64748B),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: const Color(0xFFF4F4F1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -985,7 +914,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF0F172A),
+                      color: AppColors.primary,
                       width: 1.5,
                     ),
                   ),
@@ -999,7 +928,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                 style: const TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,
-                  color: Color(0xFF0F172A),
+                  color: Color(0xFF1A1C1B),
                 ),
                 decoration: InputDecoration(
                   labelText: 'Giới tính',
@@ -1009,7 +938,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                     color: Color(0xFF64748B),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: const Color(0xFFF4F4F1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -1046,7 +975,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                     vertical: 16,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: const Color(0xFFF4F4F1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -1061,7 +990,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                           fontSize: 14,
                           color: _dob == null
                               ? const Color(0xFF64748B)
-                              : const Color(0xFF0F172A),
+                              : const Color(0xFF1A1C1B),
                         ),
                       ),
                       const Icon(
@@ -1082,7 +1011,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                 child: ElevatedButton(
                   onPressed: _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0F172A),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
