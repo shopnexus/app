@@ -26,6 +26,7 @@ import '../../features/seller/presentation/screens/seller_dashboard_screen.dart'
 import '../../features/seller/presentation/screens/ai_video_wizard_screen.dart';
 import '../../features/seller/presentation/screens/seller_products_screen.dart';
 import '../../features/seller/presentation/screens/seller_orders_screen.dart';
+import '../../features/seller/presentation/screens/seller_earnings_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -139,6 +140,11 @@ GoRouter appRouter(Ref ref) {
                   final tabIndex = int.tryParse(tabStr ?? '0') ?? 0;
                   return SellerOrdersScreen(initialTab: tabIndex);
                 },
+              ),
+              GoRoute(
+                path: 'earnings',
+                name: 'seller_earnings',
+                builder: (context, state) => const SellerEarningsScreen(),
               ),
             ],
           ),

@@ -16,7 +16,7 @@ abstract class AiWizardState with _$AiWizardState {
   const factory AiWizardState({
     @Default(1)
     int step, // 1: Select Media, 2: Upload & Process, 3: Review & Create SPU
-    @Default('video') String inputMode, // 'video' | 'voice'
+    @Default('image_audio') String inputMode, // 'image_audio' | 'image_text'
     String? selectedVideoPath,
     @Default([]) List<String> selectedImagePaths,
     String? selectedAudioPath,

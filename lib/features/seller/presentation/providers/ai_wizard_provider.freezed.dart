@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 mixin _$AiWizardState {
 
  int get step;// 1: Select Media, 2: Upload & Process, 3: Review & Create SPU
- String get inputMode;// 'video' | 'voice'
+ String get inputMode;// 'image_audio' | 'image_text'
  String? get selectedVideoPath; List<String> get selectedImagePaths; String? get selectedAudioPath; double get uploadProgress; bool get isProcessing; String? get rawAudioText; String? get refinedDescription; String get selectedTone;// 'professional' | 'persuasive' | 'minimalist' | 'enthusiastic'
  String get suggestedTitle; String get suggestedCategoryId; String get suggestedCategoryName; double get confidence; List<ProductSpecification> get specifications; List<ProductSkuRequest> get suggestedSkus; String? get errorMessage; bool get isSaving; bool get saveSuccess;
 /// Create a copy of AiWizardState
@@ -227,13 +227,13 @@ return $default(_that.step,_that.inputMode,_that.selectedVideoPath,_that.selecte
 
 
 class _AiWizardState implements AiWizardState {
-  const _AiWizardState({this.step = 1, this.inputMode = 'video', this.selectedVideoPath, final  List<String> selectedImagePaths = const [], this.selectedAudioPath, this.uploadProgress = 0.0, this.isProcessing = false, this.rawAudioText, this.refinedDescription, this.selectedTone = 'professional', this.suggestedTitle = '', this.suggestedCategoryId = '', this.suggestedCategoryName = 'Thiết bị điện tử & Gia dụng', this.confidence = 0.92, final  List<ProductSpecification> specifications = const [], final  List<ProductSkuRequest> suggestedSkus = const [], this.errorMessage, this.isSaving = false, this.saveSuccess = false}): _selectedImagePaths = selectedImagePaths,_specifications = specifications,_suggestedSkus = suggestedSkus;
+  const _AiWizardState({this.step = 1, this.inputMode = 'image_audio', this.selectedVideoPath, final  List<String> selectedImagePaths = const [], this.selectedAudioPath, this.uploadProgress = 0.0, this.isProcessing = false, this.rawAudioText, this.refinedDescription, this.selectedTone = 'professional', this.suggestedTitle = '', this.suggestedCategoryId = '', this.suggestedCategoryName = 'Thiết bị điện tử & Gia dụng', this.confidence = 0.92, final  List<ProductSpecification> specifications = const [], final  List<ProductSkuRequest> suggestedSkus = const [], this.errorMessage, this.isSaving = false, this.saveSuccess = false}): _selectedImagePaths = selectedImagePaths,_specifications = specifications,_suggestedSkus = suggestedSkus;
   
 
 @override@JsonKey() final  int step;
 // 1: Select Media, 2: Upload & Process, 3: Review & Create SPU
 @override@JsonKey() final  String inputMode;
-// 'video' | 'voice'
+// 'image_audio' | 'image_text'
 @override final  String? selectedVideoPath;
  final  List<String> _selectedImagePaths;
 @override@JsonKey() List<String> get selectedImagePaths {

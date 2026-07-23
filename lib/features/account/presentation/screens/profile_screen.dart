@@ -362,11 +362,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       vertical: 6,
                     ),
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Chuyển sang chế độ người bán...'),
-                        ),
-                      );
+                      context.push('/seller');
                     },
                   ),
                 ),

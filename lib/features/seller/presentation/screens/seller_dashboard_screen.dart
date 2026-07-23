@@ -3,12 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
 import '../../../account/presentation/providers/account_provider.dart';
 import '../providers/seller_dashboard_provider.dart';
 import '../widgets/sales_performance_chart.dart';
 import '../widgets/seller_menu_item_tile.dart';
-import '../widgets/seller_stat_card.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
   const SellerDashboardScreen({super.key});
@@ -19,7 +17,6 @@ class SellerDashboardScreen extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final statsAsync = ref.watch(sellerDashboardProvider);
-    final selectedPeriod = ref.watch(selectedDashboardPeriodProvider);
     final profileAsync = ref.watch(profileProvider);
 
     return Scaffold(
@@ -54,6 +51,7 @@ class SellerDashboardScreen extends ConsumerWidget {
               const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Hello, ${profile.name ?? profile.username ?? 'Seller'}',
@@ -62,27 +60,6 @@ class SellerDashboardScreen extends ConsumerWidget {
                       fontSize: 16,
                       color: isDark ? Colors.white : const Color(0xFF0F172A),
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF10B981),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Verified Store',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontSize: 11,
-                          color: const Color(0xFF10B981),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -101,15 +78,6 @@ class SellerDashboardScreen extends ConsumerWidget {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              context.push('/account');
-            },
-          ),
-          const SizedBox(width: 4),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -122,70 +90,8 @@ class SellerDashboardScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Quick Stat Cards Grid ---
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.4,
-                  children: [
-                    SellerStatCard(
-                      title: 'Total Revenue',
-                      value: MoneyUtils.format(stats.totalRevenue),
-                      icon: Icons.account_balance_wallet_outlined,
-                      iconColor: const Color(0xFF10B981),
-                      iconBgColor: const Color(
-                        0xFF10B981,
-                      ).withValues(alpha: 0.12),
-                      subtitle: '+14% this month',
-                    ),
-                    SellerStatCard(
-                      title: 'Total Orders',
-                      value: stats.totalOrders.toString(),
-                      icon: Icons.shopping_bag_outlined,
-                      iconColor: const Color(0xFF3B82F6),
-                      iconBgColor: const Color(
-                        0xFF3B82F6,
-                      ).withValues(alpha: 0.12),
-                      subtitle: '${stats.pendingOrders} pending',
-                    ),
-                    SellerStatCard(
-                      title: 'Items Sold',
-                      value: stats.itemsSold.toString(),
-                      icon: Icons.sell_outlined,
-                      iconColor: const Color(0xFF8B5CF6),
-                      iconBgColor: const Color(
-                        0xFF8B5CF6,
-                      ).withValues(alpha: 0.12),
-                      subtitle: 'Active items',
-                    ),
-                    SellerStatCard(
-                      title: 'Rating Score',
-                      value:
-                          '${stats.ratingScore > 0 ? stats.ratingScore.toStringAsFixed(1) : "5.0"} ★',
-                      icon: Icons.star_outline_rounded,
-                      iconColor: const Color(0xFFF59E0B),
-                      iconBgColor: const Color(
-                        0xFFF59E0B,
-                      ).withValues(alpha: 0.12),
-                      subtitle: 'From buyers',
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
                 // --- Sales Performance Chart ---
-                SalesPerformanceChart(
-                  chartPoints: stats.effectiveChartData,
-                  selectedPeriod: selectedPeriod,
-                  onPeriodChanged: (newPeriod) {
-                    ref
-                        .read(selectedDashboardPeriodProvider.notifier)
-                        .setPeriod(newPeriod);
-                  },
-                ),
+                SalesPerformanceChart(chartPoints: stats.effectiveChartData),
                 const SizedBox(height: 24),
 
                 // --- Orders Section ---
@@ -320,6 +226,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                       iconBgColor: const Color(
                         0xFF10B981,
                       ).withValues(alpha: 0.12),
+                      onTap: () => context.push('/seller/earnings'),
                     ),
                   ],
                 ),
@@ -439,7 +346,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Tự động sinh tiêu đề, mô tả từ Video & Audio',
+                      'Sinh tiêu đề & mô tả từ Image + Audio hoặc Image + Text',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withValues(alpha: 0.7),
@@ -451,41 +358,22 @@ class SellerDashboardScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => context.push('/seller/ai-wizard'),
-                  icon: const Icon(Icons.videocam_outlined, size: 18),
-                  label: const Text('Video to SPU'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: BorderSide(
-                      color: Colors.white.withValues(alpha: 0.3),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push('/seller/ai-wizard'),
+              icon: const Icon(Icons.auto_awesome, size: 20),
+              label: const Text('Tạo sản phẩm với AI Wizard'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => context.push('/seller/ai-wizard'),
-                  icon: const Icon(Icons.mic_none_outlined, size: 18),
-                  label: const Text('Voice AI Description'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
