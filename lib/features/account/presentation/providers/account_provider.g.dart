@@ -48,6 +48,81 @@ final class ProfileProvider
 
 String _$profileHash() => r'6dff79fce6bbff2c7916a56488b501c1f87375c0';
 
+@ProviderFor(publicProfile)
+const publicProfileProvider = PublicProfileFamily._();
+
+final class PublicProfileProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<AccountProfile>,
+          AccountProfile,
+          FutureOr<AccountProfile>
+        >
+    with $FutureModifier<AccountProfile>, $FutureProvider<AccountProfile> {
+  const PublicProfileProvider._({
+    required PublicProfileFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'publicProfileProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$publicProfileHash();
+
+  @override
+  String toString() {
+    return r'publicProfileProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<AccountProfile> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<AccountProfile> create(Ref ref) {
+    final argument = this.argument as String;
+    return publicProfile(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PublicProfileProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$publicProfileHash() => r'7ede5e23f2b27c35e81f36f6545cde5a612d06be';
+
+final class PublicProfileFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<AccountProfile>, String> {
+  const PublicProfileFamily._()
+    : super(
+        retry: null,
+        name: r'publicProfileProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  PublicProfileProvider call(String accountId) =>
+      PublicProfileProvider._(argument: accountId, from: this);
+
+  @override
+  String toString() => r'publicProfileProvider';
+}
+
 @ProviderFor(AccountController)
 const accountControllerProvider = AccountControllerProvider._();
 

@@ -14,6 +14,7 @@ class CatalogRepository {
   Future<List<TProductCard>> getProductCards({
     String? keyword,
     String? categoryId,
+    String? vendorId,
     int? priceMin,
     int? priceMax,
     List<String>? tags,
@@ -26,6 +27,7 @@ class CatalogRepository {
       final response = await _apiService.getProductCards(
         keyword: keyword,
         categoryId: categoryId,
+        vendorId: vendorId,
         priceMin: priceMin,
         priceMax: priceMax,
         tags: tags,

@@ -21,6 +21,11 @@ import '../../shared/widgets/placeholder_screens.dart';
 import '../../features/catalog/presentation/screens/product_detail_screen.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/checkout/presentation/screens/checkout_screen.dart';
+import '../../features/seller/presentation/screens/seller_profile_screen.dart';
+import '../../features/seller/presentation/screens/seller_dashboard_screen.dart';
+import '../../features/seller/presentation/screens/ai_video_wizard_screen.dart';
+import '../../features/seller/presentation/screens/seller_products_screen.dart';
+import '../../features/seller/presentation/screens/seller_orders_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -101,9 +106,41 @@ GoRouter appRouter(Ref ref) {
             builder: (context, state) => const SearchScreen(),
           ),
           GoRoute(
+            path: '/vendor/:id',
+            name: 'seller_profile',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return SellerProfileScreen(vendorId: id);
+            },
+          ),
+          GoRoute(
             path: '/seller',
             name: 'seller',
-            builder: (context, state) => const SellerPlaceholderScreen(),
+            builder: (context, state) => const SellerDashboardScreen(),
+            routes: [
+              GoRoute(
+                path: 'ai-wizard',
+                name: 'ai_wizard',
+                builder: (context, state) => const AiVideoWizardScreen(),
+              ),
+              GoRoute(
+                path: 'products',
+                name: 'seller_products',
+                builder: (context, state) {
+                  final status = state.uri.queryParameters['status'];
+                  return SellerProductsScreen(initialStatus: status);
+                },
+              ),
+              GoRoute(
+                path: 'orders',
+                name: 'seller_orders',
+                builder: (context, state) {
+                  final tabStr = state.uri.queryParameters['tab'];
+                  final tabIndex = int.tryParse(tabStr ?? '0') ?? 0;
+                  return SellerOrdersScreen(initialTab: tabIndex);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/chat',

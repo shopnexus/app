@@ -11,6 +11,12 @@ Future<AccountProfile> profile(Ref ref) async {
 }
 
 @riverpod
+Future<AccountProfile> publicProfile(Ref ref, String accountId) async {
+  final repository = ref.watch(accountRepositoryProvider);
+  return repository.getAccountById(accountId);
+}
+
+@riverpod
 class AccountController extends _$AccountController {
   @override
   FutureOr<void> build() {}

@@ -25,6 +25,7 @@ class _CatalogApiService implements CatalogApiService {
   Future<DataResponse<List<TProductCard>>> getProductCards({
     String? keyword,
     String? categoryId,
+    String? vendorId,
     int? priceMin,
     int? priceMax,
     List<String>? tags,
@@ -37,6 +38,7 @@ class _CatalogApiService implements CatalogApiService {
     final queryParameters = <String, dynamic>{
       r'keyword': keyword,
       r'category_id': categoryId,
+      r'vendor_id': vendorId,
       r'price_min': priceMin,
       r'price_max': priceMax,
       r'tags': tags,

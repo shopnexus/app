@@ -16,6 +16,7 @@ abstract class CatalogApiService {
   Future<DataResponse<List<TProductCard>>> getProductCards({
     @Query('keyword') String? keyword,
     @Query('category_id') String? categoryId,
+    @Query('vendor_id') String? vendorId,
     @Query('price_min') int? priceMin,
     @Query('price_max') int? priceMax,
     @Query('tags') List<String>? tags,
