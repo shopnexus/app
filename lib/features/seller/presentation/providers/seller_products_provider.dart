@@ -12,7 +12,7 @@ part 'seller_products_provider.g.dart';
 abstract class SellerProductsState with _$SellerProductsState {
   const factory SellerProductsState({
     String?
-    selectedStatus, // null: Tất cả, 'active': Đang bán, 'inactive': Hết hàng/Tạm ẩn, 'violated': Vi phạm/Chờ duyệt
+    selectedStatus, // null: Tất cả, 'active': Đang bán, 'inactive': Đã ẩn, 'violated': Vi phạm/Chờ duyệt
     @Default('') String searchQuery,
     @Default([]) List<TProductDetail> spuList,
     @Default(true) bool isLoading,
@@ -73,5 +73,28 @@ class SellerProductsNotifier extends _$SellerProductsNotifier {
       await repository.deleteSku(skuId);
       await _loadProducts();
     } catch (_) {}
+  }
+
+  void toggleProductVisibility(String productId) {
+    final updatedList = state.spuList.map((product) {
+      if (product.id == productId) {
+        final isCurrentlyHidden =
+            product.skus != null && product.skus!.every((s) => s.stock == 0);
+        final newStock = isCurrentlyHidden ? 45 : 0;
+        final updatedSkus =
+            product.skus?.map((s) => s.copyWith(stock: newStock)).toList() ??
+            [
+              ProductSku(
+                id: 'sku_${product.id}',
+                price: product.price,
+                stock: newStock,
+              ),
+            ];
+        return product.copyWith(skus: updatedSkus);
+      }
+      return product;
+    }).toList();
+
+    state = state.copyWith(spuList: updatedList);
   }
 }

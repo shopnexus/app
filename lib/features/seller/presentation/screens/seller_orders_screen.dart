@@ -72,8 +72,10 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                 children: [
                   _buildTabChip(
                     context,
-                    label: 'Chờ xác nhận',
-                    count: state.pendingItems.length,
+                    label: 'Tất cả',
+                    count:
+                        state.pendingItems.length +
+                        state.confirmedOrders.length,
                     isSelected: state.selectedTab == 0,
                     onTap: () => notifier.setTab(0),
                   ),
@@ -81,9 +83,11 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   _buildTabChip(
                     context,
                     label: 'Đang xử lý',
-                    count: state.confirmedOrders
-                        .where((o) => o.status == 'processing')
-                        .length,
+                    count:
+                        state.pendingItems.length +
+                        state.confirmedOrders
+                            .where((o) => o.status == 'processing')
+                            .length,
                     isSelected: state.selectedTab == 1,
                     onTap: () => notifier.setTab(1),
                   ),
@@ -129,9 +133,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
             Expanded(
               child: state.isLoading
                   ? _buildShimmerList(isDark)
-                  : (state.selectedTab == 0
-                        ? _buildPendingItemsList(context, state, notifier)
-                        : _buildConfirmedOrdersList(context, state)),
+                  : _buildOrdersList(context, state, notifier),
             ),
           ],
         ),
@@ -194,31 +196,6 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  // --- TAB 0: PENDING ITEMS LIST ---
-  Widget _buildPendingItemsList(
-    BuildContext context,
-    SellerOrdersState state,
-    SellerOrdersNotifier notifier,
-  ) {
-    if (state.pendingItems.isEmpty) {
-      return _buildEmptyView(context, 'Không có sản phẩm nào chờ xác nhận');
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: state.pendingItems.length,
-      itemBuilder: (context, index) {
-        final item = state.pendingItems[index];
-        return _buildPendingItemCard(
-          context,
-          item,
-          notifier,
-          state.isActionLoading,
-        );
-      },
     );
   }
 
@@ -440,16 +417,67 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     );
   }
 
-  // --- TABS 1-4: CONFIRMED ORDERS LIST ---
-  Widget _buildConfirmedOrdersList(
+  // --- ORDERS LIST RENDERER (ALL TABS) ---
+  Widget _buildOrdersList(
     BuildContext context,
     SellerOrdersState state,
+    SellerOrdersNotifier notifier,
   ) {
+    if (state.selectedTab == 0) {
+      // Tab 0: Tất cả
+      final hasPending = state.pendingItems.isNotEmpty;
+      final hasConfirmed = state.confirmedOrders.isNotEmpty;
+      if (!hasPending && !hasConfirmed) {
+        return _buildEmptyView(context, 'Chưa có đơn hàng nào');
+      }
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (hasPending)
+            for (final item in state.pendingItems)
+              _buildPendingItemCard(
+                context,
+                item,
+                notifier,
+                state.isActionLoading,
+              ),
+          if (hasConfirmed)
+            for (final order in state.confirmedOrders)
+              _buildConfirmedOrderCard(context, order),
+        ],
+      );
+    }
+
+    if (state.selectedTab == 1) {
+      // Tab 1: Đang xử lý (Gồm đơn chờ xác nhận & đơn đang xử lý)
+      final processingOrders = state.confirmedOrders
+          .where((o) => o.status == 'processing')
+          .toList();
+      final hasPending = state.pendingItems.isNotEmpty;
+      final hasProcessing = processingOrders.isNotEmpty;
+      if (!hasPending && !hasProcessing) {
+        return _buildEmptyView(context, 'Không có đơn hàng nào đang xử lý');
+      }
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (hasPending)
+            for (final item in state.pendingItems)
+              _buildPendingItemCard(
+                context,
+                item,
+                notifier,
+                state.isActionLoading,
+              ),
+          if (hasProcessing)
+            for (final order in processingOrders)
+              _buildConfirmedOrderCard(context, order),
+        ],
+      );
+    }
+
     String? targetStatus;
     switch (state.selectedTab) {
-      case 1:
-        targetStatus = 'processing';
-        break;
       case 2:
         targetStatus = 'shipping';
         break;
@@ -462,7 +490,6 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     }
 
     final filtered = state.confirmedOrders.where((order) {
-      if (targetStatus == null) return true;
       if (targetStatus == 'disputing') {
         return order.status == 'disputing' || order.status == 'cancelled';
       }
