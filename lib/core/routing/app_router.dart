@@ -27,6 +27,8 @@ import '../../features/seller/presentation/screens/ai_video_wizard_screen.dart';
 import '../../features/seller/presentation/screens/seller_products_screen.dart';
 import '../../features/seller/presentation/screens/seller_orders_screen.dart';
 import '../../features/seller/presentation/screens/seller_earnings_screen.dart';
+import '../../features/dispute/presentation/screens/dispute_list_screen.dart';
+import '../../features/dispute/presentation/screens/dispute_detail_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -189,6 +191,21 @@ GoRouter appRouter(Ref ref) {
                 path: 'notifications',
                 name: 'buyer_notifications',
                 builder: (context, state) => const NotificationsScreen(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/dispute',
+            name: 'dispute_list',
+            builder: (context, state) => const DisputeListScreen(),
+            routes: [
+              GoRoute(
+                path: ':id',
+                name: 'dispute_detail',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return DisputeDetailScreen(refundId: id);
+                },
               ),
             ],
           ),

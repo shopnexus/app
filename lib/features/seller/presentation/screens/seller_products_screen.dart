@@ -168,7 +168,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                   const SizedBox(width: 8),
                   _buildTabChip(
                     context,
-                    label: 'Hết hàng',
+                    label: 'Đã ẩn',
                     count: inactiveCount,
                     isSelected: state.selectedStatus == 'inactive',
                     onTap: () => notifier.setStatusFilter('inactive'),
@@ -272,24 +272,33 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final isViolated =
+        product.id.contains('violated') ||
+        product.skus == null ||
+        product.skus!.isEmpty;
+
     // Calculate total stock from SKUs
     int totalStock = 0;
     if (product.skus != null && product.skus!.isNotEmpty) {
       totalStock = product.skus!.fold(0, (sum, sku) => sum + sku.stock);
-    } else {
+    } else if (!isViolated) {
       totalStock = 45; // Default display stock
     }
 
-    final isOutOfStock = totalStock == 0;
-    final statusText = isOutOfStock
-        ? 'Hết hàng'
-        : (product.skus == null ? 'Chờ duyệt' : 'Đang bán');
-    final statusBgColor = isOutOfStock
+    final isHidden = totalStock == 0;
+    final statusText = isViolated
+        ? 'Vi phạm'
+        : (isHidden ? 'Đã ẩn' : 'Đang bán');
+    final statusBgColor = isViolated
         ? const Color(0xFFFEE2E2)
-        : const Color(0xFFA8ECE4);
-    final statusTextColor = isOutOfStock
+        : (isHidden
+              ? (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))
+              : const Color(0xFFA8ECE4));
+    final statusTextColor = isViolated
         ? const Color(0xFF991B1B)
-        : const Color(0xFF00504B);
+        : (isHidden
+              ? (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))
+              : const Color(0xFF00504B));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -313,23 +322,28 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Thumbnail Image
-          Container(
-            width: 90,
-            height: 90,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
-              image: (product.images != null && product.images!.isNotEmpty)
-                  ? DecorationImage(
-                      image: NetworkImage(product.images!.first.url),
-                      fit: BoxFit.cover,
-                    )
+          // Thumbnail Image (Click to view detail)
+          GestureDetector(
+            onTap: () => context.push('/home/product/${product.id}'),
+            child: Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: isDark
+                    ? const Color(0xFF0F172A)
+                    : const Color(0xFFF1F5F9),
+                image: (product.images != null && product.images!.isNotEmpty)
+                    ? DecorationImage(
+                        image: NetworkImage(product.images!.first.url),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+              child: (product.images == null || product.images!.isEmpty)
+                  ? const Icon(Icons.image_outlined, color: Color(0xFF94A3B8))
                   : null,
             ),
-            child: (product.images == null || product.images!.isEmpty)
-                ? const Icon(Icons.image_outlined, color: Color(0xFF94A3B8))
-                : null,
           ),
           const SizedBox(width: 12),
 
@@ -341,17 +355,23 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // Title (Click to view detail)
                     Expanded(
-                      child: Text(
-                        product.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                      child: GestureDetector(
+                        onTap: () =>
+                            context.push('/home/product/${product.id}'),
+                        child: Text(
+                          product.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -378,7 +398,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                     Icon(
                       Icons.inventory_2_outlined,
                       size: 16,
-                      color: isOutOfStock
+                      color: isHidden
                           ? const Color(0xFFEF4444)
                           : const Color(0xFF64748B),
                     ),
@@ -387,39 +407,166 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                       'Tồn kho: $totalStock',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isOutOfStock
+                        color: isHidden
                             ? const Color(0xFFEF4444)
                             : const Color(0xFF64748B),
-                        fontWeight: isOutOfStock
+                        fontWeight: isHidden
                             ? FontWeight.bold
                             : FontWeight.normal,
                       ),
                     ),
                   ],
                 ),
+                if (isViolated) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF451A1A)
+                          : const Color(0xFFFEF2F2),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF7F1D1D)
+                            : const Color(0xFFFCA5A5),
+                      ),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 15,
+                          color: Color(0xFFEF4444),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark
+                                    ? const Color(0xFFFCA5A5)
+                                    : const Color(0xFF991B1B),
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: 'Lý do vi phạm: ',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text:
+                                      (product.description != null &&
+                                          product.description!.isNotEmpty)
+                                      ? product.description!
+                                      : 'Sản phẩm chứa thông tin/hình ảnh không phù hợp với tiêu chuẩn.',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 10),
+
+                // Bottom Row: Price on Far Left, Switch & 3-Dots on Far Right
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // Price on Far Left
                     Text(
                       MoneyUtils.format(product.price),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
-                        fontSize: 16,
+                        fontSize: 15,
                       ),
                     ),
+
+                    // Switch & 3-Dots on Right
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (!isViolated) ...[
+                          GestureDetector(
+                            onTap: () => _showToggleConfirmDialog(
+                              context,
+                              product,
+                              isHidden,
+                              notifier,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isHidden
+                                    ? (isDark
+                                          ? const Color(0xFF334155)
+                                          : const Color(0xFFE2E8F0))
+                                    : AppColors.primary.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    isHidden
+                                        ? Icons.visibility_off_outlined
+                                        : Icons.visibility_outlined,
+                                    size: 14,
+                                    color: isHidden
+                                        ? (isDark
+                                              ? const Color(0xFF94A3B8)
+                                              : const Color(0xFF64748B))
+                                        : AppColors.primary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    isHidden ? 'Đã ẩn' : 'Hiện',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: isHidden
+                                          ? (isDark
+                                                ? const Color(0xFF94A3B8)
+                                                : const Color(0xFF64748B))
+                                          : AppColors.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Transform.scale(
+                                    scale: 0.65,
+                                    child: SizedBox(
+                                      height: 20,
+                                      width: 32,
+                                      child: Switch(
+                                        value: !isHidden,
+                                        activeThumbColor: AppColors.primary,
+                                        onChanged: (_) =>
+                                            _showToggleConfirmDialog(
+                                              context,
+                                              product,
+                                              isHidden,
+                                              notifier,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                        ],
                         IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 20),
-                          onPressed: () => context.push('/seller/ai-wizard'),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                        const SizedBox(width: 12),
-                        IconButton(
-                          icon: const Icon(Icons.more_horiz, size: 20),
+                          icon: const Icon(Icons.more_vert, size: 20),
                           onPressed: () =>
                               _showProductOptions(context, product, notifier),
                           padding: EdgeInsets.zero,
@@ -486,6 +633,77 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
           ),
         );
       },
+    );
+  }
+
+  void _showToggleConfirmDialog(
+    BuildContext context,
+    TProductDetail product,
+    bool isCurrentlyHidden,
+    SellerProductsNotifier notifier,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final actionText = isCurrentlyHidden ? 'hiển thị' : 'ẩn';
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(
+              isCurrentlyHidden
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              color: AppColors.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Xác nhận $actionText sản phẩm',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Text(
+          'Bạn có chắc chắn muốn $actionText sản phẩm "${product.name}" không?',
+          style: TextStyle(
+            fontSize: 14,
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              notifier.toggleProductVisibility(product.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    isCurrentlyHidden
+                        ? 'Đã chuyển sản phẩm sang trạng thái Đang bán'
+                        : 'Đã chuyển sản phẩm sang trạng thái Đã ẩn',
+                  ),
+                  backgroundColor: AppColors.primary,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text('Xác nhận'),
+          ),
+        ],
+      ),
     );
   }
 

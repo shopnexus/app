@@ -48,7 +48,7 @@ final class WishlistProductsProvider
   }
 }
 
-String _$wishlistProductsHash() => r'3bd6a5c984dc7ad1c7721d1f5183b57f69889bd2';
+String _$wishlistProductsHash() => r'232b9bb9640c23114158775cc05bff8c5b36a002';
 
 @ProviderFor(WishlistController)
 const wishlistControllerProvider = WishlistControllerProvider._();

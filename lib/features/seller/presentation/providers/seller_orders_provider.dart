@@ -13,7 +13,7 @@ abstract class SellerOrdersState with _$SellerOrdersState {
   const factory SellerOrdersState({
     @Default(0)
     int
-    selectedTab, // 0: Chờ gom đơn, 1: Đã xác nhận, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
+    selectedTab, // 0: Tất cả, 1: Đang xử lý, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
     @Default([]) List<SellerPendingItem> pendingItems,
     @Default([]) List<SellerOrder> confirmedOrders,
     @Default(true) bool isLoading,

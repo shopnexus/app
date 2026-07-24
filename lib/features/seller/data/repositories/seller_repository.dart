@@ -371,14 +371,28 @@ class SellerRepository {
     ),
     const TProductDetail(
       id: 'spu_violated_1',
-      name: 'Áo sơ mi Linen cúc thô Vintage (Cần bổ sung nhãn chứng nhận)',
+      name: 'Áo sơ mi Linen cúc thô Vintage',
       slug: 'ao-so-mi-linen-cuc-tho-vintage',
-      description: 'Sản phẩm tạm thời bị tạm ẩn do thiếu chứng nhận xuất xứ.',
+      description:
+          'Chưa cung cấp chứng nhận xuất xứ vải hữu cơ theo quy định đăng bán.',
       price: 350000,
       originalPrice: 450000,
       soldCount: 0,
       skus: [
         ProductSku(id: 'sku_v_1', name: 'Trắng M', price: 350000, stock: 10),
+      ],
+    ),
+    const TProductDetail(
+      id: 'spu_violated_2',
+      name: 'Tai nghe Bluetooth Pro ANC 2026 (Bản xách tay)',
+      slug: 'tai-nghe-bluetooth-pro-anc-2026',
+      description:
+          'Tiêu đề chứa từ khóa bản quyền cấm phân phối khi chưa có giấy ủy quyền.',
+      price: 1250000,
+      originalPrice: 1800000,
+      soldCount: 0,
+      skus: [
+        ProductSku(id: 'sku_v_2', name: 'Trắng', price: 1250000, stock: 5),
       ],
     ),
   ];

@@ -106,14 +106,14 @@ class SellerDashboardScreen extends ConsumerWidget {
                 Column(
                   children: [
                     SellerMenuItemTile(
-                      title: 'Pending Orders',
+                      title: 'Processing Orders',
                       icon: Icons.pending_actions,
                       iconColor: const Color(0xFFF59E0B),
                       iconBgColor: const Color(
                         0xFFF59E0B,
                       ).withValues(alpha: 0.12),
                       count: stats.pendingOrders,
-                      onTap: () => context.push('/seller/orders?tab=0'),
+                      onTap: () => context.push('/seller/orders?tab=1'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
