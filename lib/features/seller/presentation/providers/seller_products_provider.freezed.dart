@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SellerProductsState {
 
- String? get selectedStatus;// null: Tất cả, 'active': Đang bán, 'inactive': Hết hàng/Tạm ẩn, 'violated': Vi phạm/Chờ duyệt
+ String? get selectedStatus;// null: Tất cả, 'active': Đang bán, 'inactive': Đã ẩn, 'violated': Vi phạm/Chờ duyệt
  String get searchQuery; List<TProductDetail> get spuList; bool get isLoading; String? get errorMessage;
 /// Create a copy of SellerProductsState
 /// with the given fields replaced by the non-null parameter values.
@@ -215,7 +215,7 @@ class _SellerProductsState implements SellerProductsState {
   
 
 @override final  String? selectedStatus;
-// null: Tất cả, 'active': Đang bán, 'inactive': Hết hàng/Tạm ẩn, 'violated': Vi phạm/Chờ duyệt
+// null: Tất cả, 'active': Đang bán, 'inactive': Đã ẩn, 'violated': Vi phạm/Chờ duyệt
 @override@JsonKey() final  String searchQuery;
  final  List<TProductDetail> _spuList;
 @override@JsonKey() List<TProductDetail> get spuList {

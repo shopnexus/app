@@ -96,7 +96,7 @@ final class BuyerRefundFormNotifierProvider
 }
 
 String _$buyerRefundFormNotifierHash() =>
-    r'329f7f65629c3aa246866b6479fb9219928329ae';
+    r'3547acdb2d647e6c3606963e60a5e6514e660193';
 
 /// Provider quản lý Form tạo yêu cầu hoàn tiền của Buyer
 
@@ -158,7 +158,7 @@ final class SellerDisputeFormNotifierProvider
 }
 
 String _$sellerDisputeFormNotifierHash() =>
-    r'1f762165d1bf349a39fd45f9a651e41bdd98ded7';
+    r'7a5f27fac9b942602b6c2b3b6f021c69fe1ed833';
 
 /// Provider quản lý Form Seller từ chối & khiếu nại lên Admin Mod
 

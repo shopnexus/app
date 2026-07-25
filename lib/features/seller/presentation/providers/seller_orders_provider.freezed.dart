@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SellerOrdersState {
 
- int get selectedTab;// 0: Chờ gom đơn, 1: Đã xác nhận, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
+ int get selectedTab;// 0: Tất cả, 1: Đang xử lý, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
  List<SellerPendingItem> get pendingItems; List<SellerOrder> get confirmedOrders; bool get isLoading; bool get isActionLoading; String? get errorMessage;
 /// Create a copy of SellerOrdersState
 /// with the given fields replaced by the non-null parameter values.
@@ -216,9 +216,9 @@ class _SellerOrdersState implements SellerOrdersState {
   
 
 @override@JsonKey() final  int selectedTab;
-// 0: Chờ gom đơn, 1: Đã xác nhận, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
+// 0: Tất cả, 1: Đang xử lý, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
  final  List<SellerPendingItem> _pendingItems;
-// 0: Chờ gom đơn, 1: Đã xác nhận, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
+// 0: Tất cả, 1: Đang xử lý, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
 @override@JsonKey() List<SellerPendingItem> get pendingItems {
   if (_pendingItems is EqualUnmodifiableListView) return _pendingItems;
   // ignore: implicit_dynamic_type
