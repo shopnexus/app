@@ -9,8 +9,9 @@ class MainLayout extends StatelessWidget {
   int _getCurrentIndex(BuildContext context) {
     final String location = GoRouterState.of(context).matchedLocation;
     if (location.startsWith('/home')) return 0;
-    if (location.startsWith('/search') || location.startsWith('/categories'))
+    if (location.startsWith('/search') || location.startsWith('/categories')) {
       return 1;
+    }
     if (location.startsWith('/seller')) return 2;
     if (location.startsWith('/chat')) return 3;
     if (location.startsWith('/account')) return 4;
@@ -39,11 +40,13 @@ class MainLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final currentIndex = _getCurrentIndex(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F6),
-      // Đồng bộ nền sáng sữa Nexus toàn màn hình
+      backgroundColor: theme.scaffoldBackgroundColor,
+      // Nền động theo Theme
       body: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
@@ -54,11 +57,21 @@ class MainLayout extends StatelessWidget {
       bottomNavigationBar: Container(
         height: 64.0 + MediaQuery.of(context).padding.bottom,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
+          border: isDarkMode
+              ? Border(
+                  top: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withAlpha(40),
+                    width: 1.0,
+                  ),
+                )
+              : null,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(12),
+              color: isDarkMode
+                  ? Colors.black.withAlpha(80)
+                  : Colors.black.withAlpha(12),
               offset: const Offset(0, -4),
               blurRadius: 20.0,
             ),
@@ -126,9 +139,12 @@ class MainLayout extends StatelessWidget {
     required IconData activeIcon,
     required String label,
   }) {
+    final theme = Theme.of(context);
     final isActive = index == currentIndex;
-    final activeColor = const Color(0xFF005049); // Primary Teal từ Nexus
-    final inactiveColor = const Color(0xFF6E7977); // outline từ Nexus
+    final activeColor =
+        theme.colorScheme.primary; // Primary từ Theme (Soft Teal ở Dark)
+    final inactiveColor =
+        theme.colorScheme.onSurfaceVariant; // outline từ Theme
 
     return GestureDetector(
       onTap: () => _onTabTapped(context, index),
@@ -173,7 +189,8 @@ class MainLayout extends StatelessWidget {
   }
 
   Widget _buildSellButton(BuildContext context, {required int currentIndex}) {
-    final primaryColor = const Color(0xFF005049);
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
 
     return GestureDetector(
       onTap: () => _onTabTapped(context, 2),
@@ -193,9 +210,9 @@ class MainLayout extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(
+        child: Icon(
           Icons.add_circle_outline_rounded,
-          color: Colors.white,
+          color: theme.colorScheme.onPrimary,
           size: 24,
         ),
       ),

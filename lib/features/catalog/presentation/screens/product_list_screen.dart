@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/shared_product_card.dart';
 import '../../data/models/catalog_model.dart';
 import '../providers/catalog_provider.dart';
@@ -43,6 +44,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final activeFilters = ref.watch(activeSearchFiltersProvider);
     final categoriesState = ref.watch(categoriesProvider);
     final productsState = ref.watch(catalogProductsProvider(activeFilters));
@@ -57,16 +61,14 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
             activeFilters.keyword!.trim().isNotEmpty);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F6),
-      // Màu nền sáng sữa mới của Stitch
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(categoriesProvider);
             ref.invalidate(catalogProductsProvider(activeFilters));
           },
-          color: const Color(0xFF006A61),
-          // Tông màu xanh mòng két (primary) mới
+          color: theme.colorScheme.primary,
           child: NotificationListener<ScrollNotification>(
             onNotification: (scrollInfo) {
               if (scrollInfo.metrics.pixels >=
@@ -90,33 +92,33 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'ShopNexus',
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
-                            // ExtraBold từ Stitch Display
-                            color: Color(0xFF006A61),
-                            // Primary brand color mới
+                            color: isDarkMode
+                                ? AppColors.darkPrimary
+                                : const Color(0xFF006A61),
                             letterSpacing: -0.5,
                           ),
                         ),
                         Row(
                           children: [
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.shopping_cart_outlined,
-                                color: Color(0xFF1A1C1B),
+                                color: theme.colorScheme.onSurface,
                                 size: 24,
                               ),
                               onPressed: () => context.push('/cart'),
                             ),
                             const SizedBox(width: 4.0),
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.notifications_none_rounded,
-                                color: Color(0xFF1A1C1B),
+                                color: theme.colorScheme.onSurface,
                                 size: 24,
                               ),
                               onPressed: () {
@@ -155,21 +157,22 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                 horizontal: 16.0,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFEEEEEB),
-                                // surface-container của Stitch
+                                color: isDarkMode
+                                    ? AppColors.darkSurface
+                                    : const Color(0xFFEEEEEB),
                                 borderRadius: BorderRadius.circular(9999.0),
-                                // Bo tròn tối đa (rounded-full)
                                 border: Border.all(
-                                  color: const Color(0xFFBCC9C6),
-                                  // outline-variant
+                                  color: isDarkMode
+                                      ? AppColors.darkPrimary.withAlpha(40)
+                                      : const Color(0xFFBCC9C6),
                                   width: 1.0,
                                 ),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.search_rounded,
-                                    color: Color(0xFF6D7A77), // outline
+                                    color: theme.colorScheme.onSurfaceVariant,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 10.0),
@@ -179,12 +182,12 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                           'Tìm sản phẩm, đồ công nghệ, thời trang...',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
+                                      style: theme.textTheme.bodyMedium
                                           ?.copyWith(
                                             fontFamily: 'Inter',
-                                            color: const Color(0xFF6D7A77),
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
                                             fontSize: 14,
                                           ),
                                     ),
@@ -206,18 +209,22 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                             height: 48.0,
                             width: 48.0,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEEEEEB),
+                              color: isDarkMode
+                                  ? AppColors.darkSurface
+                                  : const Color(0xFFEEEEEB),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: const Color(0xFFBCC9C6),
+                                color: isDarkMode
+                                    ? AppColors.darkPrimary.withAlpha(40)
+                                    : const Color(0xFFBCC9C6),
                                 width: 1.0,
                               ),
                             ),
                             child: Icon(
                               Icons.tune_rounded,
                               color: isFiltered
-                                  ? const Color(0xFF006A61)
-                                  : const Color(0xFF1A1C1B),
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurface,
                               size: 20,
                             ),
                           ),
@@ -231,14 +238,15 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                 if (isFiltered)
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: SizedBox(
-                        height: 32.0,
+                        height: 40.0,
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
                             children: _buildActiveFilterChips(
+                              context,
                               activeFilters,
                               categoriesState,
                             ),
@@ -254,10 +262,10 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                     padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
                     child: Text(
                       isFiltered ? 'Kết quả lọc' : 'Dành cho bạn',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontFamily: 'Manrope',
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A1C1B),
+                        color: theme.colorScheme.onSurface,
                         fontSize: 20.0,
                       ),
                     ),
@@ -269,14 +277,14 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                   data: (stateData) {
                     final products = stateData.products;
                     if (products.isEmpty) {
-                      return const SliverFillRemaining(
+                      return SliverFillRemaining(
                         hasScrollBody: false,
                         child: Center(
                           child: Text(
                             'Không có sản phẩm nào phù hợp bộ lọc',
                             style: TextStyle(
                               fontFamily: 'Inter',
-                              color: Color(0xFF6D7A77),
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -356,9 +364,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
                 // Chỉ báo loading khi kéo tải thêm (Infinite Scroll)
                 if (productsState.asData?.value.isLoadingMore ?? false)
-                  const SliverToBoxAdapter(
+                  SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24.0),
+                      padding: const EdgeInsets.symmetric(vertical: 24.0),
                       child: Center(
                         child: SizedBox(
                           height: 24.0,
@@ -366,7 +374,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                           child: CircularProgressIndicator(
                             strokeWidth: 2.5,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(0xFF006A61),
+                              theme.colorScheme.primary,
                             ),
                           ),
                         ),
@@ -386,16 +394,29 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
   // Tạo động danh sách các chip đang kích hoạt bộ lọc
   List<Widget> _buildActiveFilterChips(
+    BuildContext context,
     CatalogSearchFilters activeFilters,
     AsyncValue<List<Category>> categoriesState,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final chips = <Widget>[];
+
+    final chipBgColor = isDarkMode
+        ? AppColors.darkSurface
+        : const Color(0xFFEEEEEB);
+    final chipBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFBCC9C6);
+    final chipTextColor = theme.colorScheme.onSurface;
 
     // Nút xóa toàn bộ lọc (Clear All)
     chips.add(
       Padding(
         padding: const EdgeInsets.only(right: 8.0),
         child: ActionChip(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
           avatar: const Icon(
             Icons.clear_all_rounded,
             size: 14,
@@ -404,7 +425,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           label: const Text('Xóa hết bộ lọc'),
           onPressed: () =>
               ref.read(activeSearchFiltersProvider.notifier).reset(),
-          backgroundColor: const Color(0xFFBA1A1A),
+          backgroundColor: isDarkMode
+              ? const Color(0xFFEF4444)
+              : const Color(0xFFBA1A1A),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(9999.0),
           ),
@@ -425,27 +448,29 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: InputChip(
-            avatar: const Icon(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+            avatar: Icon(
               Icons.location_on_rounded,
               size: 14,
-              color: Color(0xFF006A61),
+              color: theme.colorScheme.primary,
             ),
             label: Text(activeFilters.location!),
             onDeleted: () => ref
                 .read(activeSearchFiltersProvider.notifier)
                 .setLocation(null),
-            backgroundColor: const Color(0xFF006A61).withAlpha(26),
+            backgroundColor: theme.colorScheme.primary.withAlpha(30),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(9999.0),
-              side: const BorderSide(color: Color(0xFF006A61), width: 0.5),
+              side: BorderSide(color: theme.colorScheme.primary, width: 0.5),
             ),
-            labelStyle: const TextStyle(
+            labelStyle: TextStyle(
               fontFamily: 'Inter',
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF006A61),
+              color: theme.colorScheme.primary,
             ),
-            deleteIconColor: const Color(0xFF006A61),
+            deleteIconColor: theme.colorScheme.primary,
           ),
         ),
       );
@@ -467,20 +492,23 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: InputChip(
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
               label: Text(catName),
               onDeleted: () => ref
                   .read(activeSearchFiltersProvider.notifier)
                   .setCategory(null),
-              backgroundColor: const Color(0xFFEEEEEB),
+              backgroundColor: chipBgColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(9999.0),
-                side: const BorderSide(color: Color(0xFFBCC9C6), width: 0.5),
+                side: BorderSide(color: chipBorderColor, width: 0.5),
               ),
-              labelStyle: const TextStyle(
+              labelStyle: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 12,
-                color: Color(0xFF3D4947),
+                color: chipTextColor,
               ),
+              deleteIconColor: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         );
@@ -494,19 +522,22 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: InputChip(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
             label: Text('Từ khóa: "${activeFilters.keyword}"'),
             onDeleted: () =>
                 ref.read(activeSearchFiltersProvider.notifier).setKeyword(null),
-            backgroundColor: const Color(0xFFEEEEEB),
+            backgroundColor: chipBgColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(9999.0),
-              side: const BorderSide(color: Color(0xFFBCC9C6), width: 0.5),
+              side: BorderSide(color: chipBorderColor, width: 0.5),
             ),
-            labelStyle: const TextStyle(
+            labelStyle: TextStyle(
               fontFamily: 'Inter',
               fontSize: 12,
-              color: Color(0xFF3D4947),
+              color: chipTextColor,
             ),
+            deleteIconColor: theme.colorScheme.onSurfaceVariant,
           ),
         ),
       );
@@ -518,22 +549,25 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: InputChip(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
             label: Text(
               'Giá: ${activeFilters.priceMin ?? 0}đ - ${activeFilters.priceMax ?? "∞"}đ',
             ),
             onDeleted: () => ref
                 .read(activeSearchFiltersProvider.notifier)
                 .setPriceRange(null, null),
-            backgroundColor: const Color(0xFFEEEEEB),
+            backgroundColor: chipBgColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(9999.0),
-              side: const BorderSide(color: Color(0xFFBCC9C6), width: 0.5),
+              side: BorderSide(color: chipBorderColor, width: 0.5),
             ),
-            labelStyle: const TextStyle(
+            labelStyle: TextStyle(
               fontFamily: 'Inter',
               fontSize: 12,
-              color: Color(0xFF3D4947),
+              color: chipTextColor,
             ),
+            deleteIconColor: theme.colorScheme.onSurfaceVariant,
           ),
         ),
       );
@@ -549,19 +583,22 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: InputChip(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
             label: Text('Sắp xếp: $sortLbl'),
             onDeleted: () =>
                 ref.read(activeSearchFiltersProvider.notifier).setSort(null),
-            backgroundColor: const Color(0xFFEEEEEB),
+            backgroundColor: chipBgColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(9999.0),
-              side: const BorderSide(color: Color(0xFFBCC9C6), width: 0.5),
+              side: BorderSide(color: chipBorderColor, width: 0.5),
             ),
-            labelStyle: const TextStyle(
+            labelStyle: TextStyle(
               fontFamily: 'Inter',
               fontSize: 12,
-              color: Color(0xFF3D4947),
+              color: chipTextColor,
             ),
+            deleteIconColor: theme.colorScheme.onSurfaceVariant,
           ),
         ),
       );
@@ -581,13 +618,20 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     String? localSelectedCategory = activeFilters.categoryId;
     String? localSelectedLocation = activeFilters.location;
 
+    final parentTheme = Theme.of(context);
+    final isParentDark = parentTheme.brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: isParentDark ? AppColors.darkSurface : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
       builder: (context) {
+        final theme = Theme.of(context);
+        final isDarkMode = theme.brightness == Brightness.dark;
+
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Padding(
@@ -604,12 +648,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Bộ lọc nâng cao',
                             style: TextStyle(
                               fontFamily: 'Manrope',
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           TextButton(
@@ -621,11 +666,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                 localSelectedLocation = null;
                               });
                             },
-                            child: const Text(
+                            child: Text(
                               'Đặt lại',
                               style: TextStyle(
                                 fontFamily: 'Inter',
-                                color: Colors.red,
+                                color: isDarkMode
+                                    ? const Color(0xFFEF4444)
+                                    : Colors.red,
                               ),
                             ),
                           ),
@@ -634,12 +681,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       const SizedBox(height: 16.0),
 
                       // Phần chọn Vị trí / Địa chỉ như yêu cầu của người dùng
-                      const Text(
+                      Text(
                         'Khu vực / Địa điểm',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8.0),
@@ -664,13 +712,18 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                     labelStyle: TextStyle(
                                       fontFamily: 'Inter',
                                       color: isSelected
-                                          ? Colors.white
-                                          : const Color(0xFF3E4947),
+                                          ? theme.colorScheme.onPrimary
+                                          : theme.colorScheme.onSurface,
                                       fontWeight: isSelected
                                           ? FontWeight.bold
                                           : FontWeight.normal,
                                     ),
-                                    selectedColor: const Color(0xFF005049),
+                                    selectedColor: theme.colorScheme.primary,
+                                    backgroundColor: isDarkMode
+                                        ? theme
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                        : const Color(0xFFEEEEEB),
                                     onSelected: (selected) {
                                       setModalState(() {
                                         localSelectedLocation = selected
@@ -686,12 +739,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       const SizedBox(height: 20.0),
 
                       // Phần chọn Danh mục sản phẩm
-                      const Text(
+                      Text(
                         'Danh mục sản phẩm',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8.0),
@@ -714,13 +768,18 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                     labelStyle: TextStyle(
                                       fontFamily: 'Inter',
                                       color: isSelected
-                                          ? Colors.white
-                                          : const Color(0xFF3E4947),
+                                          ? theme.colorScheme.onPrimary
+                                          : theme.colorScheme.onSurface,
                                       fontWeight: isSelected
                                           ? FontWeight.bold
                                           : FontWeight.normal,
                                     ),
-                                    selectedColor: const Color(0xFF005049),
+                                    selectedColor: theme.colorScheme.primary,
+                                    backgroundColor: isDarkMode
+                                        ? theme
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                        : const Color(0xFFEEEEEB),
                                     onSelected: (selected) {
                                       setModalState(() {
                                         localSelectedCategory = selected
@@ -741,12 +800,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       const SizedBox(height: 20.0),
 
                       // Phần nhập khoảng giá
-                      const Text(
+                      Text(
                         'Khoảng giá (VND)',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 12.0),
@@ -756,51 +816,65 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF1F1EF),
+                                color: isDarkMode
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : const Color(0xFFF1F1EF),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: TextField(
                                 controller: _minPriceController,
                                 keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
+                                style: TextStyle(
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                                decoration: InputDecoration(
                                   hintText: 'Tối thiểu',
                                   hintStyle: TextStyle(
                                     fontFamily: 'Inter',
-                                    color: Color(0xFF6D7A77),
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
+                                  contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.0),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                            ),
                             child: Text(
                               '—',
-                              style: TextStyle(color: Color(0xFF6D7A77)),
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           ),
                           Expanded(
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF1F1EF),
+                                color: isDarkMode
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : const Color(0xFFF1F1EF),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: TextField(
                                 controller: _maxPriceController,
                                 keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
+                                style: TextStyle(
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                                decoration: InputDecoration(
                                   hintText: 'Tối đa',
                                   hintStyle: TextStyle(
                                     fontFamily: 'Inter',
-                                    color: Color(0xFF6D7A77),
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
+                                  contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                   ),
                                 ),
@@ -836,8 +910,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                             context.pop();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF005049),
-                            foregroundColor: Colors.white,
+                            backgroundColor: theme.colorScheme.primary,
+                            foregroundColor: theme.colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16.0),
                             ),
@@ -865,6 +939,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   }
 
   Widget _buildProductShimmers(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final double width = MediaQuery.of(context).size.width;
     final int crossAxisCount = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
 
@@ -885,12 +961,18 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Shimmer.fromColors(
-                      baseColor: Colors.grey[200]!,
-                      highlightColor: Colors.grey[100]!,
+                      baseColor: isDarkMode
+                          ? Colors.grey[800]!
+                          : Colors.grey[200]!,
+                      highlightColor: isDarkMode
+                          ? Colors.grey[700]!
+                          : Colors.grey[100]!,
                       child: Container(
                         height: height,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: isDarkMode
+                              ? AppColors.darkSurface
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                       ),

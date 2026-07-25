@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -63,10 +64,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF121212) : Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -91,11 +93,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       width: 140,
                       height: 140,
                       decoration: BoxDecoration(
+                        color: isDarkMode
+                            ? AppColors.darkSurface
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(24),
+                        border: isDarkMode
+                            ? Border.all(
+                                color: AppColors.darkPrimary.withAlpha(50),
+                                width: 1.5,
+                              )
+                            : null,
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0x0D000000),
-                            blurRadius: 20,
+                            color: isDarkMode
+                                ? AppColors.darkPrimary.withAlpha(25)
+                                : const Color(0x0D000000),
+                            blurRadius: 24,
                             offset: const Offset(0, 10),
                           ),
                         ],
@@ -113,15 +126,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     Text(
                       'ShopNexus',
                       style:
-                          Theme.of(context).textTheme.displayLarge?.copyWith(
+                          theme.textTheme.displayLarge?.copyWith(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.5,
+                            color: theme.colorScheme.onSurface,
                           ) ??
-                          const TextStyle(
+                          TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.5,
+                            color: theme.colorScheme.onSurface,
                           ),
                     ),
                     const SizedBox(height: 8),
@@ -129,11 +144,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     Text(
                       'Nexus of Premium Shopping',
                       style:
-                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          theme.textTheme.bodyMedium?.copyWith(
                             fontSize: 14,
                             letterSpacing: 0.5,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ) ??
-                          const TextStyle(fontSize: 14),
+                          TextStyle(
+                            fontSize: 14,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                     ),
                   ],
                 ),
@@ -154,11 +173,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       height: 3,
                       child: LinearProgressIndicator(
                         backgroundColor: isDarkMode
-                            ? const Color(0xFF2C2C2C)
-                            : const Color(0xFFF0F0F0),
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.secondary, // Sử dụng màu Accent từ Theme
+                            ? AppColors.darkSurface
+                            : const Color(0xFFE2E8F0),
+                        color: theme.colorScheme.primary,
+                        // Màu Primary từ Theme (Soft Teal ở Dark mode)
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -166,11 +184,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     Text(
                       'Initializing...',
                       style:
-                          Theme.of(context).textTheme.bodySmall?.copyWith(
+                          theme.textTheme.bodySmall?.copyWith(
                             fontSize: 12,
                             color: isDarkMode
-                                ? const Color(0xFF666666)
-                                : const Color(0xFFAAAAAA),
+                                ? AppColors.darkTextSecondary
+                                : const Color(0xFF6E7977),
                           ) ??
                           const TextStyle(fontSize: 12),
                     ),
