@@ -9,7 +9,8 @@ class MainLayout extends StatelessWidget {
   int _getCurrentIndex(BuildContext context) {
     final String location = GoRouterState.of(context).matchedLocation;
     if (location.startsWith('/home')) return 0;
-    if (location.startsWith('/search') || location.startsWith('/categories')) return 1;
+    if (location.startsWith('/search') || location.startsWith('/categories'))
+      return 1;
     if (location.startsWith('/seller')) return 2;
     if (location.startsWith('/chat')) return 3;
     if (location.startsWith('/account')) return 4;
@@ -41,7 +42,8 @@ class MainLayout extends StatelessWidget {
     final currentIndex = _getCurrentIndex(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F6), // Đồng bộ nền sáng sữa Nexus toàn màn hình
+      backgroundColor: const Color(0xFFF9F9F6),
+      // Đồng bộ nền sáng sữa Nexus toàn màn hình
       body: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
@@ -78,7 +80,7 @@ class MainLayout extends StatelessWidget {
                       currentIndex: currentIndex,
                       icon: Icons.home_outlined,
                       activeIcon: Icons.home_rounded,
-                      label: 'Home',
+                      label: 'Trang chủ',
                     ),
                     _buildTabItem(
                       context,
@@ -86,7 +88,7 @@ class MainLayout extends StatelessWidget {
                       currentIndex: currentIndex,
                       icon: Icons.search_rounded,
                       activeIcon: Icons.search_rounded,
-                      label: 'Search',
+                      label: 'Tìm kiếm',
                     ),
                     // Nút Đăng bán (Sell) ở giữa nổi bật
                     _buildSellButton(context, currentIndex: currentIndex),
@@ -96,7 +98,7 @@ class MainLayout extends StatelessWidget {
                       currentIndex: currentIndex,
                       icon: Icons.chat_bubble_outline_rounded,
                       activeIcon: Icons.chat_bubble_rounded,
-                      label: 'Inbox',
+                      label: 'Hộp thư',
                     ),
                     _buildTabItem(
                       context,
@@ -104,7 +106,7 @@ class MainLayout extends StatelessWidget {
                       currentIndex: currentIndex,
                       icon: Icons.person_outline_rounded,
                       activeIcon: Icons.person_rounded,
-                      label: 'You',
+                      label: 'Tài khoản',
                     ),
                   ],
                 ),
@@ -181,7 +183,8 @@ class MainLayout extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 4),
         decoration: BoxDecoration(
           color: primaryColor,
-          borderRadius: BorderRadius.circular(12.0), // Bo góc 12px theo chuẩn Stitch
+          borderRadius: BorderRadius.circular(12.0),
+          // Bo góc 12px theo chuẩn Stitch
           boxShadow: [
             BoxShadow(
               color: primaryColor.withAlpha(60),

@@ -173,17 +173,21 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                     size: 20,
                                   ),
                                   const SizedBox(width: 10.0),
-                                  Text(
-                                    activeFilters.keyword ??
-                                        'Search for vintage, tech, furniture...',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          fontFamily: 'Inter',
-                                          color: const Color(0xFF6D7A77),
-                                          fontSize: 14,
-                                        ),
+                                  Expanded(
+                                    child: Text(
+                                      activeFilters.keyword ??
+                                          'Tìm sản phẩm, đồ công nghệ, thời trang...',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontFamily: 'Inter',
+                                            color: const Color(0xFF6D7A77),
+                                            fontSize: 14,
+                                          ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -249,7 +253,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
                     child: Text(
-                      isFiltered ? 'Kết quả lọc' : 'For You',
+                      isFiltered ? 'Kết quả lọc' : 'Dành cho bạn',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontFamily: 'Manrope',
                         fontWeight: FontWeight.bold,

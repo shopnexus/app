@@ -136,7 +136,7 @@ class SharedProductCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6.0),
                         ),
                         child: const Text(
-                          'SALE',
+                          'GIẢM GIÁ',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             color: Colors.white,
