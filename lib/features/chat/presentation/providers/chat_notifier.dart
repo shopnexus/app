@@ -144,8 +144,9 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
     if (content.trim().isEmpty) return false;
 
     final currentState = state.value;
-    if (currentState == null || currentState.conversationId == null)
+    if (currentState == null || currentState.conversationId == null) {
       return false;
+    }
 
     final conversationId = currentState.conversationId!;
     final repository = ref.read(chatRepositoryProvider);
@@ -202,8 +203,9 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
     double? productPrice,
   }) async {
     final currentState = state.value;
-    if (currentState == null || currentState.conversationId == null)
+    if (currentState == null || currentState.conversationId == null) {
       return false;
+    }
 
     final conversationId = currentState.conversationId!;
     final repository = ref.read(chatRepositoryProvider);

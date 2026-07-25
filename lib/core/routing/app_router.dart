@@ -17,7 +17,6 @@ import '../../features/account/presentation/screens/addresses_screen.dart';
 import '../../features/account/presentation/screens/wishlist_screen.dart';
 import '../../features/account/presentation/screens/notifications_screen.dart';
 import '../../shared/widgets/main_layout.dart';
-import '../../shared/widgets/placeholder_screens.dart';
 import '../../features/catalog/presentation/screens/product_detail_screen.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/checkout/presentation/screens/checkout_screen.dart';
@@ -29,6 +28,8 @@ import '../../features/seller/presentation/screens/seller_orders_screen.dart';
 import '../../features/seller/presentation/screens/seller_earnings_screen.dart';
 import '../../features/dispute/presentation/screens/dispute_list_screen.dart';
 import '../../features/dispute/presentation/screens/dispute_detail_screen.dart';
+import '../../features/chat/presentation/screens/chat_list_screen.dart';
+import '../../features/chat/presentation/screens/chat_detail_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -153,7 +154,17 @@ GoRouter appRouter(Ref ref) {
           GoRoute(
             path: '/chat',
             name: 'chat',
-            builder: (context, state) => const ChatPlaceholderScreen(),
+            builder: (context, state) => const ChatListScreen(),
+            routes: [
+              GoRoute(
+                path: ':id',
+                name: 'chat_detail',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return ChatDetailScreen(conversationId: id);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/account',
