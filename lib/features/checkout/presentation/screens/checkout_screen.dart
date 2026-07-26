@@ -13,10 +13,11 @@ class CheckoutScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final checkoutState = ref.watch(checkoutProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F7),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: _buildAppBar(context, checkoutState),
       body: _buildBody(context, ref, checkoutState),
       bottomNavigationBar: _shouldShowBottomCTA(checkoutState)
@@ -32,13 +33,14 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context, CheckoutState state) {
+    final theme = Theme.of(context);
     final isTransactional =
         state.step == CheckoutStep.processing ||
         state.step == CheckoutStep.success ||
         state.step == CheckoutStep.failed;
 
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 0,
       title: Text(
@@ -47,27 +49,32 @@ class CheckoutScreen extends ConsumerWidget {
             : state.step == CheckoutStep.failed
             ? 'Payment Failed'
             : 'Checkout',
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'Manrope',
           fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onSurface,
         ),
       ),
       leading: isTransactional
           ? null
           : IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 20,
+                color: theme.colorScheme.onSurface,
+              ),
               onPressed: () => context.pop(),
             ),
     );
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref, CheckoutState state) {
+    final theme = Theme.of(context);
     if (state.isLoading &&
         state.contacts.isEmpty &&
         state.quoteResponse == null) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+      return Center(
+        child: CircularProgressIndicator(color: theme.colorScheme.primary),
       );
     }
 
@@ -99,11 +106,11 @@ class CheckoutScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // 2. Delivery Speed Section
-          _buildDeliverySpeedCard(ref, state),
+          _buildDeliverySpeedCard(context, ref, state),
           const SizedBox(height: 16),
 
           // 3. Payment Method Section
-          _buildPaymentMethodCard(ref, state),
+          _buildPaymentMethodCard(context, ref, state),
           const SizedBox(height: 16),
 
           // 4. Order Items Section
@@ -111,7 +118,7 @@ class CheckoutScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // 5. Order Summary Card
-          _buildOrderSummaryCard(state),
+          _buildOrderSummaryCard(context, state),
           const SizedBox(height: 32),
         ],
       ),
@@ -124,17 +131,27 @@ class CheckoutScreen extends ConsumerWidget {
     WidgetRef ref,
     CheckoutState state,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final contact = state.selectedContact;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
+    final innerBgColor = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF9F9F7);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E3E0)),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(6),
+            color: Colors.black.withAlpha(isDarkMode ? 40 : 6),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -146,21 +163,21 @@ class CheckoutScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(
                     Icons.location_on_outlined,
-                    color: AppColors.primary,
+                    color: theme.colorScheme.primary,
                     size: 22,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     'Delivery Address',
                     style: TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -169,7 +186,7 @@ class CheckoutScreen extends ConsumerWidget {
                 onPressed: () =>
                     _showAddressSelectionModal(context, ref, state),
                 style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primary,
+                  foregroundColor: theme.colorScheme.primary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 4,
@@ -191,7 +208,7 @@ class CheckoutScreen extends ConsumerWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                color: const Color(0xFFF9F9F7),
+                color: innerBgColor,
                 child: Row(
                   children: [
                     Expanded(
@@ -205,20 +222,20 @@ class CheckoutScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   contact.fullName,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
+                                    color: theme.colorScheme.onSurface,
                                   ),
                                 ),
                                 if (contact.phoneVerified)
-                                  const Padding(
-                                    padding: EdgeInsets.only(left: 4),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 4),
                                     child: Icon(
                                       Icons.verified_rounded,
                                       size: 15,
-                                      color: AppColors.primary,
+                                      color: theme.colorScheme.primary,
                                     ),
                                   ),
                               ],
@@ -228,29 +245,29 @@ class CheckoutScreen extends ConsumerWidget {
                               contact.address,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 12,
-                                color: AppColors.textSecondary,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                             if (contact.addressDetail != null &&
                                 contact.addressDetail!.isNotEmpty)
                               Text(
                                 contact.addressDetail!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 11,
-                                  color: AppColors.textSecondary,
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             const SizedBox(height: 4),
                             Text(
                               contact.phone,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 12,
-                                color: AppColors.textSecondary,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -267,12 +284,12 @@ class CheckoutScreen extends ConsumerWidget {
                               'https://lh3.googleusercontent.com/aida-public/AB6AXuCcht0CZm9E6p76WuIc7ot1PwtrnGodafyW8t2fimE-d9JTZHAJqnAFZkNqu_YDVfIuQ3XbG0T8muYuvnRu9GUxWYQoGNFOyf9AKqBWereVEnA8odf3HWfIkyl8z_lhpVwRSlqrKtgPgD43PJYJMdfkBofhBf4nvcXypUCsYLU55Xm8ytunYl83-KCYEFRJXzq4J2WyWDgx2zx1EOagubS-S6YON9e8fvE_7JaqvTufreotJtYG0M2ba0oIMGdyj6YXgSNplZcO3iE',
                           fit: BoxFit.cover,
                           placeholder: (context, url) =>
-                              Container(color: const Color(0xFFE2E3E0)),
+                              Container(color: cardBorderColor),
                           errorWidget: (context, url, error) => Container(
-                            color: const Color(0xFFE2E3E0),
-                            child: const Icon(
+                            color: cardBorderColor,
+                            child: Icon(
                               Icons.map_outlined,
-                              color: Colors.grey,
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -283,12 +300,12 @@ class CheckoutScreen extends ConsumerWidget {
               ),
             ),
           ] else ...[
-            const Text(
+            Text(
               'No address selected. Please tap Change to select an address.',
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 13,
-                color: Colors.red,
+                color: isDarkMode ? const Color(0xFFEF4444) : Colors.red,
               ),
             ),
           ],
@@ -303,13 +320,18 @@ class CheckoutScreen extends ConsumerWidget {
     WidgetRef ref,
     CheckoutState state,
   ) {
+    final parentTheme = Theme.of(context);
+    final isParentDark = parentTheme.brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: isParentDark ? AppColors.darkSurface : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final theme = Theme.of(context);
+
         return DefaultTabController(
           length: 3,
           child: SizedBox(
@@ -321,26 +343,29 @@ class CheckoutScreen extends ConsumerWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2E3E0),
+                    color: isParentDark
+                        ? AppColors.darkPrimary.withAlpha(50)
+                        : const Color(0xFFE2E3E0),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     'Select Shipping Address',
                     style: TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ),
-                const TabBar(
-                  labelColor: AppColors.primary,
-                  unselectedLabelColor: AppColors.textSecondary,
-                  indicatorColor: AppColors.primary,
-                  tabs: [
+                TabBar(
+                  labelColor: theme.colorScheme.primary,
+                  unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                  indicatorColor: theme.colorScheme.primary,
+                  tabs: const [
                     Tab(text: 'Home'),
                     Tab(text: 'Office'),
                     Tab(text: 'Other'),
@@ -384,11 +409,17 @@ class CheckoutScreen extends ConsumerWidget {
     List<Contact> list,
     Contact? selected,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     if (list.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No addresses in this category.',
-          style: TextStyle(fontFamily: 'Inter', color: AppColors.textSecondary),
+          style: TextStyle(
+            fontFamily: 'Inter',
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       );
     }
@@ -400,6 +431,18 @@ class CheckoutScreen extends ConsumerWidget {
         final contact = list[index];
         final isSelected = selected?.id == contact.id;
 
+        final selectedBg = isDarkMode
+            ? AppColors.darkPrimary.withAlpha(35)
+            : const Color(0xFFE6F4EA);
+        final unselectedBg = isDarkMode
+            ? theme.colorScheme.surfaceContainerHighest
+            : const Color(0xFFF9F9F7);
+        final borderColor = isSelected
+            ? theme.colorScheme.primary
+            : (isDarkMode
+                  ? AppColors.darkPrimary.withAlpha(30)
+                  : const Color(0xFFE2E3E0));
+
         return InkWell(
           onTap: () {
             ref.read(checkoutProvider.notifier).selectContact(contact);
@@ -410,12 +453,10 @@ class CheckoutScreen extends ConsumerWidget {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? const Color(0xFFE6F4EA)
-                  : const Color(0xFFF9F9F7),
+              color: isSelected ? selectedBg : unselectedBg,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppColors.primary : const Color(0xFFE2E3E0),
+                color: borderColor,
                 width: isSelected ? 1.5 : 1.0,
               ),
             ),
@@ -426,8 +467,8 @@ class CheckoutScreen extends ConsumerWidget {
                       ? Icons.radio_button_checked
                       : Icons.radio_button_off,
                   color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
                   size: 20,
                 ),
                 const SizedBox(width: 12),
@@ -437,20 +478,21 @@ class CheckoutScreen extends ConsumerWidget {
                     children: [
                       Text(
                         contact.fullName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       Text(
                         contact.address,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 12,
-                          color: AppColors.textSecondary,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -465,16 +507,28 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   // --- 2. DELIVERY SPEED CARD ---
-  Widget _buildDeliverySpeedCard(WidgetRef ref, CheckoutState state) {
+  Widget _buildDeliverySpeedCard(
+    BuildContext context,
+    WidgetRef ref,
+    CheckoutState state,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E3E0)),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(6),
+            color: Colors.black.withAlpha(isDarkMode ? 40 : 6),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -483,27 +537,28 @@ class CheckoutScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.local_shipping_outlined,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
                 size: 22,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Delivery Speed',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           _buildDeliveryOptionTile(
+            context,
             ref,
             title: 'Standard Delivery',
             description: 'Estimated arrival: 3 - 5 business days',
@@ -513,6 +568,7 @@ class CheckoutScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           _buildDeliveryOptionTile(
+            context,
             ref,
             title: 'Express Delivery',
             description: 'Estimated arrival: 1 - 2 business days',
@@ -526,6 +582,7 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   Widget _buildDeliveryOptionTile(
+    BuildContext context,
     WidgetRef ref, {
     required String title,
     required String description,
@@ -533,7 +590,27 @@ class CheckoutScreen extends ConsumerWidget {
     required String groupValue,
     required String badge,
   }) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final isSelected = value == groupValue;
+
+    final selectedBg = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(35)
+        : const Color(0xFFE6F4EA);
+    final unselectedBg = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF9F9F7);
+    final borderColor = isSelected
+        ? theme.colorScheme.primary
+        : (isDarkMode
+              ? AppColors.darkPrimary.withAlpha(30)
+              : const Color(0xFFE2E3E0));
+
+    final badgeBg = isSelected
+        ? theme.colorScheme.primary.withAlpha(30)
+        : (isDarkMode
+              ? theme.colorScheme.surfaceContainerHighest
+              : const Color(0xFFE2E3E0));
 
     return InkWell(
       onTap: () =>
@@ -542,18 +619,17 @@ class CheckoutScreen extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE6F4EA) : const Color(0xFFF9F9F7),
+          color: isSelected ? selectedBg : unselectedBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : const Color(0xFFE2E3E0),
-            width: isSelected ? 1.5 : 1.0,
-          ),
+          border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1.0),
         ),
         child: Row(
           children: [
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -563,20 +639,20 @@ class CheckoutScreen extends ConsumerWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -585,9 +661,7 @@ class CheckoutScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary.withAlpha(25)
-                    : const Color(0xFFE2E3E0),
+                color: badgeBg,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -597,8 +671,8 @@ class CheckoutScreen extends ConsumerWidget {
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -609,18 +683,29 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   // --- 3. PAYMENT METHOD CARD ---
-  Widget _buildPaymentMethodCard(WidgetRef ref, CheckoutState state) {
+  Widget _buildPaymentMethodCard(
+    BuildContext context,
+    WidgetRef ref,
+    CheckoutState state,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final notifier = ref.read(checkoutProvider.notifier);
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E3E0)),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(6),
+            color: Colors.black.withAlpha(isDarkMode ? 40 : 6),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -629,17 +714,21 @@ class CheckoutScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.payment_outlined, color: AppColors.primary, size: 22),
-              SizedBox(width: 8),
+              Icon(
+                Icons.payment_outlined,
+                color: theme.colorScheme.primary,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
               Text(
                 'Payment Method',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -649,6 +738,7 @@ class CheckoutScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: _buildPaymentPill(
+                  context,
                   ref,
                   label: 'Card (Stripe)',
                   icon: Icons.credit_card_rounded,
@@ -659,6 +749,7 @@ class CheckoutScreen extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: _buildPaymentPill(
+                  context,
                   ref,
                   label: 'Platform Wallet',
                   icon: Icons.account_balance_wallet_outlined,
@@ -679,18 +770,18 @@ class CheckoutScreen extends ConsumerWidget {
               children: [
                 Checkbox(
                   value: state.useWallet,
-                  activeColor: AppColors.primary,
+                  activeColor: theme.colorScheme.primary,
                   onChanged: (val) => notifier.selectPaymentOption(
                     state.paymentOption,
                     useWallet: val,
                   ),
                 ),
-                const Text(
+                Text(
                   'Use wallet balance first',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
-                    color: AppColors.textPrimary,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -702,13 +793,28 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   Widget _buildPaymentPill(
+    BuildContext context,
     WidgetRef ref, {
     required String label,
     required IconData icon,
     required String value,
     required String groupValue,
   }) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final isSelected = value == groupValue;
+
+    final selectedBg = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(35)
+        : const Color(0xFFE6F4EA);
+    final unselectedBg = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF9F9F7);
+    final borderColor = isSelected
+        ? theme.colorScheme.primary
+        : (isDarkMode
+              ? AppColors.darkPrimary.withAlpha(30)
+              : const Color(0xFFE2E3E0));
 
     return InkWell(
       onTap: () =>
@@ -717,12 +823,9 @@ class CheckoutScreen extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE6F4EA) : const Color(0xFFF9F9F7),
+          color: isSelected ? selectedBg : unselectedBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : const Color(0xFFE2E3E0),
-            width: isSelected ? 1.5 : 1.0,
-          ),
+          border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1.0),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -730,7 +833,9 @@ class CheckoutScreen extends ConsumerWidget {
             Icon(
               icon,
               size: 18,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: 6),
             Flexible(
@@ -742,7 +847,9 @@ class CheckoutScreen extends ConsumerWidget {
                   fontFamily: 'Inter',
                   fontSize: 13,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface,
                 ),
               ),
             ),
@@ -758,15 +865,26 @@ class CheckoutScreen extends ConsumerWidget {
     WidgetRef ref,
     CheckoutState state,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
+    final itemPlaceholderBg = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF9F9F7);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E3E0)),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(6),
+            color: Colors.black.withAlpha(isDarkMode ? 40 : 6),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -775,21 +893,21 @@ class CheckoutScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.shopping_bag_outlined,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
                 size: 22,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Order Items',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -808,12 +926,13 @@ class CheckoutScreen extends ConsumerWidget {
                       height: 48,
                       fit: BoxFit.cover,
                       placeholder: (context, url) =>
-                          Container(color: const Color(0xFFF9F9F7)),
+                          Container(color: itemPlaceholderBg),
                       errorWidget: (context, url, error) => Container(
-                        color: const Color(0xFFF9F9F7),
-                        child: const Icon(
+                        color: itemPlaceholderBg,
+                        child: Icon(
                           Icons.image_not_supported_outlined,
                           size: 18,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -829,19 +948,19 @@ class CheckoutScreen extends ConsumerWidget {
                               : 'Product Sku',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                         Text(
                           'Qty: ${item.quantity}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 12,
-                            color: AppColors.textSecondary,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -849,11 +968,11 @@ class CheckoutScreen extends ConsumerWidget {
                   ),
                   Text(
                     MoneyUtils.format(item.sku.price, currency: item.currency),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+                      color: theme.colorScheme.primary,
                     ),
                   ),
                 ],
@@ -866,7 +985,10 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   // --- 5. ORDER SUMMARY CARD ---
-  Widget _buildOrderSummaryCard(CheckoutState state) {
+  Widget _buildOrderSummaryCard(BuildContext context, CheckoutState state) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final subtotal = state.calculatedSubtotal;
     final shipping = state.totalShippingCost;
     final total = subtotal + shipping;
@@ -884,15 +1006,20 @@ class CheckoutScreen extends ConsumerWidget {
       currency: state.preferredCurrency,
     );
 
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E3E0)),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(6),
+            color: Colors.black.withAlpha(isDarkMode ? 40 : 6),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -901,33 +1028,34 @@ class CheckoutScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Order Summary',
             style: TextStyle(
               fontFamily: 'Manrope',
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Items Subtotal',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,
-                  color: AppColors.textSecondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               Text(
                 subtotalFormatted,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -936,47 +1064,47 @@ class CheckoutScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Delivery Fee',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,
-                  color: AppColors.textSecondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               Text(
                 shippingFormatted,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Divider(color: Color(0xFFE2E3E0), height: 1),
+          Divider(color: cardBorderColor, height: 1),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Total Amount',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               Text(
                 totalFormatted,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ],
@@ -992,6 +1120,9 @@ class CheckoutScreen extends ConsumerWidget {
     WidgetRef ref,
     CheckoutState state,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final subtotal = state.calculatedSubtotal;
     final shipping = state.totalShippingCost;
     final total = subtotal + shipping;
@@ -999,6 +1130,10 @@ class CheckoutScreen extends ConsumerWidget {
       total,
       currency: state.preferredCurrency,
     );
+
+    final ctaBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
 
     return Container(
       padding: EdgeInsets.only(
@@ -1008,11 +1143,11 @@ class CheckoutScreen extends ConsumerWidget {
         bottom: 12 + MediaQuery.of(context).padding.bottom,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: const Border(top: BorderSide(color: Color(0xFFE2E3E0))),
+        color: isDarkMode ? AppColors.darkSurface : Colors.white,
+        border: Border(top: BorderSide(color: ctaBorderColor)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(10),
+            color: Colors.black.withAlpha(isDarkMode ? 60 : 10),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -1025,9 +1160,11 @@ class CheckoutScreen extends ConsumerWidget {
               ? null
               : () => ref.read(checkoutProvider.notifier).placeOrder(),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            disabledBackgroundColor: const Color(0xFFBEC9C6),
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
+            disabledBackgroundColor: isDarkMode
+                ? theme.colorScheme.surfaceContainerHighest
+                : const Color(0xFFBEC9C6),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -1059,43 +1196,50 @@ class CheckoutScreen extends ConsumerWidget {
     WidgetRef ref,
     CheckoutState state,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(
-              color: AppColors.primary,
+            CircularProgressIndicator(
+              color: theme.colorScheme.primary,
               strokeWidth: 4,
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Processing Payment...',
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'We are syncing transaction status with the payment gateway. Please do not close the app.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
             TextButton(
               onPressed: () =>
                   ref.read(checkoutProvider.notifier).stopPolling(),
-              child: const Text(
+              child: Text(
                 'Cancel Payment',
-                style: TextStyle(color: Color(0xFFBA1A1A)),
+                style: TextStyle(
+                  color: isDarkMode
+                      ? const Color(0xFFEF4444)
+                      : const Color(0xFFBA1A1A),
+                ),
               ),
             ),
           ],
@@ -1109,6 +1253,8 @@ class CheckoutScreen extends ConsumerWidget {
     WidgetRef ref,
     CheckoutState state,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final summary = state.checkoutSummary;
 
     return Center(
@@ -1119,33 +1265,33 @@ class CheckoutScreen extends ConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Color(0xFFE6F4EA),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withAlpha(30),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle_rounded,
                 size: 72,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Order Placed Successfully!',
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'Transaction ID: #${summary?.session.id ?? ''}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
@@ -1153,21 +1299,25 @@ class CheckoutScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDarkMode ? AppColors.darkSurface : Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE2E3E0)),
+                  border: Border.all(
+                    color: isDarkMode
+                        ? AppColors.darkPrimary.withAlpha(40)
+                        : const Color(0xFFE2E3E0),
+                  ),
                 ),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Amount Paid',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 13,
-                            color: AppColors.textSecondary,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         Text(
@@ -1175,11 +1325,11 @@ class CheckoutScreen extends ConsumerWidget {
                             summary.session.totalAmount,
                             currency: summary.session.currency,
                           ),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ],
@@ -1197,7 +1347,8 @@ class CheckoutScreen extends ConsumerWidget {
                   context.go('/home');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -1216,6 +1367,9 @@ class CheckoutScreen extends ConsumerWidget {
     WidgetRef ref,
     CheckoutState state,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -1224,24 +1378,28 @@ class CheckoutScreen extends ConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFDAD6),
+              decoration: BoxDecoration(
+                color: isDarkMode
+                    ? const Color(0xFF450A0A)
+                    : const Color(0xFFFFDAD6),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.error_outline_rounded,
                 size: 72,
-                color: Color(0xFFBA1A1A),
+                color: isDarkMode
+                    ? const Color(0xFFEF4444)
+                    : const Color(0xFFBA1A1A),
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Payment Failed',
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -1249,10 +1407,10 @@ class CheckoutScreen extends ConsumerWidget {
               state.errorMessage ??
                   'An error occurred during transaction processing.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 48),
@@ -1264,7 +1422,8 @@ class CheckoutScreen extends ConsumerWidget {
                     .read(checkoutProvider.notifier)
                     .setStep(CheckoutStep.address),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

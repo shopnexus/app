@@ -15,15 +15,28 @@ class CartScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final cartState = ref.watch(cartProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F7), // Warm Off-white
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text('Your Bag'),
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
+        title: Text(
+          'Your Bag',
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: theme.colorScheme.onSurface,
+          ),
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -33,10 +46,10 @@ class CartScreen extends ConsumerWidget {
               child: Center(
                 child: Text(
                   '${cartState.items.length} items',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -49,11 +62,11 @@ class CartScreen extends ConsumerWidget {
 
   Widget _buildBody(BuildContext context, WidgetRef ref, CartState state) {
     if (state.isLoading && state.items.isEmpty) {
-      return _buildShimmerLoading();
+      return _buildShimmerLoading(context);
     }
 
     if (state.errorMessage != null && state.items.isEmpty) {
-      return _buildErrorState(ref, state.errorMessage!);
+      return _buildErrorState(context, ref, state.errorMessage!);
     }
 
     if (state.items.isEmpty) {
@@ -64,7 +77,7 @@ class CartScreen extends ConsumerWidget {
       children: [
         Expanded(
           child: RefreshIndicator(
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             onRefresh: () => ref.read(cartProvider.notifier).fetchCart(),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -72,6 +85,7 @@ class CartScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final item = state.items[index];
                 return _buildCartItem(
+                  context,
                   ref,
                   item,
                   state.preferredCurrency,
@@ -86,19 +100,20 @@ class CartScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShimmerLoading() {
+  Widget _buildShimmerLoading(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: 3,
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
+          baseColor: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+          highlightColor: isDarkMode ? Colors.grey[700]! : Colors.grey[100]!,
           child: Container(
             margin: const EdgeInsets.only(bottom: 16),
             height: 120,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDarkMode ? AppColors.darkSurface : Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
           ),
@@ -107,31 +122,40 @@ class CartScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(WidgetRef ref, String error) {
+  Widget _buildErrorState(BuildContext context, WidgetRef ref, String error) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline_rounded,
               size: 64,
-              color: Color(0xFFBA1A1A),
+              color: isDarkMode
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFFBA1A1A),
             ),
             const SizedBox(height: 16),
             Text(
               error,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 16,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => ref.read(cartProvider.notifier).fetchCart(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+              ),
               child: const Text('Retry'),
             ),
           ],
@@ -141,6 +165,9 @@ class CartScreen extends ConsumerWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -149,34 +176,36 @@ class CartScreen extends ConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Color(0xFFEEEEEC),
+              decoration: BoxDecoration(
+                color: isDarkMode
+                    ? theme.colorScheme.surfaceContainerHighest
+                    : const Color(0xFFEEEEEC),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.shopping_bag_outlined,
                 size: 64,
-                color: AppColors.accent,
+                color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Your Bag is Empty',
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Looks like you haven\'t added anything to your bag yet. Let\'s explore the marketplace!',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 32),
@@ -186,7 +215,8 @@ class CartScreen extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () => context.go('/home'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -201,11 +231,15 @@ class CartScreen extends ConsumerWidget {
   }
 
   Widget _buildCartItem(
+    BuildContext context,
     WidgetRef ref,
     CartItem item,
     String preferredCurrency,
     Map<String, double> rates,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     // Tính giá quy đổi của item đơn lẻ
     double convertedPrice = item.sku.price.toDouble();
     if (item.currency.toUpperCase() != preferredCurrency.toUpperCase()) {
@@ -232,16 +266,24 @@ class CartScreen extends ConsumerWidget {
           (item.sku.price.toDouble() == 0 ? 1.0 : item.sku.price.toDouble()),
     );
 
+    final itemBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final itemBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
+    final pillBgColor = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF4F4F1);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: itemBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E3E0)),
+        border: Border.all(color: itemBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(8),
+            color: Colors.black.withAlpha(isDarkMode ? 40 : 8),
             offset: const Offset(0, 4),
             blurRadius: 16.0,
           ),
@@ -259,16 +301,19 @@ class CartScreen extends ConsumerWidget {
               height: 110,
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
-                color: const Color(0xFFF4F4F1),
-                child: const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                color: pillBgColor,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
               ),
               errorWidget: (context, url, error) => Container(
-                color: const Color(0xFFF4F4F1),
-                child: const Icon(
+                color: pillBgColor,
+                child: Icon(
                   Icons.image_not_supported_outlined,
-                  color: Colors.grey,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -295,11 +340,11 @@ class CartScreen extends ConsumerWidget {
                                   : 'Product Sku',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                color: theme.colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -307,10 +352,10 @@ class CartScreen extends ConsumerWidget {
                             onTap: () => ref
                                 .read(cartProvider.notifier)
                                 .removeItem(item.sku.id),
-                            child: const Icon(
+                            child: Icon(
                               Icons.close_rounded,
                               size: 20,
-                              color: Color(0xFF6E7977),
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -323,10 +368,10 @@ class CartScreen extends ConsumerWidget {
                             item.sku.attributes!
                                 .map((attr) => '${attr.key}: ${attr.value}')
                                 .join(' | '),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 12,
-                              color: AppColors.textSecondary,
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -340,11 +385,11 @@ class CartScreen extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           priceDisplay,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ),
@@ -352,14 +397,18 @@ class CartScreen extends ConsumerWidget {
                       Container(
                         height: 32,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF4F4F1),
+                          color: pillBgColor,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFFE2E3E0)),
+                          border: Border.all(color: itemBorderColor),
                         ),
                         child: Row(
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.remove, size: 14),
+                              icon: Icon(
+                                Icons.remove,
+                                size: 14,
+                                color: theme.colorScheme.onSurface,
+                              ),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(
                                 minWidth: 28,
@@ -371,15 +420,19 @@ class CartScreen extends ConsumerWidget {
                             ),
                             Text(
                               '${item.quantity}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                color: theme.colorScheme.onSurface,
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.add, size: 14),
+                              icon: Icon(
+                                Icons.add,
+                                size: 14,
+                                color: theme.colorScheme.onSurface,
+                              ),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(
                                 minWidth: 28,
@@ -408,10 +461,17 @@ class CartScreen extends ConsumerWidget {
     WidgetRef ref,
     CartState state,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final subtotalFormatted = MoneyUtils.format(
       state.calculatedTotal,
       currency: state.preferredCurrency,
     );
+
+    final summaryBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
 
     return Container(
       padding: EdgeInsets.only(
@@ -421,16 +481,16 @@ class CartScreen extends ConsumerWidget {
         bottom: 20 + MediaQuery.of(context).padding.bottom,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? AppColors.darkSurface : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(12),
+            color: Colors.black.withAlpha(isDarkMode ? 60 : 12),
             offset: const Offset(0, -6),
             blurRadius: 24.0,
           ),
         ],
-        border: const Border(top: BorderSide(color: Color(0xFFE2E3E0))),
+        border: Border(top: BorderSide(color: summaryBorderColor)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,21 +499,21 @@ class CartScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Subtotal',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               Text(
                 subtotalFormatted,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -462,12 +522,12 @@ class CartScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Shipping',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               Text(
@@ -476,34 +536,34 @@ class CartScreen extends ConsumerWidget {
                   fontFamily: 'Inter',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).primaryColor,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          const Divider(color: Color(0xFFE2E3E0), height: 1),
+          Divider(color: summaryBorderColor, height: 1),
           const SizedBox(height: 16),
           // Total Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Total',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               Text(
                 subtotalFormatted,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ],
@@ -515,12 +575,11 @@ class CartScreen extends ConsumerWidget {
             height: 52,
             child: ElevatedButton(
               onPressed: () {
-                // Đóng gói items chuyển tiếp sang Checkout
                 final checkoutItems = state.items.map((item) {
                   return CheckoutItem(
                     skuId: item.sku.id,
                     quantity: item.quantity,
-                    transportOption: 'Standard', // Giá trị mặc định khi bắt đầu
+                    transportOption: 'Standard',
                   );
                 }).toList();
 
@@ -535,7 +594,8 @@ class CartScreen extends ConsumerWidget {
                 context.push('/checkout');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -551,21 +611,21 @@ class CartScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.lock_outline_rounded,
                 size: 14,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
-              SizedBox(width: 4),
+              const SizedBox(width: 4),
               Text(
                 'Secure Checkout',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
