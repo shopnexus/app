@@ -11,6 +11,7 @@ class SharedProductCard extends StatelessWidget {
   final double aspectRatio;
   final bool isFavorite;
   final VoidCallback? onFavoriteTap;
+  final bool showFavoriteButton;
   final bool showVendor;
 
   const SharedProductCard({
@@ -20,6 +21,7 @@ class SharedProductCard extends StatelessWidget {
     this.aspectRatio = 1.0,
     this.isFavorite = false,
     this.onFavoriteTap,
+    this.showFavoriteButton = false,
     this.showVendor = true,
   });
 
@@ -108,34 +110,35 @@ class SharedProductCard extends StatelessWidget {
                     ),
                   ),
                   // Nút thả tim yêu thích (Favorite Button)
-                  Positioned(
-                    top: 8.0,
-                    right: 8.0,
-                    child: GestureDetector(
-                      onTap: onFavoriteTap,
-                      child: Container(
-                        padding: const EdgeInsets.all(6.0),
-                        decoration: BoxDecoration(
-                          color: isDarkMode
-                              ? theme.colorScheme.surface.withAlpha(220)
-                              : Colors.white.withAlpha(230),
-                          shape: BoxShape.circle,
-                          boxShadow: const [
-                            BoxShadow(color: Colors.black12, blurRadius: 4.0),
-                          ],
-                        ),
-                        child: Icon(
-                          isFavorite
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                          size: 18,
-                          color: isFavorite
-                              ? const Color(0xFFBA1A1A)
-                              : theme.colorScheme.onSurfaceVariant,
+                  if (showFavoriteButton)
+                    Positioned(
+                      top: 8.0,
+                      right: 8.0,
+                      child: GestureDetector(
+                        onTap: onFavoriteTap,
+                        child: Container(
+                          padding: const EdgeInsets.all(6.0),
+                          decoration: BoxDecoration(
+                            color: isDarkMode
+                                ? theme.colorScheme.surface.withAlpha(220)
+                                : Colors.white.withAlpha(230),
+                            shape: BoxShape.circle,
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black12, blurRadius: 4.0),
+                            ],
+                          ),
+                          child: Icon(
+                            isFavorite
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            size: 18,
+                            color: isFavorite
+                                ? const Color(0xFFBA1A1A)
+                                : theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   // Nhãn giảm giá (nếu có)
                   if (product.originalPrice != null &&
                       product.originalPrice! > product.price)

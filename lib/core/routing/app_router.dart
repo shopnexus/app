@@ -16,6 +16,7 @@ import '../../features/account/presentation/screens/order_detail_screen.dart';
 import '../../features/account/presentation/screens/addresses_screen.dart';
 import '../../features/account/presentation/screens/wishlist_screen.dart';
 import '../../features/account/presentation/screens/notifications_screen.dart';
+import '../../features/account/presentation/screens/settings_screen.dart';
 import '../../shared/widgets/main_layout.dart';
 import '../../features/catalog/presentation/screens/product_detail_screen.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
@@ -202,6 +203,11 @@ GoRouter appRouter(Ref ref) {
                 path: 'notifications',
                 name: 'buyer_notifications',
                 builder: (context, state) => const NotificationsScreen(),
+              ),
+              GoRoute(
+                path: 'settings',
+                name: 'buyer_settings',
+                builder: (context, state) => const SettingsScreen(),
               ),
             ],
           ),

@@ -121,16 +121,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                 color: theme.colorScheme.onSurface,
                                 size: 24,
                               ),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Tính năng thông báo đang được phát triển!',
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              },
+                              onPressed: () =>
+                                  context.push('/account/notifications'),
                             ),
                           ],
                         ),

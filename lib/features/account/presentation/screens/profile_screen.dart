@@ -129,11 +129,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               color: theme.colorScheme.onSurfaceVariant,
               size: 24,
             ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tính năng cài đặt đang mở...')),
-              );
-            },
+            onPressed: () => context.push('/account/settings'),
           ),
         ],
       ),
