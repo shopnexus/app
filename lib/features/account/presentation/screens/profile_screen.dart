@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/account_model.dart';
 import '../providers/account_provider.dart';
+import '../../../seller/presentation/providers/seller_dashboard_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -106,6 +107,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final profileAsync = ref.watch(profileProvider);
+    final statsAsync = ref.watch(sellerDashboardProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -261,73 +263,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       : const Color(0xFFEEEEEE),
                 ),
 
-                // BUSINESS SECTION
-                _buildSectionHeader(context, 'BUSINESS'),
-                Container(
-                  color: isDarkMode ? AppColors.darkSurface : Colors.white,
-                  child: ListTile(
-                    tileColor: isDarkMode
-                        ? AppColors.darkPrimary.withAlpha(30)
-                        : const Color(0xFFA8ECE4).withValues(alpha: 0.35),
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.storefront_rounded,
-                        color: theme.colorScheme.onPrimary,
-                        size: 20,
-                      ),
-                    ),
-                    title: Text(
-                      'Switch to Seller Mode',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Manage your shop and listings',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    trailing: Icon(
-                      Icons.chevron_right_rounded,
-                      color: theme.colorScheme.primary,
-                      size: 22,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    onTap: () {
-                      context.push('/seller');
-                    },
-                  ),
-                ),
-
-                Divider(
-                  height: 1,
-                  color: isDarkMode
-                      ? AppColors.darkPrimary.withAlpha(25)
-                      : const Color(0xFFEEEEEE),
-                ),
-
-                // SHOPPING SECTION
-                _buildSectionHeader(context, 'SHOPPING'),
+                // SHOPPING & SELLER SECTION
+                _buildSectionHeader(context, 'SHOPPING & SELLER'),
                 Container(
                   color: isDarkMode ? AppColors.darkSurface : Colors.white,
                   child: Column(
                     children: [
-                      // My Orders Row Link
+                      // --- 1. My Purchases ---
                       ListTile(
                         leading: Container(
                           width: 40,
@@ -344,7 +286,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         title: Text(
-                          'My Orders',
+                          'My Purchases',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 15,
@@ -363,7 +305,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         onTap: () => context.push('/account/orders?tab=0'),
                       ),
-                      // 4 Quick Buttons (Row)
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 16,
@@ -372,7 +313,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         child: Row(
                           children: [
-                            _buildQuickOrderButton(
+                            _buildQuickActionButton(
                               context,
                               icon: Icons.schedule_rounded,
                               label: 'Pending',
@@ -380,7 +321,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   context.push('/account/orders?tab=1'),
                             ),
                             const SizedBox(width: 8),
-                            _buildQuickOrderButton(
+                            _buildQuickActionButton(
                               context,
                               icon: Icons.local_shipping_outlined,
                               label: 'Shipping',
@@ -388,7 +329,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   context.push('/account/orders?tab=2'),
                             ),
                             const SizedBox(width: 8),
-                            _buildQuickOrderButton(
+                            _buildQuickActionButton(
                               context,
                               icon: Icons.check_circle_outline_rounded,
                               label: 'Completed',
@@ -396,7 +337,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   context.push('/account/orders?tab=3'),
                             ),
                             const SizedBox(width: 8),
-                            _buildQuickOrderButton(
+                            _buildQuickActionButton(
                               context,
                               icon: Icons.history_rounded,
                               label: 'Refund',
@@ -405,6 +346,208 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ],
                         ),
+                      ),
+                      Divider(
+                        height: 1,
+                        color: isDarkMode
+                            ? AppColors.darkPrimary.withAlpha(20)
+                            : const Color(0xFFF1F5F9),
+                        indent: 56,
+                      ),
+
+                      // --- 2. My Sales (Single Row options) ---
+                      statsAsync.when(
+                        data: (stats) => Column(
+                          children: [
+                            ListTile(
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: isDarkMode
+                                      ? theme
+                                            .colorScheme
+                                            .surfaceContainerHighest
+                                      : const Color(0xFFEEEEEC),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.storefront_outlined,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              title: Text(
+                                'My Sales',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              trailing: Icon(
+                                Icons.chevron_right_rounded,
+                                color: theme.colorScheme.onSurfaceVariant,
+                                size: 22,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 2,
+                              ),
+                              onTap: () => context.push('/seller/orders'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 16,
+                                right: 16,
+                                bottom: 12,
+                              ),
+                              child: Row(
+                                children: [
+                                  _buildQuickActionButton(
+                                    context,
+                                    icon: Icons.pending_actions,
+                                    label: 'Processing',
+                                    count: stats.pendingOrders,
+                                    onTap: () =>
+                                        context.push('/seller/orders?tab=1'),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildQuickActionButton(
+                                    context,
+                                    icon: Icons.local_shipping_outlined,
+                                    label: 'Shipping',
+                                    count: stats.shippingOrders,
+                                    onTap: () =>
+                                        context.push('/seller/orders?tab=2'),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildQuickActionButton(
+                                    context,
+                                    icon: Icons.check_circle_outline,
+                                    label: 'Completed',
+                                    count: stats.completedOrders,
+                                    onTap: () =>
+                                        context.push('/seller/orders?tab=3'),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildQuickActionButton(
+                                    context,
+                                    icon: Icons.warning_amber_rounded,
+                                    label: 'Disputing',
+                                    count: stats.disputingOrders,
+                                    onTap: () =>
+                                        context.push('/seller/orders?tab=4'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Divider(
+                              height: 1,
+                              color: isDarkMode
+                                  ? AppColors.darkPrimary.withAlpha(20)
+                                  : const Color(0xFFF1F5F9),
+                              indent: 56,
+                            ),
+
+                            // --- 3. My Products (Single Row options) ---
+                            ListTile(
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: isDarkMode
+                                      ? theme
+                                            .colorScheme
+                                            .surfaceContainerHighest
+                                      : const Color(0xFFEEEEEC),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.inventory_2_outlined,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              title: Text(
+                                'My Products',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              trailing: Icon(
+                                Icons.chevron_right_rounded,
+                                color: theme.colorScheme.onSurfaceVariant,
+                                size: 22,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 2,
+                              ),
+                              onTap: () => context.push('/seller/products'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 16,
+                                right: 16,
+                                bottom: 12,
+                              ),
+                              child: Row(
+                                children: [
+                                  _buildQuickActionButton(
+                                    context,
+                                    icon: Icons.inventory_2_outlined,
+                                    label: 'Active',
+                                    count: stats.activeProducts,
+                                    onTap: () => context.push(
+                                      '/seller/products?status=active',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildQuickActionButton(
+                                    context,
+                                    icon: Icons.visibility_off_outlined,
+                                    label: 'Inactive',
+                                    count: stats.inactiveProducts,
+                                    onTap: () => context.push(
+                                      '/seller/products?status=inactive',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildQuickActionButton(
+                                    context,
+                                    icon: Icons.report_problem_outlined,
+                                    label: 'Violated',
+                                    count: stats.violatedProducts,
+                                    onTap: () => context.push(
+                                      '/seller/products?status=violated',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Divider(
+                              height: 1,
+                              color: isDarkMode
+                                  ? AppColors.darkPrimary.withAlpha(20)
+                                  : const Color(0xFFF1F5F9),
+                              indent: 56,
+                            ),
+
+                            // --- Rich AI Product Wizard Banner Card ---
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              child: _buildAiWizardBanner(context),
+                            ),
+                          ],
+                        ),
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, _) => const SizedBox.shrink(),
                       ),
                       Divider(
                         height: 1,
@@ -441,20 +584,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             : const Color(0xFFF1F5F9),
                         indent: 56,
                       ),
-                      // Payment Methods Link
+                      // Payment Methods & Earnings Link (Merged & renamed to Payment)
                       _buildMenuItem(
                         context,
                         icon: Icons.credit_card_rounded,
-                        title: 'Payment Methods',
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Tính năng ví & thanh toán đang mở...',
-                              ),
-                            ),
-                          );
-                        },
+                        title: 'Payment',
+                        onTap: () => context.push('/seller/earnings'),
                       ),
                     ],
                   ),
@@ -618,10 +753,96 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildQuickOrderButton(
+  Widget _buildAiWizardBanner(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'AI Product Wizard',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Sinh tiêu đề & mô tả từ Image + Audio hoặc Raw Text',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push('/seller/ai-wizard'),
+              icon: const Icon(Icons.auto_awesome, size: 18),
+              label: const Text('Tạo sản phẩm với AI Wizard'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionButton(
     BuildContext context, {
     required IconData icon,
     required String label,
+    int? count,
+    Color? iconColor,
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
@@ -641,10 +862,44 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: theme.colorScheme.onSurfaceVariant, size: 20),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    icon,
+                    color: iconColor ?? theme.colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+                  if (count != null && count > 0)
+                    Positioned(
+                      top: -4,
+                      right: -8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          count > 99 ? '99+' : count.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               const SizedBox(height: 4),
               Text(
                 label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 11,

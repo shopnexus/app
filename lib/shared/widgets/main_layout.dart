@@ -27,7 +27,7 @@ class MainLayout extends StatelessWidget {
         context.go('/search');
         break;
       case 2:
-        context.go('/seller');
+        context.push('/seller/ai-wizard');
         break;
       case 3:
         context.go('/chat');

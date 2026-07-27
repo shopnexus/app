@@ -84,28 +84,24 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
       );
     });
 
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       // Stitch Light Neutral Background
       appBar: AppBar(
-        title: const Text(
-          'Đơn hàng của tôi',
-          style: TextStyle(
-            color: Color(0xFF1A1C1B),
+        title: Text(
+          'Đơn mua của tôi',
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            fontFamily: 'Manrope',
-            fontSize: 18,
+            color: AppColors.primary,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        scrolledUnderElevation: 0.5,
+        scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF1A1C1B),
-            size: 20,
-          ),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
         bottom: PreferredSize(
