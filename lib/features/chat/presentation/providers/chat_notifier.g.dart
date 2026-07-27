@@ -105,7 +105,7 @@ final class ChatDetailNotifierProvider
 }
 
 String _$chatDetailNotifierHash() =>
-    r'6e1c1837614483b3e2c17c6abf1a2e26a981193d';
+    r'82f0967daca599dd1b962703cf89d45b4c0e19e0';
 
 /// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
 

@@ -53,29 +53,53 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     }
   }
 
-  void _openOfferDialog({double initialPrice = 0.0, String? title}) async {
+  void _openOfferDialog({
+    double initialPrice = 0.0,
+    String? productId,
+    String? title,
+    String? image,
+  }) async {
+    final state = ref.read(chatDetailProvider(widget.conversationId)).value;
+    final conv = state?.conversation;
+
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) =>
-          CreateOfferDialog(initialPrice: initialPrice, productTitle: title),
+      builder: (context) => CreateOfferDialog(
+        initialPrice: initialPrice,
+        productId: productId ?? conv?.productId,
+        productTitle: title ?? conv?.productTitle,
+        productImage: image ?? conv?.productImage,
+      ),
     );
 
     if (result != null && result['price'] != null) {
       final double offerPrice = result['price'];
+      final int quantity = result['quantity'] ?? 1;
       final String? note = result['note'];
-
-      final state = ref.read(chatDetailProvider(widget.conversationId)).value;
-      final conv = state?.conversation;
+      final String selProductId =
+          result['productId'] ??
+          productId ??
+          conv?.productId ??
+          'prod_leather_bag';
+      final String selProductTitle =
+          result['productTitle'] ??
+          title ??
+          conv?.productTitle ??
+          'Vintage Leather Messenger Bag';
+      final String? selProductImage =
+          result['productImage'] ?? image ?? conv?.productImage;
+      final double selProductPrice = result['productPrice'] ?? 420.0;
 
       await ref
           .read(chatDetailProvider(widget.conversationId).notifier)
           .sendOfferMessage(
             offerPrice: offerPrice,
+            quantity: quantity,
             note: note,
-            productId: conv?.productId,
-            productTitle: conv?.productTitle,
-            productImage: conv?.productImage,
-            productPrice: 420.0, // Default reference price for demo
+            productId: selProductId,
+            productTitle: selProductTitle,
+            productImage: selProductImage,
+            productPrice: selProductPrice,
           );
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -145,6 +169,389 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showChatSettingsSheet() {
+    final theme = Theme.of(context);
+    final state = ref.read(chatDetailProvider(widget.conversationId)).value;
+    final conv = state?.conversation;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        bool isMuted = false;
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Thanh kéo kéo xuống
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.outlineVariant,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Header màn hình Setting Chat
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 22,
+                            backgroundColor:
+                                theme.colorScheme.surfaceContainerHighest,
+                            backgroundImage:
+                                conv?.participantAvatar != null &&
+                                    conv!.participantAvatar!.isNotEmpty
+                                ? CachedNetworkImageProvider(
+                                    conv.participantAvatar!,
+                                  )
+                                : null,
+                            child:
+                                conv?.participantAvatar == null ||
+                                    conv!.participantAvatar!.isEmpty
+                                ? Text(
+                                    conv?.participantName.isNotEmpty ?? false
+                                        ? conv!.participantName[0].toUpperCase()
+                                        : '?',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  conv?.participantName ?? 'Nexus User',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  'Chat Settings',
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Divider(height: 1),
+                    const SizedBox(height: 8),
+
+                    // Option 1: Make an Offer
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        child: Icon(
+                          Icons.local_offer_outlined,
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                      title: const Text(
+                        'Make an Offer',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: const Text('Propose a custom price offer'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _openOfferDialog(
+                          initialPrice: 380.0,
+                          title:
+                              conv?.productTitle ??
+                              'Vintage Leather Messenger Bag',
+                        );
+                      },
+                    ),
+
+                    // Option 2: Toggle Product Context
+                    if (conv?.productTitle != null)
+                      ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: theme.colorScheme.secondaryContainer,
+                          child: Icon(
+                            _showProductContext
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: theme.colorScheme.onSecondaryContainer,
+                          ),
+                        ),
+                        title: Text(
+                          _showProductContext
+                              ? 'Hide Product Context'
+                              : 'Show Product Context',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(
+                          _showProductContext
+                              ? 'Hide top product bar'
+                              : 'Show top product bar',
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          setState(() {
+                            _showProductContext = !_showProductContext;
+                          });
+                        },
+                      ),
+
+                    // Option 3: Mute Notifications
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.surfaceContainerHigh,
+                        child: Icon(
+                          isMuted
+                              ? Icons.notifications_off_outlined
+                              : Icons.notifications_active_outlined,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      title: const Text(
+                        'Mute Notifications',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: const Text('Silence alerts for this chat'),
+                      trailing: Switch(
+                        value: isMuted,
+                        onChanged: (val) {
+                          setSheetState(() {
+                            isMuted = val;
+                          });
+                        },
+                      ),
+                    ),
+
+                    const Divider(height: 1),
+                    const SizedBox(height: 8),
+
+                    // Option 4: Block User
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.errorContainer
+                            .withValues(alpha: 0.5),
+                        child: Icon(
+                          Icons.block_outlined,
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                      title: Text(
+                        'Block ${conv?.participantName ?? 'User'}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Stop receiving messages from this user',
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showBlockConfirmDialog(
+                          conv?.participantName ?? 'User',
+                        );
+                      },
+                    ),
+
+                    // Option 5: Report Conversation
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.errorContainer
+                            .withValues(alpha: 0.5),
+                        child: Icon(
+                          Icons.flag_outlined,
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                      title: const Text(
+                        'Report Conversation',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: const Text(
+                        'Report inappropriate behavior or spam',
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showReportDialog();
+                      },
+                    ),
+
+                    // Option 6: Delete Conversation
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.errorContainer,
+                        child: Icon(
+                          Icons.delete_outline,
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                      ),
+                      title: Text(
+                        'Delete Conversation',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                      subtitle: const Text('Remove chat history permanently'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showDeleteConfirmDialog();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showBlockConfirmDialog(String name) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Block $name?'),
+        content: Text(
+          'You will no longer receive messages or offers from $name.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Blocked $name successfully.')),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
+            child: const Text('Block'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReportDialog() {
+    String selectedReason = 'Spam or scam';
+    final reasons = [
+      'Spam or scam',
+      'Inappropriate messages',
+      'Harassment or abuse',
+      'Counterfeit product',
+      'Other',
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Report Conversation'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: reasons
+                .map(
+                  (reason) => ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(
+                      selectedReason == reason
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked,
+                      color: selectedReason == reason
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    title: Text(reason),
+                    onTap: () {
+                      setDialogState(() {
+                        selectedReason = reason;
+                      });
+                    },
+                  ),
+                )
+                .toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Report submitted: $selectedReason')),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                foregroundColor: Theme.of(context).colorScheme.onError,
+              ),
+              child: const Text('Submit Report'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Conversation?'),
+        content: const Text(
+          'This action will permanently delete all messages in this conversation. It cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.pop(); // Quay lại trang danh sách chat
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Conversation deleted.')),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
   }
@@ -224,17 +631,8 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
           ),
           actions: [
             IconButton(
-              icon: Icon(
-                _showProductContext
-                    ? Icons.info_rounded
-                    : Icons.info_outline_rounded,
-                color: theme.colorScheme.primary,
-              ),
-              onPressed: () {
-                setState(() {
-                  _showProductContext = !_showProductContext;
-                });
-              },
+              icon: Icon(Icons.more_vert, color: theme.colorScheme.primary),
+              onPressed: _showChatSettingsSheet,
             ),
           ],
         ),
@@ -374,70 +772,94 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               ),
             ),
 
-            // Bottom Floating Input Bar
+            // Bottom Floating Input Bar (Unified single pill bar container)
             SafeArea(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.add_circle_outline,
-                        color: theme.colorScheme.onSurfaceVariant,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.4,
                       ),
-                      onPressed: _showAttachmentMenu,
                     ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: theme.colorScheme.outlineVariant.withValues(
-                              alpha: 0.4,
-                            ),
-                          ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.add_circle_outline,
+                          color: theme.colorScheme.onSurfaceVariant,
+                          size: 24,
                         ),
+                        onPressed: _showAttachmentMenu,
+                        padding: const EdgeInsets.all(8),
+                        constraints: const BoxConstraints(),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
                         child: TextField(
                           controller: _textController,
                           minLines: 1,
                           maxLines: 4,
-                          decoration: const InputDecoration(
+                          textAlignVertical: TextAlignVertical.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface,
+                          ),
+                          decoration: InputDecoration(
                             hintText: 'Type a message...',
+                            hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 10,
+                            ),
                             border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            focusedErrorBorder: InputBorder.none,
+                            fillColor: Colors.transparent,
+                            filled: false,
                           ),
                           onSubmitted: (_) => _onSendMessage(),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    CircleAvatar(
-                      radius: 22,
-                      backgroundColor: theme.colorScheme.primary,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.send_rounded,
-                          size: 20,
-                          color: theme.colorScheme.onPrimary,
+                      const SizedBox(width: 6),
+                      Material(
+                        color: theme.colorScheme.primary,
+                        shape: const CircleBorder(),
+                        clipBehavior: Clip.antiAlias,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.send_rounded,
+                            size: 18,
+                            color: theme.colorScheme.onPrimary,
+                          ),
+                          onPressed: _onSendMessage,
+                          padding: const EdgeInsets.all(10),
+                          constraints: const BoxConstraints(),
                         ),
-                        onPressed: _onSendMessage,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
