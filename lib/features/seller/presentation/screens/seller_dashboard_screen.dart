@@ -97,7 +97,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                 // --- Orders Section ---
                 _buildSectionHeader(
                   context,
-                  title: 'Orders',
+                  title: 'My Sales',
                   onSeeAll: () {
                     context.push('/seller/orders');
                   },
@@ -155,7 +155,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                 // --- Products Section ---
                 _buildSectionHeader(
                   context,
-                  title: 'Products',
+                  title: 'My Products',
                   onSeeAll: () {
                     context.push('/seller/products');
                   },

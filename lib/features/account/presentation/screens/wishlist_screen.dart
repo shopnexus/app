@@ -13,6 +13,9 @@ class WishlistScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final wishlistAsync = ref.watch(wishlistProductsProvider);
     final controllerState = ref.watch(wishlistControllerProvider);
 
@@ -22,7 +25,9 @@ class WishlistScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Thao tác thất bại: $err'),
-              backgroundColor: const Color(0xFFBA1A1A),
+              backgroundColor: isDarkMode
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFFBA1A1A),
             ),
           );
         },
@@ -38,32 +43,32 @@ class WishlistScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Wishlist',
           style: TextStyle(
-            color: Color(0xFF1A1C1B),
+            color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
             fontFamily: 'Manrope',
             fontSize: 20,
           ),
         ),
-        backgroundColor: AppColors.background,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF1A1C1B),
+            color: theme.colorScheme.onSurface,
             size: 20,
           ),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.shopping_bag_outlined,
-              color: Color(0xFF1A1C1B),
+              color: theme.colorScheme.onSurface,
               size: 24,
             ),
             onPressed: () => context.push('/cart'),
@@ -73,6 +78,7 @@ class WishlistScreen extends ConsumerWidget {
       body: Stack(
         children: [
           RefreshIndicator(
+            color: theme.colorScheme.primary,
             onRefresh: () => ref.refresh(wishlistProductsProvider.future),
             child: wishlistAsync.when(
               data: (products) {
@@ -89,25 +95,25 @@ class WishlistScreen extends ConsumerWidget {
                       children: [
                         Text(
                           '${products.length} Items saved',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 16,
-                            color: Color(0xFF64748B),
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
                         TextButton.icon(
                           onPressed: () {},
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.sort_rounded,
-                            color: AppColors.primary,
+                            color: theme.colorScheme.primary,
                             size: 18,
                           ),
-                          label: const Text(
+                          label: Text(
                             'Sort',
                             style: TextStyle(
                               fontFamily: 'Inter',
-                              color: AppColors.primary,
+                              color: theme.colorScheme.primary,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -129,33 +135,36 @@ class WishlistScreen extends ConsumerWidget {
                   ],
                 );
               },
-              loading: () => _buildShimmerList(),
+              loading: () => _buildShimmerList(context),
               error: (err, stack) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.error_outline_rounded,
                         size: 48,
-                        color: Color(0xFFBA1A1A),
+                        color: isDarkMode
+                            ? const Color(0xFFEF4444)
+                            : const Color(0xFFBA1A1A),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'Không thể tải danh sách sản phẩm',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Inter',
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         err.toString(),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF64748B),
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
                           fontFamily: 'Inter',
                         ),
@@ -168,8 +177,8 @@ class WishlistScreen extends ConsumerWidget {
                           onPressed: () =>
                               ref.refresh(wishlistProductsProvider),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
+                            backgroundColor: theme.colorScheme.primary,
+                            foregroundColor: theme.colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -191,9 +200,11 @@ class WishlistScreen extends ConsumerWidget {
           ),
           if (controllerState.isLoading)
             Container(
-              color: Colors.black.withValues(alpha: 0.2),
-              child: const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
+              color: Colors.black.withValues(alpha: 0.3),
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
         ],
@@ -206,13 +217,24 @@ class WishlistScreen extends ConsumerWidget {
     WidgetRef ref,
     TProductCard product,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFEEEEEC);
+    final imageBgColor = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF4F4F1);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16), // Bo góc 16px cho bento item
-        border: Border.all(color: const Color(0xFFEEEEEC)),
+        color: cardBgColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: cardBorderColor),
       ),
       child: Row(
         children: [
@@ -222,17 +244,20 @@ class WishlistScreen extends ConsumerWidget {
             child: Container(
               width: 96,
               height: 96,
-              color: const Color(0xFFF4F4F1),
+              color: imageBgColor,
               child: product.thumbnail != null && product.thumbnail!.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: product.thumbnail!,
                       fit: BoxFit.cover,
-                      errorWidget: (context, url, error) => const Icon(
+                      errorWidget: (context, url, error) => Icon(
                         Icons.broken_image_outlined,
-                        color: Colors.grey,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     )
-                  : const Icon(Icons.image_outlined, color: Colors.grey),
+                  : Icon(
+                      Icons.image_outlined,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
             ),
           ),
           const SizedBox(width: 16),
@@ -250,11 +275,11 @@ class WishlistScreen extends ConsumerWidget {
                         product.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A1C1B),
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -266,10 +291,10 @@ class WishlistScreen extends ConsumerWidget {
                             .read(wishlistControllerProvider.notifier)
                             .removeFavorite(product.id.toString());
                       },
-                      child: const Icon(
+                      child: Icon(
                         Icons.close_rounded,
                         size: 20,
-                        color: Color(0xFF3E4947),
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -277,10 +302,10 @@ class WishlistScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   'Shop: @${product.vendorName ?? "shop"}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,
-                    color: Color(0xFF3E4947),
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -289,11 +314,11 @@ class WishlistScreen extends ConsumerWidget {
                   children: [
                     Text(
                       MoneyUtils.format(product.price),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     // Circular cart button
@@ -304,14 +329,14 @@ class WishlistScreen extends ConsumerWidget {
                       child: Container(
                         width: 40,
                         height: 40,
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary, // Stitch Primary Teal
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.add_shopping_cart_rounded,
                           size: 18,
-                          color: Colors.white,
+                          color: theme.colorScheme.onPrimary,
                         ),
                       ),
                     ),
@@ -325,10 +350,11 @@ class WishlistScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShimmerList() {
+  Widget _buildShimmerList(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: const Color(0xFFF1F5F9),
-      highlightColor: const Color(0xFFF8FAFC),
+      baseColor: isDarkMode ? Colors.grey[800]! : const Color(0xFFF1F5F9),
+      highlightColor: isDarkMode ? Colors.grey[700]! : const Color(0xFFF8FAFC),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: 4,
@@ -336,7 +362,7 @@ class WishlistScreen extends ConsumerWidget {
           margin: const EdgeInsets.only(bottom: 12),
           height: 120,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(16),
           ),
         ),
@@ -350,34 +376,35 @@ class _EmptyWishlist extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.favorite_border_rounded,
               size: 64,
-              color: Color(0xFF94A3B8),
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Danh sách trống',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1C1B),
+                color: theme.colorScheme.onSurface,
                 fontFamily: 'Inter',
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Hãy thêm những sản phẩm bạn yêu thích để dễ dàng theo dõi và mua sắm sau này nhé.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: Color(0xFF64748B),
+                color: theme.colorScheme.onSurfaceVariant,
                 fontFamily: 'Inter',
               ),
             ),
@@ -388,8 +415,8 @@ class _EmptyWishlist extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => context.go('/home'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

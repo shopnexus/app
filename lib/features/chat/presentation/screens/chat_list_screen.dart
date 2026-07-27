@@ -23,7 +23,6 @@ class ChatListScreen extends ConsumerWidget {
           ),
         ),
         elevation: 0,
-        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
       ),
       body: Column(
         children: [

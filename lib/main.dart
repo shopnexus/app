@@ -5,6 +5,8 @@ import 'core/storage/hive_storage.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
 
+import 'core/theme/theme_provider.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -17,9 +19,7 @@ void main() async {
 
   runApp(
     // Bọc ứng dụng bằng ProviderScope để Riverpod hoạt động
-    const ProviderScope(
-      child: MyApp(),
-    ),
+    const ProviderScope(child: MyApp()),
   );
 }
 
@@ -30,16 +30,18 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Lấy GoRouter instance từ Provider
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(appThemeModeProvider);
 
     return MaterialApp.router(
       title: 'ShopNexus',
       debugShowCheckedModeBanner: false,
-      
+
       // Áp dụng Theme (Light & Dark)
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system, // Tự động đổi theo thiết bị
-      
+      themeMode: themeMode,
+      // Đổi động theo Provider & cài đặt của người dùng
+
       // Sử dụng GoRouter
       routerConfig: router,
     );

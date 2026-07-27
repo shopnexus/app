@@ -196,6 +196,7 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
   /// Gửi lời đề nghị mua hàng (Offer Message)
   Future<bool> sendOfferMessage({
     required double offerPrice,
+    int quantity = 1,
     String? note,
     String? productId,
     String? productTitle,
@@ -219,12 +220,14 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
       productPrice: productPrice,
       offerPrice: offerPrice,
       offerOriginalPrice: productPrice,
+      quantity: quantity,
       offerNote: note,
       offerStatus: OfferStatus.pending,
     );
 
     final content =
-        note ?? 'I\'d like to offer \$${offerPrice.toStringAsFixed(2)}';
+        note ??
+        'I\'d like to offer \$${offerPrice.toStringAsFixed(2)}${quantity > 1 ? ' (Qty: $quantity)' : ''}';
 
     try {
       final sentMessage = await repository.sendMessage(
@@ -260,7 +263,7 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
     }
   }
 
-  /// Phản hồi lời đề nghị (Chấp nhận, Thương lượng lại, Từ chối)
+  /// Phản hồi lời đề nghị (Chấp nhận, Thương lượng lại, Từ chối, Rút)
   Future<void> respondToOffer(String messageId, OfferStatus status) async {
     final currentState = state.value;
     if (currentState == null) return;

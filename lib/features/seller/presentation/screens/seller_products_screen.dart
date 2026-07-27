@@ -42,7 +42,6 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final state = ref.watch(sellerProductsProvider);
     final notifier = ref.read(sellerProductsProvider.notifier);
 
@@ -91,20 +90,22 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF0F172A)
-          : const Color(0xFFF9F9F7),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
         title: _isSearching
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
+                style: TextStyle(color: theme.colorScheme.onSurface),
                 onChanged: notifier.setSearchQuery,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Tìm kiếm tên sản phẩm...',
+                  hintStyle: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   border: InputBorder.none,
                 ),
               )
@@ -112,12 +113,15 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                 'Sản phẩm của tôi',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
         actions: [
           IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            icon: Icon(
+              _isSearching ? Icons.close : Icons.search,
+              color: theme.colorScheme.onSurface,
+            ),
             onPressed: () {
               setState(() {
                 if (_isSearching) {
@@ -135,10 +139,11 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/seller/ai-wizard'),
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
+        backgroundColor: theme.colorScheme.primary,
+        child: Icon(Icons.add, color: theme.colorScheme.onPrimary, size: 28),
       ),
       body: RefreshIndicator(
+        color: theme.colorScheme.primary,
         onRefresh: () async {
           await notifier.refresh();
         },
@@ -188,7 +193,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
             // Product List
             Expanded(
               child: state.isLoading
-                  ? _buildShimmerList(isDark)
+                  ? _buildShimmerList(context)
                   : filteredList.isEmpty
                   ? _buildEmptyView(context)
                   : ListView.builder(
@@ -213,7 +218,12 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final unselectedBg = isDark
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFECEEED);
 
     return GestureDetector(
       onTap: onTap,
@@ -221,9 +231,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary
-              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFECEEED)),
+          color: isSelected ? theme.colorScheme.primary : unselectedBg,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -234,10 +242,8 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected
-                    ? Colors.white
-                    : (isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF3F4947)),
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSurfaceVariant,
               ),
             ),
             if (count != null && count > 0) ...[
@@ -253,7 +259,9 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? AppColors.primary : Colors.white,
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : Colors.white,
                   ),
                 ),
               ),
@@ -290,30 +298,40 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
         ? 'Vi phạm'
         : (isHidden ? 'Đã ẩn' : 'Đang bán');
     final statusBgColor = isViolated
-        ? const Color(0xFFFEE2E2)
+        ? (isDark
+              ? const Color(0xFF991B1B).withAlpha(40)
+              : const Color(0xFFFEE2E2))
         : (isHidden
-              ? (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))
-              : const Color(0xFFA8ECE4));
+              ? (isDark
+                    ? theme.colorScheme.surfaceContainerHighest
+                    : const Color(0xFFE2E8F0))
+              : (isDark
+                    ? AppColors.darkPrimary.withAlpha(40)
+                    : const Color(0xFFA8ECE4)));
     final statusTextColor = isViolated
-        ? const Color(0xFF991B1B)
+        ? (isDark ? const Color(0xFFF87171) : const Color(0xFF991B1B))
         : (isHidden
-              ? (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))
-              : const Color(0xFF00504B));
+              ? theme.colorScheme.onSurfaceVariant
+              : (isDark ? AppColors.darkPrimary : const Color(0xFF00504B)));
+
+    final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDark
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFF1F5F9);
+    final imageBgColor = isDark
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF1F5F9);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFF1F5F9),
-        ),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -330,9 +348,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
               height: 90,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: isDark
-                    ? const Color(0xFF0F172A)
-                    : const Color(0xFFF1F5F9),
+                color: imageBgColor,
                 image: (product.images != null && product.images!.isNotEmpty)
                     ? DecorationImage(
                         image: NetworkImage(product.images!.first.url),
@@ -341,7 +357,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                     : null,
               ),
               child: (product.images == null || product.images!.isEmpty)
-                  ? const Icon(Icons.image_outlined, color: Color(0xFF94A3B8))
+                  ? Icon(
+                      Icons.image_outlined,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    )
                   : null,
             ),
           ),
@@ -367,6 +386,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -400,7 +420,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                       size: 16,
                       color: isHidden
                           ? const Color(0xFFEF4444)
-                          : const Color(0xFF64748B),
+                          : theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -409,7 +429,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                         fontSize: 12,
                         color: isHidden
                             ? const Color(0xFFEF4444)
-                            : const Color(0xFF64748B),
+                            : theme.colorScheme.onSurfaceVariant,
                         fontWeight: isHidden
                             ? FontWeight.bold
                             : FontWeight.normal,
@@ -484,7 +504,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                       MoneyUtils.format(product.price),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        color: theme.colorScheme.primary,
                         fontSize: 15,
                       ),
                     ),
@@ -509,9 +529,11 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                               decoration: BoxDecoration(
                                 color: isHidden
                                     ? (isDark
-                                          ? const Color(0xFF334155)
+                                          ? theme
+                                                .colorScheme
+                                                .surfaceContainerHighest
                                           : const Color(0xFFE2E8F0))
-                                    : AppColors.primary.withValues(alpha: 0.12),
+                                    : theme.colorScheme.primary.withAlpha(30),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -522,10 +544,8 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                                         : Icons.visibility_outlined,
                                     size: 14,
                                     color: isHidden
-                                        ? (isDark
-                                              ? const Color(0xFF94A3B8)
-                                              : const Color(0xFF64748B))
-                                        : AppColors.primary,
+                                        ? theme.colorScheme.onSurfaceVariant
+                                        : theme.colorScheme.primary,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
@@ -534,10 +554,8 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                       color: isHidden
-                                          ? (isDark
-                                                ? const Color(0xFF94A3B8)
-                                                : const Color(0xFF64748B))
-                                          : AppColors.primary,
+                                          ? theme.colorScheme.onSurfaceVariant
+                                          : theme.colorScheme.primary,
                                     ),
                                   ),
                                   const SizedBox(width: 2),
@@ -548,7 +566,8 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                                       width: 32,
                                       child: Switch(
                                         value: !isHidden,
-                                        activeThumbColor: AppColors.primary,
+                                        activeThumbColor:
+                                            theme.colorScheme.primary,
                                         onChanged: (_) =>
                                             _showToggleConfirmDialog(
                                               context,
@@ -566,7 +585,11 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                           const SizedBox(width: 4),
                         ],
                         IconButton(
-                          icon: const Icon(Icons.more_vert, size: 20),
+                          icon: Icon(
+                            Icons.more_vert,
+                            size: 20,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                           onPressed: () =>
                               _showProductOptions(context, product, notifier),
                           padding: EdgeInsets.zero,
@@ -589,8 +612,12 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     TProductDetail product,
     SellerProductsNotifier notifier,
   ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
+      backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -601,26 +628,43 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.visibility_outlined),
-                title: const Text('Xem chi tiết sản phẩm'),
+                leading: Icon(
+                  Icons.visibility_outlined,
+                  color: theme.colorScheme.onSurface,
+                ),
+                title: Text(
+                  'Xem chi tiết sản phẩm',
+                  style: TextStyle(color: theme.colorScheme.onSurface),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   context.push('/home/product/${product.id}');
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.edit_outlined),
-                title: const Text('Chỉnh sửa với AI Wizard'),
+                leading: Icon(
+                  Icons.edit_outlined,
+                  color: theme.colorScheme.onSurface,
+                ),
+                title: Text(
+                  'Chỉnh sửa với AI Wizard',
+                  style: TextStyle(color: theme.colorScheme.onSurface),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   context.push('/seller/ai-wizard');
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text(
+                leading: Icon(
+                  Icons.delete_outline,
+                  color: isDark ? const Color(0xFFEF4444) : Colors.red,
+                ),
+                title: Text(
                   'Xóa sản phẩm',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(
+                    color: isDark ? const Color(0xFFEF4444) : Colors.red,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -649,7 +693,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
@@ -657,12 +701,16 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
               isCurrentlyHidden
                   ? Icons.visibility_outlined
                   : Icons.visibility_off_outlined,
-              color: AppColors.primary,
+              color: theme.colorScheme.primary,
             ),
             const SizedBox(width: 8),
             Text(
               'Xác nhận $actionText sản phẩm',
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
           ],
         ),
@@ -670,13 +718,16 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
           'Bạn có chắc chắn muốn $actionText sản phẩm "${product.name}" không?',
           style: TextStyle(
             fontSize: 14,
-            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Hủy'),
+            child: Text(
+              'Hủy',
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -689,13 +740,13 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                         ? 'Đã chuyển sản phẩm sang trạng thái Đang bán'
                         : 'Đã chuyển sản phẩm sang trạng thái Đã ẩn',
                   ),
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: theme.colorScheme.primary,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -707,13 +758,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     );
   }
 
-  Widget _buildShimmerList(bool isDark) {
-    final baseColor = isDark
-        ? const Color(0xFF1E293B)
-        : const Color(0xFFE2E8F0);
-    final highlightColor = isDark
-        ? const Color(0xFF334155)
-        : const Color(0xFFF1F5F9);
+  Widget _buildShimmerList(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? Colors.grey[800]! : const Color(0xFFE2E8F0);
+    final highlightColor = isDark ? Colors.grey[700]! : const Color(0xFFF1F5F9);
 
     return Shimmer.fromColors(
       baseColor: baseColor,
@@ -725,7 +773,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
           height: 100,
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(16),
           ),
         ),
@@ -734,19 +782,24 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
   }
 
   Widget _buildEmptyView(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.inventory_2_outlined,
             size: 48,
-            color: Color(0xFF94A3B8),
+            color: theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Không tìm thấy sản phẩm nào',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
@@ -754,8 +807,8 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
             icon: const Icon(Icons.add),
             label: const Text('Tạo sản phẩm mới'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

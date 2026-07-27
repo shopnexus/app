@@ -37,6 +37,8 @@ enum OfferStatus {
   countered,
   @JsonValue('declined')
   declined,
+  @JsonValue('withdrawn')
+  withdrawn,
 }
 
 @freezed
@@ -49,6 +51,7 @@ abstract class ChatMessageMetadata with _$ChatMessageMetadata {
     @JsonKey(name: 'product_price') double? productPrice,
     @JsonKey(name: 'offer_price') double? offerPrice,
     @JsonKey(name: 'offer_original_price') double? offerOriginalPrice,
+    @Default(1) @JsonKey(name: 'quantity') int quantity,
     @JsonKey(name: 'offer_note') String? offerNote,
     @JsonKey(name: 'offer_status') OfferStatus? offerStatus,
     @JsonKey(name: 'custom_data') Map<String, dynamic>? customData,

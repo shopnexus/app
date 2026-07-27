@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatMessageMetadata {
 
-@JsonKey(name: 'image_url') String? get imageUrl;@JsonKey(name: 'product_id') String? get productId;@JsonKey(name: 'product_title') String? get productTitle;@JsonKey(name: 'product_image') String? get productImage;@JsonKey(name: 'product_price') double? get productPrice;@JsonKey(name: 'offer_price') double? get offerPrice;@JsonKey(name: 'offer_original_price') double? get offerOriginalPrice;@JsonKey(name: 'offer_note') String? get offerNote;@JsonKey(name: 'offer_status') OfferStatus? get offerStatus;@JsonKey(name: 'custom_data') Map<String, dynamic>? get customData;
+@JsonKey(name: 'image_url') String? get imageUrl;@JsonKey(name: 'product_id') String? get productId;@JsonKey(name: 'product_title') String? get productTitle;@JsonKey(name: 'product_image') String? get productImage;@JsonKey(name: 'product_price') double? get productPrice;@JsonKey(name: 'offer_price') double? get offerPrice;@JsonKey(name: 'offer_original_price') double? get offerOriginalPrice;@JsonKey(name: 'quantity') int get quantity;@JsonKey(name: 'offer_note') String? get offerNote;@JsonKey(name: 'offer_status') OfferStatus? get offerStatus;@JsonKey(name: 'custom_data') Map<String, dynamic>? get customData;
 /// Create a copy of ChatMessageMetadata
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ChatMessageMetadataCopyWith<ChatMessageMetadata> get copyWith => _$ChatMessageM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessageMetadata&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.productTitle, productTitle) || other.productTitle == productTitle)&&(identical(other.productImage, productImage) || other.productImage == productImage)&&(identical(other.productPrice, productPrice) || other.productPrice == productPrice)&&(identical(other.offerPrice, offerPrice) || other.offerPrice == offerPrice)&&(identical(other.offerOriginalPrice, offerOriginalPrice) || other.offerOriginalPrice == offerOriginalPrice)&&(identical(other.offerNote, offerNote) || other.offerNote == offerNote)&&(identical(other.offerStatus, offerStatus) || other.offerStatus == offerStatus)&&const DeepCollectionEquality().equals(other.customData, customData));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessageMetadata&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.productTitle, productTitle) || other.productTitle == productTitle)&&(identical(other.productImage, productImage) || other.productImage == productImage)&&(identical(other.productPrice, productPrice) || other.productPrice == productPrice)&&(identical(other.offerPrice, offerPrice) || other.offerPrice == offerPrice)&&(identical(other.offerOriginalPrice, offerOriginalPrice) || other.offerOriginalPrice == offerOriginalPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.offerNote, offerNote) || other.offerNote == offerNote)&&(identical(other.offerStatus, offerStatus) || other.offerStatus == offerStatus)&&const DeepCollectionEquality().equals(other.customData, customData));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,imageUrl,productId,productTitle,productImage,productPrice,offerPrice,offerOriginalPrice,offerNote,offerStatus,const DeepCollectionEquality().hash(customData));
+int get hashCode => Object.hash(runtimeType,imageUrl,productId,productTitle,productImage,productPrice,offerPrice,offerOriginalPrice,quantity,offerNote,offerStatus,const DeepCollectionEquality().hash(customData));
 
 @override
 String toString() {
-  return 'ChatMessageMetadata(imageUrl: $imageUrl, productId: $productId, productTitle: $productTitle, productImage: $productImage, productPrice: $productPrice, offerPrice: $offerPrice, offerOriginalPrice: $offerOriginalPrice, offerNote: $offerNote, offerStatus: $offerStatus, customData: $customData)';
+  return 'ChatMessageMetadata(imageUrl: $imageUrl, productId: $productId, productTitle: $productTitle, productImage: $productImage, productPrice: $productPrice, offerPrice: $offerPrice, offerOriginalPrice: $offerOriginalPrice, quantity: $quantity, offerNote: $offerNote, offerStatus: $offerStatus, customData: $customData)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ChatMessageMetadataCopyWith<$Res>  {
   factory $ChatMessageMetadataCopyWith(ChatMessageMetadata value, $Res Function(ChatMessageMetadata) _then) = _$ChatMessageMetadataCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'image_url') String? imageUrl,@JsonKey(name: 'product_id') String? productId,@JsonKey(name: 'product_title') String? productTitle,@JsonKey(name: 'product_image') String? productImage,@JsonKey(name: 'product_price') double? productPrice,@JsonKey(name: 'offer_price') double? offerPrice,@JsonKey(name: 'offer_original_price') double? offerOriginalPrice,@JsonKey(name: 'offer_note') String? offerNote,@JsonKey(name: 'offer_status') OfferStatus? offerStatus,@JsonKey(name: 'custom_data') Map<String, dynamic>? customData
+@JsonKey(name: 'image_url') String? imageUrl,@JsonKey(name: 'product_id') String? productId,@JsonKey(name: 'product_title') String? productTitle,@JsonKey(name: 'product_image') String? productImage,@JsonKey(name: 'product_price') double? productPrice,@JsonKey(name: 'offer_price') double? offerPrice,@JsonKey(name: 'offer_original_price') double? offerOriginalPrice,@JsonKey(name: 'quantity') int quantity,@JsonKey(name: 'offer_note') String? offerNote,@JsonKey(name: 'offer_status') OfferStatus? offerStatus,@JsonKey(name: 'custom_data') Map<String, dynamic>? customData
 });
 
 
@@ -65,7 +65,7 @@ class _$ChatMessageMetadataCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessageMetadata
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? imageUrl = freezed,Object? productId = freezed,Object? productTitle = freezed,Object? productImage = freezed,Object? productPrice = freezed,Object? offerPrice = freezed,Object? offerOriginalPrice = freezed,Object? offerNote = freezed,Object? offerStatus = freezed,Object? customData = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? imageUrl = freezed,Object? productId = freezed,Object? productTitle = freezed,Object? productImage = freezed,Object? productPrice = freezed,Object? offerPrice = freezed,Object? offerOriginalPrice = freezed,Object? quantity = null,Object? offerNote = freezed,Object? offerStatus = freezed,Object? customData = freezed,}) {
   return _then(_self.copyWith(
 imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String?,productId: freezed == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
@@ -74,7 +74,8 @@ as String?,productImage: freezed == productImage ? _self.productImage : productI
 as String?,productPrice: freezed == productPrice ? _self.productPrice : productPrice // ignore: cast_nullable_to_non_nullable
 as double?,offerPrice: freezed == offerPrice ? _self.offerPrice : offerPrice // ignore: cast_nullable_to_non_nullable
 as double?,offerOriginalPrice: freezed == offerOriginalPrice ? _self.offerOriginalPrice : offerOriginalPrice // ignore: cast_nullable_to_non_nullable
-as double?,offerNote: freezed == offerNote ? _self.offerNote : offerNote // ignore: cast_nullable_to_non_nullable
+as double?,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,offerNote: freezed == offerNote ? _self.offerNote : offerNote // ignore: cast_nullable_to_non_nullable
 as String?,offerStatus: freezed == offerStatus ? _self.offerStatus : offerStatus // ignore: cast_nullable_to_non_nullable
 as OfferStatus?,customData: freezed == customData ? _self.customData : customData // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'image_url')  String? imageUrl, @JsonKey(name: 'product_id')  String? productId, @JsonKey(name: 'product_title')  String? productTitle, @JsonKey(name: 'product_image')  String? productImage, @JsonKey(name: 'product_price')  double? productPrice, @JsonKey(name: 'offer_price')  double? offerPrice, @JsonKey(name: 'offer_original_price')  double? offerOriginalPrice, @JsonKey(name: 'offer_note')  String? offerNote, @JsonKey(name: 'offer_status')  OfferStatus? offerStatus, @JsonKey(name: 'custom_data')  Map<String, dynamic>? customData)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'image_url')  String? imageUrl, @JsonKey(name: 'product_id')  String? productId, @JsonKey(name: 'product_title')  String? productTitle, @JsonKey(name: 'product_image')  String? productImage, @JsonKey(name: 'product_price')  double? productPrice, @JsonKey(name: 'offer_price')  double? offerPrice, @JsonKey(name: 'offer_original_price')  double? offerOriginalPrice, @JsonKey(name: 'quantity')  int quantity, @JsonKey(name: 'offer_note')  String? offerNote, @JsonKey(name: 'offer_status')  OfferStatus? offerStatus, @JsonKey(name: 'custom_data')  Map<String, dynamic>? customData)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatMessageMetadata() when $default != null:
-return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productImage,_that.productPrice,_that.offerPrice,_that.offerOriginalPrice,_that.offerNote,_that.offerStatus,_that.customData);case _:
+return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productImage,_that.productPrice,_that.offerPrice,_that.offerOriginalPrice,_that.quantity,_that.offerNote,_that.offerStatus,_that.customData);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'image_url')  String? imageUrl, @JsonKey(name: 'product_id')  String? productId, @JsonKey(name: 'product_title')  String? productTitle, @JsonKey(name: 'product_image')  String? productImage, @JsonKey(name: 'product_price')  double? productPrice, @JsonKey(name: 'offer_price')  double? offerPrice, @JsonKey(name: 'offer_original_price')  double? offerOriginalPrice, @JsonKey(name: 'offer_note')  String? offerNote, @JsonKey(name: 'offer_status')  OfferStatus? offerStatus, @JsonKey(name: 'custom_data')  Map<String, dynamic>? customData)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'image_url')  String? imageUrl, @JsonKey(name: 'product_id')  String? productId, @JsonKey(name: 'product_title')  String? productTitle, @JsonKey(name: 'product_image')  String? productImage, @JsonKey(name: 'product_price')  double? productPrice, @JsonKey(name: 'offer_price')  double? offerPrice, @JsonKey(name: 'offer_original_price')  double? offerOriginalPrice, @JsonKey(name: 'quantity')  int quantity, @JsonKey(name: 'offer_note')  String? offerNote, @JsonKey(name: 'offer_status')  OfferStatus? offerStatus, @JsonKey(name: 'custom_data')  Map<String, dynamic>? customData)  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessageMetadata():
-return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productImage,_that.productPrice,_that.offerPrice,_that.offerOriginalPrice,_that.offerNote,_that.offerStatus,_that.customData);case _:
+return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productImage,_that.productPrice,_that.offerPrice,_that.offerOriginalPrice,_that.quantity,_that.offerNote,_that.offerStatus,_that.customData);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'image_url')  String? imageUrl, @JsonKey(name: 'product_id')  String? productId, @JsonKey(name: 'product_title')  String? productTitle, @JsonKey(name: 'product_image')  String? productImage, @JsonKey(name: 'product_price')  double? productPrice, @JsonKey(name: 'offer_price')  double? offerPrice, @JsonKey(name: 'offer_original_price')  double? offerOriginalPrice, @JsonKey(name: 'offer_note')  String? offerNote, @JsonKey(name: 'offer_status')  OfferStatus? offerStatus, @JsonKey(name: 'custom_data')  Map<String, dynamic>? customData)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'image_url')  String? imageUrl, @JsonKey(name: 'product_id')  String? productId, @JsonKey(name: 'product_title')  String? productTitle, @JsonKey(name: 'product_image')  String? productImage, @JsonKey(name: 'product_price')  double? productPrice, @JsonKey(name: 'offer_price')  double? offerPrice, @JsonKey(name: 'offer_original_price')  double? offerOriginalPrice, @JsonKey(name: 'quantity')  int quantity, @JsonKey(name: 'offer_note')  String? offerNote, @JsonKey(name: 'offer_status')  OfferStatus? offerStatus, @JsonKey(name: 'custom_data')  Map<String, dynamic>? customData)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessageMetadata() when $default != null:
-return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productImage,_that.productPrice,_that.offerPrice,_that.offerOriginalPrice,_that.offerNote,_that.offerStatus,_that.customData);case _:
+return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productImage,_that.productPrice,_that.offerPrice,_that.offerOriginalPrice,_that.quantity,_that.offerNote,_that.offerStatus,_that.customData);case _:
   return null;
 
 }
@@ -218,7 +219,7 @@ return $default(_that.imageUrl,_that.productId,_that.productTitle,_that.productI
 @JsonSerializable()
 
 class _ChatMessageMetadata implements ChatMessageMetadata {
-  const _ChatMessageMetadata({@JsonKey(name: 'image_url') this.imageUrl, @JsonKey(name: 'product_id') this.productId, @JsonKey(name: 'product_title') this.productTitle, @JsonKey(name: 'product_image') this.productImage, @JsonKey(name: 'product_price') this.productPrice, @JsonKey(name: 'offer_price') this.offerPrice, @JsonKey(name: 'offer_original_price') this.offerOriginalPrice, @JsonKey(name: 'offer_note') this.offerNote, @JsonKey(name: 'offer_status') this.offerStatus, @JsonKey(name: 'custom_data') final  Map<String, dynamic>? customData}): _customData = customData;
+  const _ChatMessageMetadata({@JsonKey(name: 'image_url') this.imageUrl, @JsonKey(name: 'product_id') this.productId, @JsonKey(name: 'product_title') this.productTitle, @JsonKey(name: 'product_image') this.productImage, @JsonKey(name: 'product_price') this.productPrice, @JsonKey(name: 'offer_price') this.offerPrice, @JsonKey(name: 'offer_original_price') this.offerOriginalPrice, @JsonKey(name: 'quantity') this.quantity = 1, @JsonKey(name: 'offer_note') this.offerNote, @JsonKey(name: 'offer_status') this.offerStatus, @JsonKey(name: 'custom_data') final  Map<String, dynamic>? customData}): _customData = customData;
   factory _ChatMessageMetadata.fromJson(Map<String, dynamic> json) => _$ChatMessageMetadataFromJson(json);
 
 @override@JsonKey(name: 'image_url') final  String? imageUrl;
@@ -228,6 +229,7 @@ class _ChatMessageMetadata implements ChatMessageMetadata {
 @override@JsonKey(name: 'product_price') final  double? productPrice;
 @override@JsonKey(name: 'offer_price') final  double? offerPrice;
 @override@JsonKey(name: 'offer_original_price') final  double? offerOriginalPrice;
+@override@JsonKey(name: 'quantity') final  int quantity;
 @override@JsonKey(name: 'offer_note') final  String? offerNote;
 @override@JsonKey(name: 'offer_status') final  OfferStatus? offerStatus;
  final  Map<String, dynamic>? _customData;
@@ -253,16 +255,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessageMetadata&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.productTitle, productTitle) || other.productTitle == productTitle)&&(identical(other.productImage, productImage) || other.productImage == productImage)&&(identical(other.productPrice, productPrice) || other.productPrice == productPrice)&&(identical(other.offerPrice, offerPrice) || other.offerPrice == offerPrice)&&(identical(other.offerOriginalPrice, offerOriginalPrice) || other.offerOriginalPrice == offerOriginalPrice)&&(identical(other.offerNote, offerNote) || other.offerNote == offerNote)&&(identical(other.offerStatus, offerStatus) || other.offerStatus == offerStatus)&&const DeepCollectionEquality().equals(other._customData, _customData));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessageMetadata&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.productTitle, productTitle) || other.productTitle == productTitle)&&(identical(other.productImage, productImage) || other.productImage == productImage)&&(identical(other.productPrice, productPrice) || other.productPrice == productPrice)&&(identical(other.offerPrice, offerPrice) || other.offerPrice == offerPrice)&&(identical(other.offerOriginalPrice, offerOriginalPrice) || other.offerOriginalPrice == offerOriginalPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.offerNote, offerNote) || other.offerNote == offerNote)&&(identical(other.offerStatus, offerStatus) || other.offerStatus == offerStatus)&&const DeepCollectionEquality().equals(other._customData, _customData));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,imageUrl,productId,productTitle,productImage,productPrice,offerPrice,offerOriginalPrice,offerNote,offerStatus,const DeepCollectionEquality().hash(_customData));
+int get hashCode => Object.hash(runtimeType,imageUrl,productId,productTitle,productImage,productPrice,offerPrice,offerOriginalPrice,quantity,offerNote,offerStatus,const DeepCollectionEquality().hash(_customData));
 
 @override
 String toString() {
-  return 'ChatMessageMetadata(imageUrl: $imageUrl, productId: $productId, productTitle: $productTitle, productImage: $productImage, productPrice: $productPrice, offerPrice: $offerPrice, offerOriginalPrice: $offerOriginalPrice, offerNote: $offerNote, offerStatus: $offerStatus, customData: $customData)';
+  return 'ChatMessageMetadata(imageUrl: $imageUrl, productId: $productId, productTitle: $productTitle, productImage: $productImage, productPrice: $productPrice, offerPrice: $offerPrice, offerOriginalPrice: $offerOriginalPrice, quantity: $quantity, offerNote: $offerNote, offerStatus: $offerStatus, customData: $customData)';
 }
 
 
@@ -273,7 +275,7 @@ abstract mixin class _$ChatMessageMetadataCopyWith<$Res> implements $ChatMessage
   factory _$ChatMessageMetadataCopyWith(_ChatMessageMetadata value, $Res Function(_ChatMessageMetadata) _then) = __$ChatMessageMetadataCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'image_url') String? imageUrl,@JsonKey(name: 'product_id') String? productId,@JsonKey(name: 'product_title') String? productTitle,@JsonKey(name: 'product_image') String? productImage,@JsonKey(name: 'product_price') double? productPrice,@JsonKey(name: 'offer_price') double? offerPrice,@JsonKey(name: 'offer_original_price') double? offerOriginalPrice,@JsonKey(name: 'offer_note') String? offerNote,@JsonKey(name: 'offer_status') OfferStatus? offerStatus,@JsonKey(name: 'custom_data') Map<String, dynamic>? customData
+@JsonKey(name: 'image_url') String? imageUrl,@JsonKey(name: 'product_id') String? productId,@JsonKey(name: 'product_title') String? productTitle,@JsonKey(name: 'product_image') String? productImage,@JsonKey(name: 'product_price') double? productPrice,@JsonKey(name: 'offer_price') double? offerPrice,@JsonKey(name: 'offer_original_price') double? offerOriginalPrice,@JsonKey(name: 'quantity') int quantity,@JsonKey(name: 'offer_note') String? offerNote,@JsonKey(name: 'offer_status') OfferStatus? offerStatus,@JsonKey(name: 'custom_data') Map<String, dynamic>? customData
 });
 
 
@@ -290,7 +292,7 @@ class __$ChatMessageMetadataCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessageMetadata
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? imageUrl = freezed,Object? productId = freezed,Object? productTitle = freezed,Object? productImage = freezed,Object? productPrice = freezed,Object? offerPrice = freezed,Object? offerOriginalPrice = freezed,Object? offerNote = freezed,Object? offerStatus = freezed,Object? customData = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? imageUrl = freezed,Object? productId = freezed,Object? productTitle = freezed,Object? productImage = freezed,Object? productPrice = freezed,Object? offerPrice = freezed,Object? offerOriginalPrice = freezed,Object? quantity = null,Object? offerNote = freezed,Object? offerStatus = freezed,Object? customData = freezed,}) {
   return _then(_ChatMessageMetadata(
 imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String?,productId: freezed == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
@@ -299,7 +301,8 @@ as String?,productImage: freezed == productImage ? _self.productImage : productI
 as String?,productPrice: freezed == productPrice ? _self.productPrice : productPrice // ignore: cast_nullable_to_non_nullable
 as double?,offerPrice: freezed == offerPrice ? _self.offerPrice : offerPrice // ignore: cast_nullable_to_non_nullable
 as double?,offerOriginalPrice: freezed == offerOriginalPrice ? _self.offerOriginalPrice : offerOriginalPrice // ignore: cast_nullable_to_non_nullable
-as double?,offerNote: freezed == offerNote ? _self.offerNote : offerNote // ignore: cast_nullable_to_non_nullable
+as double?,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,offerNote: freezed == offerNote ? _self.offerNote : offerNote // ignore: cast_nullable_to_non_nullable
 as String?,offerStatus: freezed == offerStatus ? _self.offerStatus : offerStatus // ignore: cast_nullable_to_non_nullable
 as OfferStatus?,customData: freezed == customData ? _self._customData : customData // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,

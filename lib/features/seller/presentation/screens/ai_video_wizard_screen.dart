@@ -42,15 +42,13 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
     }
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF0F172A)
-          : const Color(0xFFF9F9F7),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () {
             if (state.step > 1) {
               notifier.setStep(state.step - 1);
@@ -63,12 +61,15 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
           'AI Product Wizard',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: theme.colorScheme.primary,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded),
+            icon: Icon(
+              Icons.refresh_rounded,
+              color: theme.colorScheme.onSurface,
+            ),
             tooltip: 'Tái tạo lại',
             onPressed: () {
               notifier.reset();
@@ -93,9 +94,15 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFEF2F2),
+                  color: isDark
+                      ? const Color(0xFF991B1B).withAlpha(40)
+                      : const Color(0xFFFEF2F2),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFFCA5A5)),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF7F1D1D)
+                        : const Color(0xFFFCA5A5),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -104,8 +111,10 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                     Expanded(
                       child: Text(
                         state.errorMessage!,
-                        style: const TextStyle(
-                          color: Color(0xFF991B1B),
+                        style: TextStyle(
+                          color: isDark
+                              ? const Color(0xFFF87171)
+                              : const Color(0xFF991B1B),
                           fontSize: 13,
                         ),
                       ),
@@ -131,7 +140,8 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
   }
 
   Widget _buildProgressIndicator(BuildContext context, int step) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     double percent = step == 1 ? 0.33 : (step == 2 ? 0.66 : 1.0);
     String stepLabel = step == 1
         ? 'Step 1 of 3: Select Media'
@@ -149,10 +159,10 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
             children: [
               Text(
                 stepLabel,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
-                  color: AppColors.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               Text(
@@ -160,9 +170,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark
-                      ? const Color(0xFF94A3B8)
-                      : const Color(0xFF64748B),
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -174,10 +182,10 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
               value: percent,
               minHeight: 6,
               backgroundColor: isDark
-                  ? const Color(0xFF1E293B)
+                  ? theme.colorScheme.surfaceContainerHighest
                   : const Color(0xFFE2E8F0),
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                AppColors.primary,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                theme.colorScheme.primary,
               ),
             ),
           ),
@@ -212,6 +220,14 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final unselectedBg = isDark
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFECEEED);
+    final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDark
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E8F0);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -221,7 +237,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFECEEED),
+              color: unselectedBg,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
@@ -234,7 +250,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
                         color: state.inputMode == 'image_audio'
-                            ? AppColors.primary
+                            ? theme.colorScheme.primary
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -245,10 +261,8 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                             Icons.mic_none_outlined,
                             size: 18,
                             color: state.inputMode == 'image_audio'
-                                ? Colors.white
-                                : (isDark
-                                      ? const Color(0xFF94A3B8)
-                                      : const Color(0xFF64748B)),
+                                ? theme.colorScheme.onPrimary
+                                : theme.colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -257,10 +271,8 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                               color: state.inputMode == 'image_audio'
-                                  ? Colors.white
-                                  : (isDark
-                                        ? const Color(0xFF94A3B8)
-                                        : const Color(0xFF64748B)),
+                                  ? theme.colorScheme.onPrimary
+                                  : theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -276,7 +288,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
                         color: state.inputMode == 'image_text'
-                            ? AppColors.primary
+                            ? theme.colorScheme.primary
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -287,10 +299,8 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                             Icons.edit_note_outlined,
                             size: 18,
                             color: state.inputMode == 'image_text'
-                                ? Colors.white
-                                : (isDark
-                                      ? const Color(0xFF94A3B8)
-                                      : const Color(0xFF64748B)),
+                                ? theme.colorScheme.onPrimary
+                                : theme.colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -299,10 +309,8 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                               color: state.inputMode == 'image_text'
-                                  ? Colors.white
-                                  : (isDark
-                                        ? const Color(0xFF94A3B8)
-                                        : const Color(0xFF64748B)),
+                                  ? theme.colorScheme.onPrimary
+                                  : theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -323,12 +331,20 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                 'Hình ảnh sản phẩm (${state.selectedImagePaths.length})',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               TextButton.icon(
                 onPressed: notifier.pickImages,
-                icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
-                label: const Text('Thêm ảnh'),
+                icon: Icon(
+                  Icons.add_photo_alternate_outlined,
+                  size: 18,
+                  color: theme.colorScheme.primary,
+                ),
+                label: Text(
+                  'Thêm ảnh',
+                  style: TextStyle(color: theme.colorScheme.primary),
+                ),
               ),
             ],
           ),
@@ -340,25 +356,24 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  color: cardBgColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.1)
-                        : const Color(0xFFE2E8F0),
-                  ),
+                  border: Border.all(color: cardBorderColor),
                 ),
                 child: Column(
-                  children: const [
+                  children: [
                     Icon(
                       Icons.photo_library_outlined,
                       size: 32,
-                      color: Color(0xFF94A3B8),
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Chưa chọn ảnh nào. Bấm để tải ảnh sản phẩm',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -378,13 +393,14 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                         width: 90,
                         margin: const EdgeInsets.only(right: 8),
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFF1F5F9),
+                          color: cardBgColor,
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFCBD5E1)),
+                          border: Border.all(color: cardBorderColor),
                         ),
-                        child: const Icon(Icons.add, color: Color(0xFF64748B)),
+                        child: Icon(
+                          Icons.add,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     );
                   }
@@ -396,9 +412,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                         margin: const EdgeInsets.only(right: 8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
-                          color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFF1F5F9),
+                          color: cardBgColor,
                           image: DecorationImage(
                             image: NetworkImage(path),
                             fit: BoxFit.cover,
@@ -442,6 +456,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                     : 'Văn bản thô / Ghi chú sản phẩm 📝',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               TextButton.icon(
@@ -459,8 +474,12 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                       ? Icons.record_voice_over_outlined
                       : Icons.edit_note_outlined,
                   size: 16,
+                  color: theme.colorScheme.primary,
                 ),
-                label: const Text('Điền mẫu'),
+                label: Text(
+                  'Điền mẫu',
+                  style: TextStyle(color: theme.colorScheme.primary),
+                ),
               ),
             ],
           ),
@@ -468,19 +487,21 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
           TextField(
             controller: _voiceInputController,
             maxLines: 4,
+            style: TextStyle(color: theme.colorScheme.onSurface),
             decoration: InputDecoration(
               hintText: state.inputMode == 'image_audio'
                   ? 'Bấm biểu tượng micro hoặc dán nội dung từ ghi âm sản phẩm (Ví dụ: "Sản phẩm này làm từ gốm sứ thủ công nung 1300 độ C...")'
                   : 'Nhập các ý tưởng, thông số thô hoặc ghi chú nháp sản phẩm (Ví dụ: "Ví da bò sáp, 6 ngăn thẻ, khâu tay patina...")',
+              hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
               filled: true,
-              fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              fillColor: cardBgColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.1)
-                      : const Color(0xFFE2E8F0),
-                ),
+                borderSide: BorderSide(color: cardBorderColor),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: cardBorderColor),
               ),
             ),
           ),
@@ -491,7 +512,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
             'Chọn phong cách tinh chỉnh AI (Tone)',
             style: theme.textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
@@ -540,13 +561,18 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
     AiWizardState state,
     AiWizardNotifier notifier,
   ) {
+    final theme = Theme.of(context);
     final isSelected = state.selectedTone == toneKey;
+
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
-      selectedColor: AppColors.primary,
+      selectedColor: theme.colorScheme.primary,
+      backgroundColor: theme.colorScheme.surfaceContainerHighest,
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : null,
+        color: isSelected
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onSurfaceVariant,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         fontSize: 12,
       ),
@@ -557,6 +583,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
   // --- STEP 2: PROCESSING & UPLOAD VIEW ---
   Widget _buildStep2ProcessingView(BuildContext context, AiWizardState state) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Center(
       child: Padding(
@@ -567,13 +594,13 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: theme.colorScheme.primary.withAlpha(40),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.auto_awesome,
                 size: 56,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 24),
@@ -582,13 +609,14 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               'Tiến độ xử lý: ${(state.uploadProgress * 100).toInt()}%',
-              style: const TextStyle(
-                color: AppColors.primary,
+              style: TextStyle(
+                color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -599,9 +627,11 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                 value: state.uploadProgress,
                 minHeight: 8,
                 borderRadius: BorderRadius.circular(10),
-                backgroundColor: const Color(0xFFE2E8F0),
-                valueColor: const AlwaysStoppedAnimation<Color>(
-                  AppColors.primary,
+                backgroundColor: isDark
+                    ? theme.colorScheme.surfaceContainerHighest
+                    : const Color(0xFFE2E8F0),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  theme.colorScheme.primary,
                 ),
               ),
             ),
@@ -620,6 +650,11 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDark
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E8F0);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -629,20 +664,34 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFFECFDF5),
+              color: isDark
+                  ? const Color(0xFF059669).withAlpha(40)
+                  : const Color(0xFFECFDF5),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFA7F3D0)),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF059669).withAlpha(80)
+                    : const Color(0xFFA7F3D0),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.verified, size: 18, color: Color(0xFF10B981)),
+                Icon(
+                  Icons.verified,
+                  size: 18,
+                  color: isDark
+                      ? const Color(0xFF34D399)
+                      : const Color(0xFF10B981),
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'Độ tin cậy AI: ${(state.confidence * 100).toInt()}%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF065F46),
+                    color: isDark
+                        ? const Color(0xFF34D399)
+                        : const Color(0xFF065F46),
                     fontSize: 13,
                   ),
                 ),
@@ -656,17 +705,24 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
             'Tiêu đề sản phẩm SPU',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 6),
           TextField(
             controller: _titleController,
+            style: TextStyle(color: theme.colorScheme.onSurface),
             onChanged: notifier.updateTitle,
             decoration: InputDecoration(
               filled: true,
-              fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              fillColor: cardBgColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: cardBorderColor),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: cardBorderColor),
               ),
             ),
           ),
@@ -678,27 +734,28 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF0F172A)
+                    ? theme.colorScheme.surfaceContainerHighest
                     : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '🎤 Audio Raw Text (Gốc):',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
-                      color: Color(0xFF64748B),
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     state.rawAudioText!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontStyle: FontStyle.italic,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -714,10 +771,14 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                 'Mô tả tinh chỉnh (AI Refined Description)',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.auto_awesome, color: AppColors.primary),
+                icon: Icon(
+                  Icons.auto_awesome,
+                  color: theme.colorScheme.primary,
+                ),
                 tooltip: 'Tái tinh chỉnh theo Tone',
                 onPressed: () {
                   if (state.rawAudioText != null) {
@@ -731,12 +792,18 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
           TextField(
             controller: _descController,
             maxLines: 5,
+            style: TextStyle(color: theme.colorScheme.onSurface),
             onChanged: notifier.updateDescription,
             decoration: InputDecoration(
               filled: true,
-              fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              fillColor: cardBgColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: cardBorderColor),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: cardBorderColor),
               ),
             ),
           ),
@@ -745,15 +812,18 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
           // Category Badge
           Row(
             children: [
-              const Text(
+              Text(
                 'Danh mục gợi ý: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
               Chip(
                 label: Text(state.suggestedCategoryName),
-                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                labelStyle: const TextStyle(
-                  color: AppColors.primary,
+                backgroundColor: theme.colorScheme.primary.withAlpha(40),
+                labelStyle: TextStyle(
+                  color: theme.colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -767,18 +837,15 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
               'Thông số kỹ thuật đề xuất (${state.specifications.length})',
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                color: cardBgColor,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.1)
-                      : const Color(0xFFE2E8F0),
-                ),
+                border: Border.all(color: cardBorderColor),
               ),
               child: Column(
                 children: state.specifications.map((spec) {
@@ -792,14 +859,17 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                       children: [
                         Text(
                           spec.key,
-                          style: const TextStyle(
-                            color: Color(0xFF64748B),
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         Text(
                           spec.value,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
                         ),
                       ],
                     ),
@@ -816,6 +886,7 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
               'Các biến thể SKU gợi ý (${state.suggestedSkus.length})',
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -825,13 +896,9 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    color: cardBgColor,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.1)
-                          : const Color(0xFFE2E8F0),
-                    ),
+                    border: Border.all(color: cardBorderColor),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -841,23 +908,26 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                         children: [
                           Text(
                             sku.name ?? 'Biến thể SKU',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurface,
+                            ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             'Tồn kho: ${sku.stock} | Trọng lượng: ${sku.effectiveWeight}g',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF64748B),
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
                       ),
                       Text(
                         MoneyUtils.format(sku.price),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
+                          color: theme.colorScheme.primary,
                         ),
                       ),
                     ],
@@ -877,19 +947,19 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
     AiWizardState state,
     AiWizardNotifier notifier,
   ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDark
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E8F0);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.1)
-                : const Color(0xFFE2E8F0),
-          ),
-        ),
+        color: cardBgColor,
+        border: Border(top: BorderSide(color: cardBorderColor)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -902,7 +972,10 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                 context.pop();
               }
             },
-            child: const Text('Hủy'),
+            child: Text(
+              'Hủy',
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            ),
           ),
           if (state.step == 1)
             ElevatedButton.icon(
@@ -916,8 +989,8 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
               icon: const Icon(Icons.arrow_forward, size: 18),
               label: const Text('Tiếp theo'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -942,19 +1015,19 @@ class _AiVideoWizardScreenState extends ConsumerState<AiVideoWizardScreen> {
                       }
                     },
               icon: state.isSaving
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: theme.colorScheme.onPrimary,
                       ),
                     )
                   : const Icon(Icons.check, size: 18),
               label: Text(state.isSaving ? 'Đang lưu...' : 'Lưu sản phẩm SPU'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

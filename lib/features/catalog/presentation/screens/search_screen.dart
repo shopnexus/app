@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/shared_product_card.dart';
 import '../../data/models/catalog_model.dart';
 import '../providers/catalog_provider.dart';
@@ -16,18 +17,22 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   // Temporary controller for bottom sheet filter
   final TextEditingController _minPriceController = TextEditingController();
   final TextEditingController _maxPriceController = TextEditingController();
 
-  final List<String> _recentSearches = ['Smart Watch', 'Wireless Headphones', 'Leather Backpack'];
+  final List<String> _recentSearches = [
+    'Đồng hồ thông minh',
+    'Tai nghe không dây',
+    'Balo da cao cấp',
+  ];
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final activeFilters = ref.read(activeSearchFiltersProvider);
       _searchController.text = activeFilters.keyword ?? '';
@@ -46,7 +51,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   void _onScroll() {
     final activeFilters = ref.read(activeSearchFiltersProvider);
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       ref.read(catalogProductsProvider(activeFilters).notifier).loadNextPage();
     }
   }
@@ -54,7 +60,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void _triggerSearch(String keyword) {
     _searchController.text = keyword;
     FocusScope.of(context).unfocus();
-    
+
     // Lưu vào lịch sử tìm kiếm gần đây
     if (keyword.trim().isNotEmpty) {
       setState(() {
@@ -65,10 +71,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         }
       });
     }
-    
-    ref.read(activeSearchFiltersProvider.notifier).setKeyword(
-          keyword.trim().isEmpty ? null : keyword.trim(),
-        );
+
+    ref
+        .read(activeSearchFiltersProvider.notifier)
+        .setKeyword(keyword.trim().isEmpty ? null : keyword.trim());
   }
 
   bool _isSearchActive(CatalogSearchFilters filters) {
@@ -81,6 +87,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final activeFilters = ref.watch(activeSearchFiltersProvider);
     final productsState = ref.watch(catalogProductsProvider(activeFilters));
     final categoriesState = ref.watch(categoriesProvider);
@@ -88,12 +97,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final showDiscovery = !_isSearchActive(activeFilters);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F7), // Nền sáng sữa mới
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1A1C1B), size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: theme.colorScheme.onSurface,
+            size: 20,
+          ),
           onPressed: () {
             if (_isSearchActive(activeFilters)) {
               // Reset filters instead of popping if search was active
@@ -105,43 +118,76 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           },
         ),
         title: Container(
-          height: 48.0,
+          height: 44.0,
           decoration: BoxDecoration(
-            color: const Color(0xFFF1F1EF), // surface-container-low của Stitch
+            color: isDarkMode ? AppColors.darkSurface : const Color(0xFFF1F1EF),
             borderRadius: BorderRadius.circular(12.0),
+            border: isDarkMode
+                ? Border.all(
+                    color: AppColors.darkPrimary.withAlpha(40),
+                    width: 1.0,
+                  )
+                : null,
           ),
-          child: TextField(
-            controller: _searchController,
-            textInputAction: TextInputAction.search,
-            onSubmitted: (val) => _triggerSearch(val),
-            decoration: InputDecoration(
-              hintText: 'Search for products...',
-              hintStyle: const TextStyle(fontFamily: 'Inter', color: Color(0xFF6D7A77), fontSize: 14),
-              prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF6D7A77), size: 18),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.cancel_rounded, color: Color(0xFF6D7A77), size: 18),
-                      onPressed: () {
-                        _searchController.clear();
-                        ref.read(activeSearchFiltersProvider.notifier).setKeyword(null);
-                      },
-                    )
-                  : const Icon(Icons.mic_none_rounded, color: Color(0xFF005049), size: 18),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          child: Center(
+            child: TextField(
+              controller: _searchController,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (val) => _triggerSearch(val),
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: 'Tìm kiếm sản phẩm, đồ bán...',
+                hintStyle: TextStyle(
+                  fontFamily: 'Inter',
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontSize: 14,
+                ),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: theme.colorScheme.onSurfaceVariant,
+                  size: 18,
+                ),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.cancel_rounded,
+                          color: theme.colorScheme.onSurfaceVariant,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                          ref
+                              .read(activeSearchFiltersProvider.notifier)
+                              .setKeyword(null);
+                        },
+                      )
+                    : Icon(
+                        Icons.mic_none_rounded,
+                        color: theme.colorScheme.primary,
+                        size: 18,
+                      ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              ),
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: theme.colorScheme.onSurface,
+                fontSize: 14,
+              ),
             ),
-            style: const TextStyle(fontFamily: 'Inter', color: Color(0xFF1A1C1B), fontSize: 14),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => _triggerSearch(_searchController.text),
-            child: const Text(
+            child: Text(
               'Tìm',
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF005049),
+                color: theme.colorScheme.primary,
               ),
             ),
           ),
@@ -149,14 +195,23 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       ),
       body: showDiscovery
           ? _buildDiscoveryCanvas(categoriesState)
-          : _buildSearchResultsCanvas(activeFilters, productsState, categoriesState),
+          : _buildSearchResultsCanvas(
+              activeFilters,
+              productsState,
+              categoriesState,
+            ),
     );
   }
 
   // Canvas 1: Màn hình khám phá lúc trống (Recent Searches, Trending Categories, Recommended)
   Widget _buildDiscoveryCanvas(AsyncValue<List<Category>> categoriesState) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     // Tải danh sách mặc định để làm "Recommended for you"
-    final recommendedState = ref.watch(catalogProductsProvider(const CatalogSearchFilters(page: 1, size: 10)));
+    final recommendedState = ref.watch(
+      catalogProductsProvider(const CatalogSearchFilters(page: 1, size: 10)),
+    );
 
     return SingleChildScrollView(
       controller: _scrollController,
@@ -164,7 +219,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16.0),
-          
+
           // 1. Recent Searches
           if (_recentSearches.isNotEmpty) ...[
             Padding(
@@ -172,13 +227,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Recent Searches',
+                  Text(
+                    'Tìm kiếm gần đây',
                     style: TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1C1B),
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   TextButton(
@@ -187,9 +242,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         _recentSearches.clear();
                       });
                     },
-                    child: const Text(
-                      'Clear',
-                      style: TextStyle(fontFamily: 'Inter', color: Color(0xFF005049), fontWeight: FontWeight.w600),
+                    child: Text(
+                      'Xóa lịch sử',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -202,15 +261,32 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 runSpacing: 8.0,
                 children: _recentSearches.map((search) {
                   return ActionChip(
-                    avatar: const Icon(Icons.history_rounded, size: 16, color: Color(0xFF6D7A77)),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                    avatar: Icon(
+                      Icons.history_rounded,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                     label: Text(search),
                     onPressed: () => _triggerSearch(search),
-                    backgroundColor: const Color(0xFFEEEEEB),
+                    backgroundColor: isDarkMode
+                        ? AppColors.darkSurface
+                        : const Color(0xFFEEEEEB),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(9999.0),
-                      side: const BorderSide(color: Color(0xFFBCC9C6), width: 0.5),
+                      side: BorderSide(
+                        color: isDarkMode
+                            ? AppColors.darkPrimary.withAlpha(40)
+                            : const Color(0xFFBCC9C6),
+                        width: 0.5,
+                      ),
                     ),
-                    labelStyle: const TextStyle(fontFamily: 'Inter', fontSize: 13, color: Color(0xFF3E4947)),
+                    labelStyle: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      color: theme.colorScheme.onSurface,
+                    ),
                   );
                 }).toList(),
               ),
@@ -219,15 +295,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ],
 
           // 2. Trending Categories
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              'Trending Categories',
+              'Danh mục nổi bật',
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1C1B),
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -247,7 +323,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       padding: const EdgeInsets.only(right: 16.0),
                       child: GestureDetector(
                         onTap: () {
-                          ref.read(activeSearchFiltersProvider.notifier).setCategory(cat.id);
+                          ref
+                              .read(activeSearchFiltersProvider.notifier)
+                              .setCategory(cat.id);
                         },
                         child: Column(
                           children: [
@@ -256,24 +334,32 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               width: 56.0,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(0xFFEEEEEB),
+                                color: isDarkMode
+                                    ? AppColors.darkSurface
+                                    : const Color(0xFFEEEEEB),
                                 border: Border.all(
-                                  color: const Color(0xFFBCC9C6).withAlpha(128),
+                                  color: isDarkMode
+                                      ? AppColors.darkPrimary.withAlpha(40)
+                                      : const Color(0xFFBCC9C6).withAlpha(128),
                                   width: 1.0,
                                 ),
                               ),
-                              child: const Center(
-                                child: Icon(Icons.star_border_rounded, color: Color(0xFF005049), size: 20),
+                              child: Center(
+                                child: Icon(
+                                  Icons.star_border_rounded,
+                                  color: theme.colorScheme.primary,
+                                  size: 20,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 8.0),
                             Text(
                               cat.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF3E4947),
+                                color: theme.colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -290,15 +376,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           const SizedBox(height: 24.0),
 
           // 3. Recommended for you (Masonry Grid)
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              'Recommended for You',
+              'Gợi ý dành cho bạn',
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1C1B),
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -310,9 +396,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
               // Tính toán số cột thích ứng dựa trên độ rộng màn hình thực tế
               final double width = MediaQuery.of(context).size.width;
-              final int crossAxisCount = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
+              final int crossAxisCount = width >= 900
+                  ? 4
+                  : (width >= 600 ? 3 : 2);
 
-              final columns = List.generate(crossAxisCount, (_) => <TProductCard>[]);
+              final columns = List.generate(
+                crossAxisCount,
+                (_) => <TProductCard>[],
+              );
               for (int i = 0; i < products.length; i++) {
                 columns[i % crossAxisCount].add(products[i]);
               }
@@ -329,21 +420,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
                         ),
                         child: Column(
-                          children: List.generate(
-                            colProducts.length,
-                            (index) {
-                              final product = colProducts[index];
-                              final double aspect = ((index + colIndex) % 2 == 0) ? 0.8 : 1.0;
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: SharedProductCard(
-                                  product: product,
-                                  aspectRatio: aspect,
-                                  onTap: () => context.push('/home/product/${product.id}'),
-                                ),
-                              );
-                            },
-                          ),
+                          children: List.generate(colProducts.length, (index) {
+                            final product = colProducts[index];
+                            final double aspect = ((index + colIndex) % 2 == 0)
+                                ? 0.8
+                                : 1.0;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: SharedProductCard(
+                                product: product,
+                                aspectRatio: aspect,
+                                onTap: () =>
+                                    context.push('/home/product/${product.id}'),
+                              ),
+                            );
+                          }),
                         ),
                       ),
                     );
@@ -351,10 +442,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ),
               );
             },
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+            loading: () => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Center(
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Color(0xFF005049))),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
+                ),
               ),
             ),
             error: (err, stack) => const SizedBox(),
@@ -371,6 +464,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     AsyncValue<CatalogProductsState> productsState,
     AsyncValue<List<Category>> categoriesState,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Column(
       children: [
         // Dòng thanh công cụ bộ lọc
@@ -385,14 +481,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.search_off_rounded, size: 64, color: Color(0xFFBCC9C6)),
-                      SizedBox(height: 16.0),
+                    children: [
+                      Icon(
+                        Icons.search_off_rounded,
+                        size: 64,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(height: 16.0),
                       Text(
                         'Không tìm thấy sản phẩm phù hợp',
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          color: Color(0xFF6D7A77),
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -403,9 +503,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
               // Tính toán số cột thích ứng dựa trên độ rộng màn hình thực tế
               final double width = MediaQuery.of(context).size.width;
-              final int crossAxisCount = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
+              final int crossAxisCount = width >= 900
+                  ? 4
+                  : (width >= 600 ? 3 : 2);
 
-              final columns = List.generate(crossAxisCount, (_) => <TProductCard>[]);
+              final columns = List.generate(
+                crossAxisCount,
+                (_) => <TProductCard>[],
+              );
               for (int i = 0; i < products.length; i++) {
                 columns[i % crossAxisCount].add(products[i]);
               }
@@ -423,24 +528,30 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           return Expanded(
                             child: Padding(
                               padding: EdgeInsets.only(
-                                right: colIndex < crossAxisCount - 1 ? 12.0 : 0.0,
+                                right: colIndex < crossAxisCount - 1
+                                    ? 12.0
+                                    : 0.0,
                               ),
                               child: Column(
-                                children: List.generate(
-                                  colProducts.length,
-                                  (index) {
-                                    final product = colProducts[index];
-                                    final double aspect = ((index + colIndex) % 2 == 0) ? 0.8 : 1.0;
-                                    return Padding(
-                                      padding: const EdgeInsets.only(bottom: 12.0),
-                                      child: SharedProductCard(
-                                        product: product,
-                                        aspectRatio: aspect,
-                                        onTap: () => context.push('/home/product/${product.id}'),
+                                children: List.generate(colProducts.length, (
+                                  index,
+                                ) {
+                                  final product = colProducts[index];
+                                  final double aspect =
+                                      ((index + colIndex) % 2 == 0) ? 0.8 : 1.0;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 12.0,
+                                    ),
+                                    child: SharedProductCard(
+                                      product: product,
+                                      aspectRatio: aspect,
+                                      onTap: () => context.push(
+                                        '/home/product/${product.id}',
                                       ),
-                                    );
-                                  },
-                                ),
+                                    ),
+                                  );
+                                }),
                               ),
                             ),
                           );
@@ -449,24 +560,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                   ),
                   if (stateData.isLoadingMore)
-                    const SliverToBoxAdapter(
+                    SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: SizedBox(
                             height: 24.0,
                             width: 24.0,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF005049)),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                theme.colorScheme.primary,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  const SliverToBoxAdapter(
-                    child: SizedBox(height: 80.0),
-                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 80.0)),
                 ],
               );
             },
@@ -481,11 +592,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   childAspectRatio: 0.65,
                 ),
                 itemBuilder: (context, index) => Shimmer.fromColors(
-                  baseColor: Colors.grey[200]!,
-                  highlightColor: Colors.grey[100]!,
+                  baseColor: isDarkMode ? Colors.grey[800]! : Colors.grey[200]!,
+                  highlightColor: isDarkMode
+                      ? Colors.grey[700]!
+                      : Colors.grey[100]!,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDarkMode ? AppColors.darkSurface : Colors.white,
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                   ),
@@ -504,67 +617,120 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     CatalogSearchFilters activeFilters,
     AsyncValue<List<Category>> categoriesState,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     String sortText = 'Mới nhất';
     if (activeFilters.sort == 'price_asc') sortText = 'Giá: Thấp đến Cao';
     if (activeFilters.sort == 'price_desc') sortText = 'Giá: Cao đến Thấp';
     if (activeFilters.sort == 'sold_count_desc') sortText = 'Bán chạy nhất';
 
+    final chipBgColor = isDarkMode
+        ? AppColors.darkSurface
+        : const Color(0xFFF1F1EF);
+    final chipTextColor = theme.colorScheme.onSurface;
+
     return Container(
-      color: Colors.white,
+      color: theme.colorScheme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
             FilterChip(
-              avatar: const Icon(Icons.tune_rounded, size: 16, color: Color(0xFF005049)),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+              avatar: Icon(
+                Icons.tune_rounded,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
               label: const Text('Bộ lọc'),
-              labelStyle: const TextStyle(fontFamily: 'Inter', color: Color(0xFF1A1C1B), fontWeight: FontWeight.bold),
-              backgroundColor: const Color(0xFFF1F1EF),
-              selected: activeFilters.priceMin != null || activeFilters.priceMax != null || activeFilters.categoryId != null || activeFilters.location != null,
-              selectedColor: const Color(0xFFEEEEEB),
-              onSelected: (_) => _showFilterBottomSheet(context, activeFilters, categoriesState),
+              labelStyle: TextStyle(
+                fontFamily: 'Inter',
+                color: chipTextColor,
+                fontWeight: FontWeight.bold,
+              ),
+              backgroundColor: chipBgColor,
+              selected:
+                  activeFilters.priceMin != null ||
+                  activeFilters.priceMax != null ||
+                  activeFilters.categoryId != null ||
+                  activeFilters.location != null,
+              selectedColor: theme.colorScheme.primary.withAlpha(40),
+              onSelected: (_) => _showFilterBottomSheet(
+                context,
+                activeFilters,
+                categoriesState,
+              ),
             ),
             if (activeFilters.location != null) ...[
               const SizedBox(width: 8.0),
               Chip(
-                avatar: const Icon(Icons.location_on_rounded, size: 14, color: Color(0xFF005049)),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                avatar: Icon(
+                  Icons.location_on_rounded,
+                  size: 14,
+                  color: theme.colorScheme.primary,
+                ),
                 label: Text(
                   activeFilters.location!,
                   style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
                 ),
                 onDeleted: () {
-                  ref.read(activeSearchFiltersProvider.notifier).setLocation(null);
+                  ref
+                      .read(activeSearchFiltersProvider.notifier)
+                      .setLocation(null);
                 },
               ),
             ],
             const SizedBox(width: 8.0),
             ActionChip(
-              avatar: const Icon(Icons.sort_rounded, size: 16, color: Color(0xFF005049)),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+              avatar: Icon(
+                Icons.sort_rounded,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
               label: Text(sortText),
-              labelStyle: const TextStyle(fontFamily: 'Inter', color: Color(0xFF1A1C1B), fontWeight: FontWeight.w600),
-              backgroundColor: const Color(0xFFF1F1EF),
+              labelStyle: TextStyle(
+                fontFamily: 'Inter',
+                color: chipTextColor,
+                fontWeight: FontWeight.w600,
+              ),
+              backgroundColor: chipBgColor,
               onPressed: () => _showSortOptions(context, activeFilters),
             ),
             if (activeFilters.categoryId != null) ...[
               const SizedBox(width: 8.0),
               Chip(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
                 label: const Text('Danh mục đã chọn'),
                 labelStyle: const TextStyle(fontFamily: 'Inter', fontSize: 12),
                 onDeleted: () {
-                  ref.read(activeSearchFiltersProvider.notifier).setCategory(null);
+                  ref
+                      .read(activeSearchFiltersProvider.notifier)
+                      .setCategory(null);
                 },
               ),
             ],
-            if (activeFilters.priceMin != null || activeFilters.priceMax != null) ...[
+            if (activeFilters.priceMin != null ||
+                activeFilters.priceMax != null) ...[
               const SizedBox(width: 8.0),
               Chip(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
                 label: Text(
                   'Giá: ${activeFilters.priceMin ?? 0}đ - ${activeFilters.priceMax ?? "∞"}đ',
                   style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
                 ),
                 onDeleted: () {
-                  ref.read(activeSearchFiltersProvider.notifier).setPriceRange(null, null);
+                  ref
+                      .read(activeSearchFiltersProvider.notifier)
+                      .setPriceRange(null, null);
                 },
               ),
             ],
@@ -574,9 +740,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  void _showSortOptions(BuildContext context, CatalogSearchFilters activeFilters) {
+  void _showSortOptions(
+    BuildContext context,
+    CatalogSearchFilters activeFilters,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
@@ -585,18 +758,38 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'Sắp xếp theo',
-                  style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
               ),
-              const Divider(),
+              Divider(color: theme.colorScheme.outlineVariant),
               _buildSortTile(context, 'Mới nhất', null, activeFilters.sort),
-              _buildSortTile(context, 'Bán chạy nhất', 'sold_count_desc', activeFilters.sort),
-              _buildSortTile(context, 'Giá: Thấp đến Cao', 'price_asc', activeFilters.sort),
-              _buildSortTile(context, 'Giá: Cao đến Thấp', 'price_desc', activeFilters.sort),
+              _buildSortTile(
+                context,
+                'Bán chạy nhất',
+                'sold_count_desc',
+                activeFilters.sort,
+              ),
+              _buildSortTile(
+                context,
+                'Giá: Thấp đến Cao',
+                'price_asc',
+                activeFilters.sort,
+              ),
+              _buildSortTile(
+                context,
+                'Giá: Cao đến Thấp',
+                'price_desc',
+                activeFilters.sort,
+              ),
             ],
           ),
         );
@@ -604,18 +797,28 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildSortTile(BuildContext context, String label, String? value, String? currentValue) {
+  Widget _buildSortTile(
+    BuildContext context,
+    String label,
+    String? value,
+    String? currentValue,
+  ) {
+    final theme = Theme.of(context);
     final isSelected = value == currentValue;
     return ListTile(
       title: Text(
         label,
         style: TextStyle(
           fontFamily: 'Inter',
-          color: isSelected ? const Color(0xFF005049) : const Color(0xFF3E4947),
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.onSurface,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
-      trailing: isSelected ? const Icon(Icons.check_rounded, color: Color(0xFF005049)) : null,
+      trailing: isSelected
+          ? Icon(Icons.check_rounded, color: theme.colorScheme.primary)
+          : null,
       onTap: () {
         ref.read(activeSearchFiltersProvider.notifier).setSort(value);
         context.pop();
@@ -633,13 +836,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     String? localSelectedCategory = activeFilters.categoryId;
     String? localSelectedLocation = activeFilters.location;
 
+    final parentTheme = Theme.of(context);
+    final isParentDark = parentTheme.brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: isParentDark ? AppColors.darkSurface : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
       builder: (context) {
+        final theme = Theme.of(context);
+        final isDarkMode = theme.brightness == Brightness.dark;
+
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Padding(
@@ -656,9 +866,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Bộ lọc nâng cao',
-                            style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold, fontSize: 18),
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: theme.colorScheme.onSurface,
+                            ),
                           ),
                           TextButton(
                             onPressed: () {
@@ -669,53 +884,83 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                 localSelectedLocation = null;
                               });
                             },
-                            child: const Text('Đặt lại', style: TextStyle(fontFamily: 'Inter', color: Colors.red)),
+                            child: Text(
+                              'Đặt lại',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                color: isDarkMode
+                                    ? const Color(0xFFEF4444)
+                                    : Colors.red,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16.0),
-                      const Text(
+                      Text(
                         'Khu vực / Địa điểm',
-                        style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 14),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                       const SizedBox(height: 8.0),
                       SizedBox(
                         height: 40.0,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
-                          children: [
-                            'Hà Nội',
-                            'TP. Hồ Chí Minh',
-                            'Đà Nẵng',
-                            'San Francisco',
-                            'New York',
-                          ].map((loc) {
-                            final isSelected = localSelectedLocation == loc;
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: ChoiceChip(
-                                label: Text(loc),
-                                selected: isSelected,
-                                labelStyle: TextStyle(
-                                  fontFamily: 'Inter',
-                                  color: isSelected ? Colors.white : const Color(0xFF3E4947),
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                ),
-                                selectedColor: const Color(0xFF005049),
-                                onSelected: (selected) {
-                                  setModalState(() {
-                                    localSelectedLocation = selected ? loc : null;
-                                  });
-                                },
-                              ),
-                            );
-                          }).toList(),
+                          children:
+                              [
+                                'Hà Nội',
+                                'TP. Hồ Chí Minh',
+                                'Đà Nẵng',
+                                'San Francisco',
+                                'New York',
+                              ].map((loc) {
+                                final isSelected = localSelectedLocation == loc;
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: ChoiceChip(
+                                    label: Text(loc),
+                                    selected: isSelected,
+                                    labelStyle: TextStyle(
+                                      fontFamily: 'Inter',
+                                      color: isSelected
+                                          ? theme.colorScheme.onPrimary
+                                          : theme.colorScheme.onSurface,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                    selectedColor: theme.colorScheme.primary,
+                                    backgroundColor: isDarkMode
+                                        ? theme
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                        : const Color(0xFFEEEEEB),
+                                    onSelected: (selected) {
+                                      setModalState(() {
+                                        localSelectedLocation = selected
+                                            ? loc
+                                            : null;
+                                      });
+                                    },
+                                  ),
+                                );
+                              }).toList(),
                         ),
                       ),
                       const SizedBox(height: 20.0),
-                      const Text(
+                      Text(
                         'Danh mục sản phẩm',
-                        style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 14),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                       const SizedBox(height: 8.0),
                       categoriesState.when(
@@ -727,7 +972,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               itemCount: categories.length,
                               itemBuilder: (context, index) {
                                 final cat = categories[index];
-                                final isSelected = localSelectedCategory == cat.id;
+                                final isSelected =
+                                    localSelectedCategory == cat.id;
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: ChoiceChip(
@@ -735,13 +981,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                     selected: isSelected,
                                     labelStyle: TextStyle(
                                       fontFamily: 'Inter',
-                                      color: isSelected ? Colors.white : const Color(0xFF3E4947),
-                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                      color: isSelected
+                                          ? theme.colorScheme.onPrimary
+                                          : theme.colorScheme.onSurface,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                     ),
-                                    selectedColor: const Color(0xFF005049),
+                                    selectedColor: theme.colorScheme.primary,
+                                    backgroundColor: isDarkMode
+                                        ? theme
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                        : const Color(0xFFEEEEEB),
                                     onSelected: (selected) {
                                       setModalState(() {
-                                        localSelectedCategory = selected ? cat.id : null;
+                                        localSelectedCategory = selected
+                                            ? cat.id
+                                            : null;
                                       });
                                     },
                                   ),
@@ -750,13 +1007,19 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             ),
                           );
                         },
-                        loading: () => Container(height: 40.0, color: Colors.transparent),
+                        loading: () =>
+                            Container(height: 40.0, color: Colors.transparent),
                         error: (err, stack) => const Text('Lỗi tải danh mục'),
                       ),
                       const SizedBox(height: 24.0),
-                      const Text(
+                      Text(
                         'Khoảng giá (VND)',
-                        style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 14),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                       const SizedBox(height: 12.0),
                       Row(
@@ -765,40 +1028,67 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF1F1EF),
+                                color: isDarkMode
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : const Color(0xFFF1F1EF),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: TextField(
                                 controller: _minPriceController,
                                 keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
+                                style: TextStyle(
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                                decoration: InputDecoration(
                                   hintText: 'Tối thiểu',
-                                  hintStyle: TextStyle(fontFamily: 'Inter', color: Color(0xFF6D7A77)),
+                                  hintStyle: TextStyle(
+                                    fontFamily: 'Inter',
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.0),
-                            child: Text('—', style: TextStyle(color: Color(0xFF6D7A77))),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                            ),
+                            child: Text(
+                              '—',
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           ),
                           Expanded(
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF1F1EF),
+                                color: isDarkMode
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : const Color(0xFFF1F1EF),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: TextField(
                                 controller: _maxPriceController,
                                 keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
+                                style: TextStyle(
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                                decoration: InputDecoration(
                                   hintText: 'Tối đa',
-                                  hintStyle: TextStyle(fontFamily: 'Inter', color: Color(0xFF6D7A77)),
+                                  hintStyle: TextStyle(
+                                    fontFamily: 'Inter',
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
                                 ),
                               ),
                             ),
@@ -811,17 +1101,27 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         height: 48.0,
                         child: ElevatedButton(
                           onPressed: () {
-                            final minVal = int.tryParse(_minPriceController.text.trim());
-                            final maxVal = int.tryParse(_maxPriceController.text.trim());
-                            
-                            ref.read(activeSearchFiltersProvider.notifier).setCategory(localSelectedCategory);
-                            ref.read(activeSearchFiltersProvider.notifier).setLocation(localSelectedLocation);
-                            ref.read(activeSearchFiltersProvider.notifier).setPriceRange(minVal, maxVal);
+                            final minVal = int.tryParse(
+                              _minPriceController.text.trim(),
+                            );
+                            final maxVal = int.tryParse(
+                              _maxPriceController.text.trim(),
+                            );
+
+                            ref
+                                .read(activeSearchFiltersProvider.notifier)
+                                .setCategory(localSelectedCategory);
+                            ref
+                                .read(activeSearchFiltersProvider.notifier)
+                                .setLocation(localSelectedLocation);
+                            ref
+                                .read(activeSearchFiltersProvider.notifier)
+                                .setPriceRange(minVal, maxVal);
                             context.pop();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF005049),
-                            foregroundColor: Colors.white,
+                            backgroundColor: theme.colorScheme.primary,
+                            foregroundColor: theme.colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16.0),
                             ),

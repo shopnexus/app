@@ -138,8 +138,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           }
         }
 
+        final theme = Theme.of(context);
+
         return Scaffold(
-          backgroundColor: const Color(0xFFF9F9F7), // Nền trắng sữa Nexus
+          backgroundColor: theme.scaffoldBackgroundColor,
           body: Stack(
             children: [
               // Nội dung cuộn chính của màn hình chi tiết
@@ -238,9 +240,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
         );
       },
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         body: Center(
-          child: CircularProgressIndicator(color: Color(0xFF005049)),
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
       ),
       error: (err, stack) => Scaffold(
@@ -278,15 +282,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // 1. Gallery ảnh & video sản phẩm dạng PageView
   Widget _buildGallerySection(List<ResourceModel> items) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     if (items.isEmpty) {
       return Container(
         height: 360.0,
-        color: const Color(0xFFEEEEEB),
-        child: const Center(
+        color: isDarkMode ? AppColors.darkSurface : const Color(0xFFEEEEEB),
+        child: Center(
           child: Icon(
             Icons.image_not_supported_outlined,
             size: 64,
-            color: Color(0xFF6D7A77),
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
       );
@@ -313,16 +320,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     imageUrl: media.url,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: Colors.grey[200]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(color: Colors.white),
+                      baseColor: isDarkMode
+                          ? Colors.grey[800]!
+                          : Colors.grey[200]!,
+                      highlightColor: isDarkMode
+                          ? Colors.grey[700]!
+                          : Colors.grey[100]!,
+                      child: Container(
+                        color: isDarkMode
+                            ? AppColors.darkSurface
+                            : Colors.white,
+                      ),
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: const Color(0xFFEEEEEB),
-                      child: const Icon(
+                      color: isDarkMode
+                          ? AppColors.darkSurface
+                          : const Color(0xFFEEEEEB),
+                      child: Icon(
                         Icons.broken_image_outlined,
                         size: 48,
-                        color: Color(0xFF6D7A77),
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -386,6 +403,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     String priceText,
     String? originalPriceText,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     // Tính toán phần trăm giảm giá nếu có
     int? discountPercent;
     if (_selectedSku != null &&
@@ -403,8 +423,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               .round();
     }
 
+    final accentStarColor = isDarkMode
+        ? AppColors.darkPrimary
+        : const Color(0xFF773115);
+
     return Container(
-      color: Colors.white,
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -416,21 +440,21 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             children: [
               Text(
                 priceText,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF005049), // Trustworthy Teal
+                  color: theme.colorScheme.primary,
                 ),
               ),
               if (originalPriceText != null) ...[
                 const SizedBox(width: 8.0),
                 Text(
                   originalPriceText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 14,
-                    color: Color(0xFF6D7A77),
+                    color: theme.colorScheme.onSurfaceVariant,
                     decoration: TextDecoration.lineThrough,
                   ),
                 ),
@@ -443,17 +467,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF773115).withAlpha(26),
-                    // 10% opacity Warm Rust
+                    color: accentStarColor.withAlpha(30),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     '-$discountPercent%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF773115), // Warm Rust
+                      color: accentStarColor,
                     ),
                   ),
                 ),
@@ -465,11 +488,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Tên sản phẩm
           Text(
             detail.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Manrope',
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1C1B),
+              color: theme.colorScheme.onSurface,
               height: 1.3,
             ),
           ),
@@ -484,7 +507,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     final isFilled = index < detail.rating!.score.floor();
                     return Icon(
                       isFilled ? Icons.star_rounded : Icons.star_border_rounded,
-                      color: const Color(0xFF773115), // Warm Rust
+                      color: accentStarColor,
                       size: 16,
                     );
                   }),
@@ -492,24 +515,31 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 const SizedBox(width: 6.0),
                 Text(
                   '${detail.rating!.score} (${detail.rating!.count} đánh giá)',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,
-                    color: Color(0xFF3E4947),
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text('|', style: TextStyle(color: Color(0xFFBCC9C6))),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    '|',
+                    style: TextStyle(
+                      color: isDarkMode
+                          ? AppColors.darkPrimary.withAlpha(40)
+                          : const Color(0xFFBCC9C6),
+                    ),
+                  ),
                 ),
               ],
               Text(
                 'Đã bán ${detail.soldCount ?? 0}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 12,
-                  color: Color(0xFF6D7A77),
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -522,10 +552,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // 3. Bộ chọn biến thể (SKU Selector) & Số lượng
   Widget _buildSkuSelectorSection(List<ProductSku> skus, int totalStock) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final options = _getAttributeOptions(skus);
 
     return Container(
-      color: Colors.white,
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -533,24 +565,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Hiển thị trạng thái phân loại đã chọn
           Row(
             children: [
-              const Text(
+              Text(
                 'Phân loại sản phẩm',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A1C1B),
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const Spacer(),
               if (_selectedSku != null)
                 Text(
                   'Đã chọn: ${_selectedSku!.name}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF005049),
+                    color: theme.colorScheme.primary,
                   ),
                 ),
             ],
@@ -569,11 +601,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 children: [
                   Text(
                     attrKey.toUpperCase(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF6D7A77),
+                      color: theme.colorScheme.onSurfaceVariant,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -584,27 +616,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     children: attrValues.map((val) {
                       final isSelected = _selectedAttributes[attrKey] == val;
                       return ChoiceChip(
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
                         label: Text(val),
                         selected: isSelected,
                         labelStyle: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 13,
                           color: isSelected
-                              ? Colors.white
-                              : const Color(0xFF3E4947),
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurface,
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.normal,
                         ),
-                        selectedColor: const Color(0xFF005049),
-                        // Trustworthy Teal
-                        backgroundColor: const Color(0xFFEEEEEB),
+                        selectedColor: theme.colorScheme.primary,
+                        backgroundColor: isDarkMode
+                            ? theme.colorScheme.surfaceContainerHighest
+                            : const Color(0xFFEEEEEB),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           side: BorderSide(
                             color: isSelected
-                                ? const Color(0xFF005049)
-                                : const Color(0xFFBCC9C6),
+                                ? theme.colorScheme.primary
+                                : (isDarkMode
+                                      ? AppColors.darkPrimary.withAlpha(40)
+                                      : const Color(0xFFBCC9C6)),
                             width: 0.5,
                           ),
                         ),
@@ -636,25 +673,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             );
           }),
 
-          const Divider(color: Color(0xFFEEEEEB), height: 24.0),
+          Divider(
+            color: isDarkMode
+                ? AppColors.darkPrimary.withAlpha(20)
+                : const Color(0xFFEEEEEB),
+            height: 24.0,
+          ),
 
           // Bộ chỉnh số lượng đặt mua
           Row(
             children: [
-              const Text(
+              Text(
                 'Số lượng đặt mua',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1C1B),
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const Spacer(),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: const Color(0xFFBCC9C6),
+                    color: isDarkMode
+                        ? AppColors.darkPrimary.withAlpha(40)
+                        : const Color(0xFFBCC9C6),
                     width: 0.5,
                   ),
                   borderRadius: BorderRadius.circular(8.0),
@@ -662,7 +706,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.remove, size: 16),
+                      icon: Icon(
+                        Icons.remove,
+                        size: 16,
+                        color: theme.colorScheme.onSurface,
+                      ),
                       onPressed: _quantity > 1
                           ? () => setState(() => _quantity--)
                           : null,
@@ -671,15 +719,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         '$_quantity',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add, size: 16),
+                      icon: Icon(
+                        Icons.add,
+                        size: 16,
+                        color: theme.colorScheme.onSurface,
+                      ),
                       onPressed: _quantity < totalStock
                           ? () => setState(() => _quantity++)
                           : null,
@@ -690,10 +743,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               const SizedBox(width: 12.0),
               Text(
                 'Tồn kho: $totalStock',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 12,
-                  color: Color(0xFF6D7A77),
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -705,6 +758,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // 4. Thông tin người bán (Vendor Info)
   Widget _buildVendorSection(TProductDetail detail) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final sellerProfileState = detail.vendorId != null
         ? ref.watch(publicProfileProvider(detail.vendorId!))
         : null;
@@ -728,7 +784,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         detail.vendorAvatar;
 
     return Container(
-      color: Colors.white,
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
@@ -741,11 +797,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               backgroundImage: avatarUrl != null
                   ? CachedNetworkImageProvider(avatarUrl)
                   : null,
-              backgroundColor: const Color(0xFFEEEEEB),
+              backgroundColor: isDarkMode
+                  ? theme.colorScheme.surfaceContainerHighest
+                  : const Color(0xFFEEEEEB),
               child: avatarUrl == null
-                  ? const Icon(
+                  ? Icon(
                       Icons.storefront_rounded,
-                      color: Color(0xFF6D7A77),
+                      color: theme.colorScheme.onSurfaceVariant,
                     )
                   : null,
             ),
@@ -762,20 +820,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1C1B),
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4.0),
-                  const Text(
+                  Text(
                     'Đối tác uy tín | Phản hồi 99%',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 12,
-                      color: Color(0xFF6D7A77),
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -786,12 +844,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
             label: const Text('Chat ngay'),
             onPressed: () {
-              // Chuyển hướng sang tab Chat
               context.go('/chat');
             },
             style: OutlinedButton.styleFrom(
-              foregroundColor: const Color(0xFF005049),
-              side: const BorderSide(color: Color(0xFF005049)),
+              foregroundColor: theme.colorScheme.primary,
+              side: BorderSide(color: theme.colorScheme.primary),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -808,8 +865,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // 5. Bảng thông số kỹ thuật (Specifications) & Mô tả (Description)
   Widget _buildSpecsAndDescSection(TProductDetail detail) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Container(
-      color: Colors.white,
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -817,25 +877,30 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Bảng thông số kỹ thuật
           if (detail.specifications != null &&
               detail.specifications!.isNotEmpty) ...[
-            const Text(
+            Text(
               'Thông số kỹ thuật',
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1C1B),
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 10.0),
             ...detail.specifications!.map((spec) {
               final isEven = detail.specifications!.indexOf(spec).isEven;
+              final rowBg = isEven
+                  ? (isDarkMode
+                        ? theme.colorScheme.surfaceContainerHighest
+                        : const Color(0xFFF9F9F7))
+                  : (isDarkMode ? AppColors.darkSurface : Colors.white);
               return Container(
                 padding: const EdgeInsets.symmetric(
                   vertical: 8,
                   horizontal: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: isEven ? const Color(0xFFF9F9F7) : Colors.white,
+                  color: rowBg,
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 child: Row(
@@ -844,9 +909,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       flex: 3,
                       child: Text(
                         spec.key,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Inter',
-                          color: Color(0xFF6D7A77),
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
                         ),
                       ),
@@ -855,10 +920,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       flex: 7,
                       child: Text(
                         spec.value,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1A1C1B),
+                          color: theme.colorScheme.onSurface,
                           fontSize: 13,
                         ),
                       ),
@@ -867,26 +932,31 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
               );
             }),
-            const Divider(color: Color(0xFFEEEEEB), height: 32.0),
+            Divider(
+              color: isDarkMode
+                  ? AppColors.darkPrimary.withAlpha(20)
+                  : const Color(0xFFEEEEEB),
+              height: 32.0,
+            ),
           ],
 
           // Mô tả sản phẩm
-          const Text(
+          Text(
             'Mô tả sản phẩm',
             style: TextStyle(
               fontFamily: 'Manrope',
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1C1B),
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 10.0),
           Text(
             detail.description ?? 'Sản phẩm chưa cập nhật mô tả chi tiết.',
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
-              color: Color(0xFF3E4947),
+              color: theme.colorScheme.onSurface,
               height: 1.5,
             ),
             maxLines: _isDescriptionExpanded ? null : 4,
@@ -901,13 +971,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 _isDescriptionExpanded
                     ? Icons.keyboard_arrow_up_rounded
                     : Icons.keyboard_arrow_down_rounded,
-                color: const Color(0xFF005049),
+                color: theme.colorScheme.primary,
               ),
               label: Text(
                 _isDescriptionExpanded ? 'Thu gọn' : 'Xem thêm',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
-                  color: Color(0xFF005049),
+                  color: theme.colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -925,19 +995,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // 6. Khu vực Đánh giá (Review & Comments Section)
   Widget _buildReviewsSection(AsyncValue<List<ProductComment>> commentsState) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final accentStarColor = isDarkMode
+        ? AppColors.darkPrimary
+        : const Color(0xFF773115);
+
     return Container(
-      color: Colors.white,
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Đánh giá từ người mua',
             style: TextStyle(
               fontFamily: 'Manrope',
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1C1B),
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12.0),
@@ -945,14 +1022,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           commentsState.when(
             data: (comments) {
               if (comments.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Center(
                     child: Text(
                       'Sản phẩm chưa có lượt đánh giá nào.',
                       style: TextStyle(
                         fontFamily: 'Inter',
-                        color: Color(0xFF6D7A77),
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -970,7 +1047,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(12.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF9F9F7),
+                      color: isDarkMode
+                          ? theme.colorScheme.surfaceContainerHighest
+                          : const Color(0xFFF9F9F7),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Row(
@@ -979,11 +1058,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           children: [
                             Text(
                               avgScore.toStringAsFixed(1),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Manrope',
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF773115),
+                                color: accentStarColor,
                               ),
                             ),
                             Row(
@@ -992,7 +1071,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                   index < avgScore.floor()
                                       ? Icons.star_rounded
                                       : Icons.star_border_rounded,
-                                  color: const Color(0xFF773115),
+                                  color: accentStarColor,
                                   size: 14,
                                 );
                               }),
@@ -1000,10 +1079,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             const SizedBox(height: 4.0),
                             Text(
                               '${comments.length} đánh giá',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 11,
-                                color: Color(0xFF6D7A77),
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -1029,16 +1108,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                   children: [
                                     Text(
                                       '$starVal',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: 'Inter',
                                         fontSize: 10,
+                                        color: theme.colorScheme.onSurface,
                                       ),
                                     ),
                                     const SizedBox(width: 4.0),
-                                    const Icon(
+                                    Icon(
                                       Icons.star_rounded,
                                       size: 10,
-                                      color: Color(0xFF773115),
+                                      color: accentStarColor,
                                     ),
                                     const SizedBox(width: 6.0),
                                     Expanded(
@@ -1048,13 +1128,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                         ),
                                         child: LinearProgressIndicator(
                                           value: pct,
-                                          backgroundColor: const Color(
-                                            0xFFEEEEEB,
-                                          ),
+                                          backgroundColor: isDarkMode
+                                              ? AppColors.darkSurface
+                                              : const Color(0xFFEEEEEB),
                                           valueColor:
-                                              const AlwaysStoppedAnimation<
-                                                Color
-                                              >(Color(0xFF773115)),
+                                              AlwaysStoppedAnimation<Color>(
+                                                accentStarColor,
+                                              ),
                                           minHeight: 4,
                                         ),
                                       ),
@@ -1062,10 +1142,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                     const SizedBox(width: 8.0),
                                     Text(
                                       '${(pct * 100).round()}%',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: 'Inter',
                                         fontSize: 10,
-                                        color: Color(0xFF6D7A77),
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                   ],
@@ -1085,9 +1166,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: comments.take(3).length,
-                    // Hiển thị tối đa 3 đánh giá nổi bật
-                    separatorBuilder: (context, index) =>
-                        const Divider(color: Color(0xFFEEEEEB), height: 24),
+                    separatorBuilder: (context, index) => Divider(
+                      color: isDarkMode
+                          ? AppColors.darkPrimary.withAlpha(20)
+                          : const Color(0xFFEEEEEB),
+                      height: 24,
+                    ),
                     itemBuilder: (context, index) {
                       final comment = comments[index];
                       return Column(
@@ -1103,12 +1187,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                         comment.profile!.avatarUrl!,
                                       )
                                     : null,
-                                backgroundColor: const Color(0xFFEEEEEB),
+                                backgroundColor: isDarkMode
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : const Color(0xFFEEEEEB),
                                 child: comment.profile?.avatarUrl == null
-                                    ? const Icon(
+                                    ? Icon(
                                         Icons.person,
                                         size: 14,
-                                        color: Color(0xFF6D7A77),
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
                                       )
                                     : null,
                               ),
@@ -1117,19 +1204,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 comment.profile?.name ??
                                     comment.profile?.username ??
                                     'Người dùng ẩn danh',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.onSurface,
                                 ),
                               ),
                               const Spacer(),
                               Text(
                                 comment.dateCreated?.split('T').first ?? '',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 11,
-                                  color: Color(0xFF6D7A77),
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -1141,7 +1229,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 sIdx < comment.score.floor()
                                     ? Icons.star_rounded
                                     : Icons.star_border_rounded,
-                                color: const Color(0xFF773115),
+                                color: accentStarColor,
                                 size: 12,
                               );
                             }),
@@ -1151,10 +1239,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             const SizedBox(height: 4.0),
                             Text(
                               'Phân loại: ${comment.attributes!.map((a) => '${a.key}: ${a.value}').join(', ')}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 11,
-                                color: Color(0xFF6D7A77),
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -1163,10 +1251,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             const SizedBox(height: 6.0),
                             Text(
                               comment.body!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 13,
-                                color: Color(0xFF3E4947),
+                                color: theme.colorScheme.onSurface,
                                 height: 1.4,
                               ),
                             ),
@@ -1186,7 +1274,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                     padding: const EdgeInsets.only(right: 8.0),
                                     child: GestureDetector(
                                       onTap: () {
-                                        // Phóng to ảnh
                                         showDialog(
                                           context: context,
                                           builder: (context) => Dialog(
@@ -1233,6 +1320,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   Widget _buildRecentlyViewedSection(
     AsyncValue<List<TProductCard>> recentlyViewedState,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return recentlyViewedState.when(
       data: (products) {
         // Lọc bỏ sản phẩm hiện tại ra khỏi danh mục gợi ý
@@ -1245,20 +1335,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         }
 
         return Container(
-          color: Colors.white,
+          color: isDarkMode ? AppColors.darkSurface : Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
                   'Sản phẩm vừa xem gần đây',
                   style: TextStyle(
                     fontFamily: 'Manrope',
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A1C1B),
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -1278,7 +1368,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         product: product,
                         aspectRatio: 1.0,
                         onTap: () {
-                          // Điều hướng sang sản phẩm khác
                           context.push('/home/product/${product.id}');
                         },
                       ),
@@ -1297,7 +1386,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // 8. Sticky Bottom Bar đặt hàng dưới cùng
   Widget _buildStickyBottomBar(TProductDetail detail, int totalStock) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final bool isOutOfStock = totalStock <= 0;
+
+    final iconBgColor = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFEEEEEB);
 
     return Container(
       padding: EdgeInsets.fromLTRB(
@@ -1307,11 +1402,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         MediaQuery.of(context).padding.bottom + 12.0,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? AppColors.darkSurface : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(20),
+            color: isDarkMode
+                ? Colors.black.withAlpha(80)
+                : Colors.black.withAlpha(20),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -1322,13 +1419,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Nút Icon Chat
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFEEEEEB),
+              color: iconBgColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.chat_bubble_outline_rounded,
-                color: Color(0xFF1A1C1B),
+                color: theme.colorScheme.onSurface,
               ),
               onPressed: () => context.go('/chat'),
             ),
@@ -1338,13 +1435,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Nút Icon Thêm vào giỏ hàng
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFEEEEEB),
+              color: iconBgColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.add_shopping_cart_rounded,
-                color: Color(0xFF1A1C1B),
+                color: theme.colorScheme.onSurface,
               ),
               onPressed: isOutOfStock
                   ? null
@@ -1378,11 +1475,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.white,
+                            backgroundColor: isDarkMode
+                                ? AppColors.darkSurface
+                                : Colors.white,
                             elevation: 8,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
-                              side: const BorderSide(color: Color(0xFFE2E3E0)),
+                              side: BorderSide(
+                                color: isDarkMode
+                                    ? AppColors.darkPrimary.withAlpha(40)
+                                    : const Color(0xFFE2E3E0),
+                              ),
                             ),
                             margin: const EdgeInsets.all(16),
                             padding: const EdgeInsets.symmetric(
@@ -1394,13 +1497,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               children: [
                                 Container(
                                   padding: const EdgeInsets.all(8),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFE6F4EA),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primary.withAlpha(
+                                      30,
+                                    ),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.check_circle_outline_rounded,
-                                    color: AppColors.primary,
+                                    color: theme.colorScheme.primary,
                                     size: 24,
                                   ),
                                 ),
@@ -1411,13 +1516,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                         CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Text(
+                                      Text(
                                         'Added to Bag!',
                                         style: TextStyle(
                                           fontFamily: 'Manrope',
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
-                                          color: AppColors.textPrimary,
+                                          color: theme.colorScheme.onSurface,
                                         ),
                                       ),
                                       const SizedBox(height: 2),
@@ -1425,10 +1530,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                         '$_quantity x ${detail.name}',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 12,
-                                          color: AppColors.textSecondary,
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
                                         ),
                                       ),
                                     ],
@@ -1443,8 +1550,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                     context.push('/cart');
                                   },
                                   style: TextButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: AppColors.primary,
+                                    foregroundColor:
+                                        theme.colorScheme.onPrimary,
+                                    backgroundColor: theme.colorScheme.primary,
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 16,
                                       vertical: 8,
@@ -1535,10 +1643,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         context.push('/checkout');
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF005049), // Trustworthy Teal
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0), // Bo góc 8px
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                   elevation: 0,
                 ),

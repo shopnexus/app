@@ -14,31 +14,35 @@ class OrderDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final orderDetailAsync = ref.watch(buyerOrderDetailProvider(orderId));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Chi tiết đơn hàng',
           style: TextStyle(
-            color: Color(0xFF1A1C1B),
+            color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
             fontFamily: 'Manrope',
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF1A1C1B),
+            color: theme.colorScheme.onSurface,
             size: 20,
           ),
           onPressed: () => context.pop(),
         ),
       ),
       body: RefreshIndicator(
+        color: theme.colorScheme.primary,
         onRefresh: () => ref.refresh(buyerOrderDetailProvider(orderId).future),
         child: orderDetailAsync.when(
           data: (order) => SingleChildScrollView(
@@ -48,61 +52,62 @@ class OrderDetailScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Status & ID Card
-                _buildStatusCard(order),
+                _buildStatusCard(context, order),
                 const SizedBox(height: 16),
 
                 // 2. Shipping Address Card
-                _buildAddressCard(order),
+                _buildAddressCard(context, order),
                 const SizedBox(height: 16),
 
                 // 3. Items Card
-                _buildItemsCard(order),
+                _buildItemsCard(context, order),
                 const SizedBox(height: 16),
 
                 // 4. Payment Breakdowns Card
-                _buildPaymentCard(order),
+                _buildPaymentCard(context, order),
                 const SizedBox(height: 16),
 
                 // 5. Shipping info details
-                _buildShippingDetailsCard(order),
+                _buildShippingDetailsCard(context, order),
                 const SizedBox(height: 32),
               ],
             ),
           ),
-          loading: () => _buildShimmerDetail(),
+          loading: () => _buildShimmerDetail(context),
           error: (err, stack) => Center(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.error_outline_rounded,
                     size: 48,
-                    color: Color(0xFFBA1A1A),
+                    color: isDarkMode
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFFBA1A1A),
                   ),
-                  // Màu Error Stitch
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Không thể tải chi tiết đơn hàng',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Inter',
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     err.toString(),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Color(0xFF64748B),
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 13,
                       fontFamily: 'Inter',
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Nút bấm cao tối thiểu 48px và bo góc 12px theo chuẩn Stitch
                   SizedBox(
                     height: 48,
                     width: 140,
@@ -110,8 +115,8 @@ class OrderDetailScreen extends ConsumerWidget {
                       onPressed: () =>
                           ref.refresh(buyerOrderDetailProvider(orderId)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -135,15 +140,25 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusCard(BuyerOrder order) {
+  Widget _buildStatusCard(BuildContext context, BuyerOrder order) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFF1F5F9);
+    final dividerColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(30)
+        : const Color(0xFFF1F5F9);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(24),
-        // Đổi sang 24px theo chuẩn Stitch Card
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: cardBorderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,41 +166,41 @@ class OrderDetailScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Trạng thái đơn hàng',
                 style: TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF64748B),
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontFamily: 'Inter',
                 ),
               ),
               Text(
                 order.transport?.status ?? 'Chuẩn bị hàng',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: theme.colorScheme.onSurface,
                   fontFamily: 'Inter',
                 ),
               ),
             ],
           ),
-          const Divider(height: 24, color: Color(0xFFF1F5F9)),
+          Divider(height: 24, color: dividerColor),
           Text(
             'Mã đơn: ${order.id}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF0F172A),
+              color: theme.colorScheme.onSurface,
               fontFamily: 'Inter',
             ),
           ),
           const SizedBox(height: 6),
           Text(
             'Ngày đặt hàng: ${_formatDate(order.dateCreated)}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF64748B),
+              color: theme.colorScheme.onSurfaceVariant,
               fontFamily: 'Inter',
             ),
           ),
@@ -194,45 +209,55 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAddressCard(BuyerOrder order) {
+  Widget _buildAddressCard(BuildContext context, BuyerOrder order) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFF1F5F9);
+    final dividerColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(30)
+        : const Color(0xFFF1F5F9);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(24),
-        // Đổi sang 24px theo chuẩn Stitch Card
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: cardBorderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.location_on_rounded,
-                color: Color(0xFF64748B),
+                color: theme.colorScheme.onSurfaceVariant,
                 size: 20,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Địa chỉ giao hàng',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: theme.colorScheme.onSurface,
                   fontFamily: 'Inter',
                 ),
               ),
             ],
           ),
-          const Divider(height: 24, color: Color(0xFFF1F5F9)),
+          Divider(height: 24, color: dividerColor),
           Text(
             order.address,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               height: 1.5,
-              color: Color(0xFF0F172A),
+              color: theme.colorScheme.onSurface,
               fontFamily: 'Inter',
             ),
           ),
@@ -241,35 +266,48 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildItemsCard(BuyerOrder order) {
+  Widget _buildItemsCard(BuildContext context, BuyerOrder order) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFF1F5F9);
+    final imageBgColor = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF1F5F9);
+    final dividerColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(30)
+        : const Color(0xFFF1F5F9);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(24),
-        // Đổi sang 24px theo chuẩn Stitch Card
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: cardBorderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Sản phẩm đã mua',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
+              color: theme.colorScheme.onSurface,
               fontFamily: 'Inter',
             ),
           ),
-          const Divider(height: 24, color: Color(0xFFF1F5F9)),
+          Divider(height: 24, color: dividerColor),
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: order.items.length,
             separatorBuilder: (context, index) =>
-                const Divider(height: 24, color: Color(0xFFF1F5F9)),
+                Divider(height: 24, color: dividerColor),
             itemBuilder: (context, index) {
               final item = order.items[index];
               return Row(
@@ -280,12 +318,12 @@ class OrderDetailScreen extends ConsumerWidget {
                     child: Container(
                       width: 64,
                       height: 64,
-                      color: const Color(0xFFF1F5F9),
+                      color: imageBgColor,
                       child: item.imageUrl != null && item.imageUrl!.isNotEmpty
                           ? Image.network(item.imageUrl!, fit: BoxFit.cover)
-                          : const Icon(
+                          : Icon(
                               Icons.image_rounded,
-                              color: Color(0xFF94A3B8),
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                     ),
                   ),
@@ -298,10 +336,10 @@ class OrderDetailScreen extends ConsumerWidget {
                           item.skuName,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F172A),
+                            color: theme.colorScheme.onSurface,
                             fontFamily: 'Inter',
                           ),
                         ),
@@ -311,18 +349,18 @@ class OrderDetailScreen extends ConsumerWidget {
                           children: [
                             Text(
                               'Đơn giá: ${MoneyUtils.format(item.subtotalAmount)}  x${item.quantity}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
-                                color: Color(0xFF64748B),
+                                color: theme.colorScheme.onSurfaceVariant,
                                 fontFamily: 'Inter',
                               ),
                             ),
                             Text(
                               MoneyUtils.format(item.totalAmount),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF0F172A),
+                                color: theme.colorScheme.onSurface,
                                 fontFamily: 'Inter',
                               ),
                             ),
@@ -340,48 +378,60 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPaymentCard(BuyerOrder order) {
+  Widget _buildPaymentCard(BuildContext context, BuyerOrder order) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final subtotal = order.items.fold<int>(
       0,
       (sum, item) => sum + item.totalAmount,
     );
     final shippingCost = order.totalAmount - subtotal;
 
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFF1F5F9);
+    final dividerColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(30)
+        : const Color(0xFFF1F5F9);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(24),
-        // Đổi sang 24px theo chuẩn Stitch Card
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: cardBorderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Thông tin thanh toán',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
+              color: theme.colorScheme.onSurface,
               fontFamily: 'Inter',
             ),
           ),
-          const Divider(height: 24, color: Color(0xFFF1F5F9)),
-          _buildPaymentRow('Tiền hàng', MoneyUtils.format(subtotal)),
+          Divider(height: 24, color: dividerColor),
+          _buildPaymentRow(context, 'Tiền hàng', MoneyUtils.format(subtotal)),
           const SizedBox(height: 12),
           _buildPaymentRow(
+            context,
             'Phí vận chuyển',
             MoneyUtils.format(shippingCost > 0 ? shippingCost : 0),
           ),
-          const Divider(height: 24, color: Color(0xFFF1F5F9)),
+          Divider(height: 24, color: dividerColor),
           _buildPaymentRow(
+            context,
             'Tổng thanh toán',
             MoneyUtils.format(order.totalAmount),
             isBold: true,
             fontSize: 16,
-            valueColor: AppColors.primary,
+            valueColor: theme.colorScheme.primary,
           ),
         ],
       ),
@@ -389,12 +439,15 @@ class OrderDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildPaymentRow(
+    BuildContext context,
     String label,
     String value, {
     bool isBold = false,
     double fontSize = 13,
-    Color valueColor = const Color(0xFF1A1C1B),
+    Color? valueColor,
   }) {
+    final theme = Theme.of(context);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -402,7 +455,9 @@ class OrderDetailScreen extends ConsumerWidget {
           label,
           style: TextStyle(
             fontSize: fontSize,
-            color: isBold ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+            color: isBold
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onSurfaceVariant,
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
             fontFamily: 'Inter',
           ),
@@ -411,7 +466,7 @@ class OrderDetailScreen extends ConsumerWidget {
           value,
           style: TextStyle(
             fontSize: fontSize,
-            color: valueColor,
+            color: valueColor ?? theme.colorScheme.onSurface,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
             fontFamily: 'Inter',
           ),
@@ -420,35 +475,47 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShippingDetailsCard(BuyerOrder order) {
+  Widget _buildShippingDetailsCard(BuildContext context, BuyerOrder order) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFF1F5F9);
+    final dividerColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(30)
+        : const Color(0xFFF1F5F9);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(24),
-        // Đổi sang 24px theo chuẩn Stitch Card
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: cardBorderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Thông tin vận chuyển',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
+              color: theme.colorScheme.onSurface,
               fontFamily: 'Inter',
             ),
           ),
-          const Divider(height: 24, color: Color(0xFFF1F5F9)),
+          Divider(height: 24, color: dividerColor),
           _buildPaymentRow(
+            context,
             'Phương thức',
             order.transport?.option ?? 'Giao hàng tiêu chuẩn (Standard)',
           ),
           const SizedBox(height: 12),
           _buildPaymentRow(
+            context,
             'Trạng thái vận chuyển',
             order.transport?.status ?? 'Chuẩn bị hàng',
           ),
@@ -466,10 +533,11 @@ class OrderDetailScreen extends ConsumerWidget {
     }
   }
 
-  Widget _buildShimmerDetail() {
+  Widget _buildShimmerDetail(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: const Color(0xFFF1F5F9),
-      highlightColor: const Color(0xFFF8FAFC),
+      baseColor: isDarkMode ? Colors.grey[800]! : const Color(0xFFF1F5F9),
+      highlightColor: isDarkMode ? Colors.grey[700]! : const Color(0xFFF8FAFC),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -479,10 +547,8 @@ class OrderDetailScreen extends ConsumerWidget {
               margin: const EdgeInsets.only(bottom: 16),
               height: 140,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(
-                  24,
-                ), // Đổi sang 24px theo chuẩn Stitch Card
+                color: isDarkMode ? AppColors.darkSurface : Colors.white,
+                borderRadius: BorderRadius.circular(24),
               ),
             ),
           ),

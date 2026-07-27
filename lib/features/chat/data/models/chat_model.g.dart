@@ -15,6 +15,7 @@ _ChatMessageMetadata _$ChatMessageMetadataFromJson(Map<String, dynamic> json) =>
       productPrice: (json['product_price'] as num?)?.toDouble(),
       offerPrice: (json['offer_price'] as num?)?.toDouble(),
       offerOriginalPrice: (json['offer_original_price'] as num?)?.toDouble(),
+      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
       offerNote: json['offer_note'] as String?,
       offerStatus: $enumDecodeNullable(
         _$OfferStatusEnumMap,
@@ -33,6 +34,7 @@ Map<String, dynamic> _$ChatMessageMetadataToJson(
   'product_price': instance.productPrice,
   'offer_price': instance.offerPrice,
   'offer_original_price': instance.offerOriginalPrice,
+  'quantity': instance.quantity,
   'offer_note': instance.offerNote,
   'offer_status': _$OfferStatusEnumMap[instance.offerStatus],
   'custom_data': instance.customData,
@@ -43,6 +45,7 @@ const _$OfferStatusEnumMap = {
   OfferStatus.accepted: 'accepted',
   OfferStatus.countered: 'countered',
   OfferStatus.declined: 'declined',
+  OfferStatus.withdrawn: 'withdrawn',
 };
 
 _ChatMessage _$ChatMessageFromJson(Map<String, dynamic> json) => _ChatMessage(

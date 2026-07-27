@@ -30,35 +30,36 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final state = ref.watch(sellerOrdersProvider);
     final notifier = ref.read(sellerOrdersProvider.notifier);
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF0F172A)
-          : const Color(0xFFF9F9F7),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Đơn hàng bán',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: theme.colorScheme.primary,
           ),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+          IconButton(
+            icon: Icon(Icons.search, color: theme.colorScheme.onSurface),
+            onPressed: () {},
+          ),
           const SizedBox(width: 4),
         ],
       ),
       body: RefreshIndicator(
+        color: theme.colorScheme.primary,
         onRefresh: () async {
           await notifier.refresh();
         },
@@ -132,7 +133,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
             // Orders / Items List
             Expanded(
               child: state.isLoading
-                  ? _buildShimmerList(isDark)
+                  ? _buildShimmerList(context)
                   : _buildOrdersList(context, state, notifier),
             ),
           ],
@@ -148,7 +149,12 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final unselectedBg = isDark
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFECEEED);
 
     return GestureDetector(
       onTap: onTap,
@@ -156,9 +162,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary
-              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFECEEED)),
+          color: isSelected ? theme.colorScheme.primary : unselectedBg,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -169,10 +173,8 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected
-                    ? Colors.white
-                    : (isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF3F4947)),
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSurfaceVariant,
               ),
             ),
             if (count != null && count > 0) ...[
@@ -188,7 +190,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? AppColors.primary : Colors.white,
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : Colors.white,
                   ),
                 ),
               ),
@@ -208,20 +212,27 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDark
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFF1F5F9);
+    final imageBgColor = isDark
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF1F5F9);
+    final dividerColor = isDark
+        ? AppColors.darkPrimary.withAlpha(30)
+        : const Color(0xFFF1F5F9);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFF1F5F9),
-        ),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -238,22 +249,23 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                 children: [
                   CircleAvatar(
                     radius: 14,
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.2),
+                    backgroundColor: theme.colorScheme.primary.withAlpha(40),
                     child: Text(
                       (item.buyerName ?? 'B')[0].toUpperCase(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     item.buyerName ?? 'Khách hàng',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -261,21 +273,25 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFEF3C7),
+                  color: isDark
+                      ? const Color(0xFFD97706).withAlpha(40)
+                      : const Color(0xFFFEF3C7),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   item.orderId != null ? '#${item.orderId}' : 'Chờ gom đơn',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF92400E),
+                    color: isDark
+                        ? const Color(0xFFFBBF24)
+                        : const Color(0xFF92400E),
                   ),
                 ),
               ),
             ],
           ),
-          const Divider(height: 24),
+          Divider(height: 24, color: dividerColor),
 
           // Item Product Row
           Row(
@@ -286,9 +302,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                 height: 64,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: isDark
-                      ? const Color(0xFF0F172A)
-                      : const Color(0xFFF1F5F9),
+                  color: imageBgColor,
                   image: item.thumbnail != null
                       ? DecorationImage(
                           image: NetworkImage(item.thumbnail!),
@@ -297,9 +311,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                       : null,
                 ),
                 child: item.thumbnail == null
-                    ? const Icon(
+                    ? Icon(
                         Icons.shopping_bag_outlined,
-                        color: Color(0xFF94A3B8),
+                        color: theme.colorScheme.onSurfaceVariant,
                       )
                     : null,
               ),
@@ -312,18 +326,19 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                       item.productName ?? 'Sản phẩm gom đơn',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     if (item.skuName != null) ...[
                       const SizedBox(height: 2),
                       Text(
                         'Phân loại: ${item.skuName}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF64748B),
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -333,17 +348,17 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                       children: [
                         Text(
                           'x${item.quantity}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Color(0xFF64748B),
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           MoneyUtils.format(item.price * item.quantity),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: theme.colorScheme.primary,
                             fontSize: 15,
                           ),
                         ),
@@ -374,6 +389,8 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                           }
                         },
                   style: OutlinedButton.styleFrom(
+                    foregroundColor: theme.colorScheme.onSurface,
+                    side: BorderSide(color: theme.colorScheme.outline),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -401,8 +418,8 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                           }
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -514,17 +531,21 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDark
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFF1F5F9);
+    final dividerColor = isDark
+        ? AppColors.darkPrimary.withAlpha(30)
+        : const Color(0xFFF1F5F9);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFF1F5F9),
-        ),
+        border: Border.all(color: cardBorderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -534,20 +555,27 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
             children: [
               Text(
                 'Mã đơn: #${order.id}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD1FAE5),
+                  color: isDark
+                      ? const Color(0xFF059669).withAlpha(40)
+                      : const Color(0xFFD1FAE5),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   order.status == 'shipping' ? 'Đang giao' : 'Đã xác nhận',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF065F46),
+                    color: isDark
+                        ? const Color(0xFF34D399)
+                        : const Color(0xFF065F46),
                   ),
                 ),
               ),
@@ -556,24 +584,33 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
           const SizedBox(height: 8),
           Text(
             'Khách hàng: ${order.buyerName ?? "Minh Anh"}',
-            style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+            style: TextStyle(
+              fontSize: 13,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           if (order.shippingAddress != null)
             Text(
               'Địa chỉ: ${order.shippingAddress}',
-              style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
-          const Divider(height: 20),
+          Divider(height: 20, color: dividerColor),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Tổng thanh toán:'),
+              Text(
+                'Tổng thanh toán:',
+                style: TextStyle(color: theme.colorScheme.onSurface),
+              ),
               Text(
                 MoneyUtils.format(order.totalAmount),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: AppColors.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ],
@@ -585,6 +622,8 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                 child: OutlinedButton(
                   onPressed: () => context.push('/chat'),
                   style: OutlinedButton.styleFrom(
+                    foregroundColor: theme.colorScheme.onSurface,
+                    side: BorderSide(color: theme.colorScheme.outline),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -597,8 +636,8 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -613,13 +652,10 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     );
   }
 
-  Widget _buildShimmerList(bool isDark) {
-    final baseColor = isDark
-        ? const Color(0xFF1E293B)
-        : const Color(0xFFE2E8F0);
-    final highlightColor = isDark
-        ? const Color(0xFF334155)
-        : const Color(0xFFF1F5F9);
+  Widget _buildShimmerList(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? Colors.grey[800]! : const Color(0xFFE2E8F0);
+    final highlightColor = isDark ? Colors.grey[700]! : const Color(0xFFF1F5F9);
 
     return Shimmer.fromColors(
       baseColor: baseColor,
@@ -631,7 +667,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
           height: 160,
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(16),
           ),
         ),
@@ -640,19 +676,24 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
   }
 
   Widget _buildEmptyView(BuildContext context, String message) {
+    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.receipt_long_outlined,
             size: 48,
-            color: Color(0xFF94A3B8),
+            color: theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 12),
           Text(
             message,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
         ],
       ),
