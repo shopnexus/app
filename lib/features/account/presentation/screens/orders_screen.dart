@@ -60,6 +60,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     ref.listen<AsyncValue<void>>(buyerOrderControllerProvider, (
       previous,
       next,
@@ -69,7 +72,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Hủy sản phẩm thất bại: $err'),
-              backgroundColor: const Color(0xFFBA1A1A),
+              backgroundColor: isDarkMode
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFFBA1A1A),
             ),
           );
         },
@@ -84,30 +89,27 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
       );
     });
 
-    final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      // Stitch Light Neutral Background
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'Đơn mua của tôi',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: theme.colorScheme.primary,
           ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () => context.pop(),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(56.0),
           child: Container(
-            color: Colors.white,
+            color: theme.colorScheme.surface,
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -115,6 +117,10 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
               child: Row(
                 children: List.generate(_tabs.length, (index) {
                   final isSelected = _tabController.index == index;
+                  final unselectedBg = isDarkMode
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : const Color(0xFFF1F5F9);
+
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: AnimatedContainer(
@@ -122,9 +128,8 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                       curve: Curves.easeInOut,
                       child: Material(
                         color: isSelected
-                            ? AppColors
-                                  .primary // Stitch Primary Teal #005049
-                            : const Color(0xFFF1F5F9), // Stitch Neutral Low
+                            ? theme.colorScheme.primary
+                            : unselectedBg,
                         borderRadius: BorderRadius.circular(20),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(20),
@@ -146,8 +151,8 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                                     ? FontWeight.bold
                                     : FontWeight.w500,
                                 color: isSelected
-                                    ? Colors.white
-                                    : const Color(0xFF64748B),
+                                    ? theme.colorScheme.onPrimary
+                                    : theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -182,6 +187,7 @@ class _AllOrdersTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final pendingItemsAsync = ref.watch(buyerPendingItemsProvider());
     final pendingOrdersAsync = ref.watch(buyerPendingOrdersProvider());
     final completedOrdersAsync = ref.watch(buyerCompletedOrdersProvider());
@@ -194,7 +200,7 @@ class _AllOrdersTab extends ConsumerWidget {
         cancelledOrdersAsync.isLoading;
 
     if (isLoading) {
-      return _buildShimmerList();
+      return _buildShimmerList(context);
     }
 
     final pendingItems = pendingItemsAsync.value ?? [];
@@ -214,6 +220,7 @@ class _AllOrdersTab extends ConsumerWidget {
     }
 
     return RefreshIndicator(
+      color: theme.colorScheme.primary,
       onRefresh: () async {
         ref.invalidate(buyerPendingItemsProvider);
         ref.invalidate(buyerPendingOrdersProvider);
@@ -225,24 +232,24 @@ class _AllOrdersTab extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           if (pendingItems.isNotEmpty) ...[
-            _buildSectionHeader('SẢN PHẨM CHỜ DUYỆT GOM ĐƠN'),
+            _buildSectionHeader(context, 'SẢN PHẨM CHỜ DUYỆT GOM ĐƠN'),
             ...pendingItems.map(
               (item) => _buildPendingItemCard(context, ref, item),
             ),
             const SizedBox(height: 12),
           ],
           if (pendingOrders.isNotEmpty) ...[
-            _buildSectionHeader('ĐƠN HÀNG ĐANG XỬ LÝ / VẬN CHUYỂN'),
+            _buildSectionHeader(context, 'ĐƠN HÀNG ĐANG XỬ LÝ / VẬN CHUYỂN'),
             ...pendingOrders.map((order) => _buildOrderCard(context, order)),
             const SizedBox(height: 12),
           ],
           if (completedOrders.isNotEmpty) ...[
-            _buildSectionHeader('ĐƠN HÀNG ĐÃ HOÀN THÀNH'),
+            _buildSectionHeader(context, 'ĐƠN HÀNG ĐÃ HOÀN THÀNH'),
             ...completedOrders.map((order) => _buildOrderCard(context, order)),
             const SizedBox(height: 12),
           ],
           if (cancelledOrders.isNotEmpty) ...[
-            _buildSectionHeader('ĐƠN HÀNG ĐÃ HỦY'),
+            _buildSectionHeader(context, 'ĐƠN HÀNG ĐÃ HỦY'),
             ...cancelledOrders.map((order) => _buildOrderCard(context, order)),
           ],
         ],
@@ -250,16 +257,17 @@ class _AllOrdersTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0, top: 6.0, left: 4),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'Inter',
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF64748B),
+          color: theme.colorScheme.onSurfaceVariant,
           letterSpacing: 0.6,
         ),
       ),
@@ -271,10 +279,12 @@ class _AllOrdersTab extends ConsumerWidget {
 class _PendingItemsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final pendingItemsAsync = ref.watch(buyerPendingItemsProvider());
     final controllerState = ref.watch(buyerOrderControllerProvider);
 
     return RefreshIndicator(
+      color: theme.colorScheme.primary,
       onRefresh: () => ref.refresh(buyerPendingItemsProvider().future),
       child: pendingItemsAsync.when(
         data: (items) {
@@ -299,7 +309,7 @@ class _PendingItemsTab extends ConsumerWidget {
             ],
           );
         },
-        loading: () => _buildShimmerList(),
+        loading: () => _buildShimmerList(context),
         error: (err, stack) => _ErrorState(
           error: err,
           onRetry: () => ref.refresh(buyerPendingItemsProvider()),
@@ -313,9 +323,11 @@ class _PendingItemsTab extends ConsumerWidget {
 class _PendingOrdersTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final pendingOrdersAsync = ref.watch(buyerPendingOrdersProvider());
 
     return RefreshIndicator(
+      color: theme.colorScheme.primary,
       onRefresh: () => ref.refresh(buyerPendingOrdersProvider().future),
       child: pendingOrdersAsync.when(
         data: (orders) {
@@ -336,7 +348,7 @@ class _PendingOrdersTab extends ConsumerWidget {
             },
           );
         },
-        loading: () => _buildShimmerList(),
+        loading: () => _buildShimmerList(context),
         error: (err, stack) => _ErrorState(
           error: err,
           onRetry: () => ref.refresh(buyerPendingOrdersProvider()),
@@ -350,9 +362,11 @@ class _PendingOrdersTab extends ConsumerWidget {
 class _CompletedOrdersTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final completedOrdersAsync = ref.watch(buyerCompletedOrdersProvider());
 
     return RefreshIndicator(
+      color: theme.colorScheme.primary,
       onRefresh: () => ref.refresh(buyerCompletedOrdersProvider().future),
       child: completedOrdersAsync.when(
         data: (orders) {
@@ -372,7 +386,7 @@ class _CompletedOrdersTab extends ConsumerWidget {
             },
           );
         },
-        loading: () => _buildShimmerList(),
+        loading: () => _buildShimmerList(context),
         error: (err, stack) => _ErrorState(
           error: err,
           onRetry: () => ref.refresh(buyerCompletedOrdersProvider()),
@@ -386,10 +400,19 @@ class _CompletedOrdersTab extends ConsumerWidget {
 class _CancelledOrdersTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final cancelledOrdersAsync = ref.watch(buyerCancelledOrdersProvider());
     final cancelledItemsAsync = ref.watch(buyerCancelledItemsProvider());
 
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E8F0);
+
     return RefreshIndicator(
+      color: theme.colorScheme.primary,
       onRefresh: () async {
         ref.invalidate(buyerCancelledOrdersProvider);
         ref.invalidate(buyerCancelledItemsProvider);
@@ -405,10 +428,10 @@ class _CancelledOrdersTab extends ConsumerWidget {
               padding: const EdgeInsets.only(left: 4, bottom: 8),
               child: Text(
                 'ĐƠN HÀNG ĐÃ HỦY',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF64748B),
+                  color: theme.colorScheme.onSurfaceVariant,
                   letterSpacing: 0.6,
                   fontFamily: 'Inter',
                 ),
@@ -421,16 +444,16 @@ class _CancelledOrdersTab extends ConsumerWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: cardBgColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(color: cardBorderColor),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'Không có đơn hàng chính thức nào bị hủy',
                         style: TextStyle(
                           fontSize: 13,
-                          color: Color(0xFF64748B),
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontFamily: 'Inter',
                         ),
                       ),
@@ -455,10 +478,10 @@ class _CancelledOrdersTab extends ConsumerWidget {
               padding: const EdgeInsets.only(left: 4, bottom: 8),
               child: Text(
                 'SẢN PHẨM CHỜ ĐÃ HỦY / TỪ CHỐI',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF64748B),
+                  color: theme.colorScheme.onSurfaceVariant,
                   letterSpacing: 0.6,
                   fontFamily: 'Inter',
                 ),
@@ -471,16 +494,16 @@ class _CancelledOrdersTab extends ConsumerWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: cardBgColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(color: cardBorderColor),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'Không có sản phẩm chờ gom nào bị hủy',
                         style: TextStyle(
                           fontSize: 13,
-                          color: Color(0xFF64748B),
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontFamily: 'Inter',
                         ),
                       ),
@@ -493,7 +516,7 @@ class _CancelledOrdersTab extends ConsumerWidget {
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
-                    return _buildCancelledItemCard(item);
+                    return _buildCancelledItemCard(context, item);
                   },
                 );
               },
@@ -506,16 +529,27 @@ class _CancelledOrdersTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildCancelledItemCard(BuyerOrderItem item) {
+  Widget _buildCancelledItemCard(BuildContext context, BuyerOrderItem item) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E8F0);
+    final imageBgColor = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF1F5F9);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBgColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -533,12 +567,12 @@ class _CancelledOrdersTab extends ConsumerWidget {
                   child: Container(
                     width: 72,
                     height: 72,
-                    color: const Color(0xFFF1F5F9),
+                    color: imageBgColor,
                     child: item.imageUrl != null && item.imageUrl!.isNotEmpty
                         ? Image.network(item.imageUrl!, fit: BoxFit.cover)
-                        : const Icon(
+                        : Icon(
                             Icons.image_rounded,
-                            color: Color(0xFF94A3B8),
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                   ),
                 ),
@@ -555,16 +589,16 @@ class _CancelledOrdersTab extends ConsumerWidget {
                               item.skuName,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
+                                color: theme.colorScheme.onSurface,
                                 fontFamily: 'Inter',
                               ),
                             ),
                           ),
                           const SizedBox(width: 8),
-                          _buildStatusBadge('Đã hủy'),
+                          _buildStatusBadge(context, 'Đã hủy'),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -573,18 +607,18 @@ class _CancelledOrdersTab extends ConsumerWidget {
                         children: [
                           Text(
                             'SL: x${item.quantity}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: Color(0xFF64748B),
+                              color: theme.colorScheme.onSurfaceVariant,
                               fontFamily: 'Inter',
                             ),
                           ),
                           Text(
                             MoneyUtils.format(item.totalAmount),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF0F172A),
+                              color: theme.colorScheme.onSurface,
                               fontFamily: 'Inter',
                             ),
                           ),
@@ -608,6 +642,9 @@ class _RefundsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -617,33 +654,37 @@ class _RefundsTab extends StatelessWidget {
             Container(
               width: 76,
               height: 76,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFDAD6),
+              decoration: BoxDecoration(
+                color: isDarkMode
+                    ? const Color(0xFFEF4444).withAlpha(40)
+                    : const Color(0xFFFFDAD6),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.history_rounded,
                 size: 38,
-                color: Color(0xFFBA1A1A),
+                color: isDarkMode
+                    ? const Color(0xFFEF4444)
+                    : const Color(0xFFBA1A1A),
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Chưa có yêu cầu hoàn tiền',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                color: theme.colorScheme.onSurface,
                 fontFamily: 'Inter',
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Lịch sử các đơn hàng được yêu cầu hoàn tiền hoặc tranh chấp khiếu nại của bạn sẽ xuất hiện tại đây.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: Color(0xFF64748B),
+                color: theme.colorScheme.onSurfaceVariant,
                 fontFamily: 'Inter',
                 height: 1.4,
               ),
@@ -659,6 +700,9 @@ class _RefundsTab extends StatelessWidget {
 
 /// Xây dựng thẻ đơn hàng chính (Order Card) theo phong cách Stitch/Seller Center
 Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
+  final theme = Theme.of(context);
+  final isDarkMode = theme.brightness == Brightness.dark;
+
   final firstItem = order.items.isNotEmpty ? order.items.first : null;
   final totalItems = order.items.fold<int>(
     0,
@@ -666,15 +710,26 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
   );
   final rawStatus = order.transport?.status ?? 'Đang xử lý';
 
+  final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+  final cardBorderColor = isDarkMode
+      ? AppColors.darkPrimary.withAlpha(40)
+      : const Color(0xFFE2E8F0);
+  final imageBgColor = isDarkMode
+      ? theme.colorScheme.surfaceContainerHighest
+      : const Color(0xFFF1F5F9);
+  final dividerColor = isDarkMode
+      ? AppColors.darkPrimary.withAlpha(30)
+      : const Color(0xFFF1F5F9);
+
   return Container(
     margin: const EdgeInsets.only(bottom: 16),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: cardBgColor,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: cardBorderColor),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.03),
+          color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.03),
           blurRadius: 10,
           offset: const Offset(0, 3),
         ),
@@ -698,32 +753,32 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
+                        color: imageBgColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.storefront_rounded,
                         size: 18,
-                        color: Color(0xFF0F172A),
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Text(
                       'Mã đơn: #${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
+                        color: theme.colorScheme.onSurface,
                         fontFamily: 'Inter',
                       ),
                     ),
                   ],
                 ),
-                _buildStatusBadge(rawStatus),
+                _buildStatusBadge(context, rawStatus),
               ],
             ),
             const SizedBox(height: 12),
-            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            Divider(height: 1, color: dividerColor),
             const SizedBox(height: 12),
 
             // Item Details
@@ -736,7 +791,7 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                     child: Container(
                       width: 76,
                       height: 76,
-                      color: const Color(0xFFF1F5F9),
+                      color: imageBgColor,
                       child:
                           firstItem.imageUrl != null &&
                               firstItem.imageUrl!.isNotEmpty
@@ -744,9 +799,9 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                               firstItem.imageUrl!,
                               fit: BoxFit.cover,
                             )
-                          : const Icon(
+                          : Icon(
                               Icons.image_rounded,
-                              color: Color(0xFF94A3B8),
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                     ),
                   ),
@@ -759,10 +814,10 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                           firstItem.skuName,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F172A),
+                            color: theme.colorScheme.onSurface,
                             fontFamily: 'Inter',
                           ),
                         ),
@@ -772,18 +827,18 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                           children: [
                             Text(
                               'SL: x${firstItem.quantity}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
-                                color: Color(0xFF64748B),
+                                color: theme.colorScheme.onSurfaceVariant,
                                 fontFamily: 'Inter',
                               ),
                             ),
                             Text(
                               MoneyUtils.format(firstItem.totalAmount),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF64748B),
+                                color: theme.colorScheme.onSurfaceVariant,
                                 fontFamily: 'Inter',
                               ),
                             ),
@@ -800,9 +855,9 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
               Center(
                 child: Text(
                   'Xem thêm ${order.items.length - 1} sản phẩm khác...',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF64748B),
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontFamily: 'Inter',
                   ),
                 ),
@@ -810,7 +865,7 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
             ],
 
             const SizedBox(height: 12),
-            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            Divider(height: 1, color: dividerColor),
             const SizedBox(height: 12),
 
             // Footer Summary & Action Buttons
@@ -819,19 +874,19 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
               children: [
                 RichText(
                   text: TextSpan(
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 13,
-                      color: Color(0xFF64748B),
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                     children: [
                       TextSpan(text: '$totalItems sản phẩm: '),
                       TextSpan(
                         text: MoneyUtils.format(order.totalAmount),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A),
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -844,13 +899,13 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                     vertical: 7,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary, // Stitch Primary Teal #005049
+                    color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Chi tiết',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colorScheme.onPrimary,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Inter',
@@ -872,15 +927,29 @@ Widget _buildPendingItemCard(
   WidgetRef ref,
   BuyerOrderItem item,
 ) {
+  final theme = Theme.of(context);
+  final isDarkMode = theme.brightness == Brightness.dark;
+
+  final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+  final cardBorderColor = isDarkMode
+      ? AppColors.darkPrimary.withAlpha(40)
+      : const Color(0xFFE2E8F0);
+  final imageBgColor = isDarkMode
+      ? theme.colorScheme.surfaceContainerHighest
+      : const Color(0xFFF1F5F9);
+  final dividerColor = isDarkMode
+      ? AppColors.darkPrimary.withAlpha(30)
+      : const Color(0xFFF1F5F9);
+
   return Container(
     margin: const EdgeInsets.only(bottom: 16),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: cardBgColor,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: const Color(0xFFE2E8F0)),
+      border: Border.all(color: cardBorderColor),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.03),
+          color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.03),
           blurRadius: 10,
           offset: const Offset(0, 3),
         ),
@@ -899,12 +968,12 @@ Widget _buildPendingItemCard(
                 child: Container(
                   width: 76,
                   height: 76,
-                  color: const Color(0xFFF1F5F9),
+                  color: imageBgColor,
                   child: item.imageUrl != null && item.imageUrl!.isNotEmpty
                       ? Image.network(item.imageUrl!, fit: BoxFit.cover)
-                      : const Icon(
+                      : Icon(
                           Icons.image_rounded,
-                          color: Color(0xFF94A3B8),
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                 ),
               ),
@@ -922,16 +991,16 @@ Widget _buildPendingItemCard(
                             item.skuName,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF0F172A),
+                              color: theme.colorScheme.onSurface,
                               fontFamily: 'Inter',
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        _buildStatusBadge('Chờ gom đơn'),
+                        _buildStatusBadge(context, 'Chờ gom đơn'),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -940,18 +1009,18 @@ Widget _buildPendingItemCard(
                       children: [
                         Text(
                           'SL: x${item.quantity}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Color(0xFF64748B),
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontFamily: 'Inter',
                           ),
                         ),
                         Text(
                           MoneyUtils.format(item.totalAmount),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F172A),
+                            color: theme.colorScheme.onSurface,
                             fontFamily: 'Inter',
                           ),
                         ),
@@ -963,24 +1032,24 @@ Widget _buildPendingItemCard(
             ],
           ),
           const SizedBox(height: 12),
-          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          Divider(height: 1, color: dividerColor),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(
                     Icons.info_outline_rounded,
-                    color: Color(0xFF64748B),
+                    color: theme.colorScheme.onSurfaceVariant,
                     size: 16,
                   ),
-                  SizedBox(width: 6),
+                  const SizedBox(width: 6),
                   Text(
                     'Chờ shop xác nhận',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF64748B),
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontFamily: 'Inter',
                     ),
                   ),
@@ -996,16 +1065,24 @@ Widget _buildPendingItemCard(
                     vertical: 7,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF1F2),
+                    color: isDarkMode
+                        ? const Color(0xFFEF4444).withAlpha(30)
+                        : const Color(0xFFFFF1F2),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFFECDD3)),
+                    border: Border.all(
+                      color: isDarkMode
+                          ? const Color(0xFFEF4444).withAlpha(80)
+                          : const Color(0xFFFECDD3),
+                    ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Hủy sản phẩm',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFE11D48),
+                      color: isDarkMode
+                          ? const Color(0xFFEF4444)
+                          : const Color(0xFFE11D48),
                       fontFamily: 'Inter',
                     ),
                   ),
@@ -1024,23 +1101,37 @@ void _confirmCancelItem(
   WidgetRef ref,
   BuyerOrderItem item,
 ) {
+  final theme = Theme.of(context);
+  final isDarkMode = theme.brightness == Brightness.dark;
+
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text(
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+      title: Text(
         'Hủy đơn sản phẩm',
-        style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Inter'),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Inter',
+          color: theme.colorScheme.onSurface,
+        ),
       ),
-      content: const Text(
+      content: Text(
         'Bạn có chắc chắn muốn hủy sản phẩm này? Tiền thanh toán sẽ được hoàn trả tự động về ví nội bộ của bạn.',
-        style: TextStyle(fontFamily: 'Inter'),
+        style: TextStyle(
+          fontFamily: 'Inter',
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text(
+          child: Text(
             'Hủy bỏ',
-            style: TextStyle(color: Color(0xFF64748B), fontFamily: 'Inter'),
+            style: TextStyle(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontFamily: 'Inter',
+            ),
           ),
         ),
         TextButton(
@@ -1050,9 +1141,14 @@ void _confirmCancelItem(
                 .read(buyerOrderControllerProvider.notifier)
                 .cancelPendingItem(item.id.toString());
           },
-          child: const Text(
+          child: Text(
             'Đồng ý',
-            style: TextStyle(color: Color(0xFFBA1A1A), fontFamily: 'Inter'),
+            style: TextStyle(
+              color: isDarkMode
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFFBA1A1A),
+              fontFamily: 'Inter',
+            ),
           ),
         ),
       ],
@@ -1061,27 +1157,39 @@ void _confirmCancelItem(
 }
 
 /// Tag/Badge hiển thị trạng thái sản phẩm hay đơn hàng theo màu Stitch
-Widget _buildStatusBadge(String status) {
-  Color bgColor = const Color(0xFFF1F5F9);
-  Color textColor = const Color(0xFF475569);
+Widget _buildStatusBadge(BuildContext context, String status) {
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+  Color bgColor = isDarkMode ? Colors.grey[800]! : const Color(0xFFF1F5F9);
+  Color textColor = isDarkMode ? Colors.grey[300]! : const Color(0xFF475569);
 
   if (status.contains('Chờ') || status.contains('pending')) {
-    bgColor = const Color(0xFFFEF3C7);
-    textColor = const Color(0xFFD97706);
+    bgColor = isDarkMode
+        ? const Color(0xFFD97706).withAlpha(40)
+        : const Color(0xFFFEF3C7);
+    textColor = isDarkMode ? const Color(0xFFFBBF24) : const Color(0xFFD97706);
   } else if (status.contains('giao') ||
       status.contains('xử lý') ||
       status.contains('Shipping')) {
-    bgColor = const Color(0xFFDBEAFE);
-    textColor = const Color(0xFF0284C7);
+    bgColor = isDarkMode
+        ? const Color(0xFF0284C7).withAlpha(40)
+        : const Color(0xFFDBEAFE);
+    textColor = isDarkMode ? const Color(0xFF38BDF8) : const Color(0xFF0284C7);
   } else if (status.contains('thành') || status.contains('Completed')) {
-    bgColor = const Color(0xFFD1FAE5);
-    textColor = const Color(0xFF059669);
+    bgColor = isDarkMode
+        ? const Color(0xFF059669).withAlpha(40)
+        : const Color(0xFFD1FAE5);
+    textColor = isDarkMode ? const Color(0xFF34D399) : const Color(0xFF059669);
   } else if (status.contains('hủy') || status.contains('Cancelled')) {
-    bgColor = const Color(0xFFFEE2E2);
-    textColor = const Color(0xFFDC2626);
+    bgColor = isDarkMode
+        ? const Color(0xFFDC2626).withAlpha(40)
+        : const Color(0xFFFEE2E2);
+    textColor = isDarkMode ? const Color(0xFFF87171) : const Color(0xFFDC2626);
   } else if (status.contains('tiền') || status.contains('Refund')) {
-    bgColor = const Color(0xFFFFDAD6);
-    textColor = const Color(0xFFBA1A1A);
+    bgColor = isDarkMode
+        ? const Color(0xFFEF4444).withAlpha(40)
+        : const Color(0xFFFFDAD6);
+    textColor = isDarkMode ? const Color(0xFFF87171) : const Color(0xFFBA1A1A);
   }
 
   return Container(
@@ -1115,6 +1223,9 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -1124,19 +1235,25 @@ class _EmptyState extends StatelessWidget {
             Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
-                color: Color(0xFFF1F5F9),
+              decoration: BoxDecoration(
+                color: isDarkMode
+                    ? theme.colorScheme.surfaceContainerHighest
+                    : const Color(0xFFF1F5F9),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 36, color: const Color(0xFF94A3B8)),
+              child: Icon(
+                icon,
+                size: 36,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 20),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                color: theme.colorScheme.onSurface,
                 fontFamily: 'Inter',
               ),
             ),
@@ -1144,9 +1261,9 @@ class _EmptyState extends StatelessWidget {
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: Color(0xFF64748B),
+                color: theme.colorScheme.onSurfaceVariant,
                 fontFamily: 'Inter',
                 height: 1.4,
               ),
@@ -1166,33 +1283,39 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline_rounded,
               size: 44,
-              color: Color(0xFFBA1A1A),
+              color: isDarkMode
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFFBA1A1A),
             ),
             const SizedBox(height: 14),
-            const Text(
+            Text(
               'Không thể tải dữ liệu đơn hàng',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
                 fontFamily: 'Inter',
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               error.toString(),
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: Color(0xFF64748B),
+                color: theme.colorScheme.onSurfaceVariant,
                 fontFamily: 'Inter',
               ),
             ),
@@ -1203,8 +1326,8 @@ class _ErrorState extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onRetry,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -1226,10 +1349,11 @@ class _ErrorState extends StatelessWidget {
   }
 }
 
-Widget _buildShimmerList() {
+Widget _buildShimmerList(BuildContext context) {
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
   return Shimmer.fromColors(
-    baseColor: const Color(0xFFF1F5F9),
-    highlightColor: const Color(0xFFF8FAFC),
+    baseColor: isDarkMode ? Colors.grey[800]! : const Color(0xFFF1F5F9),
+    highlightColor: isDarkMode ? Colors.grey[700]! : const Color(0xFFF8FAFC),
     child: ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: 4,
@@ -1237,7 +1361,7 @@ Widget _buildShimmerList() {
         margin: const EdgeInsets.only(bottom: 16),
         height: 160,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
       ),
@@ -1250,13 +1374,14 @@ class _LoadingShimmerBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: const Color(0xFFF1F5F9),
-      highlightColor: const Color(0xFFF8FAFC),
+      baseColor: isDarkMode ? Colors.grey[800]! : const Color(0xFFF1F5F9),
+      highlightColor: isDarkMode ? Colors.grey[700]! : const Color(0xFFF8FAFC),
       child: Container(
         height: 120,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
       ),
@@ -1269,10 +1394,11 @@ class ContainerOverlayLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      color: Colors.black.withValues(alpha: 0.2),
-      child: const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+      color: Colors.black.withValues(alpha: 0.3),
+      child: Center(
+        child: CircularProgressIndicator(color: theme.colorScheme.primary),
       ),
     );
   }

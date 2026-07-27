@@ -17,10 +17,12 @@ class AddressesScreen extends ConsumerWidget {
     WidgetRef ref, {
     Contact? contact,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -30,6 +32,9 @@ class AddressesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final contactsAsync = ref.watch(buyerContactsProvider);
     final profileAsync = ref.watch(profileProvider);
     final controllerState = ref.watch(addressesControllerProvider);
@@ -40,7 +45,9 @@ class AddressesScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Thao tác thất bại: $err'),
-              backgroundColor: const Color(0xFFBA1A1A),
+              backgroundColor: isDarkMode
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFFBA1A1A),
             ),
           );
         },
@@ -48,30 +55,33 @@ class AddressesScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.background, // Stitch Background #F9F9F7
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Saved Addresses',
           style: TextStyle(
-            color: Color(0xFF1A1C1B),
+            color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
             fontFamily: 'Manrope',
             fontSize: 20,
           ),
         ),
-        backgroundColor: AppColors.background,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF1A1C1B),
+            color: theme.colorScheme.onSurface,
             size: 20,
           ),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF64748B)),
+            icon: Icon(
+              Icons.more_vert_rounded,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             onPressed: () {},
           ),
         ],
@@ -79,6 +89,7 @@ class AddressesScreen extends ConsumerWidget {
       body: Stack(
         children: [
           RefreshIndicator(
+            color: theme.colorScheme.primary,
             onRefresh: () async {
               ref.invalidate(buyerContactsProvider);
               ref.invalidate(profileProvider);
@@ -116,8 +127,8 @@ class AddressesScreen extends ConsumerWidget {
                       child: ElevatedButton.icon(
                         onPressed: () => _showAddressFormSheet(context, ref),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -138,33 +149,36 @@ class AddressesScreen extends ConsumerWidget {
                   ],
                 );
               },
-              loading: () => _buildShimmerList(),
+              loading: () => _buildShimmerList(context),
               error: (err, stack) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.error_outline_rounded,
                         size: 48,
-                        color: Color(0xFFBA1A1A),
+                        color: isDarkMode
+                            ? const Color(0xFFEF4444)
+                            : const Color(0xFFBA1A1A),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'Không thể tải danh sách địa chỉ',
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         err.toString(),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF64748B),
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
                           fontFamily: 'Inter',
                         ),
@@ -176,8 +190,8 @@ class AddressesScreen extends ConsumerWidget {
                         child: ElevatedButton(
                           onPressed: () => ref.refresh(buyerContactsProvider),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
+                            backgroundColor: theme.colorScheme.primary,
+                            foregroundColor: theme.colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -199,9 +213,11 @@ class AddressesScreen extends ConsumerWidget {
           ),
           if (controllerState.isLoading)
             Container(
-              color: Colors.black.withValues(alpha: 0.2),
-              child: const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
+              color: Colors.black.withValues(alpha: 0.3),
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
         ],
@@ -215,6 +231,9 @@ class AddressesScreen extends ConsumerWidget {
     Contact contact,
     bool isDefault,
   ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     IconData typeIcon = Icons.location_on_rounded;
     bool isFillIcon = false;
 
@@ -226,15 +245,29 @@ class AddressesScreen extends ConsumerWidget {
       isFillIcon = false;
     }
 
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFEEEEEC);
+    final badgeBgColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFA8ECE4);
+    final badgeTextColor = isDarkMode
+        ? AppColors.darkPrimary
+        : const Color(0xFF005049);
+    final dividerColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(30)
+        : const Color(0xFFF1F5F9);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24), // Stitch Card Bo góc 24px
-        border: Border.all(color: const Color(0xFFEEEEEC)),
+        color: cardBgColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: cardBorderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -254,17 +287,16 @@ class AddressesScreen extends ConsumerWidget {
                     horizontal: 12,
                     vertical: 6,
                   ),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFA8ECE4),
-                    // Stitch secondary-container (Soft Teal)
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: badgeBgColor,
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Default',
                     style: TextStyle(
-                      color: Color(0xFF005049), // Stitch on-secondary-container
+                      color: badgeTextColor,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Inter',
@@ -283,17 +315,17 @@ class AddressesScreen extends ConsumerWidget {
                       Icon(
                         typeIcon,
                         color: isFillIcon
-                            ? AppColors.primary
-                            : const Color(0xFF64748B),
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurfaceVariant,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         contact.addressType,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A1C1B),
+                          color: theme.colorScheme.onSurface,
                           fontFamily: 'Inter',
                         ),
                       ),
@@ -303,35 +335,35 @@ class AddressesScreen extends ConsumerWidget {
                   // Recipient & Address Details
                   Text(
                     contact.fullName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF45464D),
+                      color: theme.colorScheme.onSurface,
                       fontFamily: 'Inter',
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '${contact.address}${contact.addressDetail != null && contact.addressDetail!.isNotEmpty ? ", ${contact.addressDetail}" : ""}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       height: 1.4,
-                      color: Color(0xFF64748B),
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontFamily: 'Inter',
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     contact.phone,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF64748B),
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontFamily: 'Inter',
                     ),
                   ),
                   const SizedBox(height: 16),
                   // Divider
-                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                  Divider(height: 1, color: dividerColor),
                   const SizedBox(height: 12),
                   // Actions Row
                   Row(
@@ -344,8 +376,8 @@ class AddressesScreen extends ConsumerWidget {
                           contact: contact,
                         ),
                         borderRadius: BorderRadius.circular(6),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 4,
                           ),
@@ -354,15 +386,15 @@ class AddressesScreen extends ConsumerWidget {
                               Icon(
                                 Icons.edit_outlined,
                                 size: 16,
-                                color: AppColors.primary,
+                                color: theme.colorScheme.primary,
                               ),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
                                 'Edit',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 13,
-                                  color: AppColors.primary,
+                                  color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -384,8 +416,8 @@ class AddressesScreen extends ConsumerWidget {
                                 );
                           },
                           borderRadius: BorderRadius.circular(6),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 4,
                             ),
@@ -394,7 +426,7 @@ class AddressesScreen extends ConsumerWidget {
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 13,
-                                color: Color(0xFF64748B),
+                                color: theme.colorScheme.onSurfaceVariant,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -403,10 +435,12 @@ class AddressesScreen extends ConsumerWidget {
                       const Spacer(),
                       // Delete Button
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.delete_outline_rounded,
                           size: 18,
-                          color: Color(0xFFBA1A1A),
+                          color: isDarkMode
+                              ? const Color(0xFFEF4444)
+                              : const Color(0xFFBA1A1A),
                         ),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -425,23 +459,37 @@ class AddressesScreen extends ConsumerWidget {
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref, String id) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(
+        backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+        title: Text(
           'Xóa địa chỉ',
-          style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Inter'),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Inter',
+            color: theme.colorScheme.onSurface,
+          ),
         ),
-        content: const Text(
+        content: Text(
           'Bạn có chắc muốn xóa địa chỉ nhận hàng này?',
-          style: TextStyle(fontFamily: 'Inter'),
+          style: TextStyle(
+            fontFamily: 'Inter',
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
+            child: Text(
               'Hủy',
-              style: TextStyle(color: Color(0xFF64748B), fontFamily: 'Inter'),
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontFamily: 'Inter',
+              ),
             ),
           ),
           TextButton(
@@ -449,9 +497,14 @@ class AddressesScreen extends ConsumerWidget {
               Navigator.of(context).pop();
               ref.read(addressesControllerProvider.notifier).deleteContact(id);
             },
-            child: const Text(
+            child: Text(
               'Xóa',
-              style: TextStyle(color: Color(0xFFBA1A1A), fontFamily: 'Inter'),
+              style: TextStyle(
+                color: isDarkMode
+                    ? const Color(0xFFEF4444)
+                    : const Color(0xFFBA1A1A),
+                fontFamily: 'Inter',
+              ),
             ),
           ),
         ],
@@ -459,10 +512,11 @@ class AddressesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShimmerList() {
+  Widget _buildShimmerList(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: const Color(0xFFF1F5F9),
-      highlightColor: const Color(0xFFF8FAFC),
+      baseColor: isDarkMode ? Colors.grey[800]! : const Color(0xFFF1F5F9),
+      highlightColor: isDarkMode ? Colors.grey[700]! : const Color(0xFFF8FAFC),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: 3,
@@ -470,7 +524,7 @@ class AddressesScreen extends ConsumerWidget {
           margin: const EdgeInsets.only(bottom: 16),
           height: 180,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(24),
           ),
         ),
@@ -623,7 +677,13 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    final inputFillColor = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF4F4F1);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -644,17 +704,17 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                 children: [
                   Text(
                     widget.contact == null ? 'Add New Address' : 'Edit Address',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1C1B),
+                      color: theme.colorScheme.onSurface,
                       fontFamily: 'Manrope',
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.close_rounded,
-                      color: Color(0xFF64748B),
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
@@ -665,24 +725,28 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
               // Full Name
               TextFormField(
                 controller: _nameController,
-                style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  color: theme.colorScheme.onSurface,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Recipient Full Name',
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
-                    color: Color(0xFF64748B),
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF4F4F1),
+                  fillColor: inputFillColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
                       width: 1.5,
                     ),
                   ),
@@ -697,24 +761,28 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  color: theme.colorScheme.onSurface,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
-                    color: Color(0xFF64748B),
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF4F4F1),
+                  fillColor: inputFillColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
                       width: 1.5,
                     ),
                   ),
@@ -732,31 +800,35 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                   TextFormField(
                     controller: _addressController,
                     focusNode: _addressFocusNode,
-                    style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      color: theme.colorScheme.onSurface,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Address (Search / Autocomplete)',
-                      labelStyle: const TextStyle(
+                      labelStyle: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13,
-                        color: Color(0xFF64748B),
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFF4F4F1),
+                      fillColor: inputFillColor,
                       suffixIcon: _isSearching
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 20,
                               height: 20,
                               child: Padding(
-                                padding: EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(12.0),
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: AppColors.primary,
+                                  color: theme.colorScheme.primary,
                                 ),
                               ),
                             )
-                          : const Icon(
+                          : Icon(
                               Icons.map_rounded,
-                              color: Color(0xFF64748B),
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -764,8 +836,8 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: AppColors.primary,
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.primary,
                           width: 1.5,
                         ),
                       ),
@@ -785,7 +857,9 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                       child: Material(
                         elevation: 4,
                         borderRadius: BorderRadius.circular(12),
-                        color: Colors.white,
+                        color: isDarkMode
+                            ? AppColors.darkSurface
+                            : Colors.white,
                         child: Container(
                           constraints: const BoxConstraints(maxHeight: 200),
                           child: ListView.builder(
@@ -797,9 +871,10 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                                 dense: true,
                                 title: Text(
                                   sug.displayName,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 13,
+                                    color: theme.colorScheme.onSurface,
                                   ),
                                 ),
                                 onTap: () => _selectSuggestion(sug),
@@ -816,24 +891,28 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
               // Detail Address
               TextFormField(
                 controller: _detailController,
-                style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  color: theme.colorScheme.onSurface,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Address Details (Apartment, Suite, etc.)',
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
-                    color: Color(0xFF64748B),
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF4F4F1),
+                  fillColor: inputFillColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
                       width: 1.5,
                     ),
                   ),
@@ -842,13 +921,13 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
               const SizedBox(height: 16),
 
               // Address Type Chips
-              const Text(
+              Text(
                 'Address Type',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF64748B),
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 8),
@@ -871,8 +950,8 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
                 child: ElevatedButton(
                   onPressed: _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -895,7 +974,14 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
   }
 
   Widget _buildTypeChip(String type, String label) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final isSelected = _addressType == type;
+
+    final unselectedBg = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF1F5F9);
+
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
@@ -907,13 +993,15 @@ class _AddressFormSheetState extends ConsumerState<_AddressFormSheet> {
         }
       },
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : const Color(0xFF64748B),
+        color: isSelected
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onSurfaceVariant,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         fontFamily: 'Inter',
         fontSize: 13,
       ),
-      selectedColor: AppColors.primary,
-      backgroundColor: const Color(0xFFF1F5F9),
+      selectedColor: theme.colorScheme.primary,
+      backgroundColor: unselectedBg,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       side: BorderSide.none,
       showCheckmark: false,
@@ -926,34 +1014,35 @@ class _EmptyAddresses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.location_off_rounded,
               size: 64,
-              color: Color(0xFF94A3B8),
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Sổ địa chỉ trống',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1C1B),
+                color: theme.colorScheme.onSurface,
                 fontFamily: 'Inter',
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Bạn chưa thêm địa chỉ nhận hàng nào. Hãy thêm một địa chỉ để bắt đầu mua sắm thuận tiện nhé.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: Color(0xFF64748B),
+                color: theme.colorScheme.onSurfaceVariant,
                 fontFamily: 'Inter',
               ),
             ),
