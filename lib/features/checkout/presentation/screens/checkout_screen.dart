@@ -5,6 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/money_utils.dart';
 import '../../../account/data/models/account_model.dart';
+import '../../../account/presentation/providers/addresses_provider.dart';
+import '../../../account/presentation/widgets/address_form_sheet.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
 import '../providers/checkout_provider.dart';
 
@@ -119,6 +121,10 @@ class CheckoutScreen extends ConsumerWidget {
 
           // 5. Order Summary Card
           _buildOrderSummaryCard(context, state),
+          const SizedBox(height: 16),
+
+          // 6. Terms & Conditions Checkbox
+          _buildTermsAndConditionsRow(context, ref, state),
           const SizedBox(height: 32),
         ],
       ),
@@ -314,7 +320,84 @@ class CheckoutScreen extends ConsumerWidget {
     );
   }
 
-  // Address Selection BottomSheet Modal
+  void _showAddressForm(
+    BuildContext context,
+    WidgetRef ref, {
+    Contact? contact,
+  }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => AddressFormSheet(contact: contact),
+    ).then((_) {
+      ref.read(checkoutProvider.notifier).reloadAddresses();
+    });
+  }
+
+  void _confirmDeleteContact(BuildContext context, WidgetRef ref, String id) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+        title: Text(
+          'Xóa địa chỉ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Inter',
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        content: Text(
+          'Bạn có chắc muốn xóa địa chỉ nhận hàng này?',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Hủy',
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontFamily: 'Inter',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await ref
+                  .read(addressesControllerProvider.notifier)
+                  .deleteContact(id);
+              await ref.read(checkoutProvider.notifier).reloadAddresses();
+            },
+            child: Text(
+              'Xóa',
+              style: TextStyle(
+                color: isDarkMode
+                    ? const Color(0xFFEF4444)
+                    : const Color(0xFFBA1A1A),
+                fontFamily: 'Inter',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Address Selection BottomSheet Modal (Section-based, Top-to-Bottom)
   void _showAddressSelectionModal(
     BuildContext context,
     WidgetRef ref,
@@ -325,6 +408,7 @@ class CheckoutScreen extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: isParentDark ? AppColors.darkSurface : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -332,177 +416,344 @@ class CheckoutScreen extends ConsumerWidget {
       builder: (context) {
         final theme = Theme.of(context);
 
-        return DefaultTabController(
-          length: 3,
-          child: SizedBox(
-            height: 400,
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 8, bottom: 4),
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: isParentDark
-                        ? AppColors.darkPrimary.withAlpha(50)
-                        : const Color(0xFFE2E3E0),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.75,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 8, bottom: 4),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isParentDark
+                      ? AppColors.darkPrimary.withAlpha(50)
+                      : const Color(0xFFE2E3E0),
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    'Select Shipping Address',
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Select Shipping Address',
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                ),
-                TabBar(
-                  labelColor: theme.colorScheme.primary,
-                  unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                  indicatorColor: theme.colorScheme.primary,
-                  tabs: const [
-                    Tab(text: 'Home'),
-                    Tab(text: 'Office'),
-                    Tab(text: 'Other'),
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showAddressForm(context, ref);
+                      },
+                      icon: const Icon(Icons.add, size: 18),
+                      label: const Text(
+                        'Add New',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                Expanded(
-                  child: TabBarView(
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildModalAddressList(
-                        context,
-                        ref,
-                        state.homeContacts,
-                        state.selectedContact,
+                      if (state.contacts.isEmpty) ...[
+                        const SizedBox(height: 32),
+                        Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.location_off_outlined,
+                                size: 48,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'No saved addresses.',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ] else ...[
+                        // Section 1: Home
+                        if (state.homeContacts.isNotEmpty) ...[
+                          _buildSectionHeader(
+                            context,
+                            title: 'Home',
+                            icon: Icons.home_rounded,
+                          ),
+                          ...state.homeContacts.map(
+                            (contact) => _buildModalAddressCard(
+                              context,
+                              ref,
+                              contact,
+                              state.selectedContact,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+
+                        // Section 2: Office
+                        if (state.officeContacts.isNotEmpty) ...[
+                          _buildSectionHeader(
+                            context,
+                            title: 'Office',
+                            icon: Icons.work_rounded,
+                          ),
+                          ...state.officeContacts.map(
+                            (contact) => _buildModalAddressCard(
+                              context,
+                              ref,
+                              contact,
+                              state.selectedContact,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+
+                        // Section 3: Other
+                        if (state.otherContacts.isNotEmpty) ...[
+                          _buildSectionHeader(
+                            context,
+                            title: 'Other',
+                            icon: Icons.location_on_rounded,
+                          ),
+                          ...state.otherContacts.map(
+                            (contact) => _buildModalAddressCard(
+                              context,
+                              ref,
+                              contact,
+                              state.selectedContact,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ],
+
+                      // Bottom "+ Add New Address" Button inside modal
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _showAddressForm(context, ref);
+                          },
+                          icon: const Icon(Icons.add_rounded, size: 20),
+                          label: const Text(
+                            'Add New Address',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: theme.colorScheme.primary,
+                            side: BorderSide(color: theme.colorScheme.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
                       ),
-                      _buildModalAddressList(
-                        context,
-                        ref,
-                        state.officeContacts,
-                        state.selectedContact,
-                      ),
-                      _buildModalAddressList(
-                        context,
-                        ref,
-                        state.otherContacts,
-                        state.selectedContact,
-                      ),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
     );
   }
 
-  Widget _buildModalAddressList(
+  Widget _buildSectionHeader(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+  }) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: theme.colorScheme.primary),
+          const SizedBox(width: 6),
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'Manrope',
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModalAddressCard(
     BuildContext context,
     WidgetRef ref,
-    List<Contact> list,
+    Contact contact,
     Contact? selected,
   ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+    final isSelected = selected?.id == contact.id;
 
-    if (list.isEmpty) {
-      return Center(
-        child: Text(
-          'No addresses in this category.',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            color: theme.colorScheme.onSurfaceVariant,
+    final selectedBg = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(35)
+        : const Color(0xFFE6F4EA);
+    final unselectedBg = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF9F9F7);
+    final borderColor = isSelected
+        ? theme.colorScheme.primary
+        : (isDarkMode
+              ? AppColors.darkPrimary.withAlpha(30)
+              : const Color(0xFFE2E3E0));
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: isSelected ? selectedBg : unselectedBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1.0),
+      ),
+      child: InkWell(
+        onTap: () {
+          ref.read(checkoutProvider.notifier).selectContact(contact);
+          Navigator.pop(context);
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                isSelected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_off,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          contact.fullName,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        if (contact.phone.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            contact.phone,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${contact.address}${contact.addressDetail != null && contact.addressDetail!.isNotEmpty ? ", ${contact.addressDetail}" : ""}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Action buttons: Edit & Delete
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.edit_outlined,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showAddressForm(context, ref, contact: contact);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 18,
+                      color: isDarkMode
+                          ? const Color(0xFFEF4444)
+                          : const Color(0xFFBA1A1A),
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _confirmDeleteContact(context, ref, contact.id);
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        final contact = list[index];
-        final isSelected = selected?.id == contact.id;
-
-        final selectedBg = isDarkMode
-            ? AppColors.darkPrimary.withAlpha(35)
-            : const Color(0xFFE6F4EA);
-        final unselectedBg = isDarkMode
-            ? theme.colorScheme.surfaceContainerHighest
-            : const Color(0xFFF9F9F7);
-        final borderColor = isSelected
-            ? theme.colorScheme.primary
-            : (isDarkMode
-                  ? AppColors.darkPrimary.withAlpha(30)
-                  : const Color(0xFFE2E3E0));
-
-        return InkWell(
-          onTap: () {
-            ref.read(checkoutProvider.notifier).selectContact(contact);
-            Navigator.pop(context);
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isSelected ? selectedBg : unselectedBg,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: borderColor,
-                width: isSelected ? 1.5 : 1.0,
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  isSelected
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_off,
-                  color: isSelected
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant,
-                  size: 20,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        contact.fullName,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      Text(
-                        contact.address,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 12,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      ),
     );
   }
 
@@ -734,32 +985,38 @@ class CheckoutScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
+          Column(
             children: [
-              Expanded(
-                child: _buildPaymentPill(
-                  context,
-                  ref,
-                  label: 'Card (Stripe)',
-                  icon: Icons.credit_card_rounded,
-                  value: 'Stripe',
-                  groupValue: state.paymentOption,
-                ),
+              _buildPaymentOptionRow(
+                context,
+                ref,
+                title: 'Thẻ tín dụng / Ghi nợ (Stripe)',
+                subtitle: 'Thanh toán trực tuyến an toàn qua cổng Stripe',
+                icon: Icons.credit_card_rounded,
+                value: 'Stripe',
+                groupValue: state.paymentOption,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildPaymentPill(
-                  context,
-                  ref,
-                  label: 'Platform Wallet',
-                  icon: Icons.account_balance_wallet_outlined,
-                  value: 'Wallet',
-                  groupValue: state.paymentOption,
-                ),
+              _buildPaymentOptionRow(
+                context,
+                ref,
+                title: 'Ví ShopNexus',
+                subtitle: 'Sử dụng số dư trong ví điện tử nội bộ',
+                icon: Icons.account_balance_wallet_outlined,
+                value: 'Wallet',
+                groupValue: state.paymentOption,
+              ),
+              _buildPaymentOptionRow(
+                context,
+                ref,
+                title: 'Thanh toán khi nhận hàng (COD)',
+                subtitle: 'Thanh toán bằng tiền mặt khi giao hàng',
+                icon: Icons.local_atm_rounded,
+                value: 'COD',
+                groupValue: state.paymentOption,
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           InkWell(
             onTap: () => notifier.selectPaymentOption(
               state.paymentOption,
@@ -777,7 +1034,7 @@ class CheckoutScreen extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  'Use wallet balance first',
+                  'Ưu tiên khấu trừ từ số dư ví',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -792,10 +1049,11 @@ class CheckoutScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPaymentPill(
+  Widget _buildPaymentOptionRow(
     BuildContext context,
     WidgetRef ref, {
-    required String label,
+    required String title,
+    required String subtitle,
     required IconData icon,
     required String value,
     required String groupValue,
@@ -821,36 +1079,65 @@ class CheckoutScreen extends ConsumerWidget {
           ref.read(checkoutProvider.notifier).selectPaymentOption(value),
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSelected ? selectedBg : unselectedBg,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1.0),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              icon,
-              size: 18,
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
               color: isSelected
                   ? theme.colorScheme.primary
                   : theme.colorScheme.onSurfaceVariant,
+              size: 20,
             ),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface,
-                ),
+            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? theme.colorScheme.primary.withAlpha(20)
+                    : theme.colorScheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                size: 20,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -1158,7 +1445,21 @@ class CheckoutScreen extends ConsumerWidget {
         child: ElevatedButton(
           onPressed: state.isLoading
               ? null
-              : () => ref.read(checkoutProvider.notifier).placeOrder(),
+              : () {
+                  if (!state.agreeToTerms) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Vui lòng đồng ý với Điều khoản dịch vụ & Chính sách mua hàng trước khi thanh toán!',
+                        ),
+                        backgroundColor: Colors.orange,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                    return;
+                  }
+                  ref.read(checkoutProvider.notifier).placeOrder();
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.colorScheme.primary,
             foregroundColor: theme.colorScheme.onPrimary,
@@ -1185,6 +1486,75 @@ class CheckoutScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTermsAndConditionsRow(
+    BuildContext context,
+    WidgetRef ref,
+    CheckoutState state,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: isDarkMode
+            ? theme.colorScheme.surfaceContainerHighest
+            : const Color(0xFFF9F9F7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDarkMode
+              ? AppColors.darkPrimary.withAlpha(30)
+              : const Color(0xFFE2E3E0),
+        ),
+      ),
+      child: InkWell(
+        onTap: () => ref.read(checkoutProvider.notifier).toggleAgreeToTerms(),
+        borderRadius: BorderRadius.circular(8),
+        child: Row(
+          children: [
+            Checkbox(
+              value: state.agreeToTerms,
+              activeColor: theme.colorScheme.primary,
+              onChanged: (val) => ref
+                  .read(checkoutProvider.notifier)
+                  .toggleAgreeToTerms(value: val),
+            ),
+            Expanded(
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  children: [
+                    const TextSpan(text: 'Tôi đồng ý với '),
+                    TextSpan(
+                      text: 'Điều khoản dịch vụ',
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const TextSpan(text: ' và '),
+                    TextSpan(
+                      text: 'Chính sách mua hàng',
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const TextSpan(text: ' của ShopNexus.'),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -14,6 +14,9 @@ import '../../../checkout/presentation/providers/checkout_provider.dart';
 import '../../../checkout/data/models/checkout_model.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../account/presentation/providers/account_provider.dart';
+import 'package:flutter/services.dart';
+import '../../../chat/presentation/providers/chat_notifier.dart';
+import '../../../chat/data/providers/chat_providers.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -208,24 +211,39 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               Positioned(
                 top: MediaQuery.of(context).padding.top + 8,
                 right: 16,
-                child: CircleAvatar(
-                  backgroundColor: Colors.black.withAlpha(100),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.favorite_border_rounded,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Đã thêm sản phẩm này vào danh mục yêu thích!',
-                          ),
-                          duration: Duration(seconds: 2),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.black.withAlpha(100),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.share_rounded,
+                          color: Colors.white,
                         ),
-                      );
-                    },
-                  ),
+                        onPressed: () => _showShareModal(context, ref, detail),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    CircleAvatar(
+                      backgroundColor: Colors.black.withAlpha(100),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.favorite_border_rounded,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Đã thêm sản phẩm này vào danh mục yêu thích!',
+                              ),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -843,9 +861,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           OutlinedButton.icon(
             icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
             label: const Text('Chat ngay'),
-            onPressed: () {
-              context.go('/chat');
-            },
+            onPressed: () => _navigateToChatDetail(context, ref),
             style: OutlinedButton.styleFrom(
               foregroundColor: theme.colorScheme.primary,
               side: BorderSide(color: theme.colorScheme.primary),
@@ -1427,7 +1443,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 Icons.chat_bubble_outline_rounded,
                 color: theme.colorScheme.onSurface,
               ),
-              onPressed: () => context.go('/chat'),
+              onPressed: () => _navigateToChatDetail(context, ref),
             ),
           ),
           const SizedBox(width: 10.0),
@@ -1663,6 +1679,352 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _navigateToChatDetail(BuildContext context, WidgetRef ref) async {
+    try {
+      final conversations = await ref
+          .read(chatRepositoryProvider)
+          .getConversations();
+      final targetConvId = conversations.isNotEmpty
+          ? conversations.first.id
+          : 'conv_001';
+      if (context.mounted) {
+        context.push('/chat/$targetConvId');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        context.push('/chat/conv_001');
+      }
+    }
+  }
+
+  void _showShareModal(
+    BuildContext context,
+    WidgetRef ref,
+    TProductDetail detail,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.onSurfaceVariant.withAlpha(60),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.share_rounded,
+                    color: theme.colorScheme.primary,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Chia sẻ sản phẩm',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Card preview sản phẩm
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isDarkMode
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : const Color(0xFFF4F4F1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    if (detail.images != null && detail.images!.isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl: detail.images!.first.url,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            detail.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            MoneyUtils.format(detail.price),
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 13,
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Tùy chọn 1: Sao chép liên kết
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withAlpha(25),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.link_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                title: Text(
+                  'Sao chép liên kết',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Copy đường dẫn sản phẩm vào bộ nhớ tạm',
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 12),
+                ),
+                onTap: () {
+                  final productUrl =
+                      'https://shopnexus.com/products/${detail.id}';
+                  Clipboard.setData(ClipboardData(text: productUrl));
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Đã sao chép liên kết sản phẩm!'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 8),
+
+              // Tùy chọn 2: Chia sẻ vào cuộc trò chuyện
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withAlpha(25),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                title: Text(
+                  'Chia sẻ vào cuộc trò chuyện',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Gửi thông tin sản phẩm đến bạn bè qua chat',
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 12),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showShareToChatModal(context, ref, detail);
+                },
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showShareToChatModal(
+    BuildContext context,
+    WidgetRef ref,
+    TProductDetail detail,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final chatListAsync = ref.watch(chatListProvider);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.6,
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurfaceVariant.withAlpha(60),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                'Chọn người nhận',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: chatListAsync.when(
+                  data: (chatState) {
+                    final conversations = chatState.conversations;
+                    if (conversations.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'Chưa có cuộc trò chuyện nào',
+                          style: TextStyle(fontFamily: 'Inter'),
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: conversations.length,
+                      itemBuilder: (context, index) {
+                        final conv = conversations[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: theme.colorScheme.primary,
+                            child: Text(
+                              conv.participantName.isNotEmpty
+                                  ? conv.participantName[0].toUpperCase()
+                                  : 'U',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          title: Text(
+                            conv.participantName,
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Text(
+                            conv.lastMessage ?? 'Nhấp để gửi sản phẩm',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontFamily: 'Inter'),
+                          ),
+                          trailing: Icon(
+                            Icons.send_rounded,
+                            size: 20,
+                            color: theme.colorScheme.primary,
+                          ),
+                          onTap: () async {
+                            final productUrl =
+                                'https://shopnexus.com/products/${detail.id}';
+                            final shareText =
+                                'Xem sản phẩm này nhé: ${detail.name} - $productUrl';
+
+                            try {
+                              final repo = ref.read(chatRepositoryProvider);
+                              await repo.sendMessage(
+                                conversationId: conv.id,
+                                content: shareText,
+                                type: MessageType.text,
+                              );
+
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Đã chia sẻ sản phẩm đến ${conv.participantName}!',
+                                    ),
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Lỗi chia sẻ: $e')),
+                                );
+                              }
+                            }
+                          },
+                        );
+                      },
+                    );
+                  },
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (err, stack) => Center(child: Text('Lỗi: $err')),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

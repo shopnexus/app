@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../core/constants/app_config.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../../../../shared/data_sources/common_api_service.dart';
 import '../../../account/data/repositories/account_repository.dart';
@@ -89,6 +90,15 @@ class CartNotifier extends _$CartNotifier {
       final profile = await accountRepository.getProfile();
       final preferredCurrency = profile.currency;
 
+      if (AppConfig.useMockData) {
+        if (!ref.mounted) return;
+        state = state.copyWith(
+          preferredCurrency: preferredCurrency,
+          rates: const {'VND': 25000.0, 'USD': 1.0, 'EUR': 0.92},
+        );
+        return;
+      }
+
       if (!ref.mounted) return;
       final commonApiService = ref.read(commonApiServiceProvider);
       final ratesResponse = await commonApiService.getExchangeRates();
@@ -100,7 +110,10 @@ class CartNotifier extends _$CartNotifier {
         rates: rates,
       );
     } catch (e) {
-      // Bỏ qua lỗi và giữ nguyên mặc định VND
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        rates: const {'VND': 25000.0, 'USD': 1.0, 'EUR': 0.92},
+      );
     }
   }
 
