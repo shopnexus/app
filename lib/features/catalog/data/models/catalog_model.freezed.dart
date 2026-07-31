@@ -290,7 +290,7 @@ as String?,
 /// @nodoc
 mixin _$TProductCard {
 
- String get id; String get name; String get slug; String? get thumbnail; int get price;@JsonKey(name: 'original_price') int? get originalPrice;@JsonKey(name: 'discount_rate') double? get discountRate; RatingModel? get rating;@JsonKey(name: 'sold_count') int? get soldCount; List<String>? get tags;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;
+ String get id; String get name; String get slug; String? get thumbnail; int get price;@JsonKey(name: 'original_price') int? get originalPrice;@JsonKey(name: 'discount_rate') double? get discountRate; RatingModel? get rating;@JsonKey(name: 'sold_count') int? get soldCount; List<String>? get tags;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'is_negotiable') bool get isNegotiable;
 /// Create a copy of TProductCard
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -303,16 +303,16 @@ $TProductCardCopyWith<TProductCard> get copyWith => _$TProductCardCopyWithImpl<T
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TProductCard&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.price, price) || other.price == price)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountRate, discountRate) || other.discountRate == discountRate)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TProductCard&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.price, price) || other.price == price)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountRate, discountRate) || other.discountRate == discountRate)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,slug,thumbnail,price,originalPrice,discountRate,rating,soldCount,const DeepCollectionEquality().hash(tags),vendorId,vendorName);
+int get hashCode => Object.hash(runtimeType,id,name,slug,thumbnail,price,originalPrice,discountRate,rating,soldCount,const DeepCollectionEquality().hash(tags),vendorId,vendorName,isNegotiable);
 
 @override
 String toString() {
-  return 'TProductCard(id: $id, name: $name, slug: $slug, thumbnail: $thumbnail, price: $price, originalPrice: $originalPrice, discountRate: $discountRate, rating: $rating, soldCount: $soldCount, tags: $tags, vendorId: $vendorId, vendorName: $vendorName)';
+  return 'TProductCard(id: $id, name: $name, slug: $slug, thumbnail: $thumbnail, price: $price, originalPrice: $originalPrice, discountRate: $discountRate, rating: $rating, soldCount: $soldCount, tags: $tags, vendorId: $vendorId, vendorName: $vendorName, isNegotiable: $isNegotiable)';
 }
 
 
@@ -323,7 +323,7 @@ abstract mixin class $TProductCardCopyWith<$Res>  {
   factory $TProductCardCopyWith(TProductCard value, $Res Function(TProductCard) _then) = _$TProductCardCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String slug, String? thumbnail, int price,@JsonKey(name: 'original_price') int? originalPrice,@JsonKey(name: 'discount_rate') double? discountRate, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount, List<String>? tags,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName
+ String id, String name, String slug, String? thumbnail, int price,@JsonKey(name: 'original_price') int? originalPrice,@JsonKey(name: 'discount_rate') double? discountRate, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount, List<String>? tags,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'is_negotiable') bool isNegotiable
 });
 
 
@@ -340,7 +340,7 @@ class _$TProductCardCopyWithImpl<$Res>
 
 /// Create a copy of TProductCard
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? thumbnail = freezed,Object? price = null,Object? originalPrice = freezed,Object? discountRate = freezed,Object? rating = freezed,Object? soldCount = freezed,Object? tags = freezed,Object? vendorId = freezed,Object? vendorName = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? thumbnail = freezed,Object? price = null,Object? originalPrice = freezed,Object? discountRate = freezed,Object? rating = freezed,Object? soldCount = freezed,Object? tags = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? isNegotiable = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -354,7 +354,8 @@ as RatingModel?,soldCount: freezed == soldCount ? _self.soldCount : soldCount //
 as int?,tags: freezed == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>?,vendorId: freezed == vendorId ? _self.vendorId : vendorId // ignore: cast_nullable_to_non_nullable
 as String?,vendorName: freezed == vendorName ? _self.vendorName : vendorName // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isNegotiable: null == isNegotiable ? _self.isNegotiable : isNegotiable // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of TProductCard
@@ -451,10 +452,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? thumbnail,  int price, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? thumbnail,  int price, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TProductCard() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that.originalPrice,_that.discountRate,_that.rating,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName);case _:
+return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that.originalPrice,_that.discountRate,_that.rating,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
   return orElse();
 
 }
@@ -472,10 +473,10 @@ return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? thumbnail,  int price, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? thumbnail,  int price, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)  $default,) {final _that = this;
 switch (_that) {
 case _TProductCard():
-return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that.originalPrice,_that.discountRate,_that.rating,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName);case _:
+return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that.originalPrice,_that.discountRate,_that.rating,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -492,10 +493,10 @@ return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String? thumbnail,  int price, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String? thumbnail,  int price, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)?  $default,) {final _that = this;
 switch (_that) {
 case _TProductCard() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that.originalPrice,_that.discountRate,_that.rating,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName);case _:
+return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that.originalPrice,_that.discountRate,_that.rating,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
   return null;
 
 }
@@ -507,7 +508,7 @@ return $default(_that.id,_that.name,_that.slug,_that.thumbnail,_that.price,_that
 @JsonSerializable()
 
 class _TProductCard implements TProductCard {
-  const _TProductCard({required this.id, required this.name, required this.slug, this.thumbnail, required this.price, @JsonKey(name: 'original_price') this.originalPrice, @JsonKey(name: 'discount_rate') this.discountRate, this.rating, @JsonKey(name: 'sold_count') this.soldCount, final  List<String>? tags, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName}): _tags = tags;
+  const _TProductCard({required this.id, required this.name, required this.slug, this.thumbnail, required this.price, @JsonKey(name: 'original_price') this.originalPrice, @JsonKey(name: 'discount_rate') this.discountRate, this.rating, @JsonKey(name: 'sold_count') this.soldCount, final  List<String>? tags, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'is_negotiable') this.isNegotiable = false}): _tags = tags;
   factory _TProductCard.fromJson(Map<String, dynamic> json) => _$TProductCardFromJson(json);
 
 @override final  String id;
@@ -530,6 +531,7 @@ class _TProductCard implements TProductCard {
 
 @override@JsonKey(name: 'vendor_id') final  String? vendorId;
 @override@JsonKey(name: 'vendor_name') final  String? vendorName;
+@override@JsonKey(name: 'is_negotiable') final  bool isNegotiable;
 
 /// Create a copy of TProductCard
 /// with the given fields replaced by the non-null parameter values.
@@ -544,16 +546,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TProductCard&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.price, price) || other.price == price)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountRate, discountRate) || other.discountRate == discountRate)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TProductCard&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.price, price) || other.price == price)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountRate, discountRate) || other.discountRate == discountRate)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,slug,thumbnail,price,originalPrice,discountRate,rating,soldCount,const DeepCollectionEquality().hash(_tags),vendorId,vendorName);
+int get hashCode => Object.hash(runtimeType,id,name,slug,thumbnail,price,originalPrice,discountRate,rating,soldCount,const DeepCollectionEquality().hash(_tags),vendorId,vendorName,isNegotiable);
 
 @override
 String toString() {
-  return 'TProductCard(id: $id, name: $name, slug: $slug, thumbnail: $thumbnail, price: $price, originalPrice: $originalPrice, discountRate: $discountRate, rating: $rating, soldCount: $soldCount, tags: $tags, vendorId: $vendorId, vendorName: $vendorName)';
+  return 'TProductCard(id: $id, name: $name, slug: $slug, thumbnail: $thumbnail, price: $price, originalPrice: $originalPrice, discountRate: $discountRate, rating: $rating, soldCount: $soldCount, tags: $tags, vendorId: $vendorId, vendorName: $vendorName, isNegotiable: $isNegotiable)';
 }
 
 
@@ -564,7 +566,7 @@ abstract mixin class _$TProductCardCopyWith<$Res> implements $TProductCardCopyWi
   factory _$TProductCardCopyWith(_TProductCard value, $Res Function(_TProductCard) _then) = __$TProductCardCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String slug, String? thumbnail, int price,@JsonKey(name: 'original_price') int? originalPrice,@JsonKey(name: 'discount_rate') double? discountRate, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount, List<String>? tags,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName
+ String id, String name, String slug, String? thumbnail, int price,@JsonKey(name: 'original_price') int? originalPrice,@JsonKey(name: 'discount_rate') double? discountRate, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount, List<String>? tags,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'is_negotiable') bool isNegotiable
 });
 
 
@@ -581,7 +583,7 @@ class __$TProductCardCopyWithImpl<$Res>
 
 /// Create a copy of TProductCard
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? thumbnail = freezed,Object? price = null,Object? originalPrice = freezed,Object? discountRate = freezed,Object? rating = freezed,Object? soldCount = freezed,Object? tags = freezed,Object? vendorId = freezed,Object? vendorName = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? thumbnail = freezed,Object? price = null,Object? originalPrice = freezed,Object? discountRate = freezed,Object? rating = freezed,Object? soldCount = freezed,Object? tags = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? isNegotiable = null,}) {
   return _then(_TProductCard(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -595,7 +597,8 @@ as RatingModel?,soldCount: freezed == soldCount ? _self.soldCount : soldCount //
 as int?,tags: freezed == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>?,vendorId: freezed == vendorId ? _self.vendorId : vendorId // ignore: cast_nullable_to_non_nullable
 as String?,vendorName: freezed == vendorName ? _self.vendorName : vendorName // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isNegotiable: null == isNegotiable ? _self.isNegotiable : isNegotiable // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -1450,7 +1453,7 @@ as List<SkuAttribute>?,
 /// @nodoc
 mixin _$TProductDetail {
 
- String get id; String get name; String get slug; String? get description; int get price;@JsonKey(name: 'original_price') int? get originalPrice; RatingModel? get rating;@JsonKey(name: 'sold_count') int? get soldCount;@JsonKey(name: 'resources') List<ResourceModel>? get images; List<ProductSpecification>? get specifications; List<ProductSku>? get skus;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'vendor_avatar') String? get vendorAvatar;@JsonKey(name: 'category_id') String? get categoryId;
+ String get id; String get name; String get slug; String? get description; int get price;@JsonKey(name: 'original_price') int? get originalPrice; RatingModel? get rating;@JsonKey(name: 'sold_count') int? get soldCount;@JsonKey(name: 'resources') List<ResourceModel>? get images; List<ProductSpecification>? get specifications; List<ProductSku>? get skus;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'vendor_avatar') String? get vendorAvatar;@JsonKey(name: 'category_id') String? get categoryId;@JsonKey(name: 'is_negotiable') bool get isNegotiable;@JsonKey(name: 'min_negotiable_price') int? get minNegotiablePrice;@JsonKey(name: 'max_negotiable_price') int? get maxNegotiablePrice;
 /// Create a copy of TProductDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1463,16 +1466,16 @@ $TProductDetailCopyWith<TProductDetail> get copyWith => _$TProductDetailCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TProductDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.price, price) || other.price == price)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other.images, images)&&const DeepCollectionEquality().equals(other.specifications, specifications)&&const DeepCollectionEquality().equals(other.skus, skus)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.vendorAvatar, vendorAvatar) || other.vendorAvatar == vendorAvatar)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TProductDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.price, price) || other.price == price)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other.images, images)&&const DeepCollectionEquality().equals(other.specifications, specifications)&&const DeepCollectionEquality().equals(other.skus, skus)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.vendorAvatar, vendorAvatar) || other.vendorAvatar == vendorAvatar)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable)&&(identical(other.minNegotiablePrice, minNegotiablePrice) || other.minNegotiablePrice == minNegotiablePrice)&&(identical(other.maxNegotiablePrice, maxNegotiablePrice) || other.maxNegotiablePrice == maxNegotiablePrice));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,slug,description,price,originalPrice,rating,soldCount,const DeepCollectionEquality().hash(images),const DeepCollectionEquality().hash(specifications),const DeepCollectionEquality().hash(skus),vendorId,vendorName,vendorAvatar,categoryId);
+int get hashCode => Object.hash(runtimeType,id,name,slug,description,price,originalPrice,rating,soldCount,const DeepCollectionEquality().hash(images),const DeepCollectionEquality().hash(specifications),const DeepCollectionEquality().hash(skus),vendorId,vendorName,vendorAvatar,categoryId,isNegotiable,minNegotiablePrice,maxNegotiablePrice);
 
 @override
 String toString() {
-  return 'TProductDetail(id: $id, name: $name, slug: $slug, description: $description, price: $price, originalPrice: $originalPrice, rating: $rating, soldCount: $soldCount, images: $images, specifications: $specifications, skus: $skus, vendorId: $vendorId, vendorName: $vendorName, vendorAvatar: $vendorAvatar, categoryId: $categoryId)';
+  return 'TProductDetail(id: $id, name: $name, slug: $slug, description: $description, price: $price, originalPrice: $originalPrice, rating: $rating, soldCount: $soldCount, images: $images, specifications: $specifications, skus: $skus, vendorId: $vendorId, vendorName: $vendorName, vendorAvatar: $vendorAvatar, categoryId: $categoryId, isNegotiable: $isNegotiable, minNegotiablePrice: $minNegotiablePrice, maxNegotiablePrice: $maxNegotiablePrice)';
 }
 
 
@@ -1483,7 +1486,7 @@ abstract mixin class $TProductDetailCopyWith<$Res>  {
   factory $TProductDetailCopyWith(TProductDetail value, $Res Function(TProductDetail) _then) = _$TProductDetailCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String slug, String? description, int price,@JsonKey(name: 'original_price') int? originalPrice, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount,@JsonKey(name: 'resources') List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId
+ String id, String name, String slug, String? description, int price,@JsonKey(name: 'original_price') int? originalPrice, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount,@JsonKey(name: 'resources') List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId,@JsonKey(name: 'is_negotiable') bool isNegotiable,@JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,@JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice
 });
 
 
@@ -1500,7 +1503,7 @@ class _$TProductDetailCopyWithImpl<$Res>
 
 /// Create a copy of TProductDetail
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? description = freezed,Object? price = null,Object? originalPrice = freezed,Object? rating = freezed,Object? soldCount = freezed,Object? images = freezed,Object? specifications = freezed,Object? skus = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? vendorAvatar = freezed,Object? categoryId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? description = freezed,Object? price = null,Object? originalPrice = freezed,Object? rating = freezed,Object? soldCount = freezed,Object? images = freezed,Object? specifications = freezed,Object? skus = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? vendorAvatar = freezed,Object? categoryId = freezed,Object? isNegotiable = null,Object? minNegotiablePrice = freezed,Object? maxNegotiablePrice = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -1517,7 +1520,10 @@ as List<ProductSku>?,vendorId: freezed == vendorId ? _self.vendorId : vendorId /
 as String?,vendorName: freezed == vendorName ? _self.vendorName : vendorName // ignore: cast_nullable_to_non_nullable
 as String?,vendorAvatar: freezed == vendorAvatar ? _self.vendorAvatar : vendorAvatar // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isNegotiable: null == isNegotiable ? _self.isNegotiable : isNegotiable // ignore: cast_nullable_to_non_nullable
+as bool,minNegotiablePrice: freezed == minNegotiablePrice ? _self.minNegotiablePrice : minNegotiablePrice // ignore: cast_nullable_to_non_nullable
+as int?,maxNegotiablePrice: freezed == maxNegotiablePrice ? _self.maxNegotiablePrice : maxNegotiablePrice // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 /// Create a copy of TProductDetail
@@ -1614,10 +1620,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TProductDetail() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId);case _:
+return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId,_that.isNegotiable,_that.minNegotiablePrice,_that.maxNegotiablePrice);case _:
   return orElse();
 
 }
@@ -1635,10 +1641,10 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)  $default,) {final _that = this;
 switch (_that) {
 case _TProductDetail():
-return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId);case _:
+return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId,_that.isNegotiable,_that.minNegotiablePrice,_that.maxNegotiablePrice);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1655,10 +1661,10 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  RatingModel? rating, @JsonKey(name: 'sold_count')  int? soldCount, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)?  $default,) {final _that = this;
 switch (_that) {
 case _TProductDetail() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId);case _:
+return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.originalPrice,_that.rating,_that.soldCount,_that.images,_that.specifications,_that.skus,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId,_that.isNegotiable,_that.minNegotiablePrice,_that.maxNegotiablePrice);case _:
   return null;
 
 }
@@ -1670,7 +1676,7 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 @JsonSerializable()
 
 class _TProductDetail implements TProductDetail {
-  const _TProductDetail({required this.id, required this.name, required this.slug, this.description, this.price = 0, @JsonKey(name: 'original_price') this.originalPrice, this.rating, @JsonKey(name: 'sold_count') this.soldCount, @JsonKey(name: 'resources') final  List<ResourceModel>? images, final  List<ProductSpecification>? specifications, final  List<ProductSku>? skus, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'vendor_avatar') this.vendorAvatar, @JsonKey(name: 'category_id') this.categoryId}): _images = images,_specifications = specifications,_skus = skus;
+  const _TProductDetail({required this.id, required this.name, required this.slug, this.description, this.price = 0, @JsonKey(name: 'original_price') this.originalPrice, this.rating, @JsonKey(name: 'sold_count') this.soldCount, @JsonKey(name: 'resources') final  List<ResourceModel>? images, final  List<ProductSpecification>? specifications, final  List<ProductSku>? skus, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'vendor_avatar') this.vendorAvatar, @JsonKey(name: 'category_id') this.categoryId, @JsonKey(name: 'is_negotiable') this.isNegotiable = false, @JsonKey(name: 'min_negotiable_price') this.minNegotiablePrice, @JsonKey(name: 'max_negotiable_price') this.maxNegotiablePrice}): _images = images,_specifications = specifications,_skus = skus;
   factory _TProductDetail.fromJson(Map<String, dynamic> json) => _$TProductDetailFromJson(json);
 
 @override final  String id;
@@ -1712,6 +1718,9 @@ class _TProductDetail implements TProductDetail {
 @override@JsonKey(name: 'vendor_name') final  String? vendorName;
 @override@JsonKey(name: 'vendor_avatar') final  String? vendorAvatar;
 @override@JsonKey(name: 'category_id') final  String? categoryId;
+@override@JsonKey(name: 'is_negotiable') final  bool isNegotiable;
+@override@JsonKey(name: 'min_negotiable_price') final  int? minNegotiablePrice;
+@override@JsonKey(name: 'max_negotiable_price') final  int? maxNegotiablePrice;
 
 /// Create a copy of TProductDetail
 /// with the given fields replaced by the non-null parameter values.
@@ -1726,16 +1735,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TProductDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.price, price) || other.price == price)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other._images, _images)&&const DeepCollectionEquality().equals(other._specifications, _specifications)&&const DeepCollectionEquality().equals(other._skus, _skus)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.vendorAvatar, vendorAvatar) || other.vendorAvatar == vendorAvatar)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TProductDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.price, price) || other.price == price)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other._images, _images)&&const DeepCollectionEquality().equals(other._specifications, _specifications)&&const DeepCollectionEquality().equals(other._skus, _skus)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.vendorAvatar, vendorAvatar) || other.vendorAvatar == vendorAvatar)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable)&&(identical(other.minNegotiablePrice, minNegotiablePrice) || other.minNegotiablePrice == minNegotiablePrice)&&(identical(other.maxNegotiablePrice, maxNegotiablePrice) || other.maxNegotiablePrice == maxNegotiablePrice));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,slug,description,price,originalPrice,rating,soldCount,const DeepCollectionEquality().hash(_images),const DeepCollectionEquality().hash(_specifications),const DeepCollectionEquality().hash(_skus),vendorId,vendorName,vendorAvatar,categoryId);
+int get hashCode => Object.hash(runtimeType,id,name,slug,description,price,originalPrice,rating,soldCount,const DeepCollectionEquality().hash(_images),const DeepCollectionEquality().hash(_specifications),const DeepCollectionEquality().hash(_skus),vendorId,vendorName,vendorAvatar,categoryId,isNegotiable,minNegotiablePrice,maxNegotiablePrice);
 
 @override
 String toString() {
-  return 'TProductDetail(id: $id, name: $name, slug: $slug, description: $description, price: $price, originalPrice: $originalPrice, rating: $rating, soldCount: $soldCount, images: $images, specifications: $specifications, skus: $skus, vendorId: $vendorId, vendorName: $vendorName, vendorAvatar: $vendorAvatar, categoryId: $categoryId)';
+  return 'TProductDetail(id: $id, name: $name, slug: $slug, description: $description, price: $price, originalPrice: $originalPrice, rating: $rating, soldCount: $soldCount, images: $images, specifications: $specifications, skus: $skus, vendorId: $vendorId, vendorName: $vendorName, vendorAvatar: $vendorAvatar, categoryId: $categoryId, isNegotiable: $isNegotiable, minNegotiablePrice: $minNegotiablePrice, maxNegotiablePrice: $maxNegotiablePrice)';
 }
 
 
@@ -1746,7 +1755,7 @@ abstract mixin class _$TProductDetailCopyWith<$Res> implements $TProductDetailCo
   factory _$TProductDetailCopyWith(_TProductDetail value, $Res Function(_TProductDetail) _then) = __$TProductDetailCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String slug, String? description, int price,@JsonKey(name: 'original_price') int? originalPrice, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount,@JsonKey(name: 'resources') List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId
+ String id, String name, String slug, String? description, int price,@JsonKey(name: 'original_price') int? originalPrice, RatingModel? rating,@JsonKey(name: 'sold_count') int? soldCount,@JsonKey(name: 'resources') List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId,@JsonKey(name: 'is_negotiable') bool isNegotiable,@JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,@JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice
 });
 
 
@@ -1763,7 +1772,7 @@ class __$TProductDetailCopyWithImpl<$Res>
 
 /// Create a copy of TProductDetail
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? description = freezed,Object? price = null,Object? originalPrice = freezed,Object? rating = freezed,Object? soldCount = freezed,Object? images = freezed,Object? specifications = freezed,Object? skus = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? vendorAvatar = freezed,Object? categoryId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? description = freezed,Object? price = null,Object? originalPrice = freezed,Object? rating = freezed,Object? soldCount = freezed,Object? images = freezed,Object? specifications = freezed,Object? skus = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? vendorAvatar = freezed,Object? categoryId = freezed,Object? isNegotiable = null,Object? minNegotiablePrice = freezed,Object? maxNegotiablePrice = freezed,}) {
   return _then(_TProductDetail(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -1780,7 +1789,10 @@ as List<ProductSku>?,vendorId: freezed == vendorId ? _self.vendorId : vendorId /
 as String?,vendorName: freezed == vendorName ? _self.vendorName : vendorName // ignore: cast_nullable_to_non_nullable
 as String?,vendorAvatar: freezed == vendorAvatar ? _self.vendorAvatar : vendorAvatar // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isNegotiable: null == isNegotiable ? _self.isNegotiable : isNegotiable // ignore: cast_nullable_to_non_nullable
+as bool,minNegotiablePrice: freezed == minNegotiablePrice ? _self.minNegotiablePrice : minNegotiablePrice // ignore: cast_nullable_to_non_nullable
+as int?,maxNegotiablePrice: freezed == maxNegotiablePrice ? _self.maxNegotiablePrice : maxNegotiablePrice // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

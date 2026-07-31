@@ -31,6 +31,8 @@ import '../../features/dispute/presentation/screens/dispute_list_screen.dart';
 import '../../features/dispute/presentation/screens/dispute_detail_screen.dart';
 import '../../features/chat/presentation/screens/chat_list_screen.dart';
 import '../../features/chat/presentation/screens/chat_detail_screen.dart';
+import '../../features/help_center/presentation/screens/help_center_screen.dart';
+import '../../features/help_center/presentation/screens/support_chat_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -208,6 +210,21 @@ GoRouter appRouter(Ref ref) {
                 path: 'settings',
                 name: 'buyer_settings',
                 builder: (context, state) => const SettingsScreen(),
+              ),
+              GoRoute(
+                path: 'help-center',
+                name: 'buyer_help_center',
+                builder: (context, state) => const HelpCenterScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'chat/:id',
+                    name: 'support_chat_detail',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return SupportChatScreen(ticketId: id);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

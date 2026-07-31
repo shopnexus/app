@@ -683,19 +683,6 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                               ],
                             ),
                           ),
-                          OutlinedButton(
-                            onPressed: () => _openOfferDialog(
-                              initialPrice: 380.0,
-                              title: conv.productTitle,
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              minimumSize: const Size(0, 32),
-                            ),
-                            child: const Text('Make Offer'),
-                          ),
                         ],
                       ),
                     );

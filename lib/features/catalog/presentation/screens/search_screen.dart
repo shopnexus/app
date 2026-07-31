@@ -32,6 +32,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _searchController.addListener(_onSearchChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final activeFilters = ref.read(activeSearchFiltersProvider);
@@ -39,8 +40,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     });
   }
 
+  void _onSearchChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
@@ -96,110 +102,132 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     final showDiscovery = !_isSearchActive(activeFilters);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: theme.colorScheme.onSurface,
-            size: 20,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_isSearchActive(activeFilters)) {
+          ref.read(activeSearchFiltersProvider.notifier).reset();
+          _searchController.clear();
+        } else if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go('/home');
+        }
+      },
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: theme.colorScheme.surface,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: theme.colorScheme.onSurface,
+              size: 20,
+            ),
+            onPressed: () {
+              if (_isSearchActive(activeFilters)) {
+                // Reset filters instead of popping if search was active
+                ref.read(activeSearchFiltersProvider.notifier).reset();
+                _searchController.clear();
+              } else if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/home');
+              }
+            },
           ),
-          onPressed: () {
-            if (_isSearchActive(activeFilters)) {
-              // Reset filters instead of popping if search was active
-              ref.read(activeSearchFiltersProvider.notifier).reset();
-              _searchController.clear();
-            } else {
-              context.pop();
-            }
-          },
-        ),
-        title: Container(
-          height: 44.0,
-          decoration: BoxDecoration(
-            color: isDarkMode ? AppColors.darkSurface : const Color(0xFFF1F1EF),
-            borderRadius: BorderRadius.circular(12.0),
-            border: isDarkMode
-                ? Border.all(
-                    color: AppColors.darkPrimary.withAlpha(40),
-                    width: 1.0,
-                  )
-                : null,
-          ),
-          child: Center(
-            child: TextField(
-              controller: _searchController,
-              textInputAction: TextInputAction.search,
-              onSubmitted: (val) => _triggerSearch(val),
-              decoration: InputDecoration(
-                isDense: true,
-                hintText: 'Tìm kiếm sản phẩm, đồ bán...',
-                hintStyle: TextStyle(
-                  fontFamily: 'Inter',
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 14,
-                ),
-                prefixIcon: Icon(
-                  Icons.search_rounded,
-                  color: theme.colorScheme.onSurfaceVariant,
-                  size: 18,
-                ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.cancel_rounded,
-                          color: theme.colorScheme.onSurfaceVariant,
-                          size: 18,
+          title: Container(
+            height: 48.0,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: isDarkMode
+                  ? AppColors.darkSurface
+                  : const Color(0xFFEEEEEB),
+              borderRadius: BorderRadius.circular(24.0),
+              border: Border.all(
+                color: isDarkMode
+                    ? AppColors.darkPrimary.withAlpha(60)
+                    : const Color(0xFF94A3B8),
+                width: 1.0,
+              ),
+            ),
+            child: Center(
+              child: TextField(
+                controller: _searchController,
+                textInputAction: TextInputAction.search,
+                onSubmitted: (val) => _triggerSearch(val),
+                decoration: InputDecoration(
+                  filled: false,
+                  fillColor: Colors.transparent,
+                  isDense: true,
+                  hintText: 'Tìm sản phẩm, đồ công nghệ, thời trang...',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Inter',
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 14,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.cancel_rounded,
+                            color: theme.colorScheme.onSurfaceVariant,
+                            size: 18,
+                          ),
+                          onPressed: () {
+                            _searchController.clear();
+                            ref
+                                .read(activeSearchFiltersProvider.notifier)
+                                .setKeyword(null);
+                          },
+                        )
+                      : Icon(
+                          Icons.mic_none_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 20,
                         ),
-                        onPressed: () {
-                          _searchController.clear();
-                          ref
-                              .read(activeSearchFiltersProvider.notifier)
-                              .setKeyword(null);
-                        },
-                      )
-                    : Icon(
-                        Icons.mic_none_rounded,
-                        color: theme.colorScheme.primary,
-                        size: 18,
-                      ),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-              ),
-              style: TextStyle(
-                fontFamily: 'Inter',
-                color: theme.colorScheme.onSurface,
-                fontSize: 14,
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => _triggerSearch(_searchController.text),
+              child: Text(
+                'Tìm',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => _triggerSearch(_searchController.text),
-            child: Text(
-              'Tìm',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+        body: showDiscovery
+            ? _buildDiscoveryCanvas(categoriesState)
+            : _buildSearchResultsCanvas(
+                activeFilters,
+                productsState,
+                categoriesState,
               ),
-            ),
-          ),
-        ],
       ),
-      body: showDiscovery
-          ? _buildDiscoveryCanvas(categoriesState)
-          : _buildSearchResultsCanvas(
-              activeFilters,
-              productsState,
-              categoriesState,
-            ),
     );
   }
 

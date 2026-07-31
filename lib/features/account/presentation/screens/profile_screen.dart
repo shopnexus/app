@@ -612,13 +612,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         context,
                         icon: Icons.help_outline_rounded,
                         title: 'Help Center',
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Tính năng hỗ trợ đang mở...'),
-                            ),
-                          );
-                        },
+                        onTap: () => context.push('/account/help-center'),
                       ),
                       Divider(
                         height: 1,

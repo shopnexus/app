@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'cart_provider.dart';
+part of 'help_center_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,52 +9,53 @@ part of 'cart_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(CartNotifier)
-const cartProvider = CartNotifierProvider._();
+@ProviderFor(HelpCenterNotifier)
+const helpCenterProvider = HelpCenterNotifierProvider._();
 
-final class CartNotifierProvider
-    extends $NotifierProvider<CartNotifier, CartState> {
-  const CartNotifierProvider._()
+final class HelpCenterNotifierProvider
+    extends $NotifierProvider<HelpCenterNotifier, HelpCenterState> {
+  const HelpCenterNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'cartProvider',
+        name: r'helpCenterProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$cartNotifierHash();
+  String debugGetCreateSourceHash() => _$helpCenterNotifierHash();
 
   @$internal
   @override
-  CartNotifier create() => CartNotifier();
+  HelpCenterNotifier create() => HelpCenterNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(CartState value) {
+  Override overrideWithValue(HelpCenterState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<CartState>(value),
+      providerOverride: $SyncValueProvider<HelpCenterState>(value),
     );
   }
 }
 
-String _$cartNotifierHash() => r'94248d7c069cccc2d0522bd1cbd0047927f50be3';
+String _$helpCenterNotifierHash() =>
+    r'53986c19934e4ee6277cd1edc43835f05d79a55e';
 
-abstract class _$CartNotifier extends $Notifier<CartState> {
-  CartState build();
+abstract class _$HelpCenterNotifier extends $Notifier<HelpCenterState> {
+  HelpCenterState build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<CartState, CartState>;
+    final ref = this.ref as $Ref<HelpCenterState, HelpCenterState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<CartState, CartState>,
-              CartState,
+              AnyNotifier<HelpCenterState, HelpCenterState>,
+              HelpCenterState,
               Object?,
               Object?
             >;

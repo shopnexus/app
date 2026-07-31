@@ -37,6 +37,7 @@ abstract class CheckoutState with _$CheckoutState {
     String? errorMessage,
     @Default('USD') String preferredCurrency,
     @Default({}) Map<String, double> rates,
+    @Default(true) bool agreeToTerms,
   }) = _CheckoutState;
 
   List<Contact> get homeContacts =>
@@ -138,6 +139,36 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     }
   }
 
+  /// Làm mới danh sách địa chỉ nhận hàng từ server
+  Future<void> reloadAddresses({String? selectId}) async {
+    try {
+      final accountRepo = ref.read(accountRepositoryProvider);
+      final list = await accountRepo.getContacts();
+
+      Contact? newSelected = state.selectedContact;
+      if (selectId != null) {
+        final found = list.where((c) => c.id == selectId).toList();
+        if (found.isNotEmpty) {
+          newSelected = found.first;
+        }
+      }
+      if (newSelected == null || !list.any((c) => c.id == newSelected?.id)) {
+        newSelected = list.any((c) => c.phoneVerified)
+            ? list.firstWhere((c) => c.phoneVerified)
+            : list.firstOrNull;
+      } else {
+        final currentId = newSelected.id;
+        newSelected = list.firstWhere((c) => c.id == currentId);
+      }
+
+      if (!ref.mounted) return;
+      state = state.copyWith(contacts: list, selectedContact: newSelected);
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(errorMessage: ErrorHandler.getErrorMessage(e));
+    }
+  }
+
   /// Chọn địa chỉ nhận hàng
   void selectContact(Contact contact) {
     state = state.copyWith(selectedContact: contact, errorMessage: null);
@@ -205,8 +236,25 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     );
   }
 
+  /// Thay đổi trạng thái đồng ý điều khoản dịch vụ
+  void toggleAgreeToTerms({bool? value}) {
+    state = state.copyWith(
+      agreeToTerms: value ?? !state.agreeToTerms,
+      errorMessage: null,
+    );
+  }
+
   /// Thực hiện đặt hàng và bắt đầu polling kết quả thanh toán
   Future<void> placeOrder() async {
+    if (!state.agreeToTerms) {
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        errorMessage:
+            'Vui lòng đồng ý với Điều khoản dịch vụ & Chính sách mua hàng trước khi thanh toán!',
+      );
+      return;
+    }
+
     if (state.selectedContact == null) {
       if (!ref.mounted) return;
       state = state.copyWith(errorMessage: 'Vui lòng chọn địa chỉ nhận hàng');

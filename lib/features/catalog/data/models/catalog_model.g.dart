@@ -38,6 +38,7 @@ _TProductCard _$TProductCardFromJson(Map<String, dynamic> json) =>
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       vendorId: json['vendor_id'] as String?,
       vendorName: json['vendor_name'] as String?,
+      isNegotiable: json['is_negotiable'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$TProductCardToJson(_TProductCard instance) =>
@@ -54,6 +55,7 @@ Map<String, dynamic> _$TProductCardToJson(_TProductCard instance) =>
       'tags': instance.tags,
       'vendor_id': instance.vendorId,
       'vendor_name': instance.vendorName,
+      'is_negotiable': instance.isNegotiable,
     };
 
 _ProductSpecification _$ProductSpecificationFromJson(
@@ -125,6 +127,9 @@ _TProductDetail _$TProductDetailFromJson(Map<String, dynamic> json) =>
       vendorName: json['vendor_name'] as String?,
       vendorAvatar: json['vendor_avatar'] as String?,
       categoryId: json['category_id'] as String?,
+      isNegotiable: json['is_negotiable'] as bool? ?? false,
+      minNegotiablePrice: (json['min_negotiable_price'] as num?)?.toInt(),
+      maxNegotiablePrice: (json['max_negotiable_price'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$TProductDetailToJson(_TProductDetail instance) =>
@@ -144,6 +149,9 @@ Map<String, dynamic> _$TProductDetailToJson(_TProductDetail instance) =>
       'vendor_name': instance.vendorName,
       'vendor_avatar': instance.vendorAvatar,
       'category_id': instance.categoryId,
+      'is_negotiable': instance.isNegotiable,
+      'min_negotiable_price': instance.minNegotiablePrice,
+      'max_negotiable_price': instance.maxNegotiablePrice,
     };
 
 _CommentProfile _$CommentProfileFromJson(Map<String, dynamic> json) =>

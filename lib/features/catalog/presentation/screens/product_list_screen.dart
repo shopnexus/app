@@ -148,15 +148,16 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 16.0,
                               ),
+                              clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
                                 color: isDarkMode
                                     ? AppColors.darkSurface
                                     : const Color(0xFFEEEEEB),
-                                borderRadius: BorderRadius.circular(9999.0),
+                                borderRadius: BorderRadius.circular(24.0),
                                 border: Border.all(
                                   color: isDarkMode
-                                      ? AppColors.darkPrimary.withAlpha(40)
-                                      : const Color(0xFFBCC9C6),
+                                      ? AppColors.darkPrimary.withAlpha(60)
+                                      : const Color(0xFF94A3B8),
                                   width: 1.0,
                                 ),
                               ),

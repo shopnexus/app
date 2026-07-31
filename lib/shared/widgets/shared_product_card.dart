@@ -139,32 +139,6 @@ class SharedProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  // Nhãn giảm giá (nếu có)
-                  if (product.originalPrice != null &&
-                      product.originalPrice! > product.price)
-                    Positioned(
-                      top: 8.0,
-                      left: 8.0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEF4444),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        child: const Text(
-                          'GIẢM GIÁ',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -174,7 +148,7 @@ class SharedProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Hàng Tiêu đề & Giá
+                  // Hàng Tiêu đề & Giá + Chip Phân loại (Thương lượng / Mua ngay)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -192,15 +166,71 @@ class SharedProductCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      Text(
-                        MoneyUtils.format(product.price),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontFamily: 'Inter',
-                          color: isDarkMode
-                              ? AppColors.darkPrimary
-                              : const Color(0xFF005049),
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            MoneyUtils.format(product.price),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontFamily: 'Inter',
+                              color: isDarkMode
+                                  ? AppColors.darkPrimary
+                                  : const Color(0xFF005049),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 3.0),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: product.isNegotiable
+                                  ? theme.colorScheme.primary.withAlpha(25)
+                                  : (isDarkMode
+                                        ? theme
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                        : const Color(0xFFF1F5F9)),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: product.isNegotiable
+                                    ? theme.colorScheme.primary.withAlpha(80)
+                                    : Colors.transparent,
+                                width: 0.8,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  product.isNegotiable
+                                      ? Icons.handshake_outlined
+                                      : Icons.flash_on_rounded,
+                                  size: 10,
+                                  color: product.isNegotiable
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  product.isNegotiable
+                                      ? 'Thương lượng'
+                                      : 'Mua ngay',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: product.isNegotiable
+                                        ? theme.colorScheme.primary
+                                        : theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
