@@ -499,8 +499,113 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   ),
                 ),
               ],
+              if (detail.isNegotiable) ...[
+                const SizedBox(width: 8.0),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withAlpha(25),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withAlpha(80),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.handshake_outlined,
+                        size: 14,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Thương lượng giá',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
+          if (detail.isNegotiable) ...[
+            const SizedBox(height: 10.0),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDarkMode
+                    ? theme.colorScheme.surfaceContainerHighest
+                    : const Color(0xFFF4F4F1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withAlpha(50),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withAlpha(25),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.info_outline_rounded,
+                      size: 20,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Khoảng giá tham khảo: ',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 12,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              '${MoneyUtils.format(detail.minNegotiablePrice ?? (detail.price * 0.85).round())} - ${MoneyUtils.format(detail.maxNegotiablePrice ?? detail.price)}',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Tham khảo khoảng giá trước khi bấm "Thương lượng" để gửi đề xuất cho người bán.',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 11,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 12.0),
 
           // Tên sản phẩm
@@ -1451,16 +1556,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Nút Icon Thêm vào giỏ hàng
           Container(
             decoration: BoxDecoration(
-              color: iconBgColor,
+              color: detail.isNegotiable
+                  ? iconBgColor.withAlpha(120)
+                  : iconBgColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: IconButton(
               icon: Icon(
                 Icons.add_shopping_cart_rounded,
-                color: theme.colorScheme.onSurface,
+                color: detail.isNegotiable
+                    ? theme.colorScheme.onSurfaceVariant.withAlpha(100)
+                    : theme.colorScheme.onSurface,
               ),
-              onPressed: isOutOfStock
-                  ? null
+              onPressed: (isOutOfStock || detail.isNegotiable)
+                  ? () {
+                      if (detail.isNegotiable) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Sản phẩm thương lượng giá không thể thêm trực tiếp vào giỏ hàng.',
+                            ),
+                            backgroundColor: Colors.orange,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
                   : () async {
                       if (_selectedSku == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -1604,7 +1725,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
           const SizedBox(width: 12.0),
 
-          // Nút Mua Ngay lớn
+          // Nút Mua Ngay / Thương Lượng lớn
           Expanded(
             child: SizedBox(
               height: 48.0,
@@ -1612,6 +1733,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 onPressed: isOutOfStock
                     ? null
                     : () {
+                        if (detail.isNegotiable) {
+                          _showOfferModal(context, ref, detail);
+                          return;
+                        }
+
                         if (_selectedSku == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -1667,7 +1793,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   elevation: 0,
                 ),
                 child: Text(
-                  isOutOfStock ? 'HẾT HÀNG' : 'MUA NGAY',
+                  isOutOfStock
+                      ? 'HẾT HÀNG'
+                      : (detail.isNegotiable ? 'THƯƠNG LƯỢNG' : 'MUA NGAY'),
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.bold,
@@ -1698,6 +1826,261 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         context.push('/chat/conv_001');
       }
     }
+  }
+
+  void _showOfferModal(
+    BuildContext context,
+    WidgetRef ref,
+    TProductDetail detail,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final minPrice = detail.minNegotiablePrice ?? (detail.price * 0.85).round();
+    final maxPrice = detail.maxNegotiablePrice ?? detail.price;
+
+    final priceController = TextEditingController(
+      text: detail.price.toString(),
+    );
+    final noteController = TextEditingController(
+      text:
+          'Tôi muốn thương lượng mua sản phẩm này với giá ${MoneyUtils.format(detail.price)}.',
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: 20 + MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.onSurfaceVariant.withAlpha(60),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.handshake_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Thương lượng giá',
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Khoảng giá tham khảo
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isDarkMode
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : const Color(0xFFF4F4F1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withAlpha(50),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Khoảng giá tham khảo từ người bán:',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${MoneyUtils.format(minPrice)} - ${MoneyUtils.format(maxPrice)}',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Nhập giá đề xuất
+              Text(
+                'Mức giá bạn đề xuất',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: priceController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.attach_money_rounded),
+                  hintText: 'Nhập số tiền...',
+                  filled: true,
+                  fillColor: isDarkMode
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Ghi chú
+              Text(
+                'Lời nhắn cho người bán',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: noteController,
+                maxLines: 2,
+                decoration: InputDecoration(
+                  hintText: 'Nhập lời nhắn ngắn...',
+                  filled: true,
+                  fillColor: isDarkMode
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Nút Gửi đề xuất
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final offerVal =
+                        int.tryParse(priceController.text) ?? detail.price;
+                    final noteText = noteController.text.trim();
+                    final offerMessage =
+                        'Đề xuất giá thương lượng: ${MoneyUtils.format(offerVal)}. $noteText (Sản phẩm: ${detail.name})';
+
+                    try {
+                      final repo = ref.read(chatRepositoryProvider);
+                      final conversations = await repo.getConversations();
+                      final convId = conversations.isNotEmpty
+                          ? conversations.first.id
+                          : 'conv_001';
+
+                      await repo.sendMessage(
+                        conversationId: convId,
+                        content: offerMessage,
+                        type: MessageType.offer,
+                        metadata: ChatMessageMetadata(
+                          productId: detail.id,
+                          productTitle: detail.name,
+                          productImage: detail.images?.firstOrNull?.url,
+                          productPrice: detail.price.toDouble(),
+                          offerPrice: offerVal.toDouble(),
+                          offerOriginalPrice: detail.price.toDouble(),
+                          offerNote: noteText,
+                          offerStatus: OfferStatus.pending,
+                        ),
+                      );
+
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Đã gửi đề xuất thương lượng vào Chat!',
+                            ),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        context.push('/chat/$convId');
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Lỗi gửi đề xuất: $e')),
+                        );
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    'GỬI ĐỀ XUẤT THƯƠNG LƯỢNG',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showShareModal(

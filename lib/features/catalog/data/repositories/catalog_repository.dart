@@ -125,6 +125,7 @@ class CatalogRepository {
         soldCount: productDetail.soldCount,
         vendorId: productDetail.vendorId,
         vendorName: productDetail.vendorName,
+        isNegotiable: productDetail.isNegotiable,
       );
 
       await addToRecentlyViewed(productCard);
@@ -147,6 +148,7 @@ class CatalogRepository {
         soldCount: productDetail.soldCount,
         vendorId: productDetail.vendorId,
         vendorName: productDetail.vendorName,
+        isNegotiable: productDetail.isNegotiable,
       );
 
       // Lưu sản phẩm vào Hive recentBox
@@ -270,6 +272,7 @@ class CatalogRepository {
       soldCount: 120,
       vendorId: 'vendor_mock_01',
       vendorName: 'Craft & Wood Studio',
+      isNegotiable: true,
     ),
     TProductCard(
       id: 'spu_2',
@@ -326,6 +329,7 @@ class CatalogRepository {
       soldCount: 210,
       vendorId: 'vendor_mock_02',
       vendorName: 'TechZone Official',
+      isNegotiable: true,
     ),
     TProductCard(
       id: 'spu_6',
@@ -352,6 +356,9 @@ class CatalogRepository {
           'Ví da thật 100% may thủ công tinh tế, bề mặt mài xước patina thời thượng. Sản phẩm phù hợp cho ca hai giới với 6 ngăn đựng thẻ và 2 ngăn đựng tiền mặt.',
       price: 850000,
       originalPrice: 1200000,
+      isNegotiable: true,
+      minNegotiablePrice: 700000,
+      maxNegotiablePrice: 850000,
       rating: RatingModel(score: 4.8, count: 120),
       soldCount: 120,
       categoryId: 'cat_1',
@@ -483,6 +490,9 @@ class CatalogRepository {
           'Chống ồn chủ động ANC thế hệ mới, pin 30 giờ liên tục, âm thanh hifi sắc nét.',
       price: 1250000,
       originalPrice: 1800000,
+      isNegotiable: true,
+      minNegotiablePrice: 1000000,
+      maxNegotiablePrice: 1250000,
       rating: RatingModel(score: 4.6, count: 210),
       soldCount: 210,
       categoryId: 'cat_3',

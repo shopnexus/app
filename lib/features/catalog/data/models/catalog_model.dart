@@ -35,6 +35,7 @@ abstract class TProductCard with _$TProductCard {
     List<String>? tags,
     @JsonKey(name: 'vendor_id') String? vendorId,
     @JsonKey(name: 'vendor_name') String? vendorName,
+    @JsonKey(name: 'is_negotiable') @Default(false) bool isNegotiable,
   }) = _TProductCard;
 
   factory TProductCard.fromJson(Map<String, dynamic> json) =>
@@ -119,6 +120,9 @@ abstract class TProductDetail with _$TProductDetail {
     @JsonKey(name: 'vendor_name') String? vendorName,
     @JsonKey(name: 'vendor_avatar') String? vendorAvatar,
     @JsonKey(name: 'category_id') String? categoryId,
+    @JsonKey(name: 'is_negotiable') @Default(false) bool isNegotiable,
+    @JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,
+    @JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice,
   }) = _TProductDetail;
 
   factory TProductDetail.fromJson(Map<String, dynamic> json) =>
