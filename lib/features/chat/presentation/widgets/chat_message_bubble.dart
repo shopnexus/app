@@ -25,7 +25,7 @@ class ChatMessageBubble extends StatelessWidget {
     final theme = Theme.of(context);
     final isMe = message.isMe;
 
-    if (message.type == MessageType.offer) {
+    if (message.visualType == 'Offer') {
       return Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Padding(
@@ -139,7 +139,7 @@ class ChatMessageBubble extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        _formatTime(message.createdAt),
+                        _formatTime(message.createdAtDateTime),
                         style: theme.textTheme.labelSmall?.copyWith(
                           fontSize: 10,
                           color: theme.colorScheme.onSurfaceVariant,

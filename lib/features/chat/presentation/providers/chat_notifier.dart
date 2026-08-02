@@ -46,7 +46,7 @@ class ChatListNotifier extends _$ChatListNotifier {
     if (currentState != null) {
       final updatedList = currentState.conversations.map((conv) {
         if (conv.id == conversationId) {
-          return conv.copyWith(unreadCount: 0);
+          return conv.copyWith(unread: 0);
         }
         return conv;
       }).toList();
@@ -63,9 +63,8 @@ class ChatListNotifier extends _$ChatListNotifier {
       final updatedList = currentState.conversations.map((conv) {
         if (conv.id == conversationId) {
           return conv.copyWith(
-            lastMessage: message.content,
-            lastMessageTime: message.createdAt,
-            updatedAt: message.createdAt,
+            lastMessage: message,
+            lastMessageAt: message.createdAt,
           );
         }
         return conv;
@@ -107,8 +106,12 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
       (c) => c.id == conversationId,
       orElse: () => ChatConversation(
         id: conversationId,
-        participantId: 'unknown',
-        participantName: 'Nexus User',
+        createdAt: DateTime.now().toIso8601String(),
+        counterparty: const Counterparty(
+          id: 'unknown',
+          name: 'Nexus User',
+        ),
+        lastMessageAt: DateTime.now().toIso8601String(),
       ),
     );
 
@@ -160,7 +163,7 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
       final sentMessage = await repository.sendMessage(
         conversationId: conversationId,
         content: content.trim(),
-        type: MessageType.text,
+        type: MessageType.user,
       );
 
       final updatedState = state.value;
@@ -233,7 +236,7 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
       final sentMessage = await repository.sendMessage(
         conversationId: conversationId,
         content: content,
-        type: MessageType.offer,
+        type: MessageType.user,
         metadata: metadata,
       );
 
@@ -269,10 +272,14 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
     if (currentState == null) return;
 
     final updatedMessages = currentState.messages.map((msg) {
-      if (msg.id == messageId && msg.type == MessageType.offer) {
-        final currentMeta = msg.metadata;
-        final updatedMeta = currentMeta?.copyWith(offerStatus: status);
-        return msg.copyWith(metadata: updatedMeta);
+      if (msg.id == messageId) {
+        if (msg.metadata != null) {
+          final updatedCard = {
+            if (msg.card != null) ...msg.card!,
+            'offer_status': status.name,
+          };
+          return msg.copyWith(card: updatedCard);
+        }
       }
       return msg;
     }).toList();

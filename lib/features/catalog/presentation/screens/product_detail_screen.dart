@@ -2030,7 +2030,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       await repo.sendMessage(
                         conversationId: convId,
                         content: offerMessage,
-                        type: MessageType.offer,
+                        type: MessageType.user,
                         metadata: ChatMessageMetadata(
                           productId: detail.id,
                           productTitle: detail.name,
@@ -2356,7 +2356,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             ),
                           ),
                           subtitle: Text(
-                            conv.lastMessage ?? 'Nhấp để gửi sản phẩm',
+                            conv.lastMessageText ?? 'Nhấp để gửi sản phẩm',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontFamily: 'Inter'),
@@ -2377,7 +2377,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               await repo.sendMessage(
                                 conversationId: conv.id,
                                 content: shareText,
-                                type: MessageType.text,
+                                type: MessageType.user,
                               );
 
                               if (context.mounted) {

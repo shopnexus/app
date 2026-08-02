@@ -239,16 +239,28 @@ class ApiEndpoints {
   static const String forwardGeocode = 'common/geocode/forward';
   static const String searchGeocode = 'common/geocode/search';
 
-  // --- Chat Features ---
-  static const String conversations = 'chat/conversation';
+  // --- Chat & Messaging Features ---
+  static const String conversations = 'conversations';
+  static const String conversationDetailTemplate = 'conversations/{id}';
+  static String conversationDetail(String id) => 'conversations/$id';
   static const String conversationMessagesTemplate =
-      'chat/conversation/{id}/messages';
-
+      'conversations/{id}/messages';
   static String conversationMessages(String id) =>
-      'chat/conversation/$id/messages';
+      'conversations/$id/messages';
+  static const String conversationReadTemplate = 'conversations/{id}/read';
+  static String conversationRead(String id) => 'conversations/$id/read';
+  static const String chatUnreadCount = 'conversations/unread-count';
+  static const String chatUploads = 'conversations/uploads';
+  static const String chatUploadsConfirmationTemplate =
+      'conversations/uploads/{id}/confirmation';
+  static String chatUploadsConfirmation(String id) =>
+      'conversations/uploads/$id/confirmation';
+  static const String messageDetailTemplate = 'messages/{id}';
+  static String messageDetail(String id) => 'messages/$id';
 
-  static const String sendMessage = 'chat/send-message';
-  static const String markRead = 'chat/mark-read';
+  // Legacy aliases for backward compatibility
+  static const String sendMessage = 'conversations/{id}/messages';
+  static const String markRead = 'conversations/{id}/read';
 
   // --- Admin Dispute Features ---
   static const String adminDisputes = 'order/disputes';

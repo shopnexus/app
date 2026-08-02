@@ -36,7 +36,7 @@ final class ChatListNotifierProvider
   ChatListNotifier create() => ChatListNotifier();
 }
 
-String _$chatListNotifierHash() => r'cb0ba9409eca17a789a831b17715686c204955f1';
+String _$chatListNotifierHash() => r'629bc264e69a816df5578af28c8970a8caa8928f';
 
 /// Provider quản lý danh sách cuộc hội thoại chat
 
@@ -105,7 +105,7 @@ final class ChatDetailNotifierProvider
 }
 
 String _$chatDetailNotifierHash() =>
-    r'82f0967daca599dd1b962703cf89d45b4c0e19e0';
+    r'16fda2d1e29413d6edf4b460b781489a03f50d09';
 
 /// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
 

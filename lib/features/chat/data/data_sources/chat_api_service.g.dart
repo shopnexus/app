@@ -35,7 +35,7 @@ class _ChatApiService implements ChatApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'chat/conversation',
+            'conversations',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -62,6 +62,71 @@ class _ChatApiService implements ChatApiService {
   }
 
   @override
+  Future<DataResponse<ChatConversation>> startConversation(
+    StartConversationRequest request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _options = _setStreamType<DataResponse<ChatConversation>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'conversations',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<ChatConversation> _value;
+    try {
+      _value = DataResponse<ChatConversation>.fromJson(
+        _result.data!,
+        (json) => ChatConversation.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<DataResponse<ChatConversation>> getConversationDetail(
+    String id,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<DataResponse<ChatConversation>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'conversations/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<ChatConversation> _value;
+    try {
+      _value = DataResponse<ChatConversation>.fromJson(
+        _result.data!,
+        (json) => ChatConversation.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<DataResponse<List<ChatMessage>>> getMessages(
     String conversationId,
     int? page,
@@ -76,7 +141,7 @@ class _ChatApiService implements ChatApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'chat/conversation/${conversationId}/messages',
+            'conversations/${conversationId}/messages',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -104,18 +169,19 @@ class _ChatApiService implements ChatApiService {
 
   @override
   Future<DataResponse<ChatMessage>> sendMessage(
-    Map<String, dynamic> body,
+    String conversationId,
+    SendMessageRequest request,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(body);
+    _data.addAll(request.toJson());
     final _options = _setStreamType<DataResponse<ChatMessage>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'chat/send-message',
+            'conversations/${conversationId}/messages',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -136,28 +202,114 @@ class _ChatApiService implements ChatApiService {
   }
 
   @override
-  Future<DataResponse<bool>> markAsRead(Map<String, dynamic> body) async {
+  Future<DataResponse<ChatConversation>> markAsRead(
+    String conversationId,
+    MarkConversationReadRequest request,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(body);
-    final _options = _setStreamType<DataResponse<bool>>(
+    _data.addAll(request.toJson());
+    final _options = _setStreamType<DataResponse<ChatConversation>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'chat/mark-read',
+            'conversations/${conversationId}/read',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<bool> _value;
+    late DataResponse<ChatConversation> _value;
     try {
-      _value = DataResponse<bool>.fromJson(
+      _value = DataResponse<ChatConversation>.fromJson(
         _result.data!,
-        (json) => json as bool,
+        (json) => ChatConversation.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<DataResponse<ChatUnreadCount>> getUnreadCount() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<DataResponse<ChatUnreadCount>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'conversations/unread-count',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<ChatUnreadCount> _value;
+    try {
+      _value = DataResponse<ChatUnreadCount>.fromJson(
+        _result.data!,
+        (json) => ChatUnreadCount.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<void> deleteMessage(String id) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<void>(
+      Options(method: 'DELETE', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'messages/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
+  Future<DataResponse<ChatMessage>> editMessage(
+    String id,
+    UpdateMessageRequest request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _options = _setStreamType<DataResponse<ChatMessage>>(
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'messages/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<ChatMessage> _value;
+    try {
+      _value = DataResponse<ChatMessage>.fromJson(
+        _result.data!,
+        (json) => ChatMessage.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);

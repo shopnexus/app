@@ -6,6 +6,22 @@ part of 'chat_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_Counterparty _$CounterpartyFromJson(Map<String, dynamic> json) =>
+    _Counterparty(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      avatar: json['avatar'] == null
+          ? null
+          : Resource.fromJson(json['avatar'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$CounterpartyToJson(_Counterparty instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'avatar': instance.avatar,
+    };
+
 _ChatMessageMetadata _$ChatMessageMetadataFromJson(Map<String, dynamic> json) =>
     _ChatMessageMetadata(
       imageUrl: json['image_url'] as String?,
@@ -51,22 +67,28 @@ const _$OfferStatusEnumMap = {
 _ChatMessage _$ChatMessageFromJson(Map<String, dynamic> json) => _ChatMessage(
   id: json['id'] as String,
   conversationId: json['conversation_id'] as String,
-  senderId: json['sender_id'] as String,
+  senderId: json['sender_id'],
+  type:
+      $enumDecodeNullable(_$MessageTypeEnumMap, json['type']) ??
+      MessageType.user,
+  body: json['body'] as String,
+  attachments:
+      (json['attachments'] as List<dynamic>?)
+          ?.map((e) => Resource.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  card: json['card'] as Map<String, dynamic>?,
+  refs: json['refs'] as Map<String, dynamic>?,
+  createdAt: json['created_at'] as String,
+  editedAt: json['edited_at'] as String?,
+  deletedAt: json['deleted_at'] as String?,
   senderName: json['sender_name'] as String?,
   senderAvatar: json['sender_avatar'] as String?,
   recipientId: json['recipient_id'] as String?,
-  type:
-      $enumDecodeNullable(_$MessageTypeEnumMap, json['type']) ??
-      MessageType.text,
-  content: json['content'] as String,
-  metadata: json['metadata'] == null
-      ? null
-      : ChatMessageMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
   isMe: json['is_me'] as bool? ?? false,
   status:
       $enumDecodeNullable(_$MessageStatusEnumMap, json['status']) ??
       MessageStatus.sent,
-  createdAt: DateTime.parse(json['created_at'] as String),
 );
 
 Map<String, dynamic> _$ChatMessageToJson(_ChatMessage instance) =>
@@ -74,23 +96,24 @@ Map<String, dynamic> _$ChatMessageToJson(_ChatMessage instance) =>
       'id': instance.id,
       'conversation_id': instance.conversationId,
       'sender_id': instance.senderId,
+      'type': _$MessageTypeEnumMap[instance.type]!,
+      'body': instance.body,
+      'attachments': instance.attachments,
+      'card': instance.card,
+      'refs': instance.refs,
+      'created_at': instance.createdAt,
+      'edited_at': instance.editedAt,
+      'deleted_at': instance.deletedAt,
       'sender_name': instance.senderName,
       'sender_avatar': instance.senderAvatar,
       'recipient_id': instance.recipientId,
-      'type': _$MessageTypeEnumMap[instance.type]!,
-      'content': instance.content,
-      'metadata': instance.metadata,
       'is_me': instance.isMe,
       'status': _$MessageStatusEnumMap[instance.status]!,
-      'created_at': instance.createdAt.toIso8601String(),
     };
 
 const _$MessageTypeEnumMap = {
-  MessageType.text: 'Text',
-  MessageType.image: 'Image',
-  MessageType.offer: 'Offer',
-  MessageType.productLink: 'ProductLink',
-  MessageType.system: 'System',
+  MessageType.user: 'user',
+  MessageType.system: 'system',
 };
 
 const _$MessageStatusEnumMap = {
@@ -103,37 +126,89 @@ const _$MessageStatusEnumMap = {
 _ChatConversation _$ChatConversationFromJson(Map<String, dynamic> json) =>
     _ChatConversation(
       id: json['id'] as String,
-      participantId: json['participant_id'] as String,
-      participantName: json['participant_name'] as String,
-      participantAvatar: json['participant_avatar'] as String?,
-      participantRole: json['participant_role'] as String?,
-      isOnline: json['is_online'] as bool? ?? false,
-      lastMessage: json['last_message'] as String?,
-      lastMessageTime: json['last_message_time'] == null
+      createdAt: json['created_at'] as String,
+      counterparty: Counterparty.fromJson(
+        json['counterparty'] as Map<String, dynamic>,
+      ),
+      lastMessage: json['last_message'] == null
           ? null
-          : DateTime.parse(json['last_message_time'] as String),
-      unreadCount: (json['unread_count'] as num?)?.toInt() ?? 0,
+          : ChatMessage.fromJson(json['last_message'] as Map<String, dynamic>),
+      lastMessageAt: json['last_message_at'] as String,
+      readAt: json['read_at'] as String?,
+      counterpartyReadAt: json['counterparty_read_at'] as String?,
+      unread: (json['unread'] as num?)?.toInt() ?? 0,
       productId: json['product_id'] as String?,
       productTitle: json['product_title'] as String?,
       productImage: json['product_image'] as String?,
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
+      isOnline: json['isOnline'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ChatConversationToJson(_ChatConversation instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'participant_id': instance.participantId,
-      'participant_name': instance.participantName,
-      'participant_avatar': instance.participantAvatar,
-      'participant_role': instance.participantRole,
-      'is_online': instance.isOnline,
+      'created_at': instance.createdAt,
+      'counterparty': instance.counterparty,
       'last_message': instance.lastMessage,
-      'last_message_time': instance.lastMessageTime?.toIso8601String(),
-      'unread_count': instance.unreadCount,
+      'last_message_at': instance.lastMessageAt,
+      'read_at': instance.readAt,
+      'counterparty_read_at': instance.counterpartyReadAt,
+      'unread': instance.unread,
       'product_id': instance.productId,
       'product_title': instance.productTitle,
       'product_image': instance.productImage,
-      'updated_at': instance.updatedAt?.toIso8601String(),
+      'isOnline': instance.isOnline,
+    };
+
+_StartConversationRequest _$StartConversationRequestFromJson(
+  Map<String, dynamic> json,
+) => _StartConversationRequest(accountId: json['account_id'] as String);
+
+Map<String, dynamic> _$StartConversationRequestToJson(
+  _StartConversationRequest instance,
+) => <String, dynamic>{'account_id': instance.accountId};
+
+_SendMessageRequest _$SendMessageRequestFromJson(Map<String, dynamic> json) =>
+    _SendMessageRequest(
+      body: json['body'] as String?,
+      attachments: (json['attachments'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      card: json['card'] as Map<String, dynamic>?,
+      refs: json['refs'] as Map<String, dynamic>?,
+    );
+
+Map<String, dynamic> _$SendMessageRequestToJson(_SendMessageRequest instance) =>
+    <String, dynamic>{
+      'body': instance.body,
+      'attachments': instance.attachments,
+      'card': instance.card,
+      'refs': instance.refs,
+    };
+
+_MarkConversationReadRequest _$MarkConversationReadRequestFromJson(
+  Map<String, dynamic> json,
+) => _MarkConversationReadRequest(before: json['before'] as String);
+
+Map<String, dynamic> _$MarkConversationReadRequestToJson(
+  _MarkConversationReadRequest instance,
+) => <String, dynamic>{'before': instance.before};
+
+_UpdateMessageRequest _$UpdateMessageRequestFromJson(
+  Map<String, dynamic> json,
+) => _UpdateMessageRequest(body: json['body'] as String);
+
+Map<String, dynamic> _$UpdateMessageRequestToJson(
+  _UpdateMessageRequest instance,
+) => <String, dynamic>{'body': instance.body};
+
+_ChatUnreadCount _$ChatUnreadCountFromJson(Map<String, dynamic> json) =>
+    _ChatUnreadCount(
+      conversations: (json['conversations'] as num).toInt(),
+      unread: (json['unread'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$ChatUnreadCountToJson(_ChatUnreadCount instance) =>
+    <String, dynamic>{
+      'conversations': instance.conversations,
+      'unread': instance.unread,
     };

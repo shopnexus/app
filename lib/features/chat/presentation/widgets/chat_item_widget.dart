@@ -127,7 +127,7 @@ class ChatItemWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          conversation.lastMessage ?? 'Bắt đầu cuộc trò chuyện',
+                          conversation.lastMessageText ?? 'Bắt đầu cuộc trò chuyện',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: hasUnread
                                 ? theme.colorScheme.onSurface

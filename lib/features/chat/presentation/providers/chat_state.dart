@@ -21,7 +21,7 @@ abstract class ChatListState with _$ChatListState {
     final query = searchQuery.toLowerCase();
     return conversations.where((conv) {
       final name = conv.participantName.toLowerCase();
-      final lastMsg = (conv.lastMessage ?? '').toLowerCase();
+      final lastMsg = (conv.lastMessageText ?? '').toLowerCase();
       final product = (conv.productTitle ?? '').toLowerCase();
       return name.contains(query) ||
           lastMsg.contains(query) ||
