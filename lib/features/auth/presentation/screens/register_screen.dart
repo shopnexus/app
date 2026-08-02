@@ -57,7 +57,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ref
           .read(authProvider.notifier)
           .register(
-            username: _fullNameController.text.trim(),
+            name: _fullNameController.text.trim(),
             email: _emailController.text.trim(),
             password: _passwordController.text,
             country: _selectedCountry,

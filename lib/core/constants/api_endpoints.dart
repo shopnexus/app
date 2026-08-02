@@ -6,11 +6,17 @@ class ApiEndpoints {
       'wss://shopnexus.hopto.org/api/v1/chat'; // Placeholder cho WebSocket Chat
 
   // --- Auth Features ---
-  static const String login = 'account/auth/login/basic';
-  static const String register = 'account/auth/register/basic';
-  static const String refreshToken = 'account/auth/refresh';
-  static const String forgotPassword =
-      'account/auth/forgot-password'; // Placeholder
+  static const String login = 'login';
+  static const String loginOAuth = 'login/oauth';
+  static const String register = 'register';
+  static const String refreshToken = 'token/refresh';
+  static const String logout = 'logout';
+  static const String passwordChange = 'password';
+  static const String passwordResetRequest = 'password/reset-requests';
+  static const String passwordResetConfirm = 'password/resets';
+  static const String forgotPassword = 'password/reset-requests';
+  static const String emailVerificationRequest = 'email/verification-requests';
+  static const String emailVerificationConfirm = 'email/verifications';
 
   // --- Profile & User Account Features ---
   static const String me = 'me';

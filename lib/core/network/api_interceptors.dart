@@ -59,34 +59,38 @@ class AuthInterceptor extends Interceptor {
 
             if (response.statusCode == 200 || response.statusCode == 201) {
               final responseData = response.data;
-              final data = responseData['data'];
-              if (data != null) {
-                final newAccessToken = data['access_token'] as String;
-                final newRefreshToken = data['refresh_token'] as String;
+              final data = (responseData is Map<String, dynamic> && responseData.containsKey('data'))
+                  ? responseData['data']
+                  : responseData;
+              if (data != null && data is Map<String, dynamic>) {
+                final newAccessToken = data['access_token'] as String?;
+                final newRefreshToken = data['refresh_token'] as String?;
 
-                // Lưu lại token mới vào Hive
-                await hiveService.authBox.put('token', newAccessToken);
-                await hiveService.authBox.put('refresh_token', newRefreshToken);
+                if (newAccessToken != null && newRefreshToken != null) {
+                  // Lưu lại token mới vào Hive
+                  await hiveService.authBox.put('token', newAccessToken);
+                  await hiveService.authBox.put('refresh_token', newRefreshToken);
 
-                // Cập nhật lại state của AuthNotifier
-                _ref
-                    .read(authProvider.notifier)
-                    .updateToken(
-                      AuthResponse(
-                        accessToken: newAccessToken,
-                        refreshToken: newRefreshToken,
-                      ),
-                    );
+                  // Cập nhật lại state của AuthNotifier
+                  _ref
+                      .read(authProvider.notifier)
+                      .updateToken(
+                        AuthResponse(
+                          accessToken: newAccessToken,
+                          refreshToken: newRefreshToken,
+                        ),
+                      );
 
-                _isRefreshing = false;
+                  _isRefreshing = false;
 
-                // Thử gửi lại request gốc với token mới
-                final originalRequest = err.requestOptions;
-                originalRequest.headers['Authorization'] =
-                    'Bearer $newAccessToken';
+                  // Thử gửi lại request gốc với token mới
+                  final originalRequest = err.requestOptions;
+                  originalRequest.headers['Authorization'] =
+                      'Bearer $newAccessToken';
 
-                final retryResponse = await _dio.fetch(originalRequest);
-                return handler.resolve(retryResponse);
+                  final retryResponse = await _dio.fetch(originalRequest);
+                  return handler.resolve(retryResponse);
+                }
               }
             }
           } catch (refreshErr) {

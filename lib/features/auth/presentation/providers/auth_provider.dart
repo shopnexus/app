@@ -7,7 +7,6 @@ import '../../data/models/auth_model.dart';
 import '../../data/repositories/auth_repository.dart';
 
 part 'auth_provider.freezed.dart';
-
 part 'auth_provider.g.dart';
 
 @freezed
@@ -47,12 +46,12 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   /// Đăng nhập bằng email/username/phone và password
-  Future<void> login(String id, String password) async {
+  Future<void> login(String identifier, String password) async {
     state = const AuthState.loading();
     try {
       final repository = ref.read(authRepositoryProvider);
       final response = await repository.login(
-        LoginRequest(id: id, password: password),
+        LoginRequest(identifier: identifier, password: password),
       );
       state = AuthState.authenticated(authResponse: response);
     } catch (e) {
@@ -60,24 +59,24 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  /// Đăng ký tài khoản mới kèm quốc gia
-  Future<void> register({
-    String? username,
-    String? email,
-    String? phone,
-    required String password,
-    required String country,
+  /// Đăng nhập bằng OAuth (Google, Apple,...)
+  Future<void> loginOAuth({
+    required String provider,
+    required String credential,
+    String? country,
+    String? locale,
+    String? timezone,
   }) async {
     state = const AuthState.loading();
     try {
       final repository = ref.read(authRepositoryProvider);
-      final response = await repository.register(
-        RegisterRequest(
-          username: username,
-          email: email,
-          phone: phone,
-          password: password,
+      final response = await repository.loginOAuth(
+        OAuthLoginRequest(
+          provider: provider,
+          credential: credential,
           country: country,
+          locale: locale,
+          timezone: timezone,
         ),
       );
       state = AuthState.authenticated(authResponse: response);
@@ -86,12 +85,44 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  /// Yêu cầu khôi phục mật khẩu qua email
-  Future<void> forgotPassword(String email) async {
+  /// Đăng ký tài khoản mới
+  Future<void> register({
+    required String name,
+    required String country,
+    required String password,
+    String locale = 'vi',
+    String timezone = 'Asia/Ho_Chi_Minh',
+    String? username,
+    String? email,
+    String? phone,
+  }) async {
     state = const AuthState.loading();
     try {
       final repository = ref.read(authRepositoryProvider);
-      await repository.forgotPassword(ForgotPasswordRequest(email: email));
+      final response = await repository.register(
+        RegisterRequest(
+          name: name,
+          country: country,
+          password: password,
+          locale: locale,
+          timezone: timezone,
+          username: username,
+          email: email,
+          phone: phone,
+        ),
+      );
+      state = AuthState.authenticated(authResponse: response);
+    } catch (e) {
+      state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
+    }
+  }
+
+  /// Yêu cầu khôi phục mật khẩu qua email / identifier
+  Future<void> forgotPassword(String identifier) async {
+    state = const AuthState.loading();
+    try {
+      final repository = ref.read(authRepositoryProvider);
+      await repository.forgotPassword(PasswordResetRequest(identifier: identifier));
       state = const AuthState.unauthenticated();
     } catch (e) {
       state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
@@ -99,11 +130,11 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   /// Đăng xuất và dọn sạch session trong local storage
-  Future<void> logout() async {
+  Future<void> logout({String? deviceId}) async {
     state = const AuthState.loading();
     try {
       final repository = ref.read(authRepositoryProvider);
-      await repository.logout();
+      await repository.logout(deviceId: deviceId);
       ref.invalidate(profileProvider);
       state = const AuthState.unauthenticated();
     } catch (e) {
