@@ -13,6 +13,2800 @@ part of 'checkout_model.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
+mixin _$CheckoutLine {
+
+@JsonKey(name: 'variant_id') String get variantId; int get quantity;
+/// Create a copy of CheckoutLine
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CheckoutLineCopyWith<CheckoutLine> get copyWith => _$CheckoutLineCopyWithImpl<CheckoutLine>(this as CheckoutLine, _$identity);
+
+  /// Serializes this CheckoutLine to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutLine&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.quantity, quantity) || other.quantity == quantity));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,variantId,quantity);
+
+@override
+String toString() {
+  return 'CheckoutLine(variantId: $variantId, quantity: $quantity)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CheckoutLineCopyWith<$Res>  {
+  factory $CheckoutLineCopyWith(CheckoutLine value, $Res Function(CheckoutLine) _then) = _$CheckoutLineCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'variant_id') String variantId, int quantity
+});
+
+
+
+
+}
+/// @nodoc
+class _$CheckoutLineCopyWithImpl<$Res>
+    implements $CheckoutLineCopyWith<$Res> {
+  _$CheckoutLineCopyWithImpl(this._self, this._then);
+
+  final CheckoutLine _self;
+  final $Res Function(CheckoutLine) _then;
+
+/// Create a copy of CheckoutLine
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? variantId = null,Object? quantity = null,}) {
+  return _then(_self.copyWith(
+variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CheckoutLine].
+extension CheckoutLinePatterns on CheckoutLine {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CheckoutLine value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CheckoutLine() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CheckoutLine value)  $default,){
+final _that = this;
+switch (_that) {
+case _CheckoutLine():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CheckoutLine value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CheckoutLine() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'variant_id')  String variantId,  int quantity)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CheckoutLine() when $default != null:
+return $default(_that.variantId,_that.quantity);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'variant_id')  String variantId,  int quantity)  $default,) {final _that = this;
+switch (_that) {
+case _CheckoutLine():
+return $default(_that.variantId,_that.quantity);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'variant_id')  String variantId,  int quantity)?  $default,) {final _that = this;
+switch (_that) {
+case _CheckoutLine() when $default != null:
+return $default(_that.variantId,_that.quantity);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CheckoutLine implements CheckoutLine {
+  const _CheckoutLine({@JsonKey(name: 'variant_id') required this.variantId, required this.quantity});
+  factory _CheckoutLine.fromJson(Map<String, dynamic> json) => _$CheckoutLineFromJson(json);
+
+@override@JsonKey(name: 'variant_id') final  String variantId;
+@override final  int quantity;
+
+/// Create a copy of CheckoutLine
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CheckoutLineCopyWith<_CheckoutLine> get copyWith => __$CheckoutLineCopyWithImpl<_CheckoutLine>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CheckoutLineToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutLine&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.quantity, quantity) || other.quantity == quantity));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,variantId,quantity);
+
+@override
+String toString() {
+  return 'CheckoutLine(variantId: $variantId, quantity: $quantity)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CheckoutLineCopyWith<$Res> implements $CheckoutLineCopyWith<$Res> {
+  factory _$CheckoutLineCopyWith(_CheckoutLine value, $Res Function(_CheckoutLine) _then) = __$CheckoutLineCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'variant_id') String variantId, int quantity
+});
+
+
+
+
+}
+/// @nodoc
+class __$CheckoutLineCopyWithImpl<$Res>
+    implements _$CheckoutLineCopyWith<$Res> {
+  __$CheckoutLineCopyWithImpl(this._self, this._then);
+
+  final _CheckoutLine _self;
+  final $Res Function(_CheckoutLine) _then;
+
+/// Create a copy of CheckoutLine
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? variantId = null,Object? quantity = null,}) {
+  return _then(_CheckoutLine(
+variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$CheckoutRequest {
+
+@JsonKey(name: 'contact_id') String get contactId; String get currency; List<CheckoutLine> get lines; String? get note;@JsonKey(name: 'transport_option') String get transportOption;
+/// Create a copy of CheckoutRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CheckoutRequestCopyWith<CheckoutRequest> get copyWith => _$CheckoutRequestCopyWithImpl<CheckoutRequest>(this as CheckoutRequest, _$identity);
+
+  /// Serializes this CheckoutRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutRequest&&(identical(other.contactId, contactId) || other.contactId == contactId)&&(identical(other.currency, currency) || other.currency == currency)&&const DeepCollectionEquality().equals(other.lines, lines)&&(identical(other.note, note) || other.note == note)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,contactId,currency,const DeepCollectionEquality().hash(lines),note,transportOption);
+
+@override
+String toString() {
+  return 'CheckoutRequest(contactId: $contactId, currency: $currency, lines: $lines, note: $note, transportOption: $transportOption)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CheckoutRequestCopyWith<$Res>  {
+  factory $CheckoutRequestCopyWith(CheckoutRequest value, $Res Function(CheckoutRequest) _then) = _$CheckoutRequestCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'contact_id') String contactId, String currency, List<CheckoutLine> lines, String? note,@JsonKey(name: 'transport_option') String transportOption
+});
+
+
+
+
+}
+/// @nodoc
+class _$CheckoutRequestCopyWithImpl<$Res>
+    implements $CheckoutRequestCopyWith<$Res> {
+  _$CheckoutRequestCopyWithImpl(this._self, this._then);
+
+  final CheckoutRequest _self;
+  final $Res Function(CheckoutRequest) _then;
+
+/// Create a copy of CheckoutRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? contactId = null,Object? currency = null,Object? lines = null,Object? note = freezed,Object? transportOption = null,}) {
+  return _then(_self.copyWith(
+contactId: null == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
+as String,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,lines: null == lines ? _self.lines : lines // ignore: cast_nullable_to_non_nullable
+as List<CheckoutLine>,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,transportOption: null == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CheckoutRequest].
+extension CheckoutRequestPatterns on CheckoutRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CheckoutRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CheckoutRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CheckoutRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _CheckoutRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CheckoutRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CheckoutRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'contact_id')  String contactId,  String currency,  List<CheckoutLine> lines,  String? note, @JsonKey(name: 'transport_option')  String transportOption)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CheckoutRequest() when $default != null:
+return $default(_that.contactId,_that.currency,_that.lines,_that.note,_that.transportOption);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'contact_id')  String contactId,  String currency,  List<CheckoutLine> lines,  String? note, @JsonKey(name: 'transport_option')  String transportOption)  $default,) {final _that = this;
+switch (_that) {
+case _CheckoutRequest():
+return $default(_that.contactId,_that.currency,_that.lines,_that.note,_that.transportOption);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'contact_id')  String contactId,  String currency,  List<CheckoutLine> lines,  String? note, @JsonKey(name: 'transport_option')  String transportOption)?  $default,) {final _that = this;
+switch (_that) {
+case _CheckoutRequest() when $default != null:
+return $default(_that.contactId,_that.currency,_that.lines,_that.note,_that.transportOption);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CheckoutRequest implements CheckoutRequest {
+  const _CheckoutRequest({@JsonKey(name: 'contact_id') required this.contactId, required this.currency, required final  List<CheckoutLine> lines, this.note, @JsonKey(name: 'transport_option') required this.transportOption}): _lines = lines;
+  factory _CheckoutRequest.fromJson(Map<String, dynamic> json) => _$CheckoutRequestFromJson(json);
+
+@override@JsonKey(name: 'contact_id') final  String contactId;
+@override final  String currency;
+ final  List<CheckoutLine> _lines;
+@override List<CheckoutLine> get lines {
+  if (_lines is EqualUnmodifiableListView) return _lines;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_lines);
+}
+
+@override final  String? note;
+@override@JsonKey(name: 'transport_option') final  String transportOption;
+
+/// Create a copy of CheckoutRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CheckoutRequestCopyWith<_CheckoutRequest> get copyWith => __$CheckoutRequestCopyWithImpl<_CheckoutRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CheckoutRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutRequest&&(identical(other.contactId, contactId) || other.contactId == contactId)&&(identical(other.currency, currency) || other.currency == currency)&&const DeepCollectionEquality().equals(other._lines, _lines)&&(identical(other.note, note) || other.note == note)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,contactId,currency,const DeepCollectionEquality().hash(_lines),note,transportOption);
+
+@override
+String toString() {
+  return 'CheckoutRequest(contactId: $contactId, currency: $currency, lines: $lines, note: $note, transportOption: $transportOption)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CheckoutRequestCopyWith<$Res> implements $CheckoutRequestCopyWith<$Res> {
+  factory _$CheckoutRequestCopyWith(_CheckoutRequest value, $Res Function(_CheckoutRequest) _then) = __$CheckoutRequestCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'contact_id') String contactId, String currency, List<CheckoutLine> lines, String? note,@JsonKey(name: 'transport_option') String transportOption
+});
+
+
+
+
+}
+/// @nodoc
+class __$CheckoutRequestCopyWithImpl<$Res>
+    implements _$CheckoutRequestCopyWith<$Res> {
+  __$CheckoutRequestCopyWithImpl(this._self, this._then);
+
+  final _CheckoutRequest _self;
+  final $Res Function(_CheckoutRequest) _then;
+
+/// Create a copy of CheckoutRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? contactId = null,Object? currency = null,Object? lines = null,Object? note = freezed,Object? transportOption = null,}) {
+  return _then(_CheckoutRequest(
+contactId: null == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
+as String,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,lines: null == lines ? _self._lines : lines // ignore: cast_nullable_to_non_nullable
+as List<CheckoutLine>,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,transportOption: null == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$CheckoutOfferRequest {
+
+@JsonKey(name: 'contact_id') String get contactId; String? get note;@JsonKey(name: 'transport_option') String get transportOption;
+/// Create a copy of CheckoutOfferRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CheckoutOfferRequestCopyWith<CheckoutOfferRequest> get copyWith => _$CheckoutOfferRequestCopyWithImpl<CheckoutOfferRequest>(this as CheckoutOfferRequest, _$identity);
+
+  /// Serializes this CheckoutOfferRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutOfferRequest&&(identical(other.contactId, contactId) || other.contactId == contactId)&&(identical(other.note, note) || other.note == note)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,contactId,note,transportOption);
+
+@override
+String toString() {
+  return 'CheckoutOfferRequest(contactId: $contactId, note: $note, transportOption: $transportOption)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CheckoutOfferRequestCopyWith<$Res>  {
+  factory $CheckoutOfferRequestCopyWith(CheckoutOfferRequest value, $Res Function(CheckoutOfferRequest) _then) = _$CheckoutOfferRequestCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'contact_id') String contactId, String? note,@JsonKey(name: 'transport_option') String transportOption
+});
+
+
+
+
+}
+/// @nodoc
+class _$CheckoutOfferRequestCopyWithImpl<$Res>
+    implements $CheckoutOfferRequestCopyWith<$Res> {
+  _$CheckoutOfferRequestCopyWithImpl(this._self, this._then);
+
+  final CheckoutOfferRequest _self;
+  final $Res Function(CheckoutOfferRequest) _then;
+
+/// Create a copy of CheckoutOfferRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? contactId = null,Object? note = freezed,Object? transportOption = null,}) {
+  return _then(_self.copyWith(
+contactId: null == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
+as String,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,transportOption: null == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CheckoutOfferRequest].
+extension CheckoutOfferRequestPatterns on CheckoutOfferRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CheckoutOfferRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CheckoutOfferRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CheckoutOfferRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _CheckoutOfferRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CheckoutOfferRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CheckoutOfferRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'contact_id')  String contactId,  String? note, @JsonKey(name: 'transport_option')  String transportOption)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CheckoutOfferRequest() when $default != null:
+return $default(_that.contactId,_that.note,_that.transportOption);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'contact_id')  String contactId,  String? note, @JsonKey(name: 'transport_option')  String transportOption)  $default,) {final _that = this;
+switch (_that) {
+case _CheckoutOfferRequest():
+return $default(_that.contactId,_that.note,_that.transportOption);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'contact_id')  String contactId,  String? note, @JsonKey(name: 'transport_option')  String transportOption)?  $default,) {final _that = this;
+switch (_that) {
+case _CheckoutOfferRequest() when $default != null:
+return $default(_that.contactId,_that.note,_that.transportOption);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CheckoutOfferRequest implements CheckoutOfferRequest {
+  const _CheckoutOfferRequest({@JsonKey(name: 'contact_id') required this.contactId, this.note, @JsonKey(name: 'transport_option') required this.transportOption});
+  factory _CheckoutOfferRequest.fromJson(Map<String, dynamic> json) => _$CheckoutOfferRequestFromJson(json);
+
+@override@JsonKey(name: 'contact_id') final  String contactId;
+@override final  String? note;
+@override@JsonKey(name: 'transport_option') final  String transportOption;
+
+/// Create a copy of CheckoutOfferRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CheckoutOfferRequestCopyWith<_CheckoutOfferRequest> get copyWith => __$CheckoutOfferRequestCopyWithImpl<_CheckoutOfferRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CheckoutOfferRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutOfferRequest&&(identical(other.contactId, contactId) || other.contactId == contactId)&&(identical(other.note, note) || other.note == note)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,contactId,note,transportOption);
+
+@override
+String toString() {
+  return 'CheckoutOfferRequest(contactId: $contactId, note: $note, transportOption: $transportOption)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CheckoutOfferRequestCopyWith<$Res> implements $CheckoutOfferRequestCopyWith<$Res> {
+  factory _$CheckoutOfferRequestCopyWith(_CheckoutOfferRequest value, $Res Function(_CheckoutOfferRequest) _then) = __$CheckoutOfferRequestCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'contact_id') String contactId, String? note,@JsonKey(name: 'transport_option') String transportOption
+});
+
+
+
+
+}
+/// @nodoc
+class __$CheckoutOfferRequestCopyWithImpl<$Res>
+    implements _$CheckoutOfferRequestCopyWith<$Res> {
+  __$CheckoutOfferRequestCopyWithImpl(this._self, this._then);
+
+  final _CheckoutOfferRequest _self;
+  final $Res Function(_CheckoutOfferRequest) _then;
+
+/// Create a copy of CheckoutOfferRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? contactId = null,Object? note = freezed,Object? transportOption = null,}) {
+  return _then(_CheckoutOfferRequest(
+contactId: null == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
+as String,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,transportOption: null == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$OrderItem {
+
+ String get id;@JsonKey(name: 'order_id') String? get orderId;@JsonKey(name: 'seller_id') String get sellerId;@JsonKey(name: 'listing_id') String? get listingId;@JsonKey(name: 'variant_id') String get variantId; int get quantity;@JsonKey(name: 'total_amount') int get totalAmount; String get currency;@JsonKey(name: 'transport_option') String get transportOption;@JsonKey(name: 'payment_session_id') String? get paymentSessionId; String? get note;@JsonKey(name: 'cancelled_at') String? get cancelledAt;@JsonKey(name: 'created_at') String get createdAt;
+/// Create a copy of OrderItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OrderItemCopyWith<OrderItem> get copyWith => _$OrderItemCopyWithImpl<OrderItem>(this as OrderItem, _$identity);
+
+  /// Serializes this OrderItem to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrderItem&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption)&&(identical(other.paymentSessionId, paymentSessionId) || other.paymentSessionId == paymentSessionId)&&(identical(other.note, note) || other.note == note)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,orderId,sellerId,listingId,variantId,quantity,totalAmount,currency,transportOption,paymentSessionId,note,cancelledAt,createdAt);
+
+@override
+String toString() {
+  return 'OrderItem(id: $id, orderId: $orderId, sellerId: $sellerId, listingId: $listingId, variantId: $variantId, quantity: $quantity, totalAmount: $totalAmount, currency: $currency, transportOption: $transportOption, paymentSessionId: $paymentSessionId, note: $note, cancelledAt: $cancelledAt, createdAt: $createdAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $OrderItemCopyWith<$Res>  {
+  factory $OrderItemCopyWith(OrderItem value, $Res Function(OrderItem) _then) = _$OrderItemCopyWithImpl;
+@useResult
+$Res call({
+ String id,@JsonKey(name: 'order_id') String? orderId,@JsonKey(name: 'seller_id') String sellerId,@JsonKey(name: 'listing_id') String? listingId,@JsonKey(name: 'variant_id') String variantId, int quantity,@JsonKey(name: 'total_amount') int totalAmount, String currency,@JsonKey(name: 'transport_option') String transportOption,@JsonKey(name: 'payment_session_id') String? paymentSessionId, String? note,@JsonKey(name: 'cancelled_at') String? cancelledAt,@JsonKey(name: 'created_at') String createdAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$OrderItemCopyWithImpl<$Res>
+    implements $OrderItemCopyWith<$Res> {
+  _$OrderItemCopyWithImpl(this._self, this._then);
+
+  final OrderItem _self;
+  final $Res Function(OrderItem) _then;
+
+/// Create a copy of OrderItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? orderId = freezed,Object? sellerId = null,Object? listingId = freezed,Object? variantId = null,Object? quantity = null,Object? totalAmount = null,Object? currency = null,Object? transportOption = null,Object? paymentSessionId = freezed,Object? note = freezed,Object? cancelledAt = freezed,Object? createdAt = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,orderId: freezed == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
+as String?,sellerId: null == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
+as String,listingId: freezed == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
+as String?,variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
+as int,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,transportOption: null == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
+as String,paymentSessionId: freezed == paymentSessionId ? _self.paymentSessionId : paymentSessionId // ignore: cast_nullable_to_non_nullable
+as String?,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,cancelledAt: freezed == cancelledAt ? _self.cancelledAt : cancelledAt // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [OrderItem].
+extension OrderItemPatterns on OrderItem {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _OrderItem value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _OrderItem() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _OrderItem value)  $default,){
+final _that = this;
+switch (_that) {
+case _OrderItem():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _OrderItem value)?  $default,){
+final _that = this;
+switch (_that) {
+case _OrderItem() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'seller_id')  String sellerId, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'total_amount')  int totalAmount,  String currency, @JsonKey(name: 'transport_option')  String transportOption, @JsonKey(name: 'payment_session_id')  String? paymentSessionId,  String? note, @JsonKey(name: 'cancelled_at')  String? cancelledAt, @JsonKey(name: 'created_at')  String createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _OrderItem() when $default != null:
+return $default(_that.id,_that.orderId,_that.sellerId,_that.listingId,_that.variantId,_that.quantity,_that.totalAmount,_that.currency,_that.transportOption,_that.paymentSessionId,_that.note,_that.cancelledAt,_that.createdAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'seller_id')  String sellerId, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'total_amount')  int totalAmount,  String currency, @JsonKey(name: 'transport_option')  String transportOption, @JsonKey(name: 'payment_session_id')  String? paymentSessionId,  String? note, @JsonKey(name: 'cancelled_at')  String? cancelledAt, @JsonKey(name: 'created_at')  String createdAt)  $default,) {final _that = this;
+switch (_that) {
+case _OrderItem():
+return $default(_that.id,_that.orderId,_that.sellerId,_that.listingId,_that.variantId,_that.quantity,_that.totalAmount,_that.currency,_that.transportOption,_that.paymentSessionId,_that.note,_that.cancelledAt,_that.createdAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'seller_id')  String sellerId, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'total_amount')  int totalAmount,  String currency, @JsonKey(name: 'transport_option')  String transportOption, @JsonKey(name: 'payment_session_id')  String? paymentSessionId,  String? note, @JsonKey(name: 'cancelled_at')  String? cancelledAt, @JsonKey(name: 'created_at')  String createdAt)?  $default,) {final _that = this;
+switch (_that) {
+case _OrderItem() when $default != null:
+return $default(_that.id,_that.orderId,_that.sellerId,_that.listingId,_that.variantId,_that.quantity,_that.totalAmount,_that.currency,_that.transportOption,_that.paymentSessionId,_that.note,_that.cancelledAt,_that.createdAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _OrderItem implements OrderItem {
+  const _OrderItem({required this.id, @JsonKey(name: 'order_id') this.orderId, @JsonKey(name: 'seller_id') required this.sellerId, @JsonKey(name: 'listing_id') this.listingId, @JsonKey(name: 'variant_id') required this.variantId, required this.quantity, @JsonKey(name: 'total_amount') required this.totalAmount, required this.currency, @JsonKey(name: 'transport_option') required this.transportOption, @JsonKey(name: 'payment_session_id') this.paymentSessionId, this.note, @JsonKey(name: 'cancelled_at') this.cancelledAt, @JsonKey(name: 'created_at') required this.createdAt});
+  factory _OrderItem.fromJson(Map<String, dynamic> json) => _$OrderItemFromJson(json);
+
+@override final  String id;
+@override@JsonKey(name: 'order_id') final  String? orderId;
+@override@JsonKey(name: 'seller_id') final  String sellerId;
+@override@JsonKey(name: 'listing_id') final  String? listingId;
+@override@JsonKey(name: 'variant_id') final  String variantId;
+@override final  int quantity;
+@override@JsonKey(name: 'total_amount') final  int totalAmount;
+@override final  String currency;
+@override@JsonKey(name: 'transport_option') final  String transportOption;
+@override@JsonKey(name: 'payment_session_id') final  String? paymentSessionId;
+@override final  String? note;
+@override@JsonKey(name: 'cancelled_at') final  String? cancelledAt;
+@override@JsonKey(name: 'created_at') final  String createdAt;
+
+/// Create a copy of OrderItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OrderItemCopyWith<_OrderItem> get copyWith => __$OrderItemCopyWithImpl<_OrderItem>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$OrderItemToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrderItem&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption)&&(identical(other.paymentSessionId, paymentSessionId) || other.paymentSessionId == paymentSessionId)&&(identical(other.note, note) || other.note == note)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,orderId,sellerId,listingId,variantId,quantity,totalAmount,currency,transportOption,paymentSessionId,note,cancelledAt,createdAt);
+
+@override
+String toString() {
+  return 'OrderItem(id: $id, orderId: $orderId, sellerId: $sellerId, listingId: $listingId, variantId: $variantId, quantity: $quantity, totalAmount: $totalAmount, currency: $currency, transportOption: $transportOption, paymentSessionId: $paymentSessionId, note: $note, cancelledAt: $cancelledAt, createdAt: $createdAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$OrderItemCopyWith<$Res> implements $OrderItemCopyWith<$Res> {
+  factory _$OrderItemCopyWith(_OrderItem value, $Res Function(_OrderItem) _then) = __$OrderItemCopyWithImpl;
+@override @useResult
+$Res call({
+ String id,@JsonKey(name: 'order_id') String? orderId,@JsonKey(name: 'seller_id') String sellerId,@JsonKey(name: 'listing_id') String? listingId,@JsonKey(name: 'variant_id') String variantId, int quantity,@JsonKey(name: 'total_amount') int totalAmount, String currency,@JsonKey(name: 'transport_option') String transportOption,@JsonKey(name: 'payment_session_id') String? paymentSessionId, String? note,@JsonKey(name: 'cancelled_at') String? cancelledAt,@JsonKey(name: 'created_at') String createdAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$OrderItemCopyWithImpl<$Res>
+    implements _$OrderItemCopyWith<$Res> {
+  __$OrderItemCopyWithImpl(this._self, this._then);
+
+  final _OrderItem _self;
+  final $Res Function(_OrderItem) _then;
+
+/// Create a copy of OrderItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? orderId = freezed,Object? sellerId = null,Object? listingId = freezed,Object? variantId = null,Object? quantity = null,Object? totalAmount = null,Object? currency = null,Object? transportOption = null,Object? paymentSessionId = freezed,Object? note = freezed,Object? cancelledAt = freezed,Object? createdAt = null,}) {
+  return _then(_OrderItem(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,orderId: freezed == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
+as String?,sellerId: null == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
+as String,listingId: freezed == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
+as String?,variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
+as int,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,transportOption: null == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
+as String,paymentSessionId: freezed == paymentSessionId ? _self.paymentSessionId : paymentSessionId // ignore: cast_nullable_to_non_nullable
+as String?,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,cancelledAt: freezed == cancelledAt ? _self.cancelledAt : cancelledAt // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$CheckoutResult {
+
+ String get currency;@JsonKey(name: 'goods_total') int get goodsTotal; List<OrderItem> get items;@JsonKey(name: 'payment_session_id') String get paymentSessionId;@JsonKey(name: 'shipping_fee') int get shippingFee; int get total;
+/// Create a copy of CheckoutResult
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CheckoutResultCopyWith<CheckoutResult> get copyWith => _$CheckoutResultCopyWithImpl<CheckoutResult>(this as CheckoutResult, _$identity);
+
+  /// Serializes this CheckoutResult to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutResult&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.goodsTotal, goodsTotal) || other.goodsTotal == goodsTotal)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.paymentSessionId, paymentSessionId) || other.paymentSessionId == paymentSessionId)&&(identical(other.shippingFee, shippingFee) || other.shippingFee == shippingFee)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,currency,goodsTotal,const DeepCollectionEquality().hash(items),paymentSessionId,shippingFee,total);
+
+@override
+String toString() {
+  return 'CheckoutResult(currency: $currency, goodsTotal: $goodsTotal, items: $items, paymentSessionId: $paymentSessionId, shippingFee: $shippingFee, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CheckoutResultCopyWith<$Res>  {
+  factory $CheckoutResultCopyWith(CheckoutResult value, $Res Function(CheckoutResult) _then) = _$CheckoutResultCopyWithImpl;
+@useResult
+$Res call({
+ String currency,@JsonKey(name: 'goods_total') int goodsTotal, List<OrderItem> items,@JsonKey(name: 'payment_session_id') String paymentSessionId,@JsonKey(name: 'shipping_fee') int shippingFee, int total
+});
+
+
+
+
+}
+/// @nodoc
+class _$CheckoutResultCopyWithImpl<$Res>
+    implements $CheckoutResultCopyWith<$Res> {
+  _$CheckoutResultCopyWithImpl(this._self, this._then);
+
+  final CheckoutResult _self;
+  final $Res Function(CheckoutResult) _then;
+
+/// Create a copy of CheckoutResult
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? currency = null,Object? goodsTotal = null,Object? items = null,Object? paymentSessionId = null,Object? shippingFee = null,Object? total = null,}) {
+  return _then(_self.copyWith(
+currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,goodsTotal: null == goodsTotal ? _self.goodsTotal : goodsTotal // ignore: cast_nullable_to_non_nullable
+as int,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
+as List<OrderItem>,paymentSessionId: null == paymentSessionId ? _self.paymentSessionId : paymentSessionId // ignore: cast_nullable_to_non_nullable
+as String,shippingFee: null == shippingFee ? _self.shippingFee : shippingFee // ignore: cast_nullable_to_non_nullable
+as int,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CheckoutResult].
+extension CheckoutResultPatterns on CheckoutResult {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CheckoutResult value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CheckoutResult() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CheckoutResult value)  $default,){
+final _that = this;
+switch (_that) {
+case _CheckoutResult():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CheckoutResult value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CheckoutResult() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String currency, @JsonKey(name: 'goods_total')  int goodsTotal,  List<OrderItem> items, @JsonKey(name: 'payment_session_id')  String paymentSessionId, @JsonKey(name: 'shipping_fee')  int shippingFee,  int total)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CheckoutResult() when $default != null:
+return $default(_that.currency,_that.goodsTotal,_that.items,_that.paymentSessionId,_that.shippingFee,_that.total);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String currency, @JsonKey(name: 'goods_total')  int goodsTotal,  List<OrderItem> items, @JsonKey(name: 'payment_session_id')  String paymentSessionId, @JsonKey(name: 'shipping_fee')  int shippingFee,  int total)  $default,) {final _that = this;
+switch (_that) {
+case _CheckoutResult():
+return $default(_that.currency,_that.goodsTotal,_that.items,_that.paymentSessionId,_that.shippingFee,_that.total);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String currency, @JsonKey(name: 'goods_total')  int goodsTotal,  List<OrderItem> items, @JsonKey(name: 'payment_session_id')  String paymentSessionId, @JsonKey(name: 'shipping_fee')  int shippingFee,  int total)?  $default,) {final _that = this;
+switch (_that) {
+case _CheckoutResult() when $default != null:
+return $default(_that.currency,_that.goodsTotal,_that.items,_that.paymentSessionId,_that.shippingFee,_that.total);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CheckoutResult implements CheckoutResult {
+  const _CheckoutResult({required this.currency, @JsonKey(name: 'goods_total') required this.goodsTotal, required final  List<OrderItem> items, @JsonKey(name: 'payment_session_id') required this.paymentSessionId, @JsonKey(name: 'shipping_fee') required this.shippingFee, required this.total}): _items = items;
+  factory _CheckoutResult.fromJson(Map<String, dynamic> json) => _$CheckoutResultFromJson(json);
+
+@override final  String currency;
+@override@JsonKey(name: 'goods_total') final  int goodsTotal;
+ final  List<OrderItem> _items;
+@override List<OrderItem> get items {
+  if (_items is EqualUnmodifiableListView) return _items;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_items);
+}
+
+@override@JsonKey(name: 'payment_session_id') final  String paymentSessionId;
+@override@JsonKey(name: 'shipping_fee') final  int shippingFee;
+@override final  int total;
+
+/// Create a copy of CheckoutResult
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CheckoutResultCopyWith<_CheckoutResult> get copyWith => __$CheckoutResultCopyWithImpl<_CheckoutResult>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CheckoutResultToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutResult&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.goodsTotal, goodsTotal) || other.goodsTotal == goodsTotal)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.paymentSessionId, paymentSessionId) || other.paymentSessionId == paymentSessionId)&&(identical(other.shippingFee, shippingFee) || other.shippingFee == shippingFee)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,currency,goodsTotal,const DeepCollectionEquality().hash(_items),paymentSessionId,shippingFee,total);
+
+@override
+String toString() {
+  return 'CheckoutResult(currency: $currency, goodsTotal: $goodsTotal, items: $items, paymentSessionId: $paymentSessionId, shippingFee: $shippingFee, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CheckoutResultCopyWith<$Res> implements $CheckoutResultCopyWith<$Res> {
+  factory _$CheckoutResultCopyWith(_CheckoutResult value, $Res Function(_CheckoutResult) _then) = __$CheckoutResultCopyWithImpl;
+@override @useResult
+$Res call({
+ String currency,@JsonKey(name: 'goods_total') int goodsTotal, List<OrderItem> items,@JsonKey(name: 'payment_session_id') String paymentSessionId,@JsonKey(name: 'shipping_fee') int shippingFee, int total
+});
+
+
+
+
+}
+/// @nodoc
+class __$CheckoutResultCopyWithImpl<$Res>
+    implements _$CheckoutResultCopyWith<$Res> {
+  __$CheckoutResultCopyWithImpl(this._self, this._then);
+
+  final _CheckoutResult _self;
+  final $Res Function(_CheckoutResult) _then;
+
+/// Create a copy of CheckoutResult
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? currency = null,Object? goodsTotal = null,Object? items = null,Object? paymentSessionId = null,Object? shippingFee = null,Object? total = null,}) {
+  return _then(_CheckoutResult(
+currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,goodsTotal: null == goodsTotal ? _self.goodsTotal : goodsTotal // ignore: cast_nullable_to_non_nullable
+as int,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
+as List<OrderItem>,paymentSessionId: null == paymentSessionId ? _self.paymentSessionId : paymentSessionId // ignore: cast_nullable_to_non_nullable
+as String,shippingFee: null == shippingFee ? _self.shippingFee : shippingFee // ignore: cast_nullable_to_non_nullable
+as int,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$CreateDraftRequest {
+
+@JsonKey(name: 'listing_id') String get listingId;
+/// Create a copy of CreateDraftRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CreateDraftRequestCopyWith<CreateDraftRequest> get copyWith => _$CreateDraftRequestCopyWithImpl<CreateDraftRequest>(this as CreateDraftRequest, _$identity);
+
+  /// Serializes this CreateDraftRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateDraftRequest&&(identical(other.listingId, listingId) || other.listingId == listingId));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,listingId);
+
+@override
+String toString() {
+  return 'CreateDraftRequest(listingId: $listingId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CreateDraftRequestCopyWith<$Res>  {
+  factory $CreateDraftRequestCopyWith(CreateDraftRequest value, $Res Function(CreateDraftRequest) _then) = _$CreateDraftRequestCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'listing_id') String listingId
+});
+
+
+
+
+}
+/// @nodoc
+class _$CreateDraftRequestCopyWithImpl<$Res>
+    implements $CreateDraftRequestCopyWith<$Res> {
+  _$CreateDraftRequestCopyWithImpl(this._self, this._then);
+
+  final CreateDraftRequest _self;
+  final $Res Function(CreateDraftRequest) _then;
+
+/// Create a copy of CreateDraftRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? listingId = null,}) {
+  return _then(_self.copyWith(
+listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CreateDraftRequest].
+extension CreateDraftRequestPatterns on CreateDraftRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CreateDraftRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CreateDraftRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CreateDraftRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _CreateDraftRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CreateDraftRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CreateDraftRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'listing_id')  String listingId)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CreateDraftRequest() when $default != null:
+return $default(_that.listingId);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'listing_id')  String listingId)  $default,) {final _that = this;
+switch (_that) {
+case _CreateDraftRequest():
+return $default(_that.listingId);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'listing_id')  String listingId)?  $default,) {final _that = this;
+switch (_that) {
+case _CreateDraftRequest() when $default != null:
+return $default(_that.listingId);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CreateDraftRequest implements CreateDraftRequest {
+  const _CreateDraftRequest({@JsonKey(name: 'listing_id') required this.listingId});
+  factory _CreateDraftRequest.fromJson(Map<String, dynamic> json) => _$CreateDraftRequestFromJson(json);
+
+@override@JsonKey(name: 'listing_id') final  String listingId;
+
+/// Create a copy of CreateDraftRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CreateDraftRequestCopyWith<_CreateDraftRequest> get copyWith => __$CreateDraftRequestCopyWithImpl<_CreateDraftRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CreateDraftRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateDraftRequest&&(identical(other.listingId, listingId) || other.listingId == listingId));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,listingId);
+
+@override
+String toString() {
+  return 'CreateDraftRequest(listingId: $listingId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CreateDraftRequestCopyWith<$Res> implements $CreateDraftRequestCopyWith<$Res> {
+  factory _$CreateDraftRequestCopyWith(_CreateDraftRequest value, $Res Function(_CreateDraftRequest) _then) = __$CreateDraftRequestCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'listing_id') String listingId
+});
+
+
+
+
+}
+/// @nodoc
+class __$CreateDraftRequestCopyWithImpl<$Res>
+    implements _$CreateDraftRequestCopyWith<$Res> {
+  __$CreateDraftRequestCopyWithImpl(this._self, this._then);
+
+  final _CreateDraftRequest _self;
+  final $Res Function(_CreateDraftRequest) _then;
+
+/// Create a copy of CreateDraftRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? listingId = null,}) {
+  return _then(_CreateDraftRequest(
+listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$DraftOrderVariant {
+
+@JsonKey(name: 'variant_id') String get variantId; int get price; Map<String, dynamic>? get attributes;
+/// Create a copy of DraftOrderVariant
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DraftOrderVariantCopyWith<DraftOrderVariant> get copyWith => _$DraftOrderVariantCopyWithImpl<DraftOrderVariant>(this as DraftOrderVariant, _$identity);
+
+  /// Serializes this DraftOrderVariant to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DraftOrderVariant&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.price, price) || other.price == price)&&const DeepCollectionEquality().equals(other.attributes, attributes));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,variantId,price,const DeepCollectionEquality().hash(attributes));
+
+@override
+String toString() {
+  return 'DraftOrderVariant(variantId: $variantId, price: $price, attributes: $attributes)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DraftOrderVariantCopyWith<$Res>  {
+  factory $DraftOrderVariantCopyWith(DraftOrderVariant value, $Res Function(DraftOrderVariant) _then) = _$DraftOrderVariantCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'variant_id') String variantId, int price, Map<String, dynamic>? attributes
+});
+
+
+
+
+}
+/// @nodoc
+class _$DraftOrderVariantCopyWithImpl<$Res>
+    implements $DraftOrderVariantCopyWith<$Res> {
+  _$DraftOrderVariantCopyWithImpl(this._self, this._then);
+
+  final DraftOrderVariant _self;
+  final $Res Function(DraftOrderVariant) _then;
+
+/// Create a copy of DraftOrderVariant
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? variantId = null,Object? price = null,Object? attributes = freezed,}) {
+  return _then(_self.copyWith(
+variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as int,attributes: freezed == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DraftOrderVariant].
+extension DraftOrderVariantPatterns on DraftOrderVariant {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DraftOrderVariant value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DraftOrderVariant() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DraftOrderVariant value)  $default,){
+final _that = this;
+switch (_that) {
+case _DraftOrderVariant():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DraftOrderVariant value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DraftOrderVariant() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'variant_id')  String variantId,  int price,  Map<String, dynamic>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DraftOrderVariant() when $default != null:
+return $default(_that.variantId,_that.price,_that.attributes);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'variant_id')  String variantId,  int price,  Map<String, dynamic>? attributes)  $default,) {final _that = this;
+switch (_that) {
+case _DraftOrderVariant():
+return $default(_that.variantId,_that.price,_that.attributes);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'variant_id')  String variantId,  int price,  Map<String, dynamic>? attributes)?  $default,) {final _that = this;
+switch (_that) {
+case _DraftOrderVariant() when $default != null:
+return $default(_that.variantId,_that.price,_that.attributes);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _DraftOrderVariant implements DraftOrderVariant {
+  const _DraftOrderVariant({@JsonKey(name: 'variant_id') required this.variantId, required this.price, final  Map<String, dynamic>? attributes}): _attributes = attributes;
+  factory _DraftOrderVariant.fromJson(Map<String, dynamic> json) => _$DraftOrderVariantFromJson(json);
+
+@override@JsonKey(name: 'variant_id') final  String variantId;
+@override final  int price;
+ final  Map<String, dynamic>? _attributes;
+@override Map<String, dynamic>? get attributes {
+  final value = _attributes;
+  if (value == null) return null;
+  if (_attributes is EqualUnmodifiableMapView) return _attributes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
+
+/// Create a copy of DraftOrderVariant
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DraftOrderVariantCopyWith<_DraftOrderVariant> get copyWith => __$DraftOrderVariantCopyWithImpl<_DraftOrderVariant>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$DraftOrderVariantToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DraftOrderVariant&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.price, price) || other.price == price)&&const DeepCollectionEquality().equals(other._attributes, _attributes));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,variantId,price,const DeepCollectionEquality().hash(_attributes));
+
+@override
+String toString() {
+  return 'DraftOrderVariant(variantId: $variantId, price: $price, attributes: $attributes)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DraftOrderVariantCopyWith<$Res> implements $DraftOrderVariantCopyWith<$Res> {
+  factory _$DraftOrderVariantCopyWith(_DraftOrderVariant value, $Res Function(_DraftOrderVariant) _then) = __$DraftOrderVariantCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'variant_id') String variantId, int price, Map<String, dynamic>? attributes
+});
+
+
+
+
+}
+/// @nodoc
+class __$DraftOrderVariantCopyWithImpl<$Res>
+    implements _$DraftOrderVariantCopyWith<$Res> {
+  __$DraftOrderVariantCopyWithImpl(this._self, this._then);
+
+  final _DraftOrderVariant _self;
+  final $Res Function(_DraftOrderVariant) _then;
+
+/// Create a copy of DraftOrderVariant
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? variantId = null,Object? price = null,Object? attributes = freezed,}) {
+  return _then(_DraftOrderVariant(
+variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as int,attributes: freezed == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$DraftOrder {
+
+ String get id;@JsonKey(name: 'listing_id') String get listingId;@JsonKey(name: 'seller_id') String get sellerId; String get name; String get currency;@JsonKey(name: 'price_mode') String get priceMode;@JsonKey(name: 'valid_until') String get validUntil;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'cancelled_at') String? get cancelledAt; List<DraftOrderVariant> get variants;
+/// Create a copy of DraftOrder
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DraftOrderCopyWith<DraftOrder> get copyWith => _$DraftOrderCopyWithImpl<DraftOrder>(this as DraftOrder, _$identity);
+
+  /// Serializes this DraftOrder to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DraftOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.name, name) || other.name == name)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.validUntil, validUntil) || other.validUntil == validUntil)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&const DeepCollectionEquality().equals(other.variants, variants));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,listingId,sellerId,name,currency,priceMode,validUntil,createdAt,cancelledAt,const DeepCollectionEquality().hash(variants));
+
+@override
+String toString() {
+  return 'DraftOrder(id: $id, listingId: $listingId, sellerId: $sellerId, name: $name, currency: $currency, priceMode: $priceMode, validUntil: $validUntil, createdAt: $createdAt, cancelledAt: $cancelledAt, variants: $variants)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DraftOrderCopyWith<$Res>  {
+  factory $DraftOrderCopyWith(DraftOrder value, $Res Function(DraftOrder) _then) = _$DraftOrderCopyWithImpl;
+@useResult
+$Res call({
+ String id,@JsonKey(name: 'listing_id') String listingId,@JsonKey(name: 'seller_id') String sellerId, String name, String currency,@JsonKey(name: 'price_mode') String priceMode,@JsonKey(name: 'valid_until') String validUntil,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'cancelled_at') String? cancelledAt, List<DraftOrderVariant> variants
+});
+
+
+
+
+}
+/// @nodoc
+class _$DraftOrderCopyWithImpl<$Res>
+    implements $DraftOrderCopyWith<$Res> {
+  _$DraftOrderCopyWithImpl(this._self, this._then);
+
+  final DraftOrder _self;
+  final $Res Function(DraftOrder) _then;
+
+/// Create a copy of DraftOrder
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? listingId = null,Object? sellerId = null,Object? name = null,Object? currency = null,Object? priceMode = null,Object? validUntil = null,Object? createdAt = null,Object? cancelledAt = freezed,Object? variants = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
+as String,sellerId: null == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,priceMode: null == priceMode ? _self.priceMode : priceMode // ignore: cast_nullable_to_non_nullable
+as String,validUntil: null == validUntil ? _self.validUntil : validUntil // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,cancelledAt: freezed == cancelledAt ? _self.cancelledAt : cancelledAt // ignore: cast_nullable_to_non_nullable
+as String?,variants: null == variants ? _self.variants : variants // ignore: cast_nullable_to_non_nullable
+as List<DraftOrderVariant>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DraftOrder].
+extension DraftOrderPatterns on DraftOrder {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DraftOrder value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DraftOrder() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DraftOrder value)  $default,){
+final _that = this;
+switch (_that) {
+case _DraftOrder():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DraftOrder value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DraftOrder() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'seller_id')  String sellerId,  String name,  String currency, @JsonKey(name: 'price_mode')  String priceMode, @JsonKey(name: 'valid_until')  String validUntil, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'cancelled_at')  String? cancelledAt,  List<DraftOrderVariant> variants)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DraftOrder() when $default != null:
+return $default(_that.id,_that.listingId,_that.sellerId,_that.name,_that.currency,_that.priceMode,_that.validUntil,_that.createdAt,_that.cancelledAt,_that.variants);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'seller_id')  String sellerId,  String name,  String currency, @JsonKey(name: 'price_mode')  String priceMode, @JsonKey(name: 'valid_until')  String validUntil, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'cancelled_at')  String? cancelledAt,  List<DraftOrderVariant> variants)  $default,) {final _that = this;
+switch (_that) {
+case _DraftOrder():
+return $default(_that.id,_that.listingId,_that.sellerId,_that.name,_that.currency,_that.priceMode,_that.validUntil,_that.createdAt,_that.cancelledAt,_that.variants);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'seller_id')  String sellerId,  String name,  String currency, @JsonKey(name: 'price_mode')  String priceMode, @JsonKey(name: 'valid_until')  String validUntil, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'cancelled_at')  String? cancelledAt,  List<DraftOrderVariant> variants)?  $default,) {final _that = this;
+switch (_that) {
+case _DraftOrder() when $default != null:
+return $default(_that.id,_that.listingId,_that.sellerId,_that.name,_that.currency,_that.priceMode,_that.validUntil,_that.createdAt,_that.cancelledAt,_that.variants);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _DraftOrder implements DraftOrder {
+  const _DraftOrder({required this.id, @JsonKey(name: 'listing_id') required this.listingId, @JsonKey(name: 'seller_id') required this.sellerId, required this.name, required this.currency, @JsonKey(name: 'price_mode') required this.priceMode, @JsonKey(name: 'valid_until') required this.validUntil, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'cancelled_at') this.cancelledAt, required final  List<DraftOrderVariant> variants}): _variants = variants;
+  factory _DraftOrder.fromJson(Map<String, dynamic> json) => _$DraftOrderFromJson(json);
+
+@override final  String id;
+@override@JsonKey(name: 'listing_id') final  String listingId;
+@override@JsonKey(name: 'seller_id') final  String sellerId;
+@override final  String name;
+@override final  String currency;
+@override@JsonKey(name: 'price_mode') final  String priceMode;
+@override@JsonKey(name: 'valid_until') final  String validUntil;
+@override@JsonKey(name: 'created_at') final  String createdAt;
+@override@JsonKey(name: 'cancelled_at') final  String? cancelledAt;
+ final  List<DraftOrderVariant> _variants;
+@override List<DraftOrderVariant> get variants {
+  if (_variants is EqualUnmodifiableListView) return _variants;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_variants);
+}
+
+
+/// Create a copy of DraftOrder
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DraftOrderCopyWith<_DraftOrder> get copyWith => __$DraftOrderCopyWithImpl<_DraftOrder>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$DraftOrderToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DraftOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.name, name) || other.name == name)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.validUntil, validUntil) || other.validUntil == validUntil)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&const DeepCollectionEquality().equals(other._variants, _variants));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,listingId,sellerId,name,currency,priceMode,validUntil,createdAt,cancelledAt,const DeepCollectionEquality().hash(_variants));
+
+@override
+String toString() {
+  return 'DraftOrder(id: $id, listingId: $listingId, sellerId: $sellerId, name: $name, currency: $currency, priceMode: $priceMode, validUntil: $validUntil, createdAt: $createdAt, cancelledAt: $cancelledAt, variants: $variants)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DraftOrderCopyWith<$Res> implements $DraftOrderCopyWith<$Res> {
+  factory _$DraftOrderCopyWith(_DraftOrder value, $Res Function(_DraftOrder) _then) = __$DraftOrderCopyWithImpl;
+@override @useResult
+$Res call({
+ String id,@JsonKey(name: 'listing_id') String listingId,@JsonKey(name: 'seller_id') String sellerId, String name, String currency,@JsonKey(name: 'price_mode') String priceMode,@JsonKey(name: 'valid_until') String validUntil,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'cancelled_at') String? cancelledAt, List<DraftOrderVariant> variants
+});
+
+
+
+
+}
+/// @nodoc
+class __$DraftOrderCopyWithImpl<$Res>
+    implements _$DraftOrderCopyWith<$Res> {
+  __$DraftOrderCopyWithImpl(this._self, this._then);
+
+  final _DraftOrder _self;
+  final $Res Function(_DraftOrder) _then;
+
+/// Create a copy of DraftOrder
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? listingId = null,Object? sellerId = null,Object? name = null,Object? currency = null,Object? priceMode = null,Object? validUntil = null,Object? createdAt = null,Object? cancelledAt = freezed,Object? variants = null,}) {
+  return _then(_DraftOrder(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
+as String,sellerId: null == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,priceMode: null == priceMode ? _self.priceMode : priceMode // ignore: cast_nullable_to_non_nullable
+as String,validUntil: null == validUntil ? _self.validUntil : validUntil // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,cancelledAt: freezed == cancelledAt ? _self.cancelledAt : cancelledAt // ignore: cast_nullable_to_non_nullable
+as String?,variants: null == variants ? _self._variants : variants // ignore: cast_nullable_to_non_nullable
+as List<DraftOrderVariant>,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$StartPaymentRequest {
+
+@JsonKey(name: 'payment_option') String get paymentOption; int? get amount;@JsonKey(name: 'return_url') String? get returnUrl;
+/// Create a copy of StartPaymentRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$StartPaymentRequestCopyWith<StartPaymentRequest> get copyWith => _$StartPaymentRequestCopyWithImpl<StartPaymentRequest>(this as StartPaymentRequest, _$identity);
+
+  /// Serializes this StartPaymentRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StartPaymentRequest&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.returnUrl, returnUrl) || other.returnUrl == returnUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,paymentOption,amount,returnUrl);
+
+@override
+String toString() {
+  return 'StartPaymentRequest(paymentOption: $paymentOption, amount: $amount, returnUrl: $returnUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $StartPaymentRequestCopyWith<$Res>  {
+  factory $StartPaymentRequestCopyWith(StartPaymentRequest value, $Res Function(StartPaymentRequest) _then) = _$StartPaymentRequestCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'payment_option') String paymentOption, int? amount,@JsonKey(name: 'return_url') String? returnUrl
+});
+
+
+
+
+}
+/// @nodoc
+class _$StartPaymentRequestCopyWithImpl<$Res>
+    implements $StartPaymentRequestCopyWith<$Res> {
+  _$StartPaymentRequestCopyWithImpl(this._self, this._then);
+
+  final StartPaymentRequest _self;
+  final $Res Function(StartPaymentRequest) _then;
+
+/// Create a copy of StartPaymentRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? paymentOption = null,Object? amount = freezed,Object? returnUrl = freezed,}) {
+  return _then(_self.copyWith(
+paymentOption: null == paymentOption ? _self.paymentOption : paymentOption // ignore: cast_nullable_to_non_nullable
+as String,amount: freezed == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as int?,returnUrl: freezed == returnUrl ? _self.returnUrl : returnUrl // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [StartPaymentRequest].
+extension StartPaymentRequestPatterns on StartPaymentRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _StartPaymentRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _StartPaymentRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _StartPaymentRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _StartPaymentRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _StartPaymentRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _StartPaymentRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'payment_option')  String paymentOption,  int? amount, @JsonKey(name: 'return_url')  String? returnUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _StartPaymentRequest() when $default != null:
+return $default(_that.paymentOption,_that.amount,_that.returnUrl);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'payment_option')  String paymentOption,  int? amount, @JsonKey(name: 'return_url')  String? returnUrl)  $default,) {final _that = this;
+switch (_that) {
+case _StartPaymentRequest():
+return $default(_that.paymentOption,_that.amount,_that.returnUrl);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'payment_option')  String paymentOption,  int? amount, @JsonKey(name: 'return_url')  String? returnUrl)?  $default,) {final _that = this;
+switch (_that) {
+case _StartPaymentRequest() when $default != null:
+return $default(_that.paymentOption,_that.amount,_that.returnUrl);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _StartPaymentRequest implements StartPaymentRequest {
+  const _StartPaymentRequest({@JsonKey(name: 'payment_option') required this.paymentOption, this.amount, @JsonKey(name: 'return_url') this.returnUrl});
+  factory _StartPaymentRequest.fromJson(Map<String, dynamic> json) => _$StartPaymentRequestFromJson(json);
+
+@override@JsonKey(name: 'payment_option') final  String paymentOption;
+@override final  int? amount;
+@override@JsonKey(name: 'return_url') final  String? returnUrl;
+
+/// Create a copy of StartPaymentRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$StartPaymentRequestCopyWith<_StartPaymentRequest> get copyWith => __$StartPaymentRequestCopyWithImpl<_StartPaymentRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$StartPaymentRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StartPaymentRequest&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.returnUrl, returnUrl) || other.returnUrl == returnUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,paymentOption,amount,returnUrl);
+
+@override
+String toString() {
+  return 'StartPaymentRequest(paymentOption: $paymentOption, amount: $amount, returnUrl: $returnUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$StartPaymentRequestCopyWith<$Res> implements $StartPaymentRequestCopyWith<$Res> {
+  factory _$StartPaymentRequestCopyWith(_StartPaymentRequest value, $Res Function(_StartPaymentRequest) _then) = __$StartPaymentRequestCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'payment_option') String paymentOption, int? amount,@JsonKey(name: 'return_url') String? returnUrl
+});
+
+
+
+
+}
+/// @nodoc
+class __$StartPaymentRequestCopyWithImpl<$Res>
+    implements _$StartPaymentRequestCopyWith<$Res> {
+  __$StartPaymentRequestCopyWithImpl(this._self, this._then);
+
+  final _StartPaymentRequest _self;
+  final $Res Function(_StartPaymentRequest) _then;
+
+/// Create a copy of StartPaymentRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? paymentOption = null,Object? amount = freezed,Object? returnUrl = freezed,}) {
+  return _then(_StartPaymentRequest(
+paymentOption: null == paymentOption ? _self.paymentOption : paymentOption // ignore: cast_nullable_to_non_nullable
+as String,amount: freezed == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as int?,returnUrl: freezed == returnUrl ? _self.returnUrl : returnUrl // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$Transaction {
+
+ String get id;@JsonKey(name: 'session_id') String get sessionId;@JsonKey(name: 'payment_option') String get paymentOption; int get amount;@JsonKey(name: 'checkout_url') String? get checkoutUrl; String get status; String? get error;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'expired_at') String? get expiredAt;@JsonKey(name: 'settled_at') String? get settledAt;
+/// Create a copy of Transaction
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TransactionCopyWith<Transaction> get copyWith => _$TransactionCopyWithImpl<Transaction>(this as Transaction, _$identity);
+
+  /// Serializes this Transaction to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transaction&&(identical(other.id, id) || other.id == id)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.checkoutUrl, checkoutUrl) || other.checkoutUrl == checkoutUrl)&&(identical(other.status, status) || other.status == status)&&(identical(other.error, error) || other.error == error)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.expiredAt, expiredAt) || other.expiredAt == expiredAt)&&(identical(other.settledAt, settledAt) || other.settledAt == settledAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,sessionId,paymentOption,amount,checkoutUrl,status,error,createdAt,expiredAt,settledAt);
+
+@override
+String toString() {
+  return 'Transaction(id: $id, sessionId: $sessionId, paymentOption: $paymentOption, amount: $amount, checkoutUrl: $checkoutUrl, status: $status, error: $error, createdAt: $createdAt, expiredAt: $expiredAt, settledAt: $settledAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TransactionCopyWith<$Res>  {
+  factory $TransactionCopyWith(Transaction value, $Res Function(Transaction) _then) = _$TransactionCopyWithImpl;
+@useResult
+$Res call({
+ String id,@JsonKey(name: 'session_id') String sessionId,@JsonKey(name: 'payment_option') String paymentOption, int amount,@JsonKey(name: 'checkout_url') String? checkoutUrl, String status, String? error,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'expired_at') String? expiredAt,@JsonKey(name: 'settled_at') String? settledAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$TransactionCopyWithImpl<$Res>
+    implements $TransactionCopyWith<$Res> {
+  _$TransactionCopyWithImpl(this._self, this._then);
+
+  final Transaction _self;
+  final $Res Function(Transaction) _then;
+
+/// Create a copy of Transaction
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? sessionId = null,Object? paymentOption = null,Object? amount = null,Object? checkoutUrl = freezed,Object? status = null,Object? error = freezed,Object? createdAt = null,Object? expiredAt = freezed,Object? settledAt = freezed,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,sessionId: null == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String,paymentOption: null == paymentOption ? _self.paymentOption : paymentOption // ignore: cast_nullable_to_non_nullable
+as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as int,checkoutUrl: freezed == checkoutUrl ? _self.checkoutUrl : checkoutUrl // ignore: cast_nullable_to_non_nullable
+as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,expiredAt: freezed == expiredAt ? _self.expiredAt : expiredAt // ignore: cast_nullable_to_non_nullable
+as String?,settledAt: freezed == settledAt ? _self.settledAt : settledAt // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [Transaction].
+extension TransactionPatterns on Transaction {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Transaction value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _Transaction() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Transaction value)  $default,){
+final _that = this;
+switch (_that) {
+case _Transaction():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Transaction value)?  $default,){
+final _that = this;
+switch (_that) {
+case _Transaction() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'session_id')  String sessionId, @JsonKey(name: 'payment_option')  String paymentOption,  int amount, @JsonKey(name: 'checkout_url')  String? checkoutUrl,  String status,  String? error, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'expired_at')  String? expiredAt, @JsonKey(name: 'settled_at')  String? settledAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _Transaction() when $default != null:
+return $default(_that.id,_that.sessionId,_that.paymentOption,_that.amount,_that.checkoutUrl,_that.status,_that.error,_that.createdAt,_that.expiredAt,_that.settledAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'session_id')  String sessionId, @JsonKey(name: 'payment_option')  String paymentOption,  int amount, @JsonKey(name: 'checkout_url')  String? checkoutUrl,  String status,  String? error, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'expired_at')  String? expiredAt, @JsonKey(name: 'settled_at')  String? settledAt)  $default,) {final _that = this;
+switch (_that) {
+case _Transaction():
+return $default(_that.id,_that.sessionId,_that.paymentOption,_that.amount,_that.checkoutUrl,_that.status,_that.error,_that.createdAt,_that.expiredAt,_that.settledAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'session_id')  String sessionId, @JsonKey(name: 'payment_option')  String paymentOption,  int amount, @JsonKey(name: 'checkout_url')  String? checkoutUrl,  String status,  String? error, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'expired_at')  String? expiredAt, @JsonKey(name: 'settled_at')  String? settledAt)?  $default,) {final _that = this;
+switch (_that) {
+case _Transaction() when $default != null:
+return $default(_that.id,_that.sessionId,_that.paymentOption,_that.amount,_that.checkoutUrl,_that.status,_that.error,_that.createdAt,_that.expiredAt,_that.settledAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _Transaction implements Transaction {
+  const _Transaction({required this.id, @JsonKey(name: 'session_id') required this.sessionId, @JsonKey(name: 'payment_option') required this.paymentOption, required this.amount, @JsonKey(name: 'checkout_url') this.checkoutUrl, required this.status, this.error, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'expired_at') this.expiredAt, @JsonKey(name: 'settled_at') this.settledAt});
+  factory _Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
+
+@override final  String id;
+@override@JsonKey(name: 'session_id') final  String sessionId;
+@override@JsonKey(name: 'payment_option') final  String paymentOption;
+@override final  int amount;
+@override@JsonKey(name: 'checkout_url') final  String? checkoutUrl;
+@override final  String status;
+@override final  String? error;
+@override@JsonKey(name: 'created_at') final  String createdAt;
+@override@JsonKey(name: 'expired_at') final  String? expiredAt;
+@override@JsonKey(name: 'settled_at') final  String? settledAt;
+
+/// Create a copy of Transaction
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TransactionCopyWith<_Transaction> get copyWith => __$TransactionCopyWithImpl<_Transaction>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$TransactionToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transaction&&(identical(other.id, id) || other.id == id)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.checkoutUrl, checkoutUrl) || other.checkoutUrl == checkoutUrl)&&(identical(other.status, status) || other.status == status)&&(identical(other.error, error) || other.error == error)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.expiredAt, expiredAt) || other.expiredAt == expiredAt)&&(identical(other.settledAt, settledAt) || other.settledAt == settledAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,sessionId,paymentOption,amount,checkoutUrl,status,error,createdAt,expiredAt,settledAt);
+
+@override
+String toString() {
+  return 'Transaction(id: $id, sessionId: $sessionId, paymentOption: $paymentOption, amount: $amount, checkoutUrl: $checkoutUrl, status: $status, error: $error, createdAt: $createdAt, expiredAt: $expiredAt, settledAt: $settledAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TransactionCopyWith<$Res> implements $TransactionCopyWith<$Res> {
+  factory _$TransactionCopyWith(_Transaction value, $Res Function(_Transaction) _then) = __$TransactionCopyWithImpl;
+@override @useResult
+$Res call({
+ String id,@JsonKey(name: 'session_id') String sessionId,@JsonKey(name: 'payment_option') String paymentOption, int amount,@JsonKey(name: 'checkout_url') String? checkoutUrl, String status, String? error,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'expired_at') String? expiredAt,@JsonKey(name: 'settled_at') String? settledAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$TransactionCopyWithImpl<$Res>
+    implements _$TransactionCopyWith<$Res> {
+  __$TransactionCopyWithImpl(this._self, this._then);
+
+  final _Transaction _self;
+  final $Res Function(_Transaction) _then;
+
+/// Create a copy of Transaction
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? sessionId = null,Object? paymentOption = null,Object? amount = null,Object? checkoutUrl = freezed,Object? status = null,Object? error = freezed,Object? createdAt = null,Object? expiredAt = freezed,Object? settledAt = freezed,}) {
+  return _then(_Transaction(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,sessionId: null == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String,paymentOption: null == paymentOption ? _self.paymentOption : paymentOption // ignore: cast_nullable_to_non_nullable
+as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as int,checkoutUrl: freezed == checkoutUrl ? _self.checkoutUrl : checkoutUrl // ignore: cast_nullable_to_non_nullable
+as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,expiredAt: freezed == expiredAt ? _self.expiredAt : expiredAt // ignore: cast_nullable_to_non_nullable
+as String?,settledAt: freezed == settledAt ? _self.settledAt : settledAt // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$QuoteTransportItem {
 
 @JsonKey(name: 'sku_id') String get skuId; int get quantity;@JsonKey(name: 'transport_option') String get transportOption;
@@ -1359,298 +4153,6 @@ as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast
 as int,transportOption: null == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
 as String,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
 as String?,
-  ));
-}
-
-
-}
-
-
-/// @nodoc
-mixin _$CheckoutRequest {
-
-@JsonKey(name: 'buy_now') bool get buyNow; String get address;@JsonKey(name: 'payment_option') String get paymentOption;@JsonKey(name: 'use_wallet') bool get useWallet;@JsonKey(name: 'promotion_codes') List<String>? get promotionCodes; List<CheckoutItem> get items;
-/// Create a copy of CheckoutRequest
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$CheckoutRequestCopyWith<CheckoutRequest> get copyWith => _$CheckoutRequestCopyWithImpl<CheckoutRequest>(this as CheckoutRequest, _$identity);
-
-  /// Serializes this CheckoutRequest to a JSON map.
-  Map<String, dynamic> toJson();
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutRequest&&(identical(other.buyNow, buyNow) || other.buyNow == buyNow)&&(identical(other.address, address) || other.address == address)&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.useWallet, useWallet) || other.useWallet == useWallet)&&const DeepCollectionEquality().equals(other.promotionCodes, promotionCodes)&&const DeepCollectionEquality().equals(other.items, items));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,buyNow,address,paymentOption,useWallet,const DeepCollectionEquality().hash(promotionCodes),const DeepCollectionEquality().hash(items));
-
-@override
-String toString() {
-  return 'CheckoutRequest(buyNow: $buyNow, address: $address, paymentOption: $paymentOption, useWallet: $useWallet, promotionCodes: $promotionCodes, items: $items)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $CheckoutRequestCopyWith<$Res>  {
-  factory $CheckoutRequestCopyWith(CheckoutRequest value, $Res Function(CheckoutRequest) _then) = _$CheckoutRequestCopyWithImpl;
-@useResult
-$Res call({
-@JsonKey(name: 'buy_now') bool buyNow, String address,@JsonKey(name: 'payment_option') String paymentOption,@JsonKey(name: 'use_wallet') bool useWallet,@JsonKey(name: 'promotion_codes') List<String>? promotionCodes, List<CheckoutItem> items
-});
-
-
-
-
-}
-/// @nodoc
-class _$CheckoutRequestCopyWithImpl<$Res>
-    implements $CheckoutRequestCopyWith<$Res> {
-  _$CheckoutRequestCopyWithImpl(this._self, this._then);
-
-  final CheckoutRequest _self;
-  final $Res Function(CheckoutRequest) _then;
-
-/// Create a copy of CheckoutRequest
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? buyNow = null,Object? address = null,Object? paymentOption = null,Object? useWallet = null,Object? promotionCodes = freezed,Object? items = null,}) {
-  return _then(_self.copyWith(
-buyNow: null == buyNow ? _self.buyNow : buyNow // ignore: cast_nullable_to_non_nullable
-as bool,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,paymentOption: null == paymentOption ? _self.paymentOption : paymentOption // ignore: cast_nullable_to_non_nullable
-as String,useWallet: null == useWallet ? _self.useWallet : useWallet // ignore: cast_nullable_to_non_nullable
-as bool,promotionCodes: freezed == promotionCodes ? _self.promotionCodes : promotionCodes // ignore: cast_nullable_to_non_nullable
-as List<String>?,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<CheckoutItem>,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [CheckoutRequest].
-extension CheckoutRequestPatterns on CheckoutRequest {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CheckoutRequest value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _CheckoutRequest() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CheckoutRequest value)  $default,){
-final _that = this;
-switch (_that) {
-case _CheckoutRequest():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CheckoutRequest value)?  $default,){
-final _that = this;
-switch (_that) {
-case _CheckoutRequest() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'buy_now')  bool buyNow,  String address, @JsonKey(name: 'payment_option')  String paymentOption, @JsonKey(name: 'use_wallet')  bool useWallet, @JsonKey(name: 'promotion_codes')  List<String>? promotionCodes,  List<CheckoutItem> items)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _CheckoutRequest() when $default != null:
-return $default(_that.buyNow,_that.address,_that.paymentOption,_that.useWallet,_that.promotionCodes,_that.items);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'buy_now')  bool buyNow,  String address, @JsonKey(name: 'payment_option')  String paymentOption, @JsonKey(name: 'use_wallet')  bool useWallet, @JsonKey(name: 'promotion_codes')  List<String>? promotionCodes,  List<CheckoutItem> items)  $default,) {final _that = this;
-switch (_that) {
-case _CheckoutRequest():
-return $default(_that.buyNow,_that.address,_that.paymentOption,_that.useWallet,_that.promotionCodes,_that.items);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'buy_now')  bool buyNow,  String address, @JsonKey(name: 'payment_option')  String paymentOption, @JsonKey(name: 'use_wallet')  bool useWallet, @JsonKey(name: 'promotion_codes')  List<String>? promotionCodes,  List<CheckoutItem> items)?  $default,) {final _that = this;
-switch (_that) {
-case _CheckoutRequest() when $default != null:
-return $default(_that.buyNow,_that.address,_that.paymentOption,_that.useWallet,_that.promotionCodes,_that.items);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-@JsonSerializable()
-
-class _CheckoutRequest implements CheckoutRequest {
-  const _CheckoutRequest({@JsonKey(name: 'buy_now') required this.buyNow, required this.address, @JsonKey(name: 'payment_option') required this.paymentOption, @JsonKey(name: 'use_wallet') required this.useWallet, @JsonKey(name: 'promotion_codes') final  List<String>? promotionCodes, required final  List<CheckoutItem> items}): _promotionCodes = promotionCodes,_items = items;
-  factory _CheckoutRequest.fromJson(Map<String, dynamic> json) => _$CheckoutRequestFromJson(json);
-
-@override@JsonKey(name: 'buy_now') final  bool buyNow;
-@override final  String address;
-@override@JsonKey(name: 'payment_option') final  String paymentOption;
-@override@JsonKey(name: 'use_wallet') final  bool useWallet;
- final  List<String>? _promotionCodes;
-@override@JsonKey(name: 'promotion_codes') List<String>? get promotionCodes {
-  final value = _promotionCodes;
-  if (value == null) return null;
-  if (_promotionCodes is EqualUnmodifiableListView) return _promotionCodes;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(value);
-}
-
- final  List<CheckoutItem> _items;
-@override List<CheckoutItem> get items {
-  if (_items is EqualUnmodifiableListView) return _items;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_items);
-}
-
-
-/// Create a copy of CheckoutRequest
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$CheckoutRequestCopyWith<_CheckoutRequest> get copyWith => __$CheckoutRequestCopyWithImpl<_CheckoutRequest>(this, _$identity);
-
-@override
-Map<String, dynamic> toJson() {
-  return _$CheckoutRequestToJson(this, );
-}
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutRequest&&(identical(other.buyNow, buyNow) || other.buyNow == buyNow)&&(identical(other.address, address) || other.address == address)&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.useWallet, useWallet) || other.useWallet == useWallet)&&const DeepCollectionEquality().equals(other._promotionCodes, _promotionCodes)&&const DeepCollectionEquality().equals(other._items, _items));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,buyNow,address,paymentOption,useWallet,const DeepCollectionEquality().hash(_promotionCodes),const DeepCollectionEquality().hash(_items));
-
-@override
-String toString() {
-  return 'CheckoutRequest(buyNow: $buyNow, address: $address, paymentOption: $paymentOption, useWallet: $useWallet, promotionCodes: $promotionCodes, items: $items)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$CheckoutRequestCopyWith<$Res> implements $CheckoutRequestCopyWith<$Res> {
-  factory _$CheckoutRequestCopyWith(_CheckoutRequest value, $Res Function(_CheckoutRequest) _then) = __$CheckoutRequestCopyWithImpl;
-@override @useResult
-$Res call({
-@JsonKey(name: 'buy_now') bool buyNow, String address,@JsonKey(name: 'payment_option') String paymentOption,@JsonKey(name: 'use_wallet') bool useWallet,@JsonKey(name: 'promotion_codes') List<String>? promotionCodes, List<CheckoutItem> items
-});
-
-
-
-
-}
-/// @nodoc
-class __$CheckoutRequestCopyWithImpl<$Res>
-    implements _$CheckoutRequestCopyWith<$Res> {
-  __$CheckoutRequestCopyWithImpl(this._self, this._then);
-
-  final _CheckoutRequest _self;
-  final $Res Function(_CheckoutRequest) _then;
-
-/// Create a copy of CheckoutRequest
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? buyNow = null,Object? address = null,Object? paymentOption = null,Object? useWallet = null,Object? promotionCodes = freezed,Object? items = null,}) {
-  return _then(_CheckoutRequest(
-buyNow: null == buyNow ? _self.buyNow : buyNow // ignore: cast_nullable_to_non_nullable
-as bool,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,paymentOption: null == paymentOption ? _self.paymentOption : paymentOption // ignore: cast_nullable_to_non_nullable
-as String,useWallet: null == useWallet ? _self.useWallet : useWallet // ignore: cast_nullable_to_non_nullable
-as bool,promotionCodes: freezed == promotionCodes ? _self._promotionCodes : promotionCodes // ignore: cast_nullable_to_non_nullable
-as List<String>?,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<CheckoutItem>,
   ));
 }
 

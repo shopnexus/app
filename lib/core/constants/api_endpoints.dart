@@ -100,11 +100,28 @@ class ApiEndpoints {
   static const String notificationsRead = 'notifications/read';
   static const String notificationPreferences = 'notification-preferences';
 
-  // --- Cart & Checkout Features ---
+  // --- Cart, Drafts & Checkout Features ---
   static const String cart = 'cart-items';
   static const String cartItemDetailTemplate = 'cart-items/{id}';
 
   static String cartItemDetail(String id) => 'cart-items/$id';
+
+  static const String drafts = 'drafts';
+  static const String draftDetailTemplate = 'drafts/{id}';
+  static String draftDetail(String id) => 'drafts/$id';
+  static const String draftCheckoutTemplate = 'drafts/{id}/checkout';
+  static String draftCheckout(String id) => 'drafts/$id/checkout';
+  static const String offerCheckoutTemplate = 'offers/{id}/checkout';
+  static String offerCheckout(String id) => 'offers/$id/checkout';
+
+  // --- Payment Sessions Features ---
+  static const String paymentSessions = 'payment-sessions';
+  static const String paymentSessionDetailTemplate = 'payment-sessions/{id}';
+  static String paymentSessionDetail(String id) => 'payment-sessions/$id';
+  static const String startPaymentTemplate = 'payment-sessions/{id}/payments';
+  static String startPayment(String id) => 'payment-sessions/$id/payments';
+
+  // Legacy checkout aliases
   static const String quoteTransport = 'order/buyer/quote-transport';
   static const String checkout = 'order/buyer/checkout';
 

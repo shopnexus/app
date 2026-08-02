@@ -6,6 +6,200 @@ part of 'checkout_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_CheckoutLine _$CheckoutLineFromJson(Map<String, dynamic> json) =>
+    _CheckoutLine(
+      variantId: json['variant_id'] as String,
+      quantity: (json['quantity'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$CheckoutLineToJson(_CheckoutLine instance) =>
+    <String, dynamic>{
+      'variant_id': instance.variantId,
+      'quantity': instance.quantity,
+    };
+
+_CheckoutRequest _$CheckoutRequestFromJson(Map<String, dynamic> json) =>
+    _CheckoutRequest(
+      contactId: json['contact_id'] as String,
+      currency: json['currency'] as String,
+      lines: (json['lines'] as List<dynamic>)
+          .map((e) => CheckoutLine.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      note: json['note'] as String?,
+      transportOption: json['transport_option'] as String,
+    );
+
+Map<String, dynamic> _$CheckoutRequestToJson(_CheckoutRequest instance) =>
+    <String, dynamic>{
+      'contact_id': instance.contactId,
+      'currency': instance.currency,
+      'lines': instance.lines,
+      'note': instance.note,
+      'transport_option': instance.transportOption,
+    };
+
+_CheckoutOfferRequest _$CheckoutOfferRequestFromJson(
+  Map<String, dynamic> json,
+) => _CheckoutOfferRequest(
+  contactId: json['contact_id'] as String,
+  note: json['note'] as String?,
+  transportOption: json['transport_option'] as String,
+);
+
+Map<String, dynamic> _$CheckoutOfferRequestToJson(
+  _CheckoutOfferRequest instance,
+) => <String, dynamic>{
+  'contact_id': instance.contactId,
+  'note': instance.note,
+  'transport_option': instance.transportOption,
+};
+
+_OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => _OrderItem(
+  id: json['id'] as String,
+  orderId: json['order_id'] as String?,
+  sellerId: json['seller_id'] as String,
+  listingId: json['listing_id'] as String?,
+  variantId: json['variant_id'] as String,
+  quantity: (json['quantity'] as num).toInt(),
+  totalAmount: (json['total_amount'] as num).toInt(),
+  currency: json['currency'] as String,
+  transportOption: json['transport_option'] as String,
+  paymentSessionId: json['payment_session_id'] as String?,
+  note: json['note'] as String?,
+  cancelledAt: json['cancelled_at'] as String?,
+  createdAt: json['created_at'] as String,
+);
+
+Map<String, dynamic> _$OrderItemToJson(_OrderItem instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'order_id': instance.orderId,
+      'seller_id': instance.sellerId,
+      'listing_id': instance.listingId,
+      'variant_id': instance.variantId,
+      'quantity': instance.quantity,
+      'total_amount': instance.totalAmount,
+      'currency': instance.currency,
+      'transport_option': instance.transportOption,
+      'payment_session_id': instance.paymentSessionId,
+      'note': instance.note,
+      'cancelled_at': instance.cancelledAt,
+      'created_at': instance.createdAt,
+    };
+
+_CheckoutResult _$CheckoutResultFromJson(Map<String, dynamic> json) =>
+    _CheckoutResult(
+      currency: json['currency'] as String,
+      goodsTotal: (json['goods_total'] as num).toInt(),
+      items: (json['items'] as List<dynamic>)
+          .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      paymentSessionId: json['payment_session_id'] as String,
+      shippingFee: (json['shipping_fee'] as num).toInt(),
+      total: (json['total'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$CheckoutResultToJson(_CheckoutResult instance) =>
+    <String, dynamic>{
+      'currency': instance.currency,
+      'goods_total': instance.goodsTotal,
+      'items': instance.items,
+      'payment_session_id': instance.paymentSessionId,
+      'shipping_fee': instance.shippingFee,
+      'total': instance.total,
+    };
+
+_CreateDraftRequest _$CreateDraftRequestFromJson(Map<String, dynamic> json) =>
+    _CreateDraftRequest(listingId: json['listing_id'] as String);
+
+Map<String, dynamic> _$CreateDraftRequestToJson(_CreateDraftRequest instance) =>
+    <String, dynamic>{'listing_id': instance.listingId};
+
+_DraftOrderVariant _$DraftOrderVariantFromJson(Map<String, dynamic> json) =>
+    _DraftOrderVariant(
+      variantId: json['variant_id'] as String,
+      price: (json['price'] as num).toInt(),
+      attributes: json['attributes'] as Map<String, dynamic>?,
+    );
+
+Map<String, dynamic> _$DraftOrderVariantToJson(_DraftOrderVariant instance) =>
+    <String, dynamic>{
+      'variant_id': instance.variantId,
+      'price': instance.price,
+      'attributes': instance.attributes,
+    };
+
+_DraftOrder _$DraftOrderFromJson(Map<String, dynamic> json) => _DraftOrder(
+  id: json['id'] as String,
+  listingId: json['listing_id'] as String,
+  sellerId: json['seller_id'] as String,
+  name: json['name'] as String,
+  currency: json['currency'] as String,
+  priceMode: json['price_mode'] as String,
+  validUntil: json['valid_until'] as String,
+  createdAt: json['created_at'] as String,
+  cancelledAt: json['cancelled_at'] as String?,
+  variants: (json['variants'] as List<dynamic>)
+      .map((e) => DraftOrderVariant.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$DraftOrderToJson(_DraftOrder instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'listing_id': instance.listingId,
+      'seller_id': instance.sellerId,
+      'name': instance.name,
+      'currency': instance.currency,
+      'price_mode': instance.priceMode,
+      'valid_until': instance.validUntil,
+      'created_at': instance.createdAt,
+      'cancelled_at': instance.cancelledAt,
+      'variants': instance.variants,
+    };
+
+_StartPaymentRequest _$StartPaymentRequestFromJson(Map<String, dynamic> json) =>
+    _StartPaymentRequest(
+      paymentOption: json['payment_option'] as String,
+      amount: (json['amount'] as num?)?.toInt(),
+      returnUrl: json['return_url'] as String?,
+    );
+
+Map<String, dynamic> _$StartPaymentRequestToJson(
+  _StartPaymentRequest instance,
+) => <String, dynamic>{
+  'payment_option': instance.paymentOption,
+  'amount': instance.amount,
+  'return_url': instance.returnUrl,
+};
+
+_Transaction _$TransactionFromJson(Map<String, dynamic> json) => _Transaction(
+  id: json['id'] as String,
+  sessionId: json['session_id'] as String,
+  paymentOption: json['payment_option'] as String,
+  amount: (json['amount'] as num).toInt(),
+  checkoutUrl: json['checkout_url'] as String?,
+  status: json['status'] as String,
+  error: json['error'] as String?,
+  createdAt: json['created_at'] as String,
+  expiredAt: json['expired_at'] as String?,
+  settledAt: json['settled_at'] as String?,
+);
+
+Map<String, dynamic> _$TransactionToJson(_Transaction instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'session_id': instance.sessionId,
+      'payment_option': instance.paymentOption,
+      'amount': instance.amount,
+      'checkout_url': instance.checkoutUrl,
+      'status': instance.status,
+      'error': instance.error,
+      'created_at': instance.createdAt,
+      'expired_at': instance.expiredAt,
+      'settled_at': instance.settledAt,
+    };
+
 _QuoteTransportItem _$QuoteTransportItemFromJson(Map<String, dynamic> json) =>
     _QuoteTransportItem(
       skuId: json['sku_id'] as String,
@@ -77,30 +271,6 @@ Map<String, dynamic> _$CheckoutItemToJson(_CheckoutItem instance) =>
       'quantity': instance.quantity,
       'transport_option': instance.transportOption,
       'note': instance.note,
-    };
-
-_CheckoutRequest _$CheckoutRequestFromJson(Map<String, dynamic> json) =>
-    _CheckoutRequest(
-      buyNow: json['buy_now'] as bool,
-      address: json['address'] as String,
-      paymentOption: json['payment_option'] as String,
-      useWallet: json['use_wallet'] as bool,
-      promotionCodes: (json['promotion_codes'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      items: (json['items'] as List<dynamic>)
-          .map((e) => CheckoutItem.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-
-Map<String, dynamic> _$CheckoutRequestToJson(_CheckoutRequest instance) =>
-    <String, dynamic>{
-      'buy_now': instance.buyNow,
-      'address': instance.address,
-      'payment_option': instance.paymentOption,
-      'use_wallet': instance.useWallet,
-      'promotion_codes': instance.promotionCodes,
-      'items': instance.items,
     };
 
 _CheckoutResponse _$CheckoutResponseFromJson(Map<String, dynamic> json) =>

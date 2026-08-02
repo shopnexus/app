@@ -1,8 +1,155 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'checkout_model.freezed.dart';
-
 part 'checkout_model.g.dart';
+
+@freezed
+abstract class CheckoutLine with _$CheckoutLine {
+  const factory CheckoutLine({
+    @JsonKey(name: 'variant_id') required String variantId,
+    required int quantity,
+  }) = _CheckoutLine;
+
+  factory CheckoutLine.fromJson(Map<String, dynamic> json) =>
+      _$CheckoutLineFromJson(json);
+}
+
+@freezed
+abstract class CheckoutRequest with _$CheckoutRequest {
+  const factory CheckoutRequest({
+    @JsonKey(name: 'contact_id') required String contactId,
+    required String currency,
+    required List<CheckoutLine> lines,
+    String? note,
+    @JsonKey(name: 'transport_option') required String transportOption,
+  }) = _CheckoutRequest;
+
+  factory CheckoutRequest.fromJson(Map<String, dynamic> json) =>
+      _$CheckoutRequestFromJson(json);
+}
+
+@freezed
+abstract class CheckoutOfferRequest with _$CheckoutOfferRequest {
+  const factory CheckoutOfferRequest({
+    @JsonKey(name: 'contact_id') required String contactId,
+    String? note,
+    @JsonKey(name: 'transport_option') required String transportOption,
+  }) = _CheckoutOfferRequest;
+
+  factory CheckoutOfferRequest.fromJson(Map<String, dynamic> json) =>
+      _$CheckoutOfferRequestFromJson(json);
+}
+
+@freezed
+abstract class OrderItem with _$OrderItem {
+  const factory OrderItem({
+    required String id,
+    @JsonKey(name: 'order_id') String? orderId,
+    @JsonKey(name: 'seller_id') required String sellerId,
+    @JsonKey(name: 'listing_id') String? listingId,
+    @JsonKey(name: 'variant_id') required String variantId,
+    required int quantity,
+    @JsonKey(name: 'total_amount') required int totalAmount,
+    required String currency,
+    @JsonKey(name: 'transport_option') required String transportOption,
+    @JsonKey(name: 'payment_session_id') String? paymentSessionId,
+    String? note,
+    @JsonKey(name: 'cancelled_at') String? cancelledAt,
+    @JsonKey(name: 'created_at') required String createdAt,
+  }) = _OrderItem;
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) =>
+      _$OrderItemFromJson(json);
+}
+
+@freezed
+abstract class CheckoutResult with _$CheckoutResult {
+  const factory CheckoutResult({
+    required String currency,
+    @JsonKey(name: 'goods_total') required int goodsTotal,
+    required List<OrderItem> items,
+    @JsonKey(name: 'payment_session_id') required String paymentSessionId,
+    @JsonKey(name: 'shipping_fee') required int shippingFee,
+    required int total,
+  }) = _CheckoutResult;
+
+  factory CheckoutResult.fromJson(Map<String, dynamic> json) =>
+      _$CheckoutResultFromJson(json);
+}
+
+@freezed
+abstract class CreateDraftRequest with _$CreateDraftRequest {
+  const factory CreateDraftRequest({
+    @JsonKey(name: 'listing_id') required String listingId,
+  }) = _CreateDraftRequest;
+
+  factory CreateDraftRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateDraftRequestFromJson(json);
+}
+
+@freezed
+abstract class DraftOrderVariant with _$DraftOrderVariant {
+  const factory DraftOrderVariant({
+    @JsonKey(name: 'variant_id') required String variantId,
+    required int price,
+    Map<String, dynamic>? attributes,
+  }) = _DraftOrderVariant;
+
+  factory DraftOrderVariant.fromJson(Map<String, dynamic> json) =>
+      _$DraftOrderVariantFromJson(json);
+}
+
+@freezed
+abstract class DraftOrder with _$DraftOrder {
+  const factory DraftOrder({
+    required String id,
+    @JsonKey(name: 'listing_id') required String listingId,
+    @JsonKey(name: 'seller_id') required String sellerId,
+    required String name,
+    required String currency,
+    @JsonKey(name: 'price_mode') required String priceMode,
+    @JsonKey(name: 'valid_until') required String validUntil,
+    @JsonKey(name: 'created_at') required String createdAt,
+    @JsonKey(name: 'cancelled_at') String? cancelledAt,
+    required List<DraftOrderVariant> variants,
+  }) = _DraftOrder;
+
+  factory DraftOrder.fromJson(Map<String, dynamic> json) =>
+      _$DraftOrderFromJson(json);
+}
+
+@freezed
+abstract class StartPaymentRequest with _$StartPaymentRequest {
+  const factory StartPaymentRequest({
+    @JsonKey(name: 'payment_option') required String paymentOption,
+    int? amount,
+    @JsonKey(name: 'return_url') String? returnUrl,
+  }) = _StartPaymentRequest;
+
+  factory StartPaymentRequest.fromJson(Map<String, dynamic> json) =>
+      _$StartPaymentRequestFromJson(json);
+}
+
+@freezed
+abstract class Transaction with _$Transaction {
+  const factory Transaction({
+    required String id,
+    @JsonKey(name: 'session_id') required String sessionId,
+    @JsonKey(name: 'payment_option') required String paymentOption,
+    required int amount,
+    @JsonKey(name: 'checkout_url') String? checkoutUrl,
+    required String status,
+    String? error,
+    @JsonKey(name: 'created_at') required String createdAt,
+    @JsonKey(name: 'expired_at') String? expiredAt,
+    @JsonKey(name: 'settled_at') String? settledAt,
+  }) = _Transaction;
+
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
+}
+
+// --- Legacy & UI Helper Models ---
 
 @freezed
 abstract class QuoteTransportItem with _$QuoteTransportItem {
@@ -61,21 +208,6 @@ abstract class CheckoutItem with _$CheckoutItem {
 
   factory CheckoutItem.fromJson(Map<String, dynamic> json) =>
       _$CheckoutItemFromJson(json);
-}
-
-@freezed
-abstract class CheckoutRequest with _$CheckoutRequest {
-  const factory CheckoutRequest({
-    @JsonKey(name: 'buy_now') required bool buyNow,
-    required String address,
-    @JsonKey(name: 'payment_option') required String paymentOption,
-    @JsonKey(name: 'use_wallet') required bool useWallet,
-    @JsonKey(name: 'promotion_codes') List<String>? promotionCodes,
-    required List<CheckoutItem> items,
-  }) = _CheckoutRequest;
-
-  factory CheckoutRequest.fromJson(Map<String, dynamic> json) =>
-      _$CheckoutRequestFromJson(json);
 }
 
 @freezed

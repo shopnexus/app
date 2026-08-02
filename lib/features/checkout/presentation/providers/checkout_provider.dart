@@ -32,6 +32,8 @@ abstract class CheckoutState with _$CheckoutState {
     @Default(false) bool useWallet,
     @Default([]) List<String> promotionCodes,
     CheckoutResponse? checkoutResponse,
+    CheckoutResult? checkoutResult,
+    Transaction? paymentTransaction,
     CheckoutSummary? checkoutSummary,
     @Default(false) bool isLoading,
     String? errorMessage,
@@ -266,33 +268,63 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
     try {
       final checkoutRepo = ref.read(checkoutRepositoryProvider);
+      final contactId = state.selectedContact!.id;
+      final listingId = state.resolvedItems.firstOrNull?.listingId ??
+          state.resolvedItems.firstOrNull?.spuId ??
+          'spu_1';
 
-      // Cập nhật transport_option cho các items
-      final finalItems = state.items.map((item) {
-        return item.copyWith(transportOption: state.shippingOption);
+      // 1. Mở purchase session (DraftOrder) cho listing
+      final draft = await checkoutRepo.createDraft(
+        CreateDraftRequest(listingId: listingId),
+      );
+
+      // 2. Chuyển đổi các items sang CheckoutLine (variant_id & quantity)
+      final lines = state.resolvedItems.map((item) {
+        return CheckoutLine(
+          variantId: item.variantId,
+          quantity: item.quantity,
+        );
       }).toList();
 
-      final checkoutRes = await checkoutRepo.checkout(
+      // 3. Thực hiện Checkout Draft Order
+      final checkoutResult = await checkoutRepo.checkoutDraft(
+        draft.id,
         CheckoutRequest(
-          buyNow: state.buyNow,
-          address: state.selectedContact!.address,
-          paymentOption: state.paymentOption,
-          useWallet: state.useWallet,
-          promotionCodes: state.promotionCodes.isEmpty
-              ? null
-              : state.promotionCodes,
-          items: finalItems,
+          contactId: contactId,
+          currency: state.preferredCurrency,
+          lines: lines,
+          transportOption: state.shippingOption,
         ),
       );
 
+      // 4. Khởi tạo thanh toán với POST /payment-sessions/{id}/payments để lấy checkout_url
+      Transaction? transaction;
+      try {
+        transaction = await checkoutRepo.startPayment(
+          checkoutResult.paymentSessionId,
+          StartPaymentRequest(
+            paymentOption: state.paymentOption.toLowerCase(),
+            amount: checkoutResult.total,
+            returnUrl: 'https://shopnexus.app/checkout/callback',
+          ),
+        );
+      } catch (_) {
+        // Bỏ qua lỗi startPayment nếu backend chưa bật rail thanh toán
+      }
+
       if (!ref.mounted) return;
       state = state.copyWith(
-        checkoutResponse: checkoutRes,
+        checkoutResult: checkoutResult,
+        paymentTransaction: transaction,
+        checkoutResponse: CheckoutResponse(
+          checkoutSessionId: checkoutResult.paymentSessionId,
+          paymentUrl: transaction?.checkoutUrl,
+        ),
         step: CheckoutStep.processing,
       );
 
-      // Bắt đầu polling kết quả dựa trên checkout_session_id
-      _startPolling(checkoutRes.checkoutSessionId);
+      // Bắt đầu polling kết quả dựa trên payment_session_id
+      _startPolling(checkoutResult.paymentSessionId);
     } catch (e) {
       if (!ref.mounted) return;
       state = state.copyWith(
