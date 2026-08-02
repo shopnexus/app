@@ -11,7 +11,7 @@ Future<AccountProfile> profile(Ref ref) async {
 }
 
 @riverpod
-Future<AccountProfile> publicProfile(Ref ref, String accountId) async {
+Future<PublicAccount> publicProfile(Ref ref, String accountId) async {
   final repository = ref.watch(accountRepositoryProvider);
   return repository.getAccountById(accountId);
 }

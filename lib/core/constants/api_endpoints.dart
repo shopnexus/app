@@ -12,16 +12,28 @@ class ApiEndpoints {
   static const String forgotPassword =
       'account/auth/forgot-password'; // Placeholder
 
-  // --- Profile Features ---
-  static const String profile = 'account/me';
-  static const String profileCountry = 'account/profile/country';
-  static const String getAccountById = 'account';
+  // --- Profile & User Account Features ---
+  static const String me = 'me';
+  static const String meProfile = 'me/profile';
+  static const String meUploads = 'me/uploads';
+  static const String profile = 'me';
+  static const String accounts = 'accounts';
+  static const String getAccountById = 'accounts';
+  static const String accountDetailTemplate = 'accounts/{id}';
+
+  static String accountDetail(String id) => 'accounts/$id';
 
   // --- Contacts Features ---
-  static const String contacts = 'account/contact';
-  static const String contactDetailTemplate = 'account/contact/{id}';
+  static const String contacts = 'contacts';
+  static const String contactDetailTemplate = 'contacts/{id}';
 
-  static String contactDetail(String contactId) => 'account/contact/$contactId';
+  static String contactDetail(String contactId) => 'contacts/$contactId';
+
+  // --- Follows & Social Features ---
+  static const String meFollowing = 'me/following';
+  static const String followsTemplate = 'follows/{accountID}';
+
+  static String followSeller(String accountId) => 'follows/$accountId';
 
   // --- Catalog/Product Features ---
   static const String productCards = 'catalog/product-card';
@@ -50,20 +62,24 @@ class ApiEndpoints {
   static const String voteComment = 'catalog/comment/vote';
 
   // --- Favorites/Wishlist Features ---
-  static const String favorites = 'account/favorite';
-  static const String favoriteSpuTemplate = 'account/favorite/{spuId}';
-
-  static String favoriteSpu(String spuId) => 'account/favorite/$spuId';
+  static const String favorites = 'favorites';
+  static const String favoriteListingTemplate = 'favorites/{listingID}';
+  static String favoriteListing(String listingId) => 'favorites/$listingId';
+  // Legacy aliases
+  static const String favoriteSpuTemplate = 'favorites/{listingID}';
+  static String favoriteSpu(String spuId) => 'favorites/$spuId';
 
   // --- Notifications Features ---
-  static const String notifications = 'account/notification';
-  static const String notificationsUnreadCount =
-      'account/notification/unread-count';
-  static const String notificationsRead = 'account/notification/read';
-  static const String notificationsReadAll = 'account/notification/read-all';
+  static const String notifications = 'notifications';
+  static const String notificationsUnreadCount = 'notifications/unread-count';
+  static const String notificationsRead = 'notifications/read';
+  static const String notificationPreferences = 'notification-preferences';
 
   // --- Cart & Checkout Features ---
-  static const String cart = 'order/cart';
+  static const String cart = 'cart-items';
+  static const String cartItemDetailTemplate = 'cart-items/{id}';
+
+  static String cartItemDetail(String id) => 'cart-items/$id';
   static const String quoteTransport = 'order/buyer/quote-transport';
   static const String checkout = 'order/buyer/checkout';
 
@@ -85,22 +101,33 @@ class ApiEndpoints {
   static String checkoutSummary(String txID) =>
       'order/buyer/checkout-summary/$txID';
 
-  // --- Buyer Orders & Refunds ---
-  static const String buyerPendingItems = 'order/buyer/pending-items';
+  // --- Orders & Items ---
+  static const String orders = 'orders';
+  static const String orderDetailTemplate = 'orders/{id}';
+
+  static String orderDetail(String id) => 'orders/$id';
+  static const String cancelOrderTemplate = 'orders/{id}/cancellation';
+
+  static String cancelOrder(String id) => 'orders/$id/cancellation';
+
+  static const String orderItems = 'items';
+  static const String cancelOrderItemTemplate = 'items/{id}/cancellation';
+
+  static String cancelOrderItem(String id) => 'items/$id/cancellation';
+
+  // Legacy order aliases for compatibility
+  static const String buyerPendingItems = 'items';
   static const String cancelBuyerPendingItemTemplate =
-      'order/buyer/pending-items/{id}';
+      'items/{id}/cancellation';
 
-  static String cancelBuyerPendingItem(String id) =>
-      'order/buyer/pending-items/$id';
+  static String cancelBuyerPendingItem(String id) => 'items/$id/cancellation';
+  static const String buyerPendingOrders = 'orders';
+  static const String buyerCompletedOrders = 'orders';
+  static const String buyerCancelledOrders = 'orders';
+  static const String buyerCancelledItems = 'items';
+  static const String buyerOrderDetailTemplate = 'orders/{id}';
 
-  static const String buyerPendingOrders = 'order/buyer/pending-orders';
-  static const String buyerCompletedOrders = 'order/buyer/completed-orders';
-  static const String buyerCancelledItems = 'order/buyer/cancelled-items';
-  static const String buyerCancelledOrders = 'order/buyer/cancelled-orders';
-
-  static const String buyerOrderDetailTemplate = 'order/buyer/orders/{id}';
-
-  static String buyerOrderDetail(String id) => 'order/buyer/orders/$id';
+  static String buyerOrderDetail(String id) => 'orders/$id';
 
   static const String buyerRefund = 'order/buyer/refund';
   static const String withdrawBuyerRefundTemplate =

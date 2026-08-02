@@ -92,9 +92,9 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          profile.name ??
-                              profile.username ??
-                              'Cửa hàng đối tác',
+                          profile.name.isNotEmpty
+                              ? profile.name
+                              : 'Cửa hàng đối tác',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 22,

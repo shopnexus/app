@@ -121,7 +121,9 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
                       _buildInfoTile(
                         icon: Icons.person_outline_rounded,
                         label: 'Họ và tên',
-                        value: profile.name ?? 'Chưa cập nhật',
+                        value: profile.name.isNotEmpty
+                            ? profile.name
+                            : 'Chưa cập nhật',
                       ),
                       _buildDivider(),
                       _buildInfoTile(

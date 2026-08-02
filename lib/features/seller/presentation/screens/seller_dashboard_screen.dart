@@ -39,7 +39,9 @@ class SellerDashboardScreen extends ConsumerWidget {
                     : null,
                 child: profile.avatarUrl == null || profile.avatarUrl!.isEmpty
                     ? Text(
-                        (profile.name ?? profile.username ?? 'S')[0]
+                        (profile.name.isNotEmpty
+                                ? profile.name
+                                : (profile.username ?? 'S'))[0]
                             .toUpperCase(),
                         style: const TextStyle(
                           color: AppColors.primary,
@@ -54,7 +56,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Hello, ${profile.name ?? profile.username ?? 'Seller'}',
+                    'Hello, ${profile.name.isNotEmpty ? profile.name : (profile.username ?? 'Seller')}',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

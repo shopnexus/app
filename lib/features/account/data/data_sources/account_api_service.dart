@@ -13,23 +13,19 @@ abstract class AccountApiService {
   factory AccountApiService(Dio dio, {String baseUrl}) = _AccountApiService;
 
   // --- Profile Features ---
-  @GET(ApiEndpoints.profile)
-  Future<DataResponse<AccountProfile>> getProfile();
+  @GET(ApiEndpoints.me)
+  Future<DataResponse<Me>> getProfile();
 
-  @PATCH(ApiEndpoints.profile)
-  Future<DataResponse<AccountProfile>> updateProfile(
+  @PATCH(ApiEndpoints.meProfile)
+  Future<DataResponse<Profile>> updateProfile(
     @Body() UpdateProfileRequest request,
   );
 
-  @PATCH(ApiEndpoints.profileCountry)
-  Future<DataResponse<UpdateCountryResponse>> updateProfileCountry(
-    @Body() UpdateCountryRequest request,
-  );
+  @PATCH(ApiEndpoints.me)
+  Future<DataResponse<Me>> updateAccount(@Body() UpdateAccountRequest request);
 
-  @GET(ApiEndpoints.getAccountById)
-  Future<DataResponse<AccountProfile>> getAccountById(
-    @Query('account_id') String accountId,
-  );
+  @GET(ApiEndpoints.accountDetailTemplate)
+  Future<DataResponse<PublicAccount>> getAccountById(@Path('id') String id);
 
   // --- Contacts Features ---
   @GET(ApiEndpoints.contacts)
@@ -40,34 +36,33 @@ abstract class AccountApiService {
     @Body() CreateContactRequest request,
   );
 
-  @PATCH(ApiEndpoints.contacts)
+  @PATCH(ApiEndpoints.contactDetailTemplate)
   Future<DataResponse<Contact>> updateContact(
+    @Path('id') String contactId,
     @Body() UpdateContactRequest request,
   );
 
-  @DELETE(ApiEndpoints.contacts)
-  Future<DataResponse<MessageResponse>> deleteContact(
-    @Body() Map<String, dynamic> body,
-  );
+  @DELETE(ApiEndpoints.contactDetailTemplate)
+  Future<void> deleteContact(@Path('id') String contactId);
 
   @GET(ApiEndpoints.contactDetailTemplate)
   Future<DataResponse<Contact>> getContactDetail(@Path('id') String contactId);
 
-  // --- Favorites / Wishlist Features ---
+  // --- Favorites / Wishlist Features (FE Mock/Legacy) ---
   @GET(ApiEndpoints.favorites)
   Future<DataResponse<List<AccountFavorite>>> getFavorites(
     @Query('page') int? page,
     @Query('limit') int? limit,
   );
 
-  @POST(ApiEndpoints.favoriteSpuTemplate)
-  Future<DataResponse<AccountFavorite>> addFavorite(
-    @Path('spuId') String spuId,
+  @PUT(ApiEndpoints.favoriteListingTemplate)
+  Future<void> addFavorite(
+    @Path('listingID') String listingId,
   );
 
-  @DELETE(ApiEndpoints.favoriteSpuTemplate)
-  Future<DataResponse<MessageResponse>> removeFavorite(
-    @Path('spuId') String spuId,
+  @DELETE(ApiEndpoints.favoriteListingTemplate)
+  Future<void> removeFavorite(
+    @Path('listingID') String listingId,
   );
 
   // --- Notifications Features ---
@@ -81,12 +76,9 @@ abstract class AccountApiService {
   Future<DataResponse<UnreadCountResponse>> getUnreadCount();
 
   @POST(ApiEndpoints.notificationsRead)
-  Future<DataResponse<MessageResponse>> markAsRead(
-    @Body() ReadNotificationsRequest request,
+  Future<DataResponse<UnreadCountResponse>> markAsRead(
+    @Body() MarkNotificationsReadRequest request,
   );
-
-  @POST(ApiEndpoints.notificationsReadAll)
-  Future<DataResponse<MessageResponse>> markAllAsRead();
 
   // --- Buyer Orders & Pending Items ---
   @GET(ApiEndpoints.buyerPendingItems)

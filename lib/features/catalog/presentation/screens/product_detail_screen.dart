@@ -890,8 +890,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
     final String name =
         sellerProfileState?.when(
-          data: (profile) =>
-              profile.name ?? profile.username ?? 'Cửa hàng đối tác',
+          data: (profile) => profile.name.isNotEmpty
+              ? profile.name
+              : (detail.vendorName ?? 'Cửa hàng đối tác'),
           loading: () => 'Đang tải...',
           error: (_, _) => detail.vendorName ?? 'Shop đối tác',
         ) ??

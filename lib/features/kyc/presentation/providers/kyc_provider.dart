@@ -124,7 +124,8 @@ class KycNotifier extends _$KycNotifier {
           kycModel: kyc,
           isLoading: false,
           idNumber: kyc?.idNumber ?? '',
-          fullName: kyc?.fullName ?? profile.name ?? '',
+          fullName:
+              kyc?.fullName ?? (profile.name.isNotEmpty ? profile.name : ''),
           dateOfBirth: kyc?.dateOfBirth ?? profile.dateOfBirth,
           issueDate: kyc?.issueDate,
           issuePlace: kyc?.issuePlace,

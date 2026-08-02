@@ -6,78 +6,172 @@ part of 'account_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_AccountProfile _$AccountProfileFromJson(Map<String, dynamic> json) =>
-    _AccountProfile(
+_Resource _$ResourceFromJson(Map<String, dynamic> json) => _Resource(
+  id: json['id'] as String,
+  mime: json['mime'] as String,
+  objectKey: json['object_key'] as String,
+  provider: json['provider'] as String,
+  size: (json['size'] as num).toInt(),
+  checksum: json['checksum'] as String?,
+  url: json['url'] as String?,
+  urlExpiresAt: json['url_expires_at'] as String?,
+);
+
+Map<String, dynamic> _$ResourceToJson(_Resource instance) => <String, dynamic>{
+  'id': instance.id,
+  'mime': instance.mime,
+  'object_key': instance.objectKey,
+  'provider': instance.provider,
+  'size': instance.size,
+  'checksum': instance.checksum,
+  'url': instance.url,
+  'url_expires_at': instance.urlExpiresAt,
+};
+
+_Profile _$ProfileFromJson(Map<String, dynamic> json) => _Profile(
+  name: json['name'] as String,
+  country: json['country'] as String,
+  locale: json['locale'] as String,
+  timezone: json['timezone'] as String,
+  createdAt: json['created_at'] as String,
+  avatar: json['avatar'] == null
+      ? null
+      : Resource.fromJson(json['avatar'] as Map<String, dynamic>),
+  dateOfBirth: json['date_of_birth'] as String?,
+  description: json['description'] as String?,
+  gender: json['gender'],
+);
+
+Map<String, dynamic> _$ProfileToJson(_Profile instance) => <String, dynamic>{
+  'name': instance.name,
+  'country': instance.country,
+  'locale': instance.locale,
+  'timezone': instance.timezone,
+  'created_at': instance.createdAt,
+  'avatar': instance.avatar,
+  'date_of_birth': instance.dateOfBirth,
+  'description': instance.description,
+  'gender': instance.gender,
+};
+
+_Me _$MeFromJson(Map<String, dynamic> json) => _Me(
+  id: json['id'] as String,
+  createdAt: json['created_at'] as String,
+  email: json['email'] as String?,
+  emailVerified: json['email_verified'] as bool,
+  hasPassword: json['has_password'] as bool,
+  identityVerified: json['identity_verified'] as bool,
+  phone: json['phone'] as String?,
+  profile: json['profile'] == null
+      ? null
+      : Profile.fromJson(json['profile'] as Map<String, dynamic>),
+  role: json['role'] as String,
+  status: json['status'] as String,
+  username: json['username'] as String?,
+);
+
+Map<String, dynamic> _$MeToJson(_Me instance) => <String, dynamic>{
+  'id': instance.id,
+  'created_at': instance.createdAt,
+  'email': instance.email,
+  'email_verified': instance.emailVerified,
+  'has_password': instance.hasPassword,
+  'identity_verified': instance.identityVerified,
+  'phone': instance.phone,
+  'profile': instance.profile,
+  'role': instance.role,
+  'status': instance.status,
+  'username': instance.username,
+};
+
+_PublicAccount _$PublicAccountFromJson(Map<String, dynamic> json) =>
+    _PublicAccount(
       id: json['id'] as String,
-      dateCreated: json['date_created'] as String,
-      dateUpdated: json['date_updated'] as String,
-      status: json['status'] as String,
-      role: json['role'] as String,
-      phone: json['phone'] as String?,
-      email: json['email'] as String?,
-      username: json['username'] as String?,
-      gender: json['gender'] as String?,
-      name: json['name'] as String?,
-      dateOfBirth: json['date_of_birth'] as String?,
-      emailVerified: json['email_verified'] as bool,
-      phoneVerified: json['phone_verified'] as bool,
-      defaultContactId: json['default_contact_id'] as String?,
-      avatarUrl: json['avatar_url'] as String?,
+      name: json['name'] as String,
+      followerCount: (json['follower_count'] as num).toInt(),
+      identityVerified: json['identity_verified'] as bool,
+      createdAt: json['created_at'] as String,
       description: json['description'] as String?,
-      country: json['country'] as String,
-      currency: json['currency'] as String,
-      internalBalance: (json['internal_balance'] as num).toInt(),
+      avatar: json['avatar'] == null
+          ? null
+          : Resource.fromJson(json['avatar'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$AccountProfileToJson(_AccountProfile instance) =>
+Map<String, dynamic> _$PublicAccountToJson(_PublicAccount instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'date_created': instance.dateCreated,
-      'date_updated': instance.dateUpdated,
-      'status': instance.status,
-      'role': instance.role,
-      'phone': instance.phone,
-      'email': instance.email,
-      'username': instance.username,
-      'gender': instance.gender,
       'name': instance.name,
-      'date_of_birth': instance.dateOfBirth,
-      'email_verified': instance.emailVerified,
-      'phone_verified': instance.phoneVerified,
-      'default_contact_id': instance.defaultContactId,
-      'avatar_url': instance.avatarUrl,
+      'follower_count': instance.followerCount,
+      'identity_verified': instance.identityVerified,
+      'created_at': instance.createdAt,
       'description': instance.description,
-      'country': instance.country,
-      'currency': instance.currency,
-      'internal_balance': instance.internalBalance,
+      'avatar': instance.avatar,
     };
 
 _UpdateProfileRequest _$UpdateProfileRequestFromJson(
   Map<String, dynamic> json,
 ) => _UpdateProfileRequest(
+  name: json['name'] as String?,
+  country: json['country'] as String?,
+  locale: json['locale'] as String?,
+  timezone: json['timezone'] as String?,
+  description: json['description'] as String?,
+  gender: json['gender'] as String?,
+  dateOfBirth: json['date_of_birth'] as String?,
+  avatarResourceId: json['avatar_resource_id'] as String?,
+  avatarRsId: json['avatar_rs_id'] as String?,
+  clearAvatarResourceId: json['clear_avatar_resource_id'] as bool?,
+  clearDateOfBirth: json['clear_date_of_birth'] as bool?,
+  clearDescription: json['clear_description'] as bool?,
+  clearGender: json['clear_gender'] as bool?,
   username: json['username'] as String?,
   phone: json['phone'] as String?,
   email: json['email'] as String?,
-  gender: json['gender'] as String?,
-  name: json['name'] as String?,
-  dateOfBirth: json['date_of_birth'] as String?,
-  avatarRsId: json['avatar_rs_id'] as String?,
   defaultContactId: json['default_contact_id'] as String?,
-  description: json['description'] as String?,
 );
 
 Map<String, dynamic> _$UpdateProfileRequestToJson(
   _UpdateProfileRequest instance,
 ) => <String, dynamic>{
+  'name': instance.name,
+  'country': instance.country,
+  'locale': instance.locale,
+  'timezone': instance.timezone,
+  'description': instance.description,
+  'gender': instance.gender,
+  'date_of_birth': instance.dateOfBirth,
+  'avatar_resource_id': instance.avatarResourceId,
+  'avatar_rs_id': instance.avatarRsId,
+  'clear_avatar_resource_id': instance.clearAvatarResourceId,
+  'clear_date_of_birth': instance.clearDateOfBirth,
+  'clear_description': instance.clearDescription,
+  'clear_gender': instance.clearGender,
   'username': instance.username,
   'phone': instance.phone,
   'email': instance.email,
-  'gender': instance.gender,
-  'name': instance.name,
-  'date_of_birth': instance.dateOfBirth,
-  'avatar_rs_id': instance.avatarRsId,
   'default_contact_id': instance.defaultContactId,
-  'description': instance.description,
+};
+
+_UpdateAccountRequest _$UpdateAccountRequestFromJson(
+  Map<String, dynamic> json,
+) => _UpdateAccountRequest(
+  email: json['email'] as String?,
+  phone: json['phone'] as String?,
+  username: json['username'] as String?,
+  clearEmail: json['clear_email'] as bool?,
+  clearPhone: json['clear_phone'] as bool?,
+  clearUsername: json['clear_username'] as bool?,
+);
+
+Map<String, dynamic> _$UpdateAccountRequestToJson(
+  _UpdateAccountRequest instance,
+) => <String, dynamic>{
+  'email': instance.email,
+  'phone': instance.phone,
+  'username': instance.username,
+  'clear_email': instance.clearEmail,
+  'clear_phone': instance.clearPhone,
+  'clear_username': instance.clearUsername,
 };
 
 _UpdateCountryRequest _$UpdateCountryRequestFromJson(
@@ -104,32 +198,48 @@ Map<String, dynamic> _$UpdateCountryResponseToJson(
 
 _Contact _$ContactFromJson(Map<String, dynamic> json) => _Contact(
   id: json['id'] as String,
-  accountId: json['account_id'] as String,
   fullName: json['full_name'] as String,
   phone: _parsePhone(json['phone']),
   phoneVerified: json['phone_verified'] as bool,
   address: json['address'] as String,
   addressDetail: json['address_detail'] as String?,
   addressType: json['address_type'] as String,
+  country: json['country'] as String,
+  provinceCode: json['province_code'] as String,
+  provinceName: json['province_name'] as String,
+  districtCode: json['district_code'] as String?,
+  districtName: json['district_name'] as String?,
+  wardCode: json['ward_code'] as String,
+  wardName: json['ward_name'] as String,
+  postalCode: json['postal_code'] as String?,
+  isDefaultDelivery: json['is_default_delivery'] as bool,
+  isDefaultPickup: json['is_default_pickup'] as bool,
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
-  dateCreated: json['date_created'] as String,
-  dateUpdated: json['date_updated'] as String?,
+  createdAt: json['created_at'] as String,
 );
 
 Map<String, dynamic> _$ContactToJson(_Contact instance) => <String, dynamic>{
   'id': instance.id,
-  'account_id': instance.accountId,
   'full_name': instance.fullName,
   'phone': instance.phone,
   'phone_verified': instance.phoneVerified,
   'address': instance.address,
   'address_detail': instance.addressDetail,
   'address_type': instance.addressType,
+  'country': instance.country,
+  'province_code': instance.provinceCode,
+  'province_name': instance.provinceName,
+  'district_code': instance.districtCode,
+  'district_name': instance.districtName,
+  'ward_code': instance.wardCode,
+  'ward_name': instance.wardName,
+  'postal_code': instance.postalCode,
+  'is_default_delivery': instance.isDefaultDelivery,
+  'is_default_pickup': instance.isDefaultPickup,
   'latitude': instance.latitude,
   'longitude': instance.longitude,
-  'date_created': instance.dateCreated,
-  'date_updated': instance.dateUpdated,
+  'created_at': instance.createdAt,
 };
 
 _CreateContactRequest _$CreateContactRequestFromJson(
@@ -140,6 +250,16 @@ _CreateContactRequest _$CreateContactRequestFromJson(
   address: json['address'] as String,
   addressDetail: json['address_detail'] as String?,
   addressType: json['address_type'] as String,
+  country: json['country'] as String,
+  provinceCode: json['province_code'] as String,
+  provinceName: json['province_name'] as String,
+  districtCode: json['district_code'] as String?,
+  districtName: json['district_name'] as String?,
+  wardCode: json['ward_code'] as String,
+  wardName: json['ward_name'] as String,
+  postalCode: json['postal_code'] as String?,
+  isDefaultDelivery: json['is_default_delivery'] as bool?,
+  isDefaultPickup: json['is_default_pickup'] as bool?,
   latitude: (json['latitude'] as num).toDouble(),
   longitude: (json['longitude'] as num).toDouble(),
 );
@@ -152,6 +272,16 @@ Map<String, dynamic> _$CreateContactRequestToJson(
   'address': instance.address,
   'address_detail': instance.addressDetail,
   'address_type': instance.addressType,
+  'country': instance.country,
+  'province_code': instance.provinceCode,
+  'province_name': instance.provinceName,
+  'district_code': instance.districtCode,
+  'district_name': instance.districtName,
+  'ward_code': instance.wardCode,
+  'ward_name': instance.wardName,
+  'postal_code': instance.postalCode,
+  'is_default_delivery': instance.isDefaultDelivery,
+  'is_default_pickup': instance.isDefaultPickup,
   'latitude': instance.latitude,
   'longitude': instance.longitude,
 };
@@ -159,12 +289,22 @@ Map<String, dynamic> _$CreateContactRequestToJson(
 _UpdateContactRequest _$UpdateContactRequestFromJson(
   Map<String, dynamic> json,
 ) => _UpdateContactRequest(
-  contactId: json['contact_id'] as String,
+  contactId: json['contact_id'] as String?,
   fullName: json['full_name'] as String?,
   phone: json['phone'] as String?,
   address: json['address'] as String?,
   addressDetail: json['address_detail'] as String?,
   addressType: json['address_type'] as String?,
+  country: json['country'] as String?,
+  provinceCode: json['province_code'] as String?,
+  provinceName: json['province_name'] as String?,
+  districtCode: json['district_code'] as String?,
+  districtName: json['district_name'] as String?,
+  wardCode: json['ward_code'] as String?,
+  wardName: json['ward_name'] as String?,
+  postalCode: json['postal_code'] as String?,
+  isDefaultDelivery: json['is_default_delivery'] as bool?,
+  isDefaultPickup: json['is_default_pickup'] as bool?,
   phoneVerified: json['phone_verified'] as bool?,
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
@@ -179,6 +319,16 @@ Map<String, dynamic> _$UpdateContactRequestToJson(
   'address': instance.address,
   'address_detail': instance.addressDetail,
   'address_type': instance.addressType,
+  'country': instance.country,
+  'province_code': instance.provinceCode,
+  'province_name': instance.provinceName,
+  'district_code': instance.districtCode,
+  'district_name': instance.districtName,
+  'ward_code': instance.wardCode,
+  'ward_name': instance.wardName,
+  'postal_code': instance.postalCode,
+  'is_default_delivery': instance.isDefaultDelivery,
+  'is_default_pickup': instance.isDefaultPickup,
   'phone_verified': instance.phoneVerified,
   'latitude': instance.latitude,
   'longitude': instance.longitude,
@@ -218,40 +368,40 @@ Map<String, dynamic> _$NotificationMetadataToJson(
 
 _Notification _$NotificationFromJson(Map<String, dynamic> json) =>
     _Notification(
-      id: (json['id'] as num).toInt(),
-      accountId: json['account_id'] as String,
-      type: json['type'] as String,
-      channel: json['channel'] as String,
       title: json['title'] as String,
-      content: json['content'] as String,
-      isRead: json['is_read'] as bool,
-      metadata: json['metadata'] == null
-          ? null
-          : NotificationMetadata.fromJson(
-              json['metadata'] as Map<String, dynamic>,
-            ),
-      dateCreated: json['date_created'] as String,
+      category: json['category'] as String,
+      createdAt: json['created_at'] as String,
+      payload: json['payload'] as Map<String, dynamic>?,
+      readAt: json['read_at'] as String?,
+      legacyId: (json['legacyId'] as num?)?.toInt(),
+      legacyContent: json['legacyContent'] as String?,
     );
 
 Map<String, dynamic> _$NotificationToJson(_Notification instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'account_id': instance.accountId,
-      'type': instance.type,
-      'channel': instance.channel,
       'title': instance.title,
-      'content': instance.content,
-      'is_read': instance.isRead,
-      'metadata': instance.metadata,
-      'date_created': instance.dateCreated,
+      'category': instance.category,
+      'created_at': instance.createdAt,
+      'payload': instance.payload,
+      'read_at': instance.readAt,
+      'legacyId': instance.legacyId,
+      'legacyContent': instance.legacyContent,
     };
 
 _UnreadCountResponse _$UnreadCountResponseFromJson(Map<String, dynamic> json) =>
-    _UnreadCountResponse(count: (json['count'] as num).toInt());
+    _UnreadCountResponse(unread: (json['unread'] as num).toInt());
 
 Map<String, dynamic> _$UnreadCountResponseToJson(
   _UnreadCountResponse instance,
-) => <String, dynamic>{'count': instance.count};
+) => <String, dynamic>{'unread': instance.unread};
+
+_MarkNotificationsReadRequest _$MarkNotificationsReadRequestFromJson(
+  Map<String, dynamic> json,
+) => _MarkNotificationsReadRequest(before: json['before'] as String);
+
+Map<String, dynamic> _$MarkNotificationsReadRequestToJson(
+  _MarkNotificationsReadRequest instance,
+) => <String, dynamic>{'before': instance.before};
 
 _ReadNotificationsRequest _$ReadNotificationsRequestFromJson(
   Map<String, dynamic> json,

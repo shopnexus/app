@@ -215,9 +215,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      profile.name ??
-                                          profile.username ??
-                                          'Chưa đặt tên',
+                                      profile.name.isNotEmpty
+                                          ? profile.name
+                                          : (profile.username ??
+                                                'Chưa đặt tên'),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(

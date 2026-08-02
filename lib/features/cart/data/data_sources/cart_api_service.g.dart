@@ -31,7 +31,7 @@ class _CartApiService implements CartApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/cart',
+            'cart-items',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -67,7 +67,7 @@ class _CartApiService implements CartApiService {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/cart',
+            'cart-items',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -86,7 +86,7 @@ class _CartApiService implements CartApiService {
       Options(method: 'DELETE', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/cart',
+            'cart-items',
             queryParameters: queryParameters,
             data: _data,
           )

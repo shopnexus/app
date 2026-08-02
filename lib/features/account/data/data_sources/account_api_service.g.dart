@@ -22,27 +22,27 @@ class _AccountApiService implements AccountApiService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<DataResponse<AccountProfile>> getProfile() async {
+  Future<DataResponse<Me>> getProfile() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<AccountProfile>>(
+    final _options = _setStreamType<DataResponse<Me>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/me',
+            'me',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<AccountProfile> _value;
+    late DataResponse<Me> _value;
     try {
-      _value = DataResponse<AccountProfile>.fromJson(
+      _value = DataResponse<Me>.fromJson(
         _result.data!,
-        (json) => AccountProfile.fromJson(json as Map<String, dynamic>),
+        (json) => Me.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -52,7 +52,7 @@ class _AccountApiService implements AccountApiService {
   }
 
   @override
-  Future<DataResponse<AccountProfile>> updateProfile(
+  Future<DataResponse<Profile>> updateProfile(
     UpdateProfileRequest request,
   ) async {
     final _extra = <String, dynamic>{};
@@ -60,22 +60,22 @@ class _AccountApiService implements AccountApiService {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
-    final _options = _setStreamType<DataResponse<AccountProfile>>(
+    final _options = _setStreamType<DataResponse<Profile>>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/me',
+            'me/profile',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<AccountProfile> _value;
+    late DataResponse<Profile> _value;
     try {
-      _value = DataResponse<AccountProfile>.fromJson(
+      _value = DataResponse<Profile>.fromJson(
         _result.data!,
-        (json) => AccountProfile.fromJson(json as Map<String, dynamic>),
+        (json) => Profile.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -85,30 +85,28 @@ class _AccountApiService implements AccountApiService {
   }
 
   @override
-  Future<DataResponse<UpdateCountryResponse>> updateProfileCountry(
-    UpdateCountryRequest request,
-  ) async {
+  Future<DataResponse<Me>> updateAccount(UpdateAccountRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
-    final _options = _setStreamType<DataResponse<UpdateCountryResponse>>(
+    final _options = _setStreamType<DataResponse<Me>>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/profile/country',
+            'me',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<UpdateCountryResponse> _value;
+    late DataResponse<Me> _value;
     try {
-      _value = DataResponse<UpdateCountryResponse>.fromJson(
+      _value = DataResponse<Me>.fromJson(
         _result.data!,
-        (json) => UpdateCountryResponse.fromJson(json as Map<String, dynamic>),
+        (json) => Me.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -118,27 +116,27 @@ class _AccountApiService implements AccountApiService {
   }
 
   @override
-  Future<DataResponse<AccountProfile>> getAccountById(String accountId) async {
+  Future<DataResponse<PublicAccount>> getAccountById(String id) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'account_id': accountId};
+    final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<AccountProfile>>(
+    final _options = _setStreamType<DataResponse<PublicAccount>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account',
+            'accounts/${id}',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<AccountProfile> _value;
+    late DataResponse<PublicAccount> _value;
     try {
-      _value = DataResponse<AccountProfile>.fromJson(
+      _value = DataResponse<PublicAccount>.fromJson(
         _result.data!,
-        (json) => AccountProfile.fromJson(json as Map<String, dynamic>),
+        (json) => PublicAccount.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -157,7 +155,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/contact',
+            'contacts',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -196,7 +194,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/contact',
+            'contacts',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -218,6 +216,7 @@ class _AccountApiService implements AccountApiService {
 
   @override
   Future<DataResponse<Contact>> updateContact(
+    String contactId,
     UpdateContactRequest request,
   ) async {
     final _extra = <String, dynamic>{};
@@ -229,7 +228,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/contact',
+            'contacts/${contactId}',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -250,36 +249,22 @@ class _AccountApiService implements AccountApiService {
   }
 
   @override
-  Future<DataResponse<MessageResponse>> deleteContact(
-    Map<String, dynamic> body,
-  ) async {
+  Future<void> deleteContact(String contactId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(body);
-    final _options = _setStreamType<DataResponse<MessageResponse>>(
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<void>(
       Options(method: 'DELETE', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/contact',
+            'contacts/${contactId}',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<MessageResponse> _value;
-    try {
-      _value = DataResponse<MessageResponse>.fromJson(
-        _result.data!,
-        (json) => MessageResponse.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   @override
@@ -292,7 +277,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/contact/${contactId}',
+            'contacts/${contactId}',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -326,7 +311,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/favorite',
+            'favorites',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -353,63 +338,41 @@ class _AccountApiService implements AccountApiService {
   }
 
   @override
-  Future<DataResponse<AccountFavorite>> addFavorite(String spuId) async {
+  Future<void> addFavorite(String listingId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<AccountFavorite>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
+    final _options = _setStreamType<void>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/favorite/${spuId}',
+            'favorites/${listingId}',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<AccountFavorite> _value;
-    try {
-      _value = DataResponse<AccountFavorite>.fromJson(
-        _result.data!,
-        (json) => AccountFavorite.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   @override
-  Future<DataResponse<MessageResponse>> removeFavorite(String spuId) async {
+  Future<void> removeFavorite(String listingId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<MessageResponse>>(
+    final _options = _setStreamType<void>(
       Options(method: 'DELETE', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/favorite/${spuId}',
+            'favorites/${listingId}',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<MessageResponse> _value;
-    try {
-      _value = DataResponse<MessageResponse>.fromJson(
-        _result.data!,
-        (json) => MessageResponse.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   @override
@@ -426,7 +389,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/notification',
+            'notifications',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -462,7 +425,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/notification/unread-count',
+            'notifications/unread-count',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -483,60 +446,30 @@ class _AccountApiService implements AccountApiService {
   }
 
   @override
-  Future<DataResponse<MessageResponse>> markAsRead(
-    ReadNotificationsRequest request,
+  Future<DataResponse<UnreadCountResponse>> markAsRead(
+    MarkNotificationsReadRequest request,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
-    final _options = _setStreamType<DataResponse<MessageResponse>>(
+    final _options = _setStreamType<DataResponse<UnreadCountResponse>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'account/notification/read',
+            'notifications/read',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<MessageResponse> _value;
+    late DataResponse<UnreadCountResponse> _value;
     try {
-      _value = DataResponse<MessageResponse>.fromJson(
+      _value = DataResponse<UnreadCountResponse>.fromJson(
         _result.data!,
-        (json) => MessageResponse.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DataResponse<MessageResponse>> markAllAsRead() async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<MessageResponse>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'account/notification/read-all',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<MessageResponse> _value;
-    try {
-      _value = DataResponse<MessageResponse>.fromJson(
-        _result.data!,
-        (json) => MessageResponse.fromJson(json as Map<String, dynamic>),
+        (json) => UnreadCountResponse.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -559,7 +492,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/buyer/pending-items',
+            'items',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -595,7 +528,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'DELETE', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/buyer/pending-items/${id}',
+            'items/${id}/cancellation',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -618,7 +551,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/buyer/pending-orders',
+            'orders',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -658,7 +591,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/buyer/completed-orders',
+            'orders',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -698,7 +631,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/buyer/cancelled-orders',
+            'orders',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -738,7 +671,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/buyer/cancelled-items',
+            'items',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -774,7 +707,7 @@ class _AccountApiService implements AccountApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/buyer/orders/${id}',
+            'orders/${id}',
             queryParameters: queryParameters,
             data: _data,
           )

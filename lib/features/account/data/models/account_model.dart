@@ -4,56 +4,158 @@ part 'account_model.freezed.dart';
 
 part 'account_model.g.dart';
 
-/// Alias UserProfile cho AccountProfile để tương thích với checklist của task
-typedef UserProfile = AccountProfile;
+/// Resource model dùng chung cho Avatar, tài liệu, v.v. theo OpenAPI
+@freezed
+abstract class Resource with _$Resource {
+  const factory Resource({
+    required String id,
+    required String mime,
+    @JsonKey(name: 'object_key') required String objectKey,
+    required String provider,
+    required int size,
+    String? checksum,
+    String? url,
+    @JsonKey(name: 'url_expires_at') String? urlExpiresAt,
+  }) = _Resource;
+
+  factory Resource.fromJson(Map<String, dynamic> json) =>
+      _$ResourceFromJson(json);
+}
+
+/// Profile model chứa thông tin công khai của User/Seller
+@freezed
+abstract class Profile with _$Profile {
+  const factory Profile({
+    required String name,
+    required String country,
+    required String locale,
+    required String timezone,
+    @JsonKey(name: 'created_at') required String createdAt,
+    Resource? avatar,
+    @JsonKey(name: 'date_of_birth') String? dateOfBirth,
+    String? description,
+    dynamic gender,
+  }) = _Profile;
+
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
+}
+
+/// Model Me đại diện cho tài khoản hiện tại (GET /me)
+@freezed
+abstract class Me with _$Me {
+  const Me._();
+
+  const factory Me({
+    required String id,
+    @JsonKey(name: 'created_at') required String createdAt,
+    String? email,
+    @JsonKey(name: 'email_verified') required bool emailVerified,
+    @JsonKey(name: 'has_password') required bool hasPassword,
+    @JsonKey(name: 'identity_verified') required bool identityVerified,
+    String? phone,
+    Profile? profile,
+    required String role,
+    required String status,
+    String? username,
+  }) = _Me;
+
+  factory Me.fromJson(Map<String, dynamic> json) => _$MeFromJson(json);
+
+  // Helper getters tương thích với giao diện UI cũ
+  String get dateCreated => createdAt;
+
+  String get dateUpdated => createdAt;
+
+  bool get phoneVerified => true;
+
+  String get name => profile?.name ?? username ?? email ?? 'Người dùng';
+
+  String? get avatarUrl => profile?.avatar?.url;
+
+  String? get dateOfBirth => profile?.dateOfBirth;
+
+  String? get description => profile?.description;
+
+  String? get gender => profile?.gender?.toString();
+
+  String get country => profile?.country ?? 'VN';
+
+  String get currency => 'VND';
+
+  int get internalBalance => 0;
+
+  String? get defaultContactId => null;
+}
+
+/// Alias tương thích
+typedef AccountProfile = Me;
+typedef UserProfile = Me;
+
+/// PublicAccount dùng khi xem thông tin tài khoản public của người khác
+@freezed
+abstract class PublicAccount with _$PublicAccount {
+  const PublicAccount._();
+
+  const factory PublicAccount({
+    required String id,
+    required String name,
+    @JsonKey(name: 'follower_count') required int followerCount,
+    @JsonKey(name: 'identity_verified') required bool identityVerified,
+    @JsonKey(name: 'created_at') required String createdAt,
+    String? description,
+    Resource? avatar,
+  }) = _PublicAccount;
+
+  factory PublicAccount.fromJson(Map<String, dynamic> json) =>
+      _$PublicAccountFromJson(json);
+
+  String? get avatarUrl => avatar?.url;
+}
 
 @freezed
-abstract class AccountProfile with _$AccountProfile {
-  const factory AccountProfile({
-    required String id,
-    @JsonKey(name: 'date_created') required String dateCreated,
-    @JsonKey(name: 'date_updated') required String dateUpdated,
-    required String status,
-    required String role,
+abstract class UpdateProfileRequest with _$UpdateProfileRequest {
+  const factory UpdateProfileRequest({
+    String? name,
+    String? country,
+    String? locale,
+    String? timezone,
+    String? description,
+    String? gender, // 'male' | 'female' | 'other'
+    @JsonKey(name: 'date_of_birth') String? dateOfBirth,
+    @JsonKey(name: 'avatar_resource_id') String? avatarResourceId,
+    @JsonKey(name: 'avatar_rs_id') String? avatarRsId,
+    @JsonKey(name: 'clear_avatar_resource_id') bool? clearAvatarResourceId,
+    @JsonKey(name: 'clear_date_of_birth') bool? clearDateOfBirth,
+    @JsonKey(name: 'clear_description') bool? clearDescription,
+    @JsonKey(name: 'clear_gender') bool? clearGender,
+    // Fields tương thích
+    String? username,
     String? phone,
     String? email,
-    String? username,
-    String? gender,
-    String? name,
-    @JsonKey(name: 'date_of_birth') String? dateOfBirth,
-    @JsonKey(name: 'email_verified') required bool emailVerified,
-    @JsonKey(name: 'phone_verified') required bool phoneVerified,
     @JsonKey(name: 'default_contact_id') String? defaultContactId,
-    @JsonKey(name: 'avatar_url') String? avatarUrl,
-    String? description,
-    required String country,
-    required String currency,
-    @JsonKey(name: 'internal_balance') required int internalBalance,
-  }) = _AccountProfile;
+  }) = _UpdateProfileRequest;
 
-  factory AccountProfile.fromJson(Map<String, dynamic> json) =>
-      _$AccountProfileFromJson(json);
+  factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateProfileRequestFromJson(json);
 
   @override
   Map<String, dynamic> toJson();
 }
 
 @freezed
-abstract class UpdateProfileRequest with _$UpdateProfileRequest {
-  const factory UpdateProfileRequest({
-    String? username,
-    String? phone,
+abstract class UpdateAccountRequest with _$UpdateAccountRequest {
+  const factory UpdateAccountRequest({
     String? email,
-    String? gender, // 'Male' | 'Female' | 'Other'
-    String? name,
-    @JsonKey(name: 'date_of_birth') String? dateOfBirth,
-    @JsonKey(name: 'avatar_rs_id') String? avatarRsId,
-    @JsonKey(name: 'default_contact_id') String? defaultContactId,
-    String? description,
-  }) = _UpdateProfileRequest;
+    String? phone,
+    String? username,
+    @JsonKey(name: 'clear_email') bool? clearEmail,
+    @JsonKey(name: 'clear_phone') bool? clearPhone,
+    @JsonKey(name: 'clear_username') bool? clearUsername,
+  }) = _UpdateAccountRequest;
 
-  factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateProfileRequestFromJson(json);
+  factory UpdateAccountRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateAccountRequestFromJson(json);
 
   @override
   Map<String, dynamic> toJson();
@@ -80,9 +182,6 @@ abstract class UpdateCountryResponse with _$UpdateCountryResponse {
 
   factory UpdateCountryResponse.fromJson(Map<String, dynamic> json) =>
       _$UpdateCountryResponseFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
 }
 
 String _parsePhone(dynamic value) {
@@ -92,27 +191,40 @@ String _parsePhone(dynamic value) {
 
 @freezed
 abstract class Contact with _$Contact {
+  const Contact._();
+
   const factory Contact({
     required String id,
-    @JsonKey(name: 'account_id') required String accountId,
     @JsonKey(name: 'full_name') required String fullName,
     @JsonKey(fromJson: _parsePhone) required String phone,
     @JsonKey(name: 'phone_verified') required bool phoneVerified,
     required String address,
     @JsonKey(name: 'address_detail') String? addressDetail,
     @JsonKey(name: 'address_type')
-    required String addressType, // 'Home' | 'Office' | 'Other'
+    required String addressType, // 'home' | 'work'
+    required String country,
+    @JsonKey(name: 'province_code') required String provinceCode,
+    @JsonKey(name: 'province_name') required String provinceName,
+    @JsonKey(name: 'district_code') String? districtCode,
+    @JsonKey(name: 'district_name') String? districtName,
+    @JsonKey(name: 'ward_code') required String wardCode,
+    @JsonKey(name: 'ward_name') required String wardName,
+    @JsonKey(name: 'postal_code') String? postalCode,
+    @JsonKey(name: 'is_default_delivery') required bool isDefaultDelivery,
+    @JsonKey(name: 'is_default_pickup') required bool isDefaultPickup,
     double? latitude,
     double? longitude,
-    @JsonKey(name: 'date_created') required String dateCreated,
-    @JsonKey(name: 'date_updated') String? dateUpdated,
+    @JsonKey(name: 'created_at') required String createdAt,
   }) = _Contact;
 
   factory Contact.fromJson(Map<String, dynamic> json) =>
       _$ContactFromJson(json);
 
-  @override
-  Map<String, dynamic> toJson();
+  String get accountId => '';
+
+  String get dateCreated => createdAt;
+
+  bool get isDefault => isDefaultDelivery;
 }
 
 @freezed
@@ -123,7 +235,17 @@ abstract class CreateContactRequest with _$CreateContactRequest {
     required String address,
     @JsonKey(name: 'address_detail') String? addressDetail,
     @JsonKey(name: 'address_type')
-    required String addressType, // 'Home' | 'Office' | 'Other'
+    required String addressType, // 'home' | 'work'
+    required String country,
+    @JsonKey(name: 'province_code') required String provinceCode,
+    @JsonKey(name: 'province_name') required String provinceName,
+    @JsonKey(name: 'district_code') String? districtCode,
+    @JsonKey(name: 'district_name') String? districtName,
+    @JsonKey(name: 'ward_code') required String wardCode,
+    @JsonKey(name: 'ward_name') required String wardName,
+    @JsonKey(name: 'postal_code') String? postalCode,
+    @JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,
+    @JsonKey(name: 'is_default_pickup') bool? isDefaultPickup,
     required double latitude,
     required double longitude,
   }) = _CreateContactRequest;
@@ -138,13 +260,22 @@ abstract class CreateContactRequest with _$CreateContactRequest {
 @freezed
 abstract class UpdateContactRequest with _$UpdateContactRequest {
   const factory UpdateContactRequest({
-    @JsonKey(name: 'contact_id') required String contactId,
+    @JsonKey(name: 'contact_id') String? contactId, // Legacy
     @JsonKey(name: 'full_name') String? fullName,
     String? phone,
     String? address,
     @JsonKey(name: 'address_detail') String? addressDetail,
-    @JsonKey(name: 'address_type')
-    String? addressType, // 'Home' | 'Office' | 'Other'
+    @JsonKey(name: 'address_type') String? addressType,
+    String? country,
+    @JsonKey(name: 'province_code') String? provinceCode,
+    @JsonKey(name: 'province_name') String? provinceName,
+    @JsonKey(name: 'district_code') String? districtCode,
+    @JsonKey(name: 'district_name') String? districtName,
+    @JsonKey(name: 'ward_code') String? wardCode,
+    @JsonKey(name: 'ward_name') String? wardName,
+    @JsonKey(name: 'postal_code') String? postalCode,
+    @JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,
+    @JsonKey(name: 'is_default_pickup') bool? isDefaultPickup,
     @JsonKey(name: 'phone_verified') bool? phoneVerified,
     double? latitude,
     double? longitude,
@@ -168,9 +299,6 @@ abstract class AccountFavorite with _$AccountFavorite {
 
   factory AccountFavorite.fromJson(Map<String, dynamic> json) =>
       _$AccountFavoriteFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
 }
 
 @freezed
@@ -183,39 +311,68 @@ abstract class NotificationMetadata with _$NotificationMetadata {
 
   factory NotificationMetadata.fromJson(Map<String, dynamic> json) =>
       _$NotificationMetadataFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
 }
 
 @freezed
 abstract class Notification with _$Notification {
+  const Notification._();
+
   const factory Notification({
-    required int id,
-    @JsonKey(name: 'account_id') required String accountId,
-    required String type,
-    required String channel,
     required String title,
-    required String content,
-    @JsonKey(name: 'is_read') required bool isRead,
-    NotificationMetadata? metadata,
-    @JsonKey(name: 'date_created') required String dateCreated,
+    required String
+    category, // 'order' | 'promotion' | 'system' | 'chat' | 'social'
+    @JsonKey(name: 'created_at') required String createdAt,
+    Map<String, dynamic>? payload,
+    @JsonKey(name: 'read_at') String? readAt,
+    // Fields tương thích
+    int? legacyId,
+    String? legacyContent,
   }) = _Notification;
 
   factory Notification.fromJson(Map<String, dynamic> json) =>
       _$NotificationFromJson(json);
 
-  @override
-  Map<String, dynamic> toJson();
+  bool get isRead => readAt != null;
+
+  String get type => category;
+
+  String get channel => 'push';
+
+  String get content =>
+      legacyContent ??
+      payload?['content']?.toString() ??
+      payload?['body']?.toString() ??
+      title;
+
+  String get dateCreated => createdAt;
+
+  int get id => legacyId ?? createdAt.hashCode;
+
+  NotificationMetadata? get metadata =>
+      payload != null ? NotificationMetadata.fromJson(payload!) : null;
 }
 
 @freezed
 abstract class UnreadCountResponse with _$UnreadCountResponse {
-  const factory UnreadCountResponse({required int count}) =
+  const UnreadCountResponse._();
+
+  const factory UnreadCountResponse({required int unread}) =
       _UnreadCountResponse;
 
   factory UnreadCountResponse.fromJson(Map<String, dynamic> json) =>
       _$UnreadCountResponseFromJson(json);
+
+  int get count => unread;
+}
+
+@freezed
+abstract class MarkNotificationsReadRequest
+    with _$MarkNotificationsReadRequest {
+  const factory MarkNotificationsReadRequest({required String before}) =
+      _MarkNotificationsReadRequest;
+
+  factory MarkNotificationsReadRequest.fromJson(Map<String, dynamic> json) =>
+      _$MarkNotificationsReadRequestFromJson(json);
 
   @override
   Map<String, dynamic> toJson();
@@ -251,9 +408,6 @@ abstract class BuyerOrderItem with _$BuyerOrderItem {
 
   factory BuyerOrderItem.fromJson(Map<String, dynamic> json) =>
       _$BuyerOrderItemFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
 }
 
 @freezed
@@ -266,9 +420,6 @@ abstract class BuyerOrderTransport with _$BuyerOrderTransport {
 
   factory BuyerOrderTransport.fromJson(Map<String, dynamic> json) =>
       _$BuyerOrderTransportFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
 }
 
 @freezed
@@ -286,9 +437,6 @@ abstract class BuyerOrder with _$BuyerOrder {
 
   factory BuyerOrder.fromJson(Map<String, dynamic> json) =>
       _$BuyerOrderFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
 }
 
 @freezed
@@ -297,7 +445,4 @@ abstract class MessageResponse with _$MessageResponse {
 
   factory MessageResponse.fromJson(Map<String, dynamic> json) =>
       _$MessageResponseFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
 }
