@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/constants/app_config.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../../../../shared/data_sources/common_api_service.dart';
 import '../../../account/data/repositories/account_repository.dart';
@@ -8,7 +7,6 @@ import '../../data/models/cart_model.dart';
 import '../../data/repositories/cart_repository.dart';
 
 part 'cart_provider.freezed.dart';
-
 part 'cart_provider.g.dart';
 
 @freezed
@@ -29,7 +27,7 @@ abstract class CartState with _$CartState {
 
     for (final item in items) {
       final origCurrency = item.currency.toUpperCase();
-      final itemPrice = item.sku.price.toDouble();
+      final itemPrice = (item.sku?.price ?? 0).toDouble();
 
       double itemPriceInPreferred = itemPrice;
 
@@ -90,15 +88,6 @@ class CartNotifier extends _$CartNotifier {
       final profile = await accountRepository.getProfile();
       final preferredCurrency = profile.currency;
 
-      if (AppConfig.useMockData) {
-        if (!ref.mounted) return;
-        state = state.copyWith(
-          preferredCurrency: preferredCurrency,
-          rates: const {'VND': 25000.0, 'USD': 1.0, 'EUR': 0.92},
-        );
-        return;
-      }
-
       if (!ref.mounted) return;
       final commonApiService = ref.read(commonApiServiceProvider);
       final ratesResponse = await commonApiService.getExchangeRates();
@@ -139,15 +128,15 @@ class CartNotifier extends _$CartNotifier {
     }
   }
 
-  /// Thêm item vào giỏ hàng
-  Future<void> addItem(String skuId, int quantity) async {
+  /// Thêm item vào giỏ hàng với variantId và quantity
+  Future<void> addItem(String variantId, int quantity) async {
     if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final repository = ref.read(cartRepositoryProvider);
 
-      await repository.updateCart(
-        UpdateCartRequest(skuId: skuId, deltaQuantity: quantity),
+      await repository.addCartItem(
+        AddCartItemRequest(variantId: variantId, quantity: quantity),
       );
 
       if (!ref.mounted) return;
@@ -162,13 +151,18 @@ class CartNotifier extends _$CartNotifier {
   }
 
   /// Xóa item khỏi giỏ hàng
-  Future<void> removeItem(String skuId) async {
+  Future<void> removeItem(String idOrVariantId) async {
     if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final repository = ref.read(cartRepositoryProvider);
 
-      await repository.updateCart(UpdateCartRequest(skuId: skuId, quantity: 0));
+      final currentItem = state.items.firstWhere(
+        (item) => item.id == idOrVariantId || item.variantId == idOrVariantId || item.sku?.id == idOrVariantId,
+        orElse: () => CartItem(id: idOrVariantId, listingId: '', variantId: idOrVariantId, quantity: 0),
+      );
+
+      await repository.deleteCartItem(currentItem.id);
 
       if (!ref.mounted) return;
       await fetchCart();
@@ -181,28 +175,47 @@ class CartNotifier extends _$CartNotifier {
     }
   }
 
-  /// Tăng hoặc giảm số lượng của một SKU
-  Future<void> updateQuantity(String skuId, int deltaQuantity) async {
+  /// Tăng hoặc giảm số lượng của một item
+  Future<void> updateQuantity(String idOrVariantId, int deltaQuantity) async {
     if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final repository = ref.read(cartRepositoryProvider);
 
       final currentItem = state.items.firstWhere(
-        (item) => item.sku.id == skuId,
+        (item) => item.id == idOrVariantId || item.variantId == idOrVariantId || item.sku?.id == idOrVariantId,
         orElse: () => throw Exception('Item not found in cart'),
       );
 
       final newQuantity = currentItem.quantity + deltaQuantity;
       if (newQuantity <= 0) {
-        await removeItem(skuId);
+        await removeItem(currentItem.id);
       } else {
-        await repository.updateCart(
-          UpdateCartRequest(skuId: skuId, deltaQuantity: deltaQuantity),
+        await repository.updateCartItem(
+          currentItem.id,
+          UpdateCartItemRequest(quantity: newQuantity),
         );
         if (!ref.mounted) return;
         await fetchCart();
       }
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: ErrorHandler.getErrorMessage(e),
+      );
+    }
+  }
+
+  /// Xóa sạch giỏ hàng
+  Future<void> clearCart() async {
+    if (!ref.mounted) return;
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final repository = ref.read(cartRepositoryProvider);
+      await repository.clearCart();
+      if (!ref.mounted) return;
+      state = state.copyWith(items: [], isLoading: false);
     } catch (e) {
       if (!ref.mounted) return;
       state = state.copyWith(

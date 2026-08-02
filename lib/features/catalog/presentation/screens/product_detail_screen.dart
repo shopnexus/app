@@ -1753,6 +1753,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
                         // Tạo CartItem giả lập từ chi tiết SKU và SPU hiện tại
                         final buyNowCartItem = CartItem(
+                          id: 'buynow_${_selectedSku!.id}',
+                          listingId: detail.id,
+                          variantId: _selectedSku!.id,
                           spuId: detail.id,
                           sku: CartSku(
                             id: _selectedSku!.id,

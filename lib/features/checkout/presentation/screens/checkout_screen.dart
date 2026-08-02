@@ -1230,8 +1230,8 @@ class CheckoutScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.sku.name.isNotEmpty
-                              ? item.sku.name
+                          (item.sku?.name.isNotEmpty ?? false)
+                              ? item.sku!.name
                               : 'Product Sku',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -1254,7 +1254,7 @@ class CheckoutScreen extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    MoneyUtils.format(item.sku.price, currency: item.currency),
+                    MoneyUtils.format(item.sku?.price ?? 0, currency: item.currency),
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 13,

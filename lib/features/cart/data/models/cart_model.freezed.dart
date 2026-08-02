@@ -600,7 +600,8 @@ $PackageDetailsCopyWith<$Res>? get packageDetails {
 /// @nodoc
 mixin _$CartItem {
 
-@JsonKey(name: 'spu_id') String get spuId; CartSku get sku; int get quantity; ResourceModel? get resource; String get currency;
+ String get id;@JsonKey(name: 'listing_id') String get listingId;@JsonKey(name: 'variant_id') String get variantId; int get quantity;@JsonKey(name: 'created_at') String? get createdAt;// Optional populated / UI display helper fields:
+@JsonKey(name: 'spu_id') String? get spuId; CartSku? get sku; ResourceModel? get resource; String get currency;
 /// Create a copy of CartItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -613,16 +614,16 @@ $CartItemCopyWith<CartItem> get copyWith => _$CartItemCopyWithImpl<CartItem>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartItem&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.sku, sku) || other.sku == sku)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.resource, resource) || other.resource == resource)&&(identical(other.currency, currency) || other.currency == currency));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartItem&&(identical(other.id, id) || other.id == id)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.sku, sku) || other.sku == sku)&&(identical(other.resource, resource) || other.resource == resource)&&(identical(other.currency, currency) || other.currency == currency));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,spuId,sku,quantity,resource,currency);
+int get hashCode => Object.hash(runtimeType,id,listingId,variantId,quantity,createdAt,spuId,sku,resource,currency);
 
 @override
 String toString() {
-  return 'CartItem(spuId: $spuId, sku: $sku, quantity: $quantity, resource: $resource, currency: $currency)';
+  return 'CartItem(id: $id, listingId: $listingId, variantId: $variantId, quantity: $quantity, createdAt: $createdAt, spuId: $spuId, sku: $sku, resource: $resource, currency: $currency)';
 }
 
 
@@ -633,11 +634,11 @@ abstract mixin class $CartItemCopyWith<$Res>  {
   factory $CartItemCopyWith(CartItem value, $Res Function(CartItem) _then) = _$CartItemCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'spu_id') String spuId, CartSku sku, int quantity, ResourceModel? resource, String currency
+ String id,@JsonKey(name: 'listing_id') String listingId,@JsonKey(name: 'variant_id') String variantId, int quantity,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'spu_id') String? spuId, CartSku? sku, ResourceModel? resource, String currency
 });
 
 
-$CartSkuCopyWith<$Res> get sku;$ResourceModelCopyWith<$Res>? get resource;
+$CartSkuCopyWith<$Res>? get sku;$ResourceModelCopyWith<$Res>? get resource;
 
 }
 /// @nodoc
@@ -650,12 +651,16 @@ class _$CartItemCopyWithImpl<$Res>
 
 /// Create a copy of CartItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? spuId = null,Object? sku = null,Object? quantity = null,Object? resource = freezed,Object? currency = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? listingId = null,Object? variantId = null,Object? quantity = null,Object? createdAt = freezed,Object? spuId = freezed,Object? sku = freezed,Object? resource = freezed,Object? currency = null,}) {
   return _then(_self.copyWith(
-spuId: null == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
-as String,sku: null == sku ? _self.sku : sku // ignore: cast_nullable_to_non_nullable
-as CartSku,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,resource: freezed == resource ? _self.resource : resource // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
+as String,variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,spuId: freezed == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
+as String?,sku: freezed == sku ? _self.sku : sku // ignore: cast_nullable_to_non_nullable
+as CartSku?,resource: freezed == resource ? _self.resource : resource // ignore: cast_nullable_to_non_nullable
 as ResourceModel?,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -664,9 +669,12 @@ as String,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$CartSkuCopyWith<$Res> get sku {
-  
-  return $CartSkuCopyWith<$Res>(_self.sku, (value) {
+$CartSkuCopyWith<$Res>? get sku {
+    if (_self.sku == null) {
+    return null;
+  }
+
+  return $CartSkuCopyWith<$Res>(_self.sku!, (value) {
     return _then(_self.copyWith(sku: value));
   });
 }/// Create a copy of CartItem
@@ -763,10 +771,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'spu_id')  String spuId,  CartSku sku,  int quantity,  ResourceModel? resource,  String currency)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  ResourceModel? resource,  String currency)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CartItem() when $default != null:
-return $default(_that.spuId,_that.sku,_that.quantity,_that.resource,_that.currency);case _:
+return $default(_that.id,_that.listingId,_that.variantId,_that.quantity,_that.createdAt,_that.spuId,_that.sku,_that.resource,_that.currency);case _:
   return orElse();
 
 }
@@ -784,10 +792,10 @@ return $default(_that.spuId,_that.sku,_that.quantity,_that.resource,_that.curren
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'spu_id')  String spuId,  CartSku sku,  int quantity,  ResourceModel? resource,  String currency)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  ResourceModel? resource,  String currency)  $default,) {final _that = this;
 switch (_that) {
 case _CartItem():
-return $default(_that.spuId,_that.sku,_that.quantity,_that.resource,_that.currency);case _:
+return $default(_that.id,_that.listingId,_that.variantId,_that.quantity,_that.createdAt,_that.spuId,_that.sku,_that.resource,_that.currency);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -804,10 +812,10 @@ return $default(_that.spuId,_that.sku,_that.quantity,_that.resource,_that.curren
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'spu_id')  String spuId,  CartSku sku,  int quantity,  ResourceModel? resource,  String currency)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  ResourceModel? resource,  String currency)?  $default,) {final _that = this;
 switch (_that) {
 case _CartItem() when $default != null:
-return $default(_that.spuId,_that.sku,_that.quantity,_that.resource,_that.currency);case _:
+return $default(_that.id,_that.listingId,_that.variantId,_that.quantity,_that.createdAt,_that.spuId,_that.sku,_that.resource,_that.currency);case _:
   return null;
 
 }
@@ -819,14 +827,19 @@ return $default(_that.spuId,_that.sku,_that.quantity,_that.resource,_that.curren
 @JsonSerializable()
 
 class _CartItem implements CartItem {
-  const _CartItem({@JsonKey(name: 'spu_id') required this.spuId, required this.sku, required this.quantity, this.resource, required this.currency});
+  const _CartItem({required this.id, @JsonKey(name: 'listing_id') required this.listingId, @JsonKey(name: 'variant_id') required this.variantId, required this.quantity, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'spu_id') this.spuId, this.sku, this.resource, this.currency = 'VND'});
   factory _CartItem.fromJson(Map<String, dynamic> json) => _$CartItemFromJson(json);
 
-@override@JsonKey(name: 'spu_id') final  String spuId;
-@override final  CartSku sku;
+@override final  String id;
+@override@JsonKey(name: 'listing_id') final  String listingId;
+@override@JsonKey(name: 'variant_id') final  String variantId;
 @override final  int quantity;
+@override@JsonKey(name: 'created_at') final  String? createdAt;
+// Optional populated / UI display helper fields:
+@override@JsonKey(name: 'spu_id') final  String? spuId;
+@override final  CartSku? sku;
 @override final  ResourceModel? resource;
-@override final  String currency;
+@override@JsonKey() final  String currency;
 
 /// Create a copy of CartItem
 /// with the given fields replaced by the non-null parameter values.
@@ -841,16 +854,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CartItem&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.sku, sku) || other.sku == sku)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.resource, resource) || other.resource == resource)&&(identical(other.currency, currency) || other.currency == currency));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CartItem&&(identical(other.id, id) || other.id == id)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.spuId, spuId) || other.spuId == spuId)&&(identical(other.sku, sku) || other.sku == sku)&&(identical(other.resource, resource) || other.resource == resource)&&(identical(other.currency, currency) || other.currency == currency));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,spuId,sku,quantity,resource,currency);
+int get hashCode => Object.hash(runtimeType,id,listingId,variantId,quantity,createdAt,spuId,sku,resource,currency);
 
 @override
 String toString() {
-  return 'CartItem(spuId: $spuId, sku: $sku, quantity: $quantity, resource: $resource, currency: $currency)';
+  return 'CartItem(id: $id, listingId: $listingId, variantId: $variantId, quantity: $quantity, createdAt: $createdAt, spuId: $spuId, sku: $sku, resource: $resource, currency: $currency)';
 }
 
 
@@ -861,11 +874,11 @@ abstract mixin class _$CartItemCopyWith<$Res> implements $CartItemCopyWith<$Res>
   factory _$CartItemCopyWith(_CartItem value, $Res Function(_CartItem) _then) = __$CartItemCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'spu_id') String spuId, CartSku sku, int quantity, ResourceModel? resource, String currency
+ String id,@JsonKey(name: 'listing_id') String listingId,@JsonKey(name: 'variant_id') String variantId, int quantity,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'spu_id') String? spuId, CartSku? sku, ResourceModel? resource, String currency
 });
 
 
-@override $CartSkuCopyWith<$Res> get sku;@override $ResourceModelCopyWith<$Res>? get resource;
+@override $CartSkuCopyWith<$Res>? get sku;@override $ResourceModelCopyWith<$Res>? get resource;
 
 }
 /// @nodoc
@@ -878,12 +891,16 @@ class __$CartItemCopyWithImpl<$Res>
 
 /// Create a copy of CartItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? spuId = null,Object? sku = null,Object? quantity = null,Object? resource = freezed,Object? currency = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? listingId = null,Object? variantId = null,Object? quantity = null,Object? createdAt = freezed,Object? spuId = freezed,Object? sku = freezed,Object? resource = freezed,Object? currency = null,}) {
   return _then(_CartItem(
-spuId: null == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
-as String,sku: null == sku ? _self.sku : sku // ignore: cast_nullable_to_non_nullable
-as CartSku,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,resource: freezed == resource ? _self.resource : resource // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
+as String,variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,spuId: freezed == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
+as String?,sku: freezed == sku ? _self.sku : sku // ignore: cast_nullable_to_non_nullable
+as CartSku?,resource: freezed == resource ? _self.resource : resource // ignore: cast_nullable_to_non_nullable
 as ResourceModel?,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -893,9 +910,12 @@ as String,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$CartSkuCopyWith<$Res> get sku {
-  
-  return $CartSkuCopyWith<$Res>(_self.sku, (value) {
+$CartSkuCopyWith<$Res>? get sku {
+    if (_self.sku == null) {
+    return null;
+  }
+
+  return $CartSkuCopyWith<$Res>(_self.sku!, (value) {
     return _then(_self.copyWith(sku: value));
   });
 }/// Create a copy of CartItem
@@ -915,42 +935,42 @@ $ResourceModelCopyWith<$Res>? get resource {
 
 
 /// @nodoc
-mixin _$UpdateCartRequest {
+mixin _$AddCartItemRequest {
 
-@JsonKey(name: 'sku_id') String get skuId; int? get quantity;@JsonKey(name: 'delta_quantity') int? get deltaQuantity;
-/// Create a copy of UpdateCartRequest
+@JsonKey(name: 'variant_id') String get variantId; int get quantity;
+/// Create a copy of AddCartItemRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$UpdateCartRequestCopyWith<UpdateCartRequest> get copyWith => _$UpdateCartRequestCopyWithImpl<UpdateCartRequest>(this as UpdateCartRequest, _$identity);
+$AddCartItemRequestCopyWith<AddCartItemRequest> get copyWith => _$AddCartItemRequestCopyWithImpl<AddCartItemRequest>(this as AddCartItemRequest, _$identity);
 
-  /// Serializes this UpdateCartRequest to a JSON map.
+  /// Serializes this AddCartItemRequest to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateCartRequest&&(identical(other.skuId, skuId) || other.skuId == skuId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.deltaQuantity, deltaQuantity) || other.deltaQuantity == deltaQuantity));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AddCartItemRequest&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.quantity, quantity) || other.quantity == quantity));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,skuId,quantity,deltaQuantity);
+int get hashCode => Object.hash(runtimeType,variantId,quantity);
 
 @override
 String toString() {
-  return 'UpdateCartRequest(skuId: $skuId, quantity: $quantity, deltaQuantity: $deltaQuantity)';
+  return 'AddCartItemRequest(variantId: $variantId, quantity: $quantity)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $UpdateCartRequestCopyWith<$Res>  {
-  factory $UpdateCartRequestCopyWith(UpdateCartRequest value, $Res Function(UpdateCartRequest) _then) = _$UpdateCartRequestCopyWithImpl;
+abstract mixin class $AddCartItemRequestCopyWith<$Res>  {
+  factory $AddCartItemRequestCopyWith(AddCartItemRequest value, $Res Function(AddCartItemRequest) _then) = _$AddCartItemRequestCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'sku_id') String skuId, int? quantity,@JsonKey(name: 'delta_quantity') int? deltaQuantity
+@JsonKey(name: 'variant_id') String variantId, int quantity
 });
 
 
@@ -958,29 +978,28 @@ $Res call({
 
 }
 /// @nodoc
-class _$UpdateCartRequestCopyWithImpl<$Res>
-    implements $UpdateCartRequestCopyWith<$Res> {
-  _$UpdateCartRequestCopyWithImpl(this._self, this._then);
+class _$AddCartItemRequestCopyWithImpl<$Res>
+    implements $AddCartItemRequestCopyWith<$Res> {
+  _$AddCartItemRequestCopyWithImpl(this._self, this._then);
 
-  final UpdateCartRequest _self;
-  final $Res Function(UpdateCartRequest) _then;
+  final AddCartItemRequest _self;
+  final $Res Function(AddCartItemRequest) _then;
 
-/// Create a copy of UpdateCartRequest
+/// Create a copy of AddCartItemRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? skuId = null,Object? quantity = freezed,Object? deltaQuantity = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? variantId = null,Object? quantity = null,}) {
   return _then(_self.copyWith(
-skuId: null == skuId ? _self.skuId : skuId // ignore: cast_nullable_to_non_nullable
-as String,quantity: freezed == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int?,deltaQuantity: freezed == deltaQuantity ? _self.deltaQuantity : deltaQuantity // ignore: cast_nullable_to_non_nullable
-as int?,
+variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
 }
 
 
-/// Adds pattern-matching-related methods to [UpdateCartRequest].
-extension UpdateCartRequestPatterns on UpdateCartRequest {
+/// Adds pattern-matching-related methods to [AddCartItemRequest].
+extension AddCartItemRequestPatterns on AddCartItemRequest {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -993,10 +1012,10 @@ extension UpdateCartRequestPatterns on UpdateCartRequest {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UpdateCartRequest value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AddCartItemRequest value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _UpdateCartRequest() when $default != null:
+case _AddCartItemRequest() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -1015,10 +1034,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UpdateCartRequest value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AddCartItemRequest value)  $default,){
 final _that = this;
 switch (_that) {
-case _UpdateCartRequest():
+case _AddCartItemRequest():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -1036,10 +1055,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UpdateCartRequest value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AddCartItemRequest value)?  $default,){
 final _that = this;
 switch (_that) {
-case _UpdateCartRequest() when $default != null:
+case _AddCartItemRequest() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -1057,10 +1076,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'sku_id')  String skuId,  int? quantity, @JsonKey(name: 'delta_quantity')  int? deltaQuantity)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'variant_id')  String variantId,  int quantity)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _UpdateCartRequest() when $default != null:
-return $default(_that.skuId,_that.quantity,_that.deltaQuantity);case _:
+case _AddCartItemRequest() when $default != null:
+return $default(_that.variantId,_that.quantity);case _:
   return orElse();
 
 }
@@ -1078,10 +1097,10 @@ return $default(_that.skuId,_that.quantity,_that.deltaQuantity);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'sku_id')  String skuId,  int? quantity, @JsonKey(name: 'delta_quantity')  int? deltaQuantity)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'variant_id')  String variantId,  int quantity)  $default,) {final _that = this;
 switch (_that) {
-case _UpdateCartRequest():
-return $default(_that.skuId,_that.quantity,_that.deltaQuantity);case _:
+case _AddCartItemRequest():
+return $default(_that.variantId,_that.quantity);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1098,10 +1117,10 @@ return $default(_that.skuId,_that.quantity,_that.deltaQuantity);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'sku_id')  String skuId,  int? quantity, @JsonKey(name: 'delta_quantity')  int? deltaQuantity)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'variant_id')  String variantId,  int quantity)?  $default,) {final _that = this;
 switch (_that) {
-case _UpdateCartRequest() when $default != null:
-return $default(_that.skuId,_that.quantity,_that.deltaQuantity);case _:
+case _AddCartItemRequest() when $default != null:
+return $default(_that.variantId,_that.quantity);case _:
   return null;
 
 }
@@ -1112,48 +1131,47 @@ return $default(_that.skuId,_that.quantity,_that.deltaQuantity);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _UpdateCartRequest implements UpdateCartRequest {
-  const _UpdateCartRequest({@JsonKey(name: 'sku_id') required this.skuId, this.quantity, @JsonKey(name: 'delta_quantity') this.deltaQuantity});
-  factory _UpdateCartRequest.fromJson(Map<String, dynamic> json) => _$UpdateCartRequestFromJson(json);
+class _AddCartItemRequest implements AddCartItemRequest {
+  const _AddCartItemRequest({@JsonKey(name: 'variant_id') required this.variantId, required this.quantity});
+  factory _AddCartItemRequest.fromJson(Map<String, dynamic> json) => _$AddCartItemRequestFromJson(json);
 
-@override@JsonKey(name: 'sku_id') final  String skuId;
-@override final  int? quantity;
-@override@JsonKey(name: 'delta_quantity') final  int? deltaQuantity;
+@override@JsonKey(name: 'variant_id') final  String variantId;
+@override final  int quantity;
 
-/// Create a copy of UpdateCartRequest
+/// Create a copy of AddCartItemRequest
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$UpdateCartRequestCopyWith<_UpdateCartRequest> get copyWith => __$UpdateCartRequestCopyWithImpl<_UpdateCartRequest>(this, _$identity);
+_$AddCartItemRequestCopyWith<_AddCartItemRequest> get copyWith => __$AddCartItemRequestCopyWithImpl<_AddCartItemRequest>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$UpdateCartRequestToJson(this, );
+  return _$AddCartItemRequestToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateCartRequest&&(identical(other.skuId, skuId) || other.skuId == skuId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.deltaQuantity, deltaQuantity) || other.deltaQuantity == deltaQuantity));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddCartItemRequest&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.quantity, quantity) || other.quantity == quantity));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,skuId,quantity,deltaQuantity);
+int get hashCode => Object.hash(runtimeType,variantId,quantity);
 
 @override
 String toString() {
-  return 'UpdateCartRequest(skuId: $skuId, quantity: $quantity, deltaQuantity: $deltaQuantity)';
+  return 'AddCartItemRequest(variantId: $variantId, quantity: $quantity)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$UpdateCartRequestCopyWith<$Res> implements $UpdateCartRequestCopyWith<$Res> {
-  factory _$UpdateCartRequestCopyWith(_UpdateCartRequest value, $Res Function(_UpdateCartRequest) _then) = __$UpdateCartRequestCopyWithImpl;
+abstract mixin class _$AddCartItemRequestCopyWith<$Res> implements $AddCartItemRequestCopyWith<$Res> {
+  factory _$AddCartItemRequestCopyWith(_AddCartItemRequest value, $Res Function(_AddCartItemRequest) _then) = __$AddCartItemRequestCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'sku_id') String skuId, int? quantity,@JsonKey(name: 'delta_quantity') int? deltaQuantity
+@JsonKey(name: 'variant_id') String variantId, int quantity
 });
 
 
@@ -1161,21 +1179,283 @@ $Res call({
 
 }
 /// @nodoc
-class __$UpdateCartRequestCopyWithImpl<$Res>
-    implements _$UpdateCartRequestCopyWith<$Res> {
-  __$UpdateCartRequestCopyWithImpl(this._self, this._then);
+class __$AddCartItemRequestCopyWithImpl<$Res>
+    implements _$AddCartItemRequestCopyWith<$Res> {
+  __$AddCartItemRequestCopyWithImpl(this._self, this._then);
 
-  final _UpdateCartRequest _self;
-  final $Res Function(_UpdateCartRequest) _then;
+  final _AddCartItemRequest _self;
+  final $Res Function(_AddCartItemRequest) _then;
 
-/// Create a copy of UpdateCartRequest
+/// Create a copy of AddCartItemRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? skuId = null,Object? quantity = freezed,Object? deltaQuantity = freezed,}) {
-  return _then(_UpdateCartRequest(
-skuId: null == skuId ? _self.skuId : skuId // ignore: cast_nullable_to_non_nullable
-as String,quantity: freezed == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int?,deltaQuantity: freezed == deltaQuantity ? _self.deltaQuantity : deltaQuantity // ignore: cast_nullable_to_non_nullable
-as int?,
+@override @pragma('vm:prefer-inline') $Res call({Object? variantId = null,Object? quantity = null,}) {
+  return _then(_AddCartItemRequest(
+variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$UpdateCartItemRequest {
+
+ int get quantity;
+/// Create a copy of UpdateCartItemRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UpdateCartItemRequestCopyWith<UpdateCartItemRequest> get copyWith => _$UpdateCartItemRequestCopyWithImpl<UpdateCartItemRequest>(this as UpdateCartItemRequest, _$identity);
+
+  /// Serializes this UpdateCartItemRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UpdateCartItemRequest&&(identical(other.quantity, quantity) || other.quantity == quantity));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,quantity);
+
+@override
+String toString() {
+  return 'UpdateCartItemRequest(quantity: $quantity)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $UpdateCartItemRequestCopyWith<$Res>  {
+  factory $UpdateCartItemRequestCopyWith(UpdateCartItemRequest value, $Res Function(UpdateCartItemRequest) _then) = _$UpdateCartItemRequestCopyWithImpl;
+@useResult
+$Res call({
+ int quantity
+});
+
+
+
+
+}
+/// @nodoc
+class _$UpdateCartItemRequestCopyWithImpl<$Res>
+    implements $UpdateCartItemRequestCopyWith<$Res> {
+  _$UpdateCartItemRequestCopyWithImpl(this._self, this._then);
+
+  final UpdateCartItemRequest _self;
+  final $Res Function(UpdateCartItemRequest) _then;
+
+/// Create a copy of UpdateCartItemRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? quantity = null,}) {
+  return _then(_self.copyWith(
+quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [UpdateCartItemRequest].
+extension UpdateCartItemRequestPatterns on UpdateCartItemRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UpdateCartItemRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UpdateCartItemRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UpdateCartItemRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _UpdateCartItemRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UpdateCartItemRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UpdateCartItemRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int quantity)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UpdateCartItemRequest() when $default != null:
+return $default(_that.quantity);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int quantity)  $default,) {final _that = this;
+switch (_that) {
+case _UpdateCartItemRequest():
+return $default(_that.quantity);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int quantity)?  $default,) {final _that = this;
+switch (_that) {
+case _UpdateCartItemRequest() when $default != null:
+return $default(_that.quantity);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _UpdateCartItemRequest implements UpdateCartItemRequest {
+  const _UpdateCartItemRequest({required this.quantity});
+  factory _UpdateCartItemRequest.fromJson(Map<String, dynamic> json) => _$UpdateCartItemRequestFromJson(json);
+
+@override final  int quantity;
+
+/// Create a copy of UpdateCartItemRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateCartItemRequestCopyWith<_UpdateCartItemRequest> get copyWith => __$UpdateCartItemRequestCopyWithImpl<_UpdateCartItemRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$UpdateCartItemRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateCartItemRequest&&(identical(other.quantity, quantity) || other.quantity == quantity));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,quantity);
+
+@override
+String toString() {
+  return 'UpdateCartItemRequest(quantity: $quantity)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateCartItemRequestCopyWith<$Res> implements $UpdateCartItemRequestCopyWith<$Res> {
+  factory _$UpdateCartItemRequestCopyWith(_UpdateCartItemRequest value, $Res Function(_UpdateCartItemRequest) _then) = __$UpdateCartItemRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ int quantity
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateCartItemRequestCopyWithImpl<$Res>
+    implements _$UpdateCartItemRequestCopyWith<$Res> {
+  __$UpdateCartItemRequestCopyWithImpl(this._self, this._then);
+
+  final _UpdateCartItemRequest _self;
+  final $Res Function(_UpdateCartItemRequest) _then;
+
+/// Create a copy of UpdateCartItemRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? quantity = null,}) {
+  return _then(_UpdateCartItemRequest(
+quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

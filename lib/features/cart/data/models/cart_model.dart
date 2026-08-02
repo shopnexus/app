@@ -38,11 +38,16 @@ abstract class CartSku with _$CartSku {
 @freezed
 abstract class CartItem with _$CartItem {
   const factory CartItem({
-    @JsonKey(name: 'spu_id') required String spuId,
-    required CartSku sku,
+    required String id,
+    @JsonKey(name: 'listing_id') required String listingId,
+    @JsonKey(name: 'variant_id') required String variantId,
     required int quantity,
+    @JsonKey(name: 'created_at') String? createdAt,
+    // Optional populated / UI display helper fields:
+    @JsonKey(name: 'spu_id') String? spuId,
+    CartSku? sku,
     ResourceModel? resource,
-    required String currency,
+    @Default('VND') String currency,
   }) = _CartItem;
 
   factory CartItem.fromJson(Map<String, dynamic> json) =>
@@ -50,13 +55,21 @@ abstract class CartItem with _$CartItem {
 }
 
 @freezed
-abstract class UpdateCartRequest with _$UpdateCartRequest {
-  const factory UpdateCartRequest({
-    @JsonKey(name: 'sku_id') required String skuId,
-    int? quantity,
-    @JsonKey(name: 'delta_quantity') int? deltaQuantity,
-  }) = _UpdateCartRequest;
+abstract class AddCartItemRequest with _$AddCartItemRequest {
+  const factory AddCartItemRequest({
+    @JsonKey(name: 'variant_id') required String variantId,
+    required int quantity,
+  }) = _AddCartItemRequest;
 
-  factory UpdateCartRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateCartRequestFromJson(json);
+  factory AddCartItemRequest.fromJson(Map<String, dynamic> json) =>
+      _$AddCartItemRequestFromJson(json);
+}
+
+@freezed
+abstract class UpdateCartItemRequest with _$UpdateCartItemRequest {
+  const factory UpdateCartItemRequest({required int quantity}) =
+      _UpdateCartItemRequest;
+
+  factory UpdateCartItemRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateCartItemRequestFromJson(json);
 }

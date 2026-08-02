@@ -3,7 +3,6 @@ import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/network/dio_client.dart';
-import '../../../../shared/models/data_response.dart';
 import '../models/cart_model.dart';
 
 part 'cart_api_service.g.dart';
@@ -13,13 +12,19 @@ abstract class CartApiService {
   factory CartApiService(Dio dio, {String baseUrl}) = _CartApiService;
 
   @GET(ApiEndpoints.cart)
-  Future<DataResponse<List<CartItem>>> getCart();
+  Future<List<CartItem>> getCart();
 
   @POST(ApiEndpoints.cart)
-  Future<void> updateCart(@Body() UpdateCartRequest request);
+  Future<CartItem> addCartItem(@Body() AddCartItemRequest request);
 
-  @DELETE(ApiEndpoints.cart)
-  Future<void> clearCart();
+  @PATCH(ApiEndpoints.cartItemDetailTemplate)
+  Future<CartItem> updateCartItem(
+    @Path('id') String id,
+    @Body() UpdateCartItemRequest request,
+  );
+
+  @DELETE(ApiEndpoints.cartItemDetailTemplate)
+  Future<void> deleteCartItem(@Path('id') String id);
 }
 
 @riverpod

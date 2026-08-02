@@ -241,14 +241,15 @@ class CartScreen extends ConsumerWidget {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     // Tính giá quy đổi của item đơn lẻ
-    double convertedPrice = item.sku.price.toDouble();
+    final itemPriceVal = (item.sku?.price ?? 0).toDouble();
+    double convertedPrice = itemPriceVal;
     if (item.currency.toUpperCase() != preferredCurrency.toUpperCase()) {
-      double priceInUsd = item.sku.price.toDouble();
+      double priceInUsd = itemPriceVal;
       if (item.currency.toUpperCase() == 'USD') {
-        priceInUsd = item.sku.price / 100.0;
+        priceInUsd = itemPriceVal / 100.0;
       } else {
         final origRate = rates[item.currency.toUpperCase()] ?? 1.0;
-        priceInUsd = item.sku.price / origRate;
+        priceInUsd = itemPriceVal / origRate;
       }
       final prefRate = rates[preferredCurrency.toUpperCase()] ?? 1.0;
       double converted = priceInUsd * prefRate;
@@ -258,12 +259,12 @@ class CartScreen extends ConsumerWidget {
     }
 
     final priceDisplay = MoneyUtils.formatWithConversion(
-      item.sku.price,
+      item.sku?.price ?? 0,
       originalCurrency: item.currency,
       preferredCurrency: preferredCurrency,
       exchangeRate:
           convertedPrice /
-          (item.sku.price.toDouble() == 0 ? 1.0 : item.sku.price.toDouble()),
+          (itemPriceVal == 0 ? 1.0 : itemPriceVal),
     );
 
     final itemBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
@@ -335,8 +336,8 @@ class CartScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              item.sku.name.isNotEmpty
-                                  ? item.sku.name
+                              (item.sku?.name.isNotEmpty ?? false)
+                                  ? item.sku!.name
                                   : 'Product Sku',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -351,7 +352,7 @@ class CartScreen extends ConsumerWidget {
                           GestureDetector(
                             onTap: () => ref
                                 .read(cartProvider.notifier)
-                                .removeItem(item.sku.id),
+                                .removeItem(item.id),
                             child: Icon(
                               Icons.close_rounded,
                               size: 20,
@@ -360,12 +361,12 @@ class CartScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      if (item.sku.attributes != null &&
-                          item.sku.attributes!.isNotEmpty)
+                      if (item.sku?.attributes != null &&
+                          item.sku!.attributes!.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            item.sku.attributes!
+                            item.sku!.attributes!
                                 .map((attr) => '${attr.key}: ${attr.value}')
                                 .join(' | '),
                             style: TextStyle(
@@ -416,7 +417,7 @@ class CartScreen extends ConsumerWidget {
                               ),
                               onPressed: () => ref
                                   .read(cartProvider.notifier)
-                                  .updateQuantity(item.sku.id, -1),
+                                  .updateQuantity(item.id, -1),
                             ),
                             Text(
                               '${item.quantity}',
@@ -440,7 +441,7 @@ class CartScreen extends ConsumerWidget {
                               ),
                               onPressed: () => ref
                                   .read(cartProvider.notifier)
-                                  .updateQuantity(item.sku.id, 1),
+                                  .updateQuantity(item.id, 1),
                             ),
                           ],
                         ),
@@ -577,7 +578,7 @@ class CartScreen extends ConsumerWidget {
               onPressed: () {
                 final checkoutItems = state.items.map((item) {
                   return CheckoutItem(
-                    skuId: item.sku.id,
+                    skuId: item.sku?.id ?? item.variantId,
                     quantity: item.quantity,
                     transportOption: 'Standard',
                   );

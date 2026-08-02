@@ -49,33 +49,49 @@ Map<String, dynamic> _$CartSkuToJson(_CartSku instance) => <String, dynamic>{
 };
 
 _CartItem _$CartItemFromJson(Map<String, dynamic> json) => _CartItem(
-  spuId: json['spu_id'] as String,
-  sku: CartSku.fromJson(json['sku'] as Map<String, dynamic>),
+  id: json['id'] as String,
+  listingId: json['listing_id'] as String,
+  variantId: json['variant_id'] as String,
   quantity: (json['quantity'] as num).toInt(),
+  createdAt: json['created_at'] as String?,
+  spuId: json['spu_id'] as String?,
+  sku: json['sku'] == null
+      ? null
+      : CartSku.fromJson(json['sku'] as Map<String, dynamic>),
   resource: json['resource'] == null
       ? null
       : ResourceModel.fromJson(json['resource'] as Map<String, dynamic>),
-  currency: json['currency'] as String,
+  currency: json['currency'] as String? ?? 'VND',
 );
 
 Map<String, dynamic> _$CartItemToJson(_CartItem instance) => <String, dynamic>{
+  'id': instance.id,
+  'listing_id': instance.listingId,
+  'variant_id': instance.variantId,
+  'quantity': instance.quantity,
+  'created_at': instance.createdAt,
   'spu_id': instance.spuId,
   'sku': instance.sku,
-  'quantity': instance.quantity,
   'resource': instance.resource,
   'currency': instance.currency,
 };
 
-_UpdateCartRequest _$UpdateCartRequestFromJson(Map<String, dynamic> json) =>
-    _UpdateCartRequest(
-      skuId: json['sku_id'] as String,
-      quantity: (json['quantity'] as num?)?.toInt(),
-      deltaQuantity: (json['delta_quantity'] as num?)?.toInt(),
+_AddCartItemRequest _$AddCartItemRequestFromJson(Map<String, dynamic> json) =>
+    _AddCartItemRequest(
+      variantId: json['variant_id'] as String,
+      quantity: (json['quantity'] as num).toInt(),
     );
 
-Map<String, dynamic> _$UpdateCartRequestToJson(_UpdateCartRequest instance) =>
+Map<String, dynamic> _$AddCartItemRequestToJson(_AddCartItemRequest instance) =>
     <String, dynamic>{
-      'sku_id': instance.skuId,
+      'variant_id': instance.variantId,
       'quantity': instance.quantity,
-      'delta_quantity': instance.deltaQuantity,
     };
+
+_UpdateCartItemRequest _$UpdateCartItemRequestFromJson(
+  Map<String, dynamic> json,
+) => _UpdateCartItemRequest(quantity: (json['quantity'] as num).toInt());
+
+Map<String, dynamic> _$UpdateCartItemRequestToJson(
+  _UpdateCartItemRequest instance,
+) => <String, dynamic>{'quantity': instance.quantity};

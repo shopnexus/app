@@ -57,7 +57,7 @@ abstract class CheckoutState with _$CheckoutState {
   int get calculatedSubtotal {
     double totalUsd = 0.0;
     for (final item in resolvedItems) {
-      final price = item.sku.price;
+      final price = item.sku?.price ?? 0;
       final currency = item.currency.toUpperCase();
       final qty = item.quantity;
 

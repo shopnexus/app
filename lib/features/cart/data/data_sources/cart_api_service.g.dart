@@ -22,12 +22,12 @@ class _CartApiService implements CartApiService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<DataResponse<List<CartItem>>> getCart() async {
+  Future<List<CartItem>> getCart() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<List<CartItem>>>(
+    final _options = _setStreamType<List<CartItem>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -37,19 +37,12 @@ class _CartApiService implements CartApiService {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<List<CartItem>> _value;
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<CartItem> _value;
     try {
-      _value = DataResponse<List<CartItem>>.fromJson(
-        _result.data!,
-        (json) => json is List<dynamic>
-            ? json
-                  .map<CartItem>(
-                    (i) => CartItem.fromJson(i as Map<String, dynamic>),
-                  )
-                  .toList()
-            : List.empty(),
-      );
+      _value = _result.data!
+          .map((dynamic i) => CartItem.fromJson(i as Map<String, dynamic>))
+          .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -58,12 +51,12 @@ class _CartApiService implements CartApiService {
   }
 
   @override
-  Future<void> updateCart(UpdateCartRequest request) async {
+  Future<CartItem> addCartItem(AddCartItemRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = request;
-    final _options = _setStreamType<void>(
+    final _options = _setStreamType<CartItem>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -73,11 +66,49 @@ class _CartApiService implements CartApiService {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    await _dio.fetch<void>(_options);
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CartItem _value;
+    try {
+      _value = CartItem.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
-  Future<void> clearCart() async {
+  Future<CartItem> updateCartItem(
+    String id,
+    UpdateCartItemRequest request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = request;
+    final _options = _setStreamType<CartItem>(
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'cart-items/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CartItem _value;
+    try {
+      _value = CartItem.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<void> deleteCartItem(String id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -86,7 +117,7 @@ class _CartApiService implements CartApiService {
       Options(method: 'DELETE', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'cart-items',
+            'cart-items/${id}',
             queryParameters: queryParameters,
             data: _data,
           )
