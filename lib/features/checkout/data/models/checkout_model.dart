@@ -149,6 +149,42 @@ abstract class Transaction with _$Transaction {
       _$TransactionFromJson(json);
 }
 
+@freezed
+abstract class ShippingOption with _$ShippingOption {
+  const factory ShippingOption({
+    @JsonKey(name: 'option') required String option,
+    @JsonKey(name: 'name') required String name,
+    @JsonKey(name: 'fee') required int fee,
+  }) = _ShippingOption;
+
+  factory ShippingOption.fromJson(Map<String, dynamic> json) =>
+      _$ShippingOptionFromJson(json);
+}
+
+@freezed
+abstract class ShippingQuotes with _$ShippingQuotes {
+  const factory ShippingQuotes({
+    required String currency,
+    required List<ShippingOption> options,
+  }) = _ShippingQuotes;
+
+  factory ShippingQuotes.fromJson(Map<String, dynamic> json) =>
+      _$ShippingQuotesFromJson(json);
+}
+
+@freezed
+abstract class ShippingQuotesRequest with _$ShippingQuotesRequest {
+  const factory ShippingQuotesRequest({
+    @JsonKey(name: 'contact_id') required String contactId,
+    @JsonKey(name: 'draft_id') String? draftId,
+    @JsonKey(name: 'offer_id') String? offerId,
+    List<CheckoutLine>? lines,
+  }) = _ShippingQuotesRequest;
+
+  factory ShippingQuotesRequest.fromJson(Map<String, dynamic> json) =>
+      _$ShippingQuotesRequestFromJson(json);
+}
+
 // --- Legacy & UI Helper Models ---
 
 @freezed

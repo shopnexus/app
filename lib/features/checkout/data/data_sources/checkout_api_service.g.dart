@@ -185,6 +185,35 @@ class _CheckoutApiService implements CheckoutApiService {
   }
 
   @override
+  Future<ShippingQuotes> getShippingQuotes(
+    ShippingQuotesRequest request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = request;
+    final _options = _setStreamType<ShippingQuotes>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'shipping-quotes',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ShippingQuotes _value;
+    try {
+      _value = ShippingQuotes.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<DataResponse<QuoteTransportResponse>> quoteTransport(
     QuoteTransportRequest request,
   ) async {

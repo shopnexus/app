@@ -72,6 +72,17 @@ class CheckoutRepository {
     }
   }
 
+  /// Lấy báo giá phí vận chuyển từ server
+  Future<ShippingQuotes> getShippingQuotes(
+    ShippingQuotesRequest request,
+  ) async {
+    try {
+      return await _apiService.getShippingQuotes(request);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // --- Support methods ---
 
   Future<QuoteTransportResponse> quoteTransport(

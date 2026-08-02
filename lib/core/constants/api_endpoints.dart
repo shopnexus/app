@@ -113,6 +113,7 @@ class ApiEndpoints {
   static String draftCheckout(String id) => 'drafts/$id/checkout';
   static const String offerCheckoutTemplate = 'offers/{id}/checkout';
   static String offerCheckout(String id) => 'offers/$id/checkout';
+  static const String shippingQuotes = 'shipping-quotes';
 
   // --- Payment Sessions Features ---
   static const String paymentSessions = 'payment-sessions';

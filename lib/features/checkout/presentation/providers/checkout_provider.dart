@@ -28,6 +28,7 @@ abstract class CheckoutState with _$CheckoutState {
     @Default(false) bool buyNow,
     @Default('Standard') String shippingOption,
     QuoteTransportResponse? quoteResponse,
+    ShippingQuotes? shippingQuotes,
     @Default('Stripe') String paymentOption,
     @Default(false) bool useWallet,
     @Default([]) List<String> promotionCodes,
@@ -52,8 +53,19 @@ abstract class CheckoutState with _$CheckoutState {
       contacts.where((c) => c.addressType.toLowerCase() == 'other').toList();
 
   int get totalShippingCost {
-    if (quoteResponse == null) return 0;
-    return quoteResponse!.items.fold(0, (sum, item) => sum + item.cost);
+    if (shippingQuotes != null && shippingQuotes!.options.isNotEmpty) {
+      final matched = shippingQuotes!.options.firstWhere(
+        (o) =>
+            o.option.toLowerCase() == shippingOption.toLowerCase() ||
+            o.name.toLowerCase() == shippingOption.toLowerCase(),
+        orElse: () => shippingQuotes!.options.first,
+      );
+      return matched.fee;
+    }
+    if (quoteResponse != null) {
+      return quoteResponse!.items.fold(0, (sum, item) => sum + item.cost);
+    }
+    return 0;
   }
 
   int get calculatedSubtotal {
@@ -181,7 +193,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     state = state.copyWith(step: step, errorMessage: null);
   }
 
-  /// Chọn phương thức vận chuyển và tự động lấy báo giá
+  /// Chọn phương thức vận chuyển và tự động lấy báo giá từ server
   Future<void> selectShippingOption(String option) async {
     if (!ref.mounted) return;
     state = state.copyWith(
@@ -201,25 +213,22 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
     try {
       final checkoutRepo = ref.read(checkoutRepositoryProvider);
-
-      // Tạo danh sách items với phương thức vận chuyển được chọn
-      final updatedItems = state.items.map((item) {
-        return QuoteTransportItem(
-          skuId: item.skuId,
+      final lines = state.resolvedItems.map((item) {
+        return CheckoutLine(
+          variantId: item.variantId,
           quantity: item.quantity,
-          transportOption: option,
         );
       }).toList();
 
-      final quote = await checkoutRepo.quoteTransport(
-        QuoteTransportRequest(
-          address: state.selectedContact!.address,
-          items: updatedItems,
+      final quotes = await checkoutRepo.getShippingQuotes(
+        ShippingQuotesRequest(
+          contactId: state.selectedContact!.id,
+          lines: lines.isEmpty ? null : lines,
         ),
       );
 
       if (!ref.mounted) return;
-      state = state.copyWith(quoteResponse: quote, isLoading: false);
+      state = state.copyWith(shippingQuotes: quotes, isLoading: false);
     } catch (e) {
       if (!ref.mounted) return;
       state = state.copyWith(

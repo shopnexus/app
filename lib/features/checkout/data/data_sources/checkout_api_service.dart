@@ -39,6 +39,11 @@ abstract class CheckoutApiService {
     @Body() StartPaymentRequest request,
   );
 
+  @POST(ApiEndpoints.shippingQuotes)
+  Future<ShippingQuotes> getShippingQuotes(
+    @Body() ShippingQuotesRequest request,
+  );
+
   // --- Legacy Endpoints for UI Compatibility ---
   @POST(ApiEndpoints.quoteTransport)
   Future<DataResponse<QuoteTransportResponse>> quoteTransport(

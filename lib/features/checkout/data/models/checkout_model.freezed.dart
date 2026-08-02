@@ -2807,6 +2807,827 @@ as String?,
 
 
 /// @nodoc
+mixin _$ShippingOption {
+
+@JsonKey(name: 'option') String get option;@JsonKey(name: 'name') String get name;@JsonKey(name: 'fee') int get fee;
+/// Create a copy of ShippingOption
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ShippingOptionCopyWith<ShippingOption> get copyWith => _$ShippingOptionCopyWithImpl<ShippingOption>(this as ShippingOption, _$identity);
+
+  /// Serializes this ShippingOption to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ShippingOption&&(identical(other.option, option) || other.option == option)&&(identical(other.name, name) || other.name == name)&&(identical(other.fee, fee) || other.fee == fee));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,option,name,fee);
+
+@override
+String toString() {
+  return 'ShippingOption(option: $option, name: $name, fee: $fee)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ShippingOptionCopyWith<$Res>  {
+  factory $ShippingOptionCopyWith(ShippingOption value, $Res Function(ShippingOption) _then) = _$ShippingOptionCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'option') String option,@JsonKey(name: 'name') String name,@JsonKey(name: 'fee') int fee
+});
+
+
+
+
+}
+/// @nodoc
+class _$ShippingOptionCopyWithImpl<$Res>
+    implements $ShippingOptionCopyWith<$Res> {
+  _$ShippingOptionCopyWithImpl(this._self, this._then);
+
+  final ShippingOption _self;
+  final $Res Function(ShippingOption) _then;
+
+/// Create a copy of ShippingOption
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? option = null,Object? name = null,Object? fee = null,}) {
+  return _then(_self.copyWith(
+option: null == option ? _self.option : option // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,fee: null == fee ? _self.fee : fee // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ShippingOption].
+extension ShippingOptionPatterns on ShippingOption {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ShippingOption value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ShippingOption() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ShippingOption value)  $default,){
+final _that = this;
+switch (_that) {
+case _ShippingOption():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ShippingOption value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ShippingOption() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'option')  String option, @JsonKey(name: 'name')  String name, @JsonKey(name: 'fee')  int fee)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ShippingOption() when $default != null:
+return $default(_that.option,_that.name,_that.fee);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'option')  String option, @JsonKey(name: 'name')  String name, @JsonKey(name: 'fee')  int fee)  $default,) {final _that = this;
+switch (_that) {
+case _ShippingOption():
+return $default(_that.option,_that.name,_that.fee);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'option')  String option, @JsonKey(name: 'name')  String name, @JsonKey(name: 'fee')  int fee)?  $default,) {final _that = this;
+switch (_that) {
+case _ShippingOption() when $default != null:
+return $default(_that.option,_that.name,_that.fee);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _ShippingOption implements ShippingOption {
+  const _ShippingOption({@JsonKey(name: 'option') required this.option, @JsonKey(name: 'name') required this.name, @JsonKey(name: 'fee') required this.fee});
+  factory _ShippingOption.fromJson(Map<String, dynamic> json) => _$ShippingOptionFromJson(json);
+
+@override@JsonKey(name: 'option') final  String option;
+@override@JsonKey(name: 'name') final  String name;
+@override@JsonKey(name: 'fee') final  int fee;
+
+/// Create a copy of ShippingOption
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ShippingOptionCopyWith<_ShippingOption> get copyWith => __$ShippingOptionCopyWithImpl<_ShippingOption>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ShippingOptionToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ShippingOption&&(identical(other.option, option) || other.option == option)&&(identical(other.name, name) || other.name == name)&&(identical(other.fee, fee) || other.fee == fee));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,option,name,fee);
+
+@override
+String toString() {
+  return 'ShippingOption(option: $option, name: $name, fee: $fee)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ShippingOptionCopyWith<$Res> implements $ShippingOptionCopyWith<$Res> {
+  factory _$ShippingOptionCopyWith(_ShippingOption value, $Res Function(_ShippingOption) _then) = __$ShippingOptionCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'option') String option,@JsonKey(name: 'name') String name,@JsonKey(name: 'fee') int fee
+});
+
+
+
+
+}
+/// @nodoc
+class __$ShippingOptionCopyWithImpl<$Res>
+    implements _$ShippingOptionCopyWith<$Res> {
+  __$ShippingOptionCopyWithImpl(this._self, this._then);
+
+  final _ShippingOption _self;
+  final $Res Function(_ShippingOption) _then;
+
+/// Create a copy of ShippingOption
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? option = null,Object? name = null,Object? fee = null,}) {
+  return _then(_ShippingOption(
+option: null == option ? _self.option : option // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,fee: null == fee ? _self.fee : fee // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$ShippingQuotes {
+
+ String get currency; List<ShippingOption> get options;
+/// Create a copy of ShippingQuotes
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ShippingQuotesCopyWith<ShippingQuotes> get copyWith => _$ShippingQuotesCopyWithImpl<ShippingQuotes>(this as ShippingQuotes, _$identity);
+
+  /// Serializes this ShippingQuotes to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ShippingQuotes&&(identical(other.currency, currency) || other.currency == currency)&&const DeepCollectionEquality().equals(other.options, options));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,currency,const DeepCollectionEquality().hash(options));
+
+@override
+String toString() {
+  return 'ShippingQuotes(currency: $currency, options: $options)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ShippingQuotesCopyWith<$Res>  {
+  factory $ShippingQuotesCopyWith(ShippingQuotes value, $Res Function(ShippingQuotes) _then) = _$ShippingQuotesCopyWithImpl;
+@useResult
+$Res call({
+ String currency, List<ShippingOption> options
+});
+
+
+
+
+}
+/// @nodoc
+class _$ShippingQuotesCopyWithImpl<$Res>
+    implements $ShippingQuotesCopyWith<$Res> {
+  _$ShippingQuotesCopyWithImpl(this._self, this._then);
+
+  final ShippingQuotes _self;
+  final $Res Function(ShippingQuotes) _then;
+
+/// Create a copy of ShippingQuotes
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? currency = null,Object? options = null,}) {
+  return _then(_self.copyWith(
+currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,options: null == options ? _self.options : options // ignore: cast_nullable_to_non_nullable
+as List<ShippingOption>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ShippingQuotes].
+extension ShippingQuotesPatterns on ShippingQuotes {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ShippingQuotes value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ShippingQuotes() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ShippingQuotes value)  $default,){
+final _that = this;
+switch (_that) {
+case _ShippingQuotes():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ShippingQuotes value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ShippingQuotes() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String currency,  List<ShippingOption> options)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ShippingQuotes() when $default != null:
+return $default(_that.currency,_that.options);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String currency,  List<ShippingOption> options)  $default,) {final _that = this;
+switch (_that) {
+case _ShippingQuotes():
+return $default(_that.currency,_that.options);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String currency,  List<ShippingOption> options)?  $default,) {final _that = this;
+switch (_that) {
+case _ShippingQuotes() when $default != null:
+return $default(_that.currency,_that.options);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _ShippingQuotes implements ShippingQuotes {
+  const _ShippingQuotes({required this.currency, required final  List<ShippingOption> options}): _options = options;
+  factory _ShippingQuotes.fromJson(Map<String, dynamic> json) => _$ShippingQuotesFromJson(json);
+
+@override final  String currency;
+ final  List<ShippingOption> _options;
+@override List<ShippingOption> get options {
+  if (_options is EqualUnmodifiableListView) return _options;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_options);
+}
+
+
+/// Create a copy of ShippingQuotes
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ShippingQuotesCopyWith<_ShippingQuotes> get copyWith => __$ShippingQuotesCopyWithImpl<_ShippingQuotes>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ShippingQuotesToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ShippingQuotes&&(identical(other.currency, currency) || other.currency == currency)&&const DeepCollectionEquality().equals(other._options, _options));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,currency,const DeepCollectionEquality().hash(_options));
+
+@override
+String toString() {
+  return 'ShippingQuotes(currency: $currency, options: $options)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ShippingQuotesCopyWith<$Res> implements $ShippingQuotesCopyWith<$Res> {
+  factory _$ShippingQuotesCopyWith(_ShippingQuotes value, $Res Function(_ShippingQuotes) _then) = __$ShippingQuotesCopyWithImpl;
+@override @useResult
+$Res call({
+ String currency, List<ShippingOption> options
+});
+
+
+
+
+}
+/// @nodoc
+class __$ShippingQuotesCopyWithImpl<$Res>
+    implements _$ShippingQuotesCopyWith<$Res> {
+  __$ShippingQuotesCopyWithImpl(this._self, this._then);
+
+  final _ShippingQuotes _self;
+  final $Res Function(_ShippingQuotes) _then;
+
+/// Create a copy of ShippingQuotes
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? currency = null,Object? options = null,}) {
+  return _then(_ShippingQuotes(
+currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,options: null == options ? _self._options : options // ignore: cast_nullable_to_non_nullable
+as List<ShippingOption>,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$ShippingQuotesRequest {
+
+@JsonKey(name: 'contact_id') String get contactId;@JsonKey(name: 'draft_id') String? get draftId;@JsonKey(name: 'offer_id') String? get offerId; List<CheckoutLine>? get lines;
+/// Create a copy of ShippingQuotesRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ShippingQuotesRequestCopyWith<ShippingQuotesRequest> get copyWith => _$ShippingQuotesRequestCopyWithImpl<ShippingQuotesRequest>(this as ShippingQuotesRequest, _$identity);
+
+  /// Serializes this ShippingQuotesRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ShippingQuotesRequest&&(identical(other.contactId, contactId) || other.contactId == contactId)&&(identical(other.draftId, draftId) || other.draftId == draftId)&&(identical(other.offerId, offerId) || other.offerId == offerId)&&const DeepCollectionEquality().equals(other.lines, lines));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,contactId,draftId,offerId,const DeepCollectionEquality().hash(lines));
+
+@override
+String toString() {
+  return 'ShippingQuotesRequest(contactId: $contactId, draftId: $draftId, offerId: $offerId, lines: $lines)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ShippingQuotesRequestCopyWith<$Res>  {
+  factory $ShippingQuotesRequestCopyWith(ShippingQuotesRequest value, $Res Function(ShippingQuotesRequest) _then) = _$ShippingQuotesRequestCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'contact_id') String contactId,@JsonKey(name: 'draft_id') String? draftId,@JsonKey(name: 'offer_id') String? offerId, List<CheckoutLine>? lines
+});
+
+
+
+
+}
+/// @nodoc
+class _$ShippingQuotesRequestCopyWithImpl<$Res>
+    implements $ShippingQuotesRequestCopyWith<$Res> {
+  _$ShippingQuotesRequestCopyWithImpl(this._self, this._then);
+
+  final ShippingQuotesRequest _self;
+  final $Res Function(ShippingQuotesRequest) _then;
+
+/// Create a copy of ShippingQuotesRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? contactId = null,Object? draftId = freezed,Object? offerId = freezed,Object? lines = freezed,}) {
+  return _then(_self.copyWith(
+contactId: null == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
+as String,draftId: freezed == draftId ? _self.draftId : draftId // ignore: cast_nullable_to_non_nullable
+as String?,offerId: freezed == offerId ? _self.offerId : offerId // ignore: cast_nullable_to_non_nullable
+as String?,lines: freezed == lines ? _self.lines : lines // ignore: cast_nullable_to_non_nullable
+as List<CheckoutLine>?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ShippingQuotesRequest].
+extension ShippingQuotesRequestPatterns on ShippingQuotesRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ShippingQuotesRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ShippingQuotesRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ShippingQuotesRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _ShippingQuotesRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ShippingQuotesRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ShippingQuotesRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'contact_id')  String contactId, @JsonKey(name: 'draft_id')  String? draftId, @JsonKey(name: 'offer_id')  String? offerId,  List<CheckoutLine>? lines)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ShippingQuotesRequest() when $default != null:
+return $default(_that.contactId,_that.draftId,_that.offerId,_that.lines);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'contact_id')  String contactId, @JsonKey(name: 'draft_id')  String? draftId, @JsonKey(name: 'offer_id')  String? offerId,  List<CheckoutLine>? lines)  $default,) {final _that = this;
+switch (_that) {
+case _ShippingQuotesRequest():
+return $default(_that.contactId,_that.draftId,_that.offerId,_that.lines);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'contact_id')  String contactId, @JsonKey(name: 'draft_id')  String? draftId, @JsonKey(name: 'offer_id')  String? offerId,  List<CheckoutLine>? lines)?  $default,) {final _that = this;
+switch (_that) {
+case _ShippingQuotesRequest() when $default != null:
+return $default(_that.contactId,_that.draftId,_that.offerId,_that.lines);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _ShippingQuotesRequest implements ShippingQuotesRequest {
+  const _ShippingQuotesRequest({@JsonKey(name: 'contact_id') required this.contactId, @JsonKey(name: 'draft_id') this.draftId, @JsonKey(name: 'offer_id') this.offerId, final  List<CheckoutLine>? lines}): _lines = lines;
+  factory _ShippingQuotesRequest.fromJson(Map<String, dynamic> json) => _$ShippingQuotesRequestFromJson(json);
+
+@override@JsonKey(name: 'contact_id') final  String contactId;
+@override@JsonKey(name: 'draft_id') final  String? draftId;
+@override@JsonKey(name: 'offer_id') final  String? offerId;
+ final  List<CheckoutLine>? _lines;
+@override List<CheckoutLine>? get lines {
+  final value = _lines;
+  if (value == null) return null;
+  if (_lines is EqualUnmodifiableListView) return _lines;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+
+/// Create a copy of ShippingQuotesRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ShippingQuotesRequestCopyWith<_ShippingQuotesRequest> get copyWith => __$ShippingQuotesRequestCopyWithImpl<_ShippingQuotesRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ShippingQuotesRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ShippingQuotesRequest&&(identical(other.contactId, contactId) || other.contactId == contactId)&&(identical(other.draftId, draftId) || other.draftId == draftId)&&(identical(other.offerId, offerId) || other.offerId == offerId)&&const DeepCollectionEquality().equals(other._lines, _lines));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,contactId,draftId,offerId,const DeepCollectionEquality().hash(_lines));
+
+@override
+String toString() {
+  return 'ShippingQuotesRequest(contactId: $contactId, draftId: $draftId, offerId: $offerId, lines: $lines)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ShippingQuotesRequestCopyWith<$Res> implements $ShippingQuotesRequestCopyWith<$Res> {
+  factory _$ShippingQuotesRequestCopyWith(_ShippingQuotesRequest value, $Res Function(_ShippingQuotesRequest) _then) = __$ShippingQuotesRequestCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'contact_id') String contactId,@JsonKey(name: 'draft_id') String? draftId,@JsonKey(name: 'offer_id') String? offerId, List<CheckoutLine>? lines
+});
+
+
+
+
+}
+/// @nodoc
+class __$ShippingQuotesRequestCopyWithImpl<$Res>
+    implements _$ShippingQuotesRequestCopyWith<$Res> {
+  __$ShippingQuotesRequestCopyWithImpl(this._self, this._then);
+
+  final _ShippingQuotesRequest _self;
+  final $Res Function(_ShippingQuotesRequest) _then;
+
+/// Create a copy of ShippingQuotesRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? contactId = null,Object? draftId = freezed,Object? offerId = freezed,Object? lines = freezed,}) {
+  return _then(_ShippingQuotesRequest(
+contactId: null == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
+as String,draftId: freezed == draftId ? _self.draftId : draftId // ignore: cast_nullable_to_non_nullable
+as String?,offerId: freezed == offerId ? _self.offerId : offerId // ignore: cast_nullable_to_non_nullable
+as String?,lines: freezed == lines ? _self._lines : lines // ignore: cast_nullable_to_non_nullable
+as List<CheckoutLine>?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$QuoteTransportItem {
 
 @JsonKey(name: 'sku_id') String get skuId; int get quantity;@JsonKey(name: 'transport_option') String get transportOption;

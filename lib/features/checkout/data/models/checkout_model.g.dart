@@ -200,6 +200,54 @@ Map<String, dynamic> _$TransactionToJson(_Transaction instance) =>
       'settled_at': instance.settledAt,
     };
 
+_ShippingOption _$ShippingOptionFromJson(Map<String, dynamic> json) =>
+    _ShippingOption(
+      option: json['option'] as String,
+      name: json['name'] as String,
+      fee: (json['fee'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$ShippingOptionToJson(_ShippingOption instance) =>
+    <String, dynamic>{
+      'option': instance.option,
+      'name': instance.name,
+      'fee': instance.fee,
+    };
+
+_ShippingQuotes _$ShippingQuotesFromJson(Map<String, dynamic> json) =>
+    _ShippingQuotes(
+      currency: json['currency'] as String,
+      options: (json['options'] as List<dynamic>)
+          .map((e) => ShippingOption.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ShippingQuotesToJson(_ShippingQuotes instance) =>
+    <String, dynamic>{
+      'currency': instance.currency,
+      'options': instance.options,
+    };
+
+_ShippingQuotesRequest _$ShippingQuotesRequestFromJson(
+  Map<String, dynamic> json,
+) => _ShippingQuotesRequest(
+  contactId: json['contact_id'] as String,
+  draftId: json['draft_id'] as String?,
+  offerId: json['offer_id'] as String?,
+  lines: (json['lines'] as List<dynamic>?)
+      ?.map((e) => CheckoutLine.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$ShippingQuotesRequestToJson(
+  _ShippingQuotesRequest instance,
+) => <String, dynamic>{
+  'contact_id': instance.contactId,
+  'draft_id': instance.draftId,
+  'offer_id': instance.offerId,
+  'lines': instance.lines,
+};
+
 _QuoteTransportItem _$QuoteTransportItemFromJson(Map<String, dynamic> json) =>
     _QuoteTransportItem(
       skuId: json['sku_id'] as String,
