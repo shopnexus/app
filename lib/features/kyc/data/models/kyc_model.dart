@@ -1,18 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'kyc_model.freezed.dart';
+
 part 'kyc_model.g.dart';
 
 enum KycStatus {
   @JsonValue('unverified')
   unverified,
-
   @JsonValue('pending')
   pending,
-
   @JsonValue('verified')
   verified,
-
   @JsonValue('rejected')
   rejected,
 }

@@ -140,10 +140,7 @@ class KycNotifier extends _$KycNotifier {
     }
   }
 
-  Future<void> pickAndUploadImage(
-    KycImageType type,
-    ImageSource source,
-  ) async {
+  Future<void> pickAndUploadImage(KycImageType type, ImageSource source) async {
     final XFile? image = await _picker.pickImage(
       source: source,
       imageQuality: 85,
@@ -246,7 +243,9 @@ class KycNotifier extends _$KycNotifier {
   Future<bool> submitKyc() async {
     final profile = ref.read(profileProvider).value;
     if (profile == null) {
-      state = state.copyWith(errorMessage: 'Không tìm thấy thông tin tài khoản');
+      state = state.copyWith(
+        errorMessage: 'Không tìm thấy thông tin tài khoản',
+      );
       return false;
     }
 
@@ -256,7 +255,9 @@ class KycNotifier extends _$KycNotifier {
     }
 
     if (state.idNumber.trim().length < 9) {
-      state = state.copyWith(errorMessage: 'Số CCCD/CMND không hợp lệ (tối thiểu 9 chữ số)');
+      state = state.copyWith(
+        errorMessage: 'Số CCCD/CMND không hợp lệ (tối thiểu 9 chữ số)',
+      );
       return false;
     }
 
@@ -266,17 +267,23 @@ class KycNotifier extends _$KycNotifier {
     }
 
     if (state.frontCardPath == null && state.frontCardUrl == null) {
-      state = state.copyWith(errorMessage: 'Vui lòng chụp/chọn ảnh mặt trước CCCD');
+      state = state.copyWith(
+        errorMessage: 'Vui lòng chụp/chọn ảnh mặt trước CCCD',
+      );
       return false;
     }
 
     if (state.backCardPath == null && state.backCardUrl == null) {
-      state = state.copyWith(errorMessage: 'Vui lòng chụp/chọn ảnh mặt sau CCCD');
+      state = state.copyWith(
+        errorMessage: 'Vui lòng chụp/chọn ảnh mặt sau CCCD',
+      );
       return false;
     }
 
     if (state.selfiePath == null && state.selfieUrl == null) {
-      state = state.copyWith(errorMessage: 'Vui lòng chụp/chọn ảnh chân dung cầm CCCD');
+      state = state.copyWith(
+        errorMessage: 'Vui lòng chụp/chọn ảnh chân dung cầm CCCD',
+      );
       return false;
     }
 

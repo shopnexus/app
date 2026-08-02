@@ -118,7 +118,8 @@ class KycCardPickerWidget extends StatelessWidget {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     Widget previewContent;
-    final hasImage = (localPath != null && localPath!.isNotEmpty) ||
+    final hasImage =
+        (localPath != null && localPath!.isNotEmpty) ||
         (networkUrl != null && networkUrl!.isNotEmpty);
 
     if (localPath != null && localPath!.isNotEmpty) {
@@ -134,16 +135,18 @@ class KycCardPickerWidget extends StatelessWidget {
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
-        errorBuilder: (context, error, stackTrace) => Icon(
-          icon,
-          size: 48,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
+        errorBuilder: (context, error, stackTrace) =>
+            Icon(icon, size: 48, color: theme.colorScheme.onSurfaceVariant),
       );
     } else {
       previewContent = SizedBox.expand(
         child: Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 10, left: 24, right: 24),
+          padding: const EdgeInsets.only(
+            top: 20,
+            bottom: 10,
+            left: 24,
+            right: 24,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -155,11 +158,7 @@ class KycCardPickerWidget extends StatelessWidget {
                       : const Color(0xFFF1F5F9),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  size: 26,
-                  color: theme.colorScheme.primary,
-                ),
+                child: Icon(icon, size: 26, color: theme.colorScheme.primary),
               ),
               const SizedBox(height: 8),
               Text(
@@ -199,8 +198,8 @@ class KycCardPickerWidget extends StatelessWidget {
           color: hasImage
               ? const Color(0xFF10B981)
               : (isDarkMode
-                  ? AppColors.darkPrimary.withValues(alpha: 0.3)
-                  : const Color(0xFFE2E8F0)),
+                    ? AppColors.darkPrimary.withValues(alpha: 0.3)
+                    : const Color(0xFFE2E8F0)),
           width: hasImage ? 2 : 1,
         ),
       ),
@@ -265,8 +264,10 @@ class KycCardPickerWidget extends StatelessWidget {
                 top: 8,
                 right: 8,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(20),

@@ -15,8 +15,8 @@ class KycRepository {
   KycRepository({
     required HiveService hiveService,
     required CommonApiService commonApiService,
-  })  : _hiveService = hiveService,
-        _commonApiService = commonApiService;
+  }) : _hiveService = hiveService,
+       _commonApiService = commonApiService;
 
   /// Lấy thông tin KYC hiện tại của tài khoản (ưu tiên từ Hive cache)
   Future<KycModel?> getKycStatus(String accountId) async {
@@ -37,10 +37,7 @@ class KycRepository {
     List<int> bytes,
     String fileName,
   ) async {
-    final multipartFile = MultipartFile.fromBytes(
-      bytes,
-      filename: fileName,
-    );
+    final multipartFile = MultipartFile.fromBytes(bytes, filename: fileName);
     final response = await _commonApiService.uploadFile(multipartFile);
     return response.data;
   }

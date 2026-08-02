@@ -134,7 +134,9 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
                         icon: Icons.email_outlined,
                         label: 'Email liên hệ',
                         value: profile.email ?? 'Chưa liên kết Email',
-                        badgeText: profile.emailVerified ? 'Đã xác minh' : 'Chưa xác minh',
+                        badgeText: profile.emailVerified
+                            ? 'Đã xác minh'
+                            : 'Chưa xác minh',
                         badgeColor: profile.emailVerified
                             ? const Color(0xFF10B981)
                             : const Color(0xFFF59E0B),
@@ -144,7 +146,9 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
                         icon: Icons.phone_outlined,
                         label: 'Số điện thoại',
                         value: profile.phone ?? 'Chưa cập nhật SĐT',
-                        badgeText: profile.phoneVerified ? 'Đã xác minh' : 'Chưa xác minh',
+                        badgeText: profile.phoneVerified
+                            ? 'Đã xác minh'
+                            : 'Chưa xác minh',
                         badgeColor: profile.phoneVerified
                             ? const Color(0xFF10B981)
                             : const Color(0xFFF59E0B),
@@ -176,9 +180,7 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
             ),
           ),
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, _) => Center(
-            child: Text('Không thể tải dữ liệu: $err'),
-          ),
+          error: (err, _) => Center(child: Text('Không thể tải dữ liệu: $err')),
         ),
       ),
     );
@@ -365,7 +367,8 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
                       const SizedBox(width: 8),
                       _buildMiniBadge(
                         label: badgeText,
-                        color: badgeColor?.withValues(alpha: 0.15) ??
+                        color:
+                            badgeColor?.withValues(alpha: 0.15) ??
                             Colors.grey.shade200,
                         textColor: badgeColor ?? Colors.black87,
                       ),
@@ -484,9 +487,7 @@ class __EditAccountCenterFormSheetState
         dateOfBirth: _dateOfBirth,
       );
 
-      await ref
-          .read(accountControllerProvider.notifier)
-          .updateProfile(req);
+      await ref.read(accountControllerProvider.notifier).updateProfile(req);
 
       if (mounted) {
         Navigator.pop(context);

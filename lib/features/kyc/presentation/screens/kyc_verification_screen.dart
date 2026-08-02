@@ -14,8 +14,7 @@ class KycVerificationScreen extends ConsumerStatefulWidget {
       _KycVerificationScreenState();
 }
 
-class _KycVerificationScreenState
-    extends ConsumerState<KycVerificationScreen> {
+class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
   late TextEditingController _idNumberController;
   late TextEditingController _fullNameController;
   late TextEditingController _issuePlaceController;
@@ -41,7 +40,9 @@ class _KycVerificationScreenState
     String? initialDateStr,
     Function(String) onDateSelected,
   ) async {
-    DateTime initialDate = DateTime.now().subtract(const Duration(days: 365 * 20));
+    DateTime initialDate = DateTime.now().subtract(
+      const Duration(days: 365 * 20),
+    );
     if (initialDateStr != null && initialDateStr.isNotEmpty) {
       final parsed = DateTime.tryParse(initialDateStr);
       if (parsed != null) initialDate = parsed;
@@ -81,7 +82,8 @@ class _KycVerificationScreenState
 
     // Listen to error and success messages
     ref.listen<KycFormState>(kycProvider, (prev, next) {
-      if (next.errorMessage != null && next.errorMessage != prev?.errorMessage) {
+      if (next.errorMessage != null &&
+          next.errorMessage != prev?.errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
@@ -100,7 +102,8 @@ class _KycVerificationScreenState
       }
     });
 
-    final isReadOnly = state.kycModel?.status == KycStatus.pending ||
+    final isReadOnly =
+        state.kycModel?.status == KycStatus.pending ||
         state.kycModel?.status == KycStatus.verified;
 
     return PopScope(
@@ -133,8 +136,10 @@ class _KycVerificationScreenState
         body: state.isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -159,7 +164,8 @@ class _KycVerificationScreenState
                     // Front Card
                     KycCardPickerWidget(
                       title: 'Mặt trước CCCD',
-                      description: 'Ảnh chụp mặt trước có chứa ảnh đại diện và thông tin cá nhân',
+                      description:
+                          'Ảnh chụp mặt trước có chứa ảnh đại diện và thông tin cá nhân',
                       icon: Icons.badge_outlined,
                       localPath: state.frontCardPath,
                       networkUrl: state.frontCardUrl,
@@ -179,7 +185,8 @@ class _KycVerificationScreenState
                     // Back Card
                     KycCardPickerWidget(
                       title: 'Mặt sau CCCD',
-                      description: 'Ảnh chụp mặt sau có dấu vân tay và đặc điểm nhân dạng',
+                      description:
+                          'Ảnh chụp mặt sau có dấu vân tay và đặc điểm nhân dạng',
                       icon: Icons.fingerprint_rounded,
                       localPath: state.backCardPath,
                       networkUrl: state.backCardUrl,
@@ -199,7 +206,8 @@ class _KycVerificationScreenState
                     // Selfie Card
                     KycCardPickerWidget(
                       title: 'Ảnh chân dung',
-                      description: 'Chụp ảnh chân dung hiện rõ khuôn mặt của bạn',
+                      description:
+                          'Chụp ảnh chân dung hiện rõ khuôn mặt của bạn',
                       icon: Icons.face_rounded,
                       localPath: state.selfiePath,
                       networkUrl: state.selfieUrl,
@@ -253,12 +261,12 @@ class _KycVerificationScreenState
                             onTap: isReadOnly
                                 ? null
                                 : () => _selectDate(
-                                      context,
-                                      state.dateOfBirth,
-                                      (date) => notifier.updateFormFields(
-                                        dateOfBirth: date,
-                                      ),
+                                    context,
+                                    state.dateOfBirth,
+                                    (date) => notifier.updateFormFields(
+                                      dateOfBirth: date,
                                     ),
+                                  ),
                             child: _buildInputDecorator(
                               label: 'Ngày sinh',
                               value: state.dateOfBirth ?? 'Chọn ngày sinh',
@@ -272,12 +280,12 @@ class _KycVerificationScreenState
                             onTap: isReadOnly
                                 ? null
                                 : () => _selectDate(
-                                      context,
-                                      state.issueDate,
-                                      (date) => notifier.updateFormFields(
-                                        issueDate: date,
-                                      ),
+                                    context,
+                                    state.issueDate,
+                                    (date) => notifier.updateFormFields(
+                                      issueDate: date,
                                     ),
+                                  ),
                             child: _buildInputDecorator(
                               label: 'Ngày cấp',
                               value: state.issueDate ?? 'Chọn ngày cấp',
@@ -385,7 +393,8 @@ class _KycVerificationScreenState
         iconData = Icons.cancel_rounded;
         statusTitle = 'Hồ sơ bị từ chối (Rejected)';
         statusSubtitle =
-            kyc?.rejectedReason ?? 'Hồ sơ chưa đạt yêu cầu. Vui lòng kiểm tra lại ảnh chụp CCCD và gửi lại.';
+            kyc?.rejectedReason ??
+            'Hồ sơ chưa đạt yêu cầu. Vui lòng kiểm tra lại ảnh chụp CCCD và gửi lại.';
         break;
       case KycStatus.unverified:
         bgColor = theme.brightness == Brightness.dark
@@ -500,8 +509,10 @@ class _KycVerificationScreenState
             fillColor: enabled
                 ? (isDarkMode ? AppColors.darkSurface : const Color(0xFFF8FAFC))
                 : (isDarkMode ? Colors.black26 : const Color(0xFFE2E8F0)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -561,11 +572,7 @@ class _KycVerificationScreenState
           ),
           child: Row(
             children: [
-              Icon(
-                icon,
-                size: 18,
-                color: theme.colorScheme.primary,
-              ),
+              Icon(icon, size: 18, color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
