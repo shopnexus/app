@@ -63,6 +63,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Section: Account & Security
+            _buildSectionHeader('Account & Security'),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: borderColor, width: 1)),
+              ),
+              child: Column(
+                children: [
+                  _buildSettingRow(
+                    icon: Icons.manage_accounts_outlined,
+                    label: 'Account Center (Trung tâm tài khoản)',
+                    onTap: () => context.push('/account/account-center'),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
             // Section: App Preferences
             _buildSectionHeader('App Preferences'),
             Container(
