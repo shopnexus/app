@@ -624,10 +624,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Điểm đánh giá sao và số lượng đã bán
           Row(
             children: [
-              if (detail.rating != null && detail.rating!.count > 0) ...[
+              if (detail.reviewCount > 0) ...[
                 Row(
                   children: List.generate(5, (index) {
-                    final isFilled = index < detail.rating!.score.floor();
+                    final isFilled = index < detail.rating.floor();
                     return Icon(
                       isFilled ? Icons.star_rounded : Icons.star_border_rounded,
                       color: accentStarColor,
@@ -637,7 +637,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
                 const SizedBox(width: 6.0),
                 Text(
-                  '${detail.rating!.score} (${detail.rating!.count} đánh giá)',
+                  '${detail.rating} (${detail.reviewCount} đánh giá)',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,
@@ -1160,7 +1160,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
               // Tính toán phân tích điểm sao
               final double avgScore =
-                  comments.map((c) => c.score).reduce((a, b) => a + b) /
+                  comments.map((c) => c.effectiveScore).reduce((a, b) => a + b) /
                   comments.length;
 
               return Column(
@@ -1216,7 +1216,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             children: List.generate(5, (starIdx) {
                               final int starVal = 5 - starIdx;
                               final int count = comments
-                                  .where((c) => c.score.round() == starVal)
+                                  .where((c) => c.effectiveScore.round() == starVal)
                                   .length;
                               final double pct = comments.isEmpty
                                   ? 0
@@ -1348,7 +1348,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           Row(
                             children: List.generate(5, (sIdx) {
                               return Icon(
-                                sIdx < comment.score.floor()
+                                sIdx < comment.effectiveScore.floor()
                                     ? Icons.star_rounded
                                     : Icons.star_border_rounded,
                                 color: accentStarColor,

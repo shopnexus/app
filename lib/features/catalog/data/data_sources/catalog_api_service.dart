@@ -12,9 +12,9 @@ part 'catalog_api_service.g.dart';
 abstract class CatalogApiService {
   factory CatalogApiService(Dio dio, {String baseUrl}) = _CatalogApiService;
 
-  @GET(ApiEndpoints.productCards)
+  @GET(ApiEndpoints.listings)
   Future<DataResponse<List<TProductCard>>> getProductCards({
-    @Query('keyword') String? keyword,
+    @Query('query') String? keyword,
     @Query('search') String? search,
     @Query('category_id') String? categoryId,
     @Query('vendor_id') String? vendorId,
@@ -29,12 +29,17 @@ abstract class CatalogApiService {
     @Query('limit') int? limit,
   });
 
-  @GET(ApiEndpoints.productCardDetailTemplate)
+  @GET(ApiEndpoints.listingDetailTemplate)
+  Future<DataResponse<TProductDetail>> getListingDetail(
+    @Path('id') String id,
+  );
+
+  @GET(ApiEndpoints.listingDetailTemplate)
   Future<DataResponse<TProductCard>> getProductCardDetail(
     @Path('id') String id,
   );
 
-  @GET(ApiEndpoints.productDetail)
+  @GET(ApiEndpoints.listingDetailTemplate)
   Future<DataResponse<TProductDetail>> getProductDetail({
     @Query('id') String? id,
     @Query('slug') String? slug,
@@ -42,6 +47,13 @@ abstract class CatalogApiService {
 
   @GET(ApiEndpoints.categories)
   Future<DataResponse<List<Category>>> getCategories();
+
+  @GET(ApiEndpoints.listingReviewsTemplate)
+  Future<DataResponse<List<ProductComment>>> getListingReviews(
+    @Path('listingID') String listingId, {
+    @Query('page') int? page,
+    @Query('size') int? size,
+  });
 
   @GET(ApiEndpoints.comments)
   Future<DataResponse<List<ProductComment>>> getComments({

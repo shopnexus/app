@@ -42,30 +42,49 @@ class ApiEndpoints {
   static String followSeller(String accountId) => 'follows/$accountId';
 
   // --- Catalog/Product Features ---
-  static const String productCards = 'catalog/product-card';
-  static const String productCardDetailTemplate = 'catalog/product-card/{id}';
+  static const String listings = 'listings';
+  static const String listingDetailTemplate = 'listings/{id}';
+  static String listingDetail(String id) => 'listings/$id';
+  static const String listingPublicationTemplate = 'listings/{id}/publication';
+  static const String listingVariantsTemplate = 'listings/{id}/variants';
+  static const String variantDetailTemplate = 'variants/{id}';
+  static const String listingUploads = 'listings/uploads';
+  static const String listingUploadsConfirmationTemplate =
+      'listings/uploads/{id}/confirmation';
 
-  static String productCardDetail(String id) => 'catalog/product-card/$id';
+  // Legacy aliases for backwards compatibility
+  static const String productCards = 'listings';
+  static const String productCardDetailTemplate = 'listings/{id}';
+  static String productCardDetail(String id) => 'listings/$id';
+  static const String recommendedProducts = 'listings';
+  static const String productDetail = 'listings';
 
-  static const String recommendedProducts = 'catalog/product-card/recommended';
-  static const String productDetail = 'catalog/product-detail';
+  static const String categories = 'categories';
+  static const String categoryDetailTemplate = 'categories/{id}';
+  static String categoryDetail(String id) => 'categories/$id';
 
-  static const String categories = 'catalog/category';
-  static const String categoryDetailTemplate = 'catalog/category/{id}';
+  static const String tags = 'tags';
+  static const String tagDetailTemplate = 'tags/{name}';
+  static String tagDetail(String name) => 'tags/$name';
 
-  static String categoryDetail(String id) => 'catalog/category/$id';
-
-  static const String tags = 'catalog/tag';
-  static const String tagDetailTemplate = 'catalog/tag/{name}';
-
-  static String tagDetail(String name) => 'catalog/tag/$name';
-
-  static const String vendorStats = 'catalog/vendor-stats';
+  static const String vendorStats = 'me/reputation';
 
   // --- Comments & Reviews Features ---
-  static const String comments = 'catalog/comment';
-  static const String reviewableOrders = 'catalog/comment/reviewable-orders';
-  static const String voteComment = 'catalog/comment/vote';
+  static const String listingReviewsTemplate = 'listings/{listingID}/reviews';
+  static String listingReviews(String listingId) =>
+      'listings/$listingId/reviews';
+  static const String reviewDetailTemplate = 'reviews/{id}';
+  static String reviewDetail(String id) => 'reviews/$id';
+  static const String reviewRepliesTemplate = 'reviews/{id}/replies';
+  static const String reviewVoteTemplate = 'reviews/{id}/vote';
+  static const String reviewUploads = 'reviews/uploads';
+  static const String reviewUploadsConfirmationTemplate =
+      'reviews/uploads/{id}/confirmation';
+
+  // Legacy aliases
+  static const String comments = 'reviews';
+  static const String reviewableOrders = 'orders';
+  static const String voteComment = 'reviews/vote';
 
   // --- Favorites/Wishlist Features ---
   static const String favorites = 'favorites';

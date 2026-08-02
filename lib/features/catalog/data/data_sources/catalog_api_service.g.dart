@@ -39,7 +39,7 @@ class _CatalogApiService implements CatalogApiService {
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'keyword': keyword,
+      r'query': keyword,
       r'search': search,
       r'category_id': categoryId,
       r'vendor_id': vendorId,
@@ -60,7 +60,7 @@ class _CatalogApiService implements CatalogApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'catalog/product-card',
+            'listings',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -87,6 +87,36 @@ class _CatalogApiService implements CatalogApiService {
   }
 
   @override
+  Future<DataResponse<TProductDetail>> getListingDetail(String id) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<DataResponse<TProductDetail>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'listings/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<TProductDetail> _value;
+    try {
+      _value = DataResponse<TProductDetail>.fromJson(
+        _result.data!,
+        (json) => TProductDetail.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<DataResponse<TProductCard>> getProductCardDetail(String id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -96,7 +126,7 @@ class _CatalogApiService implements CatalogApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'catalog/product-card/${id}',
+            'listings/${id}',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -130,7 +160,7 @@ class _CatalogApiService implements CatalogApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'catalog/product-detail',
+            'listings/{id}',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -160,7 +190,7 @@ class _CatalogApiService implements CatalogApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'catalog/category',
+            'categories',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -175,6 +205,47 @@ class _CatalogApiService implements CatalogApiService {
             ? json
                   .map<Category>(
                     (i) => Category.fromJson(i as Map<String, dynamic>),
+                  )
+                  .toList()
+            : List.empty(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<DataResponse<List<ProductComment>>> getListingReviews(
+    String listingId, {
+    int? page,
+    int? size,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page, r'size': size};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<DataResponse<List<ProductComment>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'listings/${listingId}/reviews',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<List<ProductComment>> _value;
+    try {
+      _value = DataResponse<List<ProductComment>>.fromJson(
+        _result.data!,
+        (json) => json is List<dynamic>
+            ? json
+                  .map<ProductComment>(
+                    (i) => ProductComment.fromJson(i as Map<String, dynamic>),
                   )
                   .toList()
             : List.empty(),
@@ -207,7 +278,7 @@ class _CatalogApiService implements CatalogApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'catalog/comment',
+            'reviews',
             queryParameters: queryParameters,
             data: _data,
           )

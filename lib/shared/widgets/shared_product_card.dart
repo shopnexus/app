@@ -289,7 +289,7 @@ class SharedProductCard extends StatelessWidget {
                         // Tên và Đánh giá sao của Vendor
                         Expanded(
                           child: Text(
-                            '@${product.vendorName ?? "shop"} • ${product.rating?.score.toStringAsFixed(1) ?? "5.0"} ★',
+                            '@${product.vendorName ?? "shop"} • ${product.rating.toStringAsFixed(1)} ★',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelMedium?.copyWith(
