@@ -17,6 +17,8 @@ import '../../features/account/presentation/screens/addresses_screen.dart';
 import '../../features/account/presentation/screens/wishlist_screen.dart';
 import '../../features/account/presentation/screens/notifications_screen.dart';
 import '../../features/account/presentation/screens/settings_screen.dart';
+import '../../features/account/presentation/screens/account_center_screen.dart';
+import '../../features/kyc/presentation/screens/kyc_verification_screen.dart';
 import '../../shared/widgets/main_layout.dart';
 import '../../features/catalog/presentation/screens/product_detail_screen.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
@@ -210,6 +212,16 @@ GoRouter appRouter(Ref ref) {
                 path: 'settings',
                 name: 'buyer_settings',
                 builder: (context, state) => const SettingsScreen(),
+              ),
+              GoRoute(
+                path: 'account-center',
+                name: 'account_center',
+                builder: (context, state) => const AccountCenterScreen(),
+              ),
+              GoRoute(
+                path: 'kyc',
+                name: 'kyc_verification',
+                builder: (context, state) => const KycVerificationScreen(),
               ),
               GoRoute(
                 path: 'help-center',
