@@ -6,69 +6,110 @@ part of 'kyc_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_KycModel _$KycModelFromJson(Map<String, dynamic> json) => _KycModel(
-  id: json['id'] as String,
-  accountId: json['account_id'] as String,
-  idNumber: json['id_number'] as String,
-  fullName: json['full_name'] as String,
-  dateOfBirth: json['date_of_birth'] as String?,
-  issueDate: json['issue_date'] as String?,
-  issuePlace: json['issue_place'] as String?,
-  frontCardUrl: json['front_card_url'] as String?,
-  backCardUrl: json['back_card_url'] as String?,
-  selfieUrl: json['selfie_url'] as String?,
-  status:
-      $enumDecodeNullable(_$KycStatusEnumMap, json['status']) ??
-      KycStatus.unverified,
-  rejectedReason: json['rejected_reason'] as String?,
-  submittedAt: json['submitted_at'] as String?,
-  verifiedAt: json['verified_at'] as String?,
-);
-
-Map<String, dynamic> _$KycModelToJson(_KycModel instance) => <String, dynamic>{
-  'id': instance.id,
-  'account_id': instance.accountId,
-  'id_number': instance.idNumber,
-  'full_name': instance.fullName,
-  'date_of_birth': instance.dateOfBirth,
-  'issue_date': instance.issueDate,
-  'issue_place': instance.issuePlace,
-  'front_card_url': instance.frontCardUrl,
-  'back_card_url': instance.backCardUrl,
-  'selfie_url': instance.selfieUrl,
-  'status': _$KycStatusEnumMap[instance.status]!,
-  'rejected_reason': instance.rejectedReason,
-  'submitted_at': instance.submittedAt,
-  'verified_at': instance.verifiedAt,
-};
-
-const _$KycStatusEnumMap = {
-  KycStatus.unverified: 'unverified',
-  KycStatus.pending: 'pending',
-  KycStatus.verified: 'verified',
-  KycStatus.rejected: 'rejected',
-};
-
-_SubmitKycRequest _$SubmitKycRequestFromJson(Map<String, dynamic> json) =>
-    _SubmitKycRequest(
-      idNumber: json['id_number'] as String,
-      fullName: json['full_name'] as String,
-      dateOfBirth: json['date_of_birth'] as String?,
-      issueDate: json['issue_date'] as String?,
-      issuePlace: json['issue_place'] as String?,
-      frontCardRsId: json['front_card_rs_id'] as String?,
-      backCardRsId: json['back_card_rs_id'] as String?,
-      selfieRsId: json['selfie_rs_id'] as String?,
+_IdentityDocument _$IdentityDocumentFromJson(Map<String, dynamic> json) =>
+    _IdentityDocument(
+      id: json['id'] as String,
+      provider: json['provider'] as String?,
+      docType:
+          $enumDecodeNullable(_$IdentityDocTypeEnumMap, json['doc_type']) ??
+          IdentityDocType.nationalId,
+      status:
+          $enumDecodeNullable(_$IdentityStatusEnumMap, json['status']) ??
+          IdentityStatus.unverified,
+      rejectionReason: json['rejection_reason'] as String?,
+      createdAt: json['created_at'] as String?,
+      expiresAt: json['expires_at'] as String?,
+      verifiedAt: json['verified_at'] as String?,
     );
 
-Map<String, dynamic> _$SubmitKycRequestToJson(_SubmitKycRequest instance) =>
+Map<String, dynamic> _$IdentityDocumentToJson(_IdentityDocument instance) =>
     <String, dynamic>{
-      'id_number': instance.idNumber,
-      'full_name': instance.fullName,
-      'date_of_birth': instance.dateOfBirth,
-      'issue_date': instance.issueDate,
-      'issue_place': instance.issuePlace,
-      'front_card_rs_id': instance.frontCardRsId,
-      'back_card_rs_id': instance.backCardRsId,
-      'selfie_rs_id': instance.selfieRsId,
+      'id': instance.id,
+      'provider': instance.provider,
+      'doc_type': _$IdentityDocTypeEnumMap[instance.docType]!,
+      'status': _$IdentityStatusEnumMap[instance.status]!,
+      'rejection_reason': instance.rejectionReason,
+      'created_at': instance.createdAt,
+      'expires_at': instance.expiresAt,
+      'verified_at': instance.verifiedAt,
+    };
+
+const _$IdentityDocTypeEnumMap = {
+  IdentityDocType.nationalId: 'national-id',
+  IdentityDocType.passport: 'passport',
+  IdentityDocType.driverLicense: 'driver-license',
+};
+
+const _$IdentityStatusEnumMap = {
+  IdentityStatus.unverified: 'unverified',
+  IdentityStatus.pending: 'pending',
+  IdentityStatus.verified: 'verified',
+  IdentityStatus.rejected: 'rejected',
+};
+
+_StartIdentityVerificationRequest _$StartIdentityVerificationRequestFromJson(
+  Map<String, dynamic> json,
+) => _StartIdentityVerificationRequest(
+  docType: $enumDecode(_$IdentityDocTypeEnumMap, json['doc_type']),
+  frontResourceId: json['front_resource_id'] as String,
+  backResourceId: json['back_resource_id'] as String?,
+  selfieResourceId: json['selfie_resource_id'] as String,
+);
+
+Map<String, dynamic> _$StartIdentityVerificationRequestToJson(
+  _StartIdentityVerificationRequest instance,
+) => <String, dynamic>{
+  'doc_type': _$IdentityDocTypeEnumMap[instance.docType]!,
+  'front_resource_id': instance.frontResourceId,
+  'back_resource_id': instance.backResourceId,
+  'selfie_resource_id': instance.selfieResourceId,
+};
+
+_IdentityVerificationTicket _$IdentityVerificationTicketFromJson(
+  Map<String, dynamic> json,
+) => _IdentityVerificationTicket(
+  document: IdentityDocument.fromJson(json['document'] as Map<String, dynamic>),
+  vendorSessionExpiresAt: json['vendor_session_expires_at'] as String?,
+  vendorSessionUrl: json['vendor_session_url'] as String?,
+);
+
+Map<String, dynamic> _$IdentityVerificationTicketToJson(
+  _IdentityVerificationTicket instance,
+) => <String, dynamic>{
+  'document': instance.document,
+  'vendor_session_expires_at': instance.vendorSessionExpiresAt,
+  'vendor_session_url': instance.vendorSessionUrl,
+};
+
+_AccountCreateUploadRequest _$AccountCreateUploadRequestFromJson(
+  Map<String, dynamic> json,
+) => _AccountCreateUploadRequest(
+  filename: json['filename'] as String,
+  kind: json['kind'] as String? ?? 'identity',
+  mime: json['mime'] as String,
+  size: (json['size'] as num).toInt(),
+);
+
+Map<String, dynamic> _$AccountCreateUploadRequestToJson(
+  _AccountCreateUploadRequest instance,
+) => <String, dynamic>{
+  'filename': instance.filename,
+  'kind': instance.kind,
+  'mime': instance.mime,
+  'size': instance.size,
+};
+
+_UploadSlot _$UploadSlotFromJson(Map<String, dynamic> json) => _UploadSlot(
+  resourceId: json['resource_id'] as String,
+  url: json['url'] as String,
+  headers: json['headers'] as Map<String, dynamic>?,
+  expiresAt: json['expires_at'] as String?,
+);
+
+Map<String, dynamic> _$UploadSlotToJson(_UploadSlot instance) =>
+    <String, dynamic>{
+      'resource_id': instance.resourceId,
+      'url': instance.url,
+      'headers': instance.headers,
+      'expires_at': instance.expiresAt,
     };

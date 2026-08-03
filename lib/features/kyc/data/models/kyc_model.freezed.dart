@@ -13,42 +13,42 @@ part of 'kyc_model.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$KycModel {
+mixin _$IdentityDocument {
 
- String get id;@JsonKey(name: 'account_id') String get accountId;@JsonKey(name: 'id_number') String get idNumber;@JsonKey(name: 'full_name') String get fullName;@JsonKey(name: 'date_of_birth') String? get dateOfBirth;@JsonKey(name: 'issue_date') String? get issueDate;@JsonKey(name: 'issue_place') String? get issuePlace;@JsonKey(name: 'front_card_url') String? get frontCardUrl;@JsonKey(name: 'back_card_url') String? get backCardUrl;@JsonKey(name: 'selfie_url') String? get selfieUrl; KycStatus get status;@JsonKey(name: 'rejected_reason') String? get rejectedReason;@JsonKey(name: 'submitted_at') String? get submittedAt;@JsonKey(name: 'verified_at') String? get verifiedAt;
-/// Create a copy of KycModel
+ String get id; String? get provider;@JsonKey(name: 'doc_type') IdentityDocType get docType; IdentityStatus get status;@JsonKey(name: 'rejection_reason') String? get rejectionReason;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'expires_at') String? get expiresAt;@JsonKey(name: 'verified_at') String? get verifiedAt;
+/// Create a copy of IdentityDocument
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$KycModelCopyWith<KycModel> get copyWith => _$KycModelCopyWithImpl<KycModel>(this as KycModel, _$identity);
+$IdentityDocumentCopyWith<IdentityDocument> get copyWith => _$IdentityDocumentCopyWithImpl<IdentityDocument>(this as IdentityDocument, _$identity);
 
-  /// Serializes this KycModel to a JSON map.
+  /// Serializes this IdentityDocument to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is KycModel&&(identical(other.id, id) || other.id == id)&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.idNumber, idNumber) || other.idNumber == idNumber)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.issueDate, issueDate) || other.issueDate == issueDate)&&(identical(other.issuePlace, issuePlace) || other.issuePlace == issuePlace)&&(identical(other.frontCardUrl, frontCardUrl) || other.frontCardUrl == frontCardUrl)&&(identical(other.backCardUrl, backCardUrl) || other.backCardUrl == backCardUrl)&&(identical(other.selfieUrl, selfieUrl) || other.selfieUrl == selfieUrl)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectedReason, rejectedReason) || other.rejectedReason == rejectedReason)&&(identical(other.submittedAt, submittedAt) || other.submittedAt == submittedAt)&&(identical(other.verifiedAt, verifiedAt) || other.verifiedAt == verifiedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IdentityDocument&&(identical(other.id, id) || other.id == id)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.docType, docType) || other.docType == docType)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.verifiedAt, verifiedAt) || other.verifiedAt == verifiedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,accountId,idNumber,fullName,dateOfBirth,issueDate,issuePlace,frontCardUrl,backCardUrl,selfieUrl,status,rejectedReason,submittedAt,verifiedAt);
+int get hashCode => Object.hash(runtimeType,id,provider,docType,status,rejectionReason,createdAt,expiresAt,verifiedAt);
 
 @override
 String toString() {
-  return 'KycModel(id: $id, accountId: $accountId, idNumber: $idNumber, fullName: $fullName, dateOfBirth: $dateOfBirth, issueDate: $issueDate, issuePlace: $issuePlace, frontCardUrl: $frontCardUrl, backCardUrl: $backCardUrl, selfieUrl: $selfieUrl, status: $status, rejectedReason: $rejectedReason, submittedAt: $submittedAt, verifiedAt: $verifiedAt)';
+  return 'IdentityDocument(id: $id, provider: $provider, docType: $docType, status: $status, rejectionReason: $rejectionReason, createdAt: $createdAt, expiresAt: $expiresAt, verifiedAt: $verifiedAt)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $KycModelCopyWith<$Res>  {
-  factory $KycModelCopyWith(KycModel value, $Res Function(KycModel) _then) = _$KycModelCopyWithImpl;
+abstract mixin class $IdentityDocumentCopyWith<$Res>  {
+  factory $IdentityDocumentCopyWith(IdentityDocument value, $Res Function(IdentityDocument) _then) = _$IdentityDocumentCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'account_id') String accountId,@JsonKey(name: 'id_number') String idNumber,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'date_of_birth') String? dateOfBirth,@JsonKey(name: 'issue_date') String? issueDate,@JsonKey(name: 'issue_place') String? issuePlace,@JsonKey(name: 'front_card_url') String? frontCardUrl,@JsonKey(name: 'back_card_url') String? backCardUrl,@JsonKey(name: 'selfie_url') String? selfieUrl, KycStatus status,@JsonKey(name: 'rejected_reason') String? rejectedReason,@JsonKey(name: 'submitted_at') String? submittedAt,@JsonKey(name: 'verified_at') String? verifiedAt
+ String id, String? provider,@JsonKey(name: 'doc_type') IdentityDocType docType, IdentityStatus status,@JsonKey(name: 'rejection_reason') String? rejectionReason,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'expires_at') String? expiresAt,@JsonKey(name: 'verified_at') String? verifiedAt
 });
 
 
@@ -56,30 +56,24 @@ $Res call({
 
 }
 /// @nodoc
-class _$KycModelCopyWithImpl<$Res>
-    implements $KycModelCopyWith<$Res> {
-  _$KycModelCopyWithImpl(this._self, this._then);
+class _$IdentityDocumentCopyWithImpl<$Res>
+    implements $IdentityDocumentCopyWith<$Res> {
+  _$IdentityDocumentCopyWithImpl(this._self, this._then);
 
-  final KycModel _self;
-  final $Res Function(KycModel) _then;
+  final IdentityDocument _self;
+  final $Res Function(IdentityDocument) _then;
 
-/// Create a copy of KycModel
+/// Create a copy of IdentityDocument
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? accountId = null,Object? idNumber = null,Object? fullName = null,Object? dateOfBirth = freezed,Object? issueDate = freezed,Object? issuePlace = freezed,Object? frontCardUrl = freezed,Object? backCardUrl = freezed,Object? selfieUrl = freezed,Object? status = null,Object? rejectedReason = freezed,Object? submittedAt = freezed,Object? verifiedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? provider = freezed,Object? docType = null,Object? status = null,Object? rejectionReason = freezed,Object? createdAt = freezed,Object? expiresAt = freezed,Object? verifiedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,accountId: null == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
-as String,idNumber: null == idNumber ? _self.idNumber : idNumber // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
-as String?,issueDate: freezed == issueDate ? _self.issueDate : issueDate // ignore: cast_nullable_to_non_nullable
-as String?,issuePlace: freezed == issuePlace ? _self.issuePlace : issuePlace // ignore: cast_nullable_to_non_nullable
-as String?,frontCardUrl: freezed == frontCardUrl ? _self.frontCardUrl : frontCardUrl // ignore: cast_nullable_to_non_nullable
-as String?,backCardUrl: freezed == backCardUrl ? _self.backCardUrl : backCardUrl // ignore: cast_nullable_to_non_nullable
-as String?,selfieUrl: freezed == selfieUrl ? _self.selfieUrl : selfieUrl // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as KycStatus,rejectedReason: freezed == rejectedReason ? _self.rejectedReason : rejectedReason // ignore: cast_nullable_to_non_nullable
-as String?,submittedAt: freezed == submittedAt ? _self.submittedAt : submittedAt // ignore: cast_nullable_to_non_nullable
+as String,provider: freezed == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
+as String?,docType: null == docType ? _self.docType : docType // ignore: cast_nullable_to_non_nullable
+as IdentityDocType,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as IdentityStatus,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as String?,verifiedAt: freezed == verifiedAt ? _self.verifiedAt : verifiedAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -88,8 +82,8 @@ as String?,
 }
 
 
-/// Adds pattern-matching-related methods to [KycModel].
-extension KycModelPatterns on KycModel {
+/// Adds pattern-matching-related methods to [IdentityDocument].
+extension IdentityDocumentPatterns on IdentityDocument {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -102,10 +96,10 @@ extension KycModelPatterns on KycModel {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _KycModel value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _IdentityDocument value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _KycModel() when $default != null:
+case _IdentityDocument() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -124,10 +118,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _KycModel value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _IdentityDocument value)  $default,){
 final _that = this;
 switch (_that) {
-case _KycModel():
+case _IdentityDocument():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -145,10 +139,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _KycModel value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _IdentityDocument value)?  $default,){
 final _that = this;
 switch (_that) {
-case _KycModel() when $default != null:
+case _IdentityDocument() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -166,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'id_number')  String idNumber, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'issue_date')  String? issueDate, @JsonKey(name: 'issue_place')  String? issuePlace, @JsonKey(name: 'front_card_url')  String? frontCardUrl, @JsonKey(name: 'back_card_url')  String? backCardUrl, @JsonKey(name: 'selfie_url')  String? selfieUrl,  KycStatus status, @JsonKey(name: 'rejected_reason')  String? rejectedReason, @JsonKey(name: 'submitted_at')  String? submittedAt, @JsonKey(name: 'verified_at')  String? verifiedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? provider, @JsonKey(name: 'doc_type')  IdentityDocType docType,  IdentityStatus status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'verified_at')  String? verifiedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _KycModel() when $default != null:
-return $default(_that.id,_that.accountId,_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,_that.issuePlace,_that.frontCardUrl,_that.backCardUrl,_that.selfieUrl,_that.status,_that.rejectedReason,_that.submittedAt,_that.verifiedAt);case _:
+case _IdentityDocument() when $default != null:
+return $default(_that.id,_that.provider,_that.docType,_that.status,_that.rejectionReason,_that.createdAt,_that.expiresAt,_that.verifiedAt);case _:
   return orElse();
 
 }
@@ -187,10 +181,10 @@ return $default(_that.id,_that.accountId,_that.idNumber,_that.fullName,_that.dat
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'id_number')  String idNumber, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'issue_date')  String? issueDate, @JsonKey(name: 'issue_place')  String? issuePlace, @JsonKey(name: 'front_card_url')  String? frontCardUrl, @JsonKey(name: 'back_card_url')  String? backCardUrl, @JsonKey(name: 'selfie_url')  String? selfieUrl,  KycStatus status, @JsonKey(name: 'rejected_reason')  String? rejectedReason, @JsonKey(name: 'submitted_at')  String? submittedAt, @JsonKey(name: 'verified_at')  String? verifiedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? provider, @JsonKey(name: 'doc_type')  IdentityDocType docType,  IdentityStatus status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'verified_at')  String? verifiedAt)  $default,) {final _that = this;
 switch (_that) {
-case _KycModel():
-return $default(_that.id,_that.accountId,_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,_that.issuePlace,_that.frontCardUrl,_that.backCardUrl,_that.selfieUrl,_that.status,_that.rejectedReason,_that.submittedAt,_that.verifiedAt);case _:
+case _IdentityDocument():
+return $default(_that.id,_that.provider,_that.docType,_that.status,_that.rejectionReason,_that.createdAt,_that.expiresAt,_that.verifiedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +201,10 @@ return $default(_that.id,_that.accountId,_that.idNumber,_that.fullName,_that.dat
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'account_id')  String accountId, @JsonKey(name: 'id_number')  String idNumber, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'issue_date')  String? issueDate, @JsonKey(name: 'issue_place')  String? issuePlace, @JsonKey(name: 'front_card_url')  String? frontCardUrl, @JsonKey(name: 'back_card_url')  String? backCardUrl, @JsonKey(name: 'selfie_url')  String? selfieUrl,  KycStatus status, @JsonKey(name: 'rejected_reason')  String? rejectedReason, @JsonKey(name: 'submitted_at')  String? submittedAt, @JsonKey(name: 'verified_at')  String? verifiedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? provider, @JsonKey(name: 'doc_type')  IdentityDocType docType,  IdentityStatus status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'verified_at')  String? verifiedAt)?  $default,) {final _that = this;
 switch (_that) {
-case _KycModel() when $default != null:
-return $default(_that.id,_that.accountId,_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,_that.issuePlace,_that.frontCardUrl,_that.backCardUrl,_that.selfieUrl,_that.status,_that.rejectedReason,_that.submittedAt,_that.verifiedAt);case _:
+case _IdentityDocument() when $default != null:
+return $default(_that.id,_that.provider,_that.docType,_that.status,_that.rejectionReason,_that.createdAt,_that.expiresAt,_that.verifiedAt);case _:
   return null;
 
 }
@@ -221,59 +215,53 @@ return $default(_that.id,_that.accountId,_that.idNumber,_that.fullName,_that.dat
 /// @nodoc
 @JsonSerializable()
 
-class _KycModel implements KycModel {
-  const _KycModel({required this.id, @JsonKey(name: 'account_id') required this.accountId, @JsonKey(name: 'id_number') required this.idNumber, @JsonKey(name: 'full_name') required this.fullName, @JsonKey(name: 'date_of_birth') this.dateOfBirth, @JsonKey(name: 'issue_date') this.issueDate, @JsonKey(name: 'issue_place') this.issuePlace, @JsonKey(name: 'front_card_url') this.frontCardUrl, @JsonKey(name: 'back_card_url') this.backCardUrl, @JsonKey(name: 'selfie_url') this.selfieUrl, this.status = KycStatus.unverified, @JsonKey(name: 'rejected_reason') this.rejectedReason, @JsonKey(name: 'submitted_at') this.submittedAt, @JsonKey(name: 'verified_at') this.verifiedAt});
-  factory _KycModel.fromJson(Map<String, dynamic> json) => _$KycModelFromJson(json);
+class _IdentityDocument implements IdentityDocument {
+  const _IdentityDocument({required this.id, this.provider, @JsonKey(name: 'doc_type') this.docType = IdentityDocType.nationalId, this.status = IdentityStatus.unverified, @JsonKey(name: 'rejection_reason') this.rejectionReason, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'expires_at') this.expiresAt, @JsonKey(name: 'verified_at') this.verifiedAt});
+  factory _IdentityDocument.fromJson(Map<String, dynamic> json) => _$IdentityDocumentFromJson(json);
 
 @override final  String id;
-@override@JsonKey(name: 'account_id') final  String accountId;
-@override@JsonKey(name: 'id_number') final  String idNumber;
-@override@JsonKey(name: 'full_name') final  String fullName;
-@override@JsonKey(name: 'date_of_birth') final  String? dateOfBirth;
-@override@JsonKey(name: 'issue_date') final  String? issueDate;
-@override@JsonKey(name: 'issue_place') final  String? issuePlace;
-@override@JsonKey(name: 'front_card_url') final  String? frontCardUrl;
-@override@JsonKey(name: 'back_card_url') final  String? backCardUrl;
-@override@JsonKey(name: 'selfie_url') final  String? selfieUrl;
-@override@JsonKey() final  KycStatus status;
-@override@JsonKey(name: 'rejected_reason') final  String? rejectedReason;
-@override@JsonKey(name: 'submitted_at') final  String? submittedAt;
+@override final  String? provider;
+@override@JsonKey(name: 'doc_type') final  IdentityDocType docType;
+@override@JsonKey() final  IdentityStatus status;
+@override@JsonKey(name: 'rejection_reason') final  String? rejectionReason;
+@override@JsonKey(name: 'created_at') final  String? createdAt;
+@override@JsonKey(name: 'expires_at') final  String? expiresAt;
 @override@JsonKey(name: 'verified_at') final  String? verifiedAt;
 
-/// Create a copy of KycModel
+/// Create a copy of IdentityDocument
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$KycModelCopyWith<_KycModel> get copyWith => __$KycModelCopyWithImpl<_KycModel>(this, _$identity);
+_$IdentityDocumentCopyWith<_IdentityDocument> get copyWith => __$IdentityDocumentCopyWithImpl<_IdentityDocument>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$KycModelToJson(this, );
+  return _$IdentityDocumentToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _KycModel&&(identical(other.id, id) || other.id == id)&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.idNumber, idNumber) || other.idNumber == idNumber)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.issueDate, issueDate) || other.issueDate == issueDate)&&(identical(other.issuePlace, issuePlace) || other.issuePlace == issuePlace)&&(identical(other.frontCardUrl, frontCardUrl) || other.frontCardUrl == frontCardUrl)&&(identical(other.backCardUrl, backCardUrl) || other.backCardUrl == backCardUrl)&&(identical(other.selfieUrl, selfieUrl) || other.selfieUrl == selfieUrl)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectedReason, rejectedReason) || other.rejectedReason == rejectedReason)&&(identical(other.submittedAt, submittedAt) || other.submittedAt == submittedAt)&&(identical(other.verifiedAt, verifiedAt) || other.verifiedAt == verifiedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IdentityDocument&&(identical(other.id, id) || other.id == id)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.docType, docType) || other.docType == docType)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.verifiedAt, verifiedAt) || other.verifiedAt == verifiedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,accountId,idNumber,fullName,dateOfBirth,issueDate,issuePlace,frontCardUrl,backCardUrl,selfieUrl,status,rejectedReason,submittedAt,verifiedAt);
+int get hashCode => Object.hash(runtimeType,id,provider,docType,status,rejectionReason,createdAt,expiresAt,verifiedAt);
 
 @override
 String toString() {
-  return 'KycModel(id: $id, accountId: $accountId, idNumber: $idNumber, fullName: $fullName, dateOfBirth: $dateOfBirth, issueDate: $issueDate, issuePlace: $issuePlace, frontCardUrl: $frontCardUrl, backCardUrl: $backCardUrl, selfieUrl: $selfieUrl, status: $status, rejectedReason: $rejectedReason, submittedAt: $submittedAt, verifiedAt: $verifiedAt)';
+  return 'IdentityDocument(id: $id, provider: $provider, docType: $docType, status: $status, rejectionReason: $rejectionReason, createdAt: $createdAt, expiresAt: $expiresAt, verifiedAt: $verifiedAt)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$KycModelCopyWith<$Res> implements $KycModelCopyWith<$Res> {
-  factory _$KycModelCopyWith(_KycModel value, $Res Function(_KycModel) _then) = __$KycModelCopyWithImpl;
+abstract mixin class _$IdentityDocumentCopyWith<$Res> implements $IdentityDocumentCopyWith<$Res> {
+  factory _$IdentityDocumentCopyWith(_IdentityDocument value, $Res Function(_IdentityDocument) _then) = __$IdentityDocumentCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'account_id') String accountId,@JsonKey(name: 'id_number') String idNumber,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'date_of_birth') String? dateOfBirth,@JsonKey(name: 'issue_date') String? issueDate,@JsonKey(name: 'issue_place') String? issuePlace,@JsonKey(name: 'front_card_url') String? frontCardUrl,@JsonKey(name: 'back_card_url') String? backCardUrl,@JsonKey(name: 'selfie_url') String? selfieUrl, KycStatus status,@JsonKey(name: 'rejected_reason') String? rejectedReason,@JsonKey(name: 'submitted_at') String? submittedAt,@JsonKey(name: 'verified_at') String? verifiedAt
+ String id, String? provider,@JsonKey(name: 'doc_type') IdentityDocType docType, IdentityStatus status,@JsonKey(name: 'rejection_reason') String? rejectionReason,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'expires_at') String? expiresAt,@JsonKey(name: 'verified_at') String? verifiedAt
 });
 
 
@@ -281,30 +269,24 @@ $Res call({
 
 }
 /// @nodoc
-class __$KycModelCopyWithImpl<$Res>
-    implements _$KycModelCopyWith<$Res> {
-  __$KycModelCopyWithImpl(this._self, this._then);
+class __$IdentityDocumentCopyWithImpl<$Res>
+    implements _$IdentityDocumentCopyWith<$Res> {
+  __$IdentityDocumentCopyWithImpl(this._self, this._then);
 
-  final _KycModel _self;
-  final $Res Function(_KycModel) _then;
+  final _IdentityDocument _self;
+  final $Res Function(_IdentityDocument) _then;
 
-/// Create a copy of KycModel
+/// Create a copy of IdentityDocument
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? accountId = null,Object? idNumber = null,Object? fullName = null,Object? dateOfBirth = freezed,Object? issueDate = freezed,Object? issuePlace = freezed,Object? frontCardUrl = freezed,Object? backCardUrl = freezed,Object? selfieUrl = freezed,Object? status = null,Object? rejectedReason = freezed,Object? submittedAt = freezed,Object? verifiedAt = freezed,}) {
-  return _then(_KycModel(
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? provider = freezed,Object? docType = null,Object? status = null,Object? rejectionReason = freezed,Object? createdAt = freezed,Object? expiresAt = freezed,Object? verifiedAt = freezed,}) {
+  return _then(_IdentityDocument(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,accountId: null == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
-as String,idNumber: null == idNumber ? _self.idNumber : idNumber // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
-as String?,issueDate: freezed == issueDate ? _self.issueDate : issueDate // ignore: cast_nullable_to_non_nullable
-as String?,issuePlace: freezed == issuePlace ? _self.issuePlace : issuePlace // ignore: cast_nullable_to_non_nullable
-as String?,frontCardUrl: freezed == frontCardUrl ? _self.frontCardUrl : frontCardUrl // ignore: cast_nullable_to_non_nullable
-as String?,backCardUrl: freezed == backCardUrl ? _self.backCardUrl : backCardUrl // ignore: cast_nullable_to_non_nullable
-as String?,selfieUrl: freezed == selfieUrl ? _self.selfieUrl : selfieUrl // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as KycStatus,rejectedReason: freezed == rejectedReason ? _self.rejectedReason : rejectedReason // ignore: cast_nullable_to_non_nullable
-as String?,submittedAt: freezed == submittedAt ? _self.submittedAt : submittedAt // ignore: cast_nullable_to_non_nullable
+as String,provider: freezed == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
+as String?,docType: null == docType ? _self.docType : docType // ignore: cast_nullable_to_non_nullable
+as IdentityDocType,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as IdentityStatus,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as String?,verifiedAt: freezed == verifiedAt ? _self.verifiedAt : verifiedAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -315,42 +297,42 @@ as String?,
 
 
 /// @nodoc
-mixin _$SubmitKycRequest {
+mixin _$StartIdentityVerificationRequest {
 
-@JsonKey(name: 'id_number') String get idNumber;@JsonKey(name: 'full_name') String get fullName;@JsonKey(name: 'date_of_birth') String? get dateOfBirth;@JsonKey(name: 'issue_date') String? get issueDate;@JsonKey(name: 'issue_place') String? get issuePlace;@JsonKey(name: 'front_card_rs_id') String? get frontCardRsId;@JsonKey(name: 'back_card_rs_id') String? get backCardRsId;@JsonKey(name: 'selfie_rs_id') String? get selfieRsId;
-/// Create a copy of SubmitKycRequest
+@JsonKey(name: 'doc_type') IdentityDocType get docType;@JsonKey(name: 'front_resource_id') String get frontResourceId;@JsonKey(name: 'back_resource_id') String? get backResourceId;@JsonKey(name: 'selfie_resource_id') String get selfieResourceId;
+/// Create a copy of StartIdentityVerificationRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$SubmitKycRequestCopyWith<SubmitKycRequest> get copyWith => _$SubmitKycRequestCopyWithImpl<SubmitKycRequest>(this as SubmitKycRequest, _$identity);
+$StartIdentityVerificationRequestCopyWith<StartIdentityVerificationRequest> get copyWith => _$StartIdentityVerificationRequestCopyWithImpl<StartIdentityVerificationRequest>(this as StartIdentityVerificationRequest, _$identity);
 
-  /// Serializes this SubmitKycRequest to a JSON map.
+  /// Serializes this StartIdentityVerificationRequest to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubmitKycRequest&&(identical(other.idNumber, idNumber) || other.idNumber == idNumber)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.issueDate, issueDate) || other.issueDate == issueDate)&&(identical(other.issuePlace, issuePlace) || other.issuePlace == issuePlace)&&(identical(other.frontCardRsId, frontCardRsId) || other.frontCardRsId == frontCardRsId)&&(identical(other.backCardRsId, backCardRsId) || other.backCardRsId == backCardRsId)&&(identical(other.selfieRsId, selfieRsId) || other.selfieRsId == selfieRsId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StartIdentityVerificationRequest&&(identical(other.docType, docType) || other.docType == docType)&&(identical(other.frontResourceId, frontResourceId) || other.frontResourceId == frontResourceId)&&(identical(other.backResourceId, backResourceId) || other.backResourceId == backResourceId)&&(identical(other.selfieResourceId, selfieResourceId) || other.selfieResourceId == selfieResourceId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,idNumber,fullName,dateOfBirth,issueDate,issuePlace,frontCardRsId,backCardRsId,selfieRsId);
+int get hashCode => Object.hash(runtimeType,docType,frontResourceId,backResourceId,selfieResourceId);
 
 @override
 String toString() {
-  return 'SubmitKycRequest(idNumber: $idNumber, fullName: $fullName, dateOfBirth: $dateOfBirth, issueDate: $issueDate, issuePlace: $issuePlace, frontCardRsId: $frontCardRsId, backCardRsId: $backCardRsId, selfieRsId: $selfieRsId)';
+  return 'StartIdentityVerificationRequest(docType: $docType, frontResourceId: $frontResourceId, backResourceId: $backResourceId, selfieResourceId: $selfieResourceId)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $SubmitKycRequestCopyWith<$Res>  {
-  factory $SubmitKycRequestCopyWith(SubmitKycRequest value, $Res Function(SubmitKycRequest) _then) = _$SubmitKycRequestCopyWithImpl;
+abstract mixin class $StartIdentityVerificationRequestCopyWith<$Res>  {
+  factory $StartIdentityVerificationRequestCopyWith(StartIdentityVerificationRequest value, $Res Function(StartIdentityVerificationRequest) _then) = _$StartIdentityVerificationRequestCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id_number') String idNumber,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'date_of_birth') String? dateOfBirth,@JsonKey(name: 'issue_date') String? issueDate,@JsonKey(name: 'issue_place') String? issuePlace,@JsonKey(name: 'front_card_rs_id') String? frontCardRsId,@JsonKey(name: 'back_card_rs_id') String? backCardRsId,@JsonKey(name: 'selfie_rs_id') String? selfieRsId
+@JsonKey(name: 'doc_type') IdentityDocType docType,@JsonKey(name: 'front_resource_id') String frontResourceId,@JsonKey(name: 'back_resource_id') String? backResourceId,@JsonKey(name: 'selfie_resource_id') String selfieResourceId
 });
 
 
@@ -358,34 +340,30 @@ $Res call({
 
 }
 /// @nodoc
-class _$SubmitKycRequestCopyWithImpl<$Res>
-    implements $SubmitKycRequestCopyWith<$Res> {
-  _$SubmitKycRequestCopyWithImpl(this._self, this._then);
+class _$StartIdentityVerificationRequestCopyWithImpl<$Res>
+    implements $StartIdentityVerificationRequestCopyWith<$Res> {
+  _$StartIdentityVerificationRequestCopyWithImpl(this._self, this._then);
 
-  final SubmitKycRequest _self;
-  final $Res Function(SubmitKycRequest) _then;
+  final StartIdentityVerificationRequest _self;
+  final $Res Function(StartIdentityVerificationRequest) _then;
 
-/// Create a copy of SubmitKycRequest
+/// Create a copy of StartIdentityVerificationRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? idNumber = null,Object? fullName = null,Object? dateOfBirth = freezed,Object? issueDate = freezed,Object? issuePlace = freezed,Object? frontCardRsId = freezed,Object? backCardRsId = freezed,Object? selfieRsId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? docType = null,Object? frontResourceId = null,Object? backResourceId = freezed,Object? selfieResourceId = null,}) {
   return _then(_self.copyWith(
-idNumber: null == idNumber ? _self.idNumber : idNumber // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
-as String?,issueDate: freezed == issueDate ? _self.issueDate : issueDate // ignore: cast_nullable_to_non_nullable
-as String?,issuePlace: freezed == issuePlace ? _self.issuePlace : issuePlace // ignore: cast_nullable_to_non_nullable
-as String?,frontCardRsId: freezed == frontCardRsId ? _self.frontCardRsId : frontCardRsId // ignore: cast_nullable_to_non_nullable
-as String?,backCardRsId: freezed == backCardRsId ? _self.backCardRsId : backCardRsId // ignore: cast_nullable_to_non_nullable
-as String?,selfieRsId: freezed == selfieRsId ? _self.selfieRsId : selfieRsId // ignore: cast_nullable_to_non_nullable
-as String?,
+docType: null == docType ? _self.docType : docType // ignore: cast_nullable_to_non_nullable
+as IdentityDocType,frontResourceId: null == frontResourceId ? _self.frontResourceId : frontResourceId // ignore: cast_nullable_to_non_nullable
+as String,backResourceId: freezed == backResourceId ? _self.backResourceId : backResourceId // ignore: cast_nullable_to_non_nullable
+as String?,selfieResourceId: null == selfieResourceId ? _self.selfieResourceId : selfieResourceId // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
 }
 
 
-/// Adds pattern-matching-related methods to [SubmitKycRequest].
-extension SubmitKycRequestPatterns on SubmitKycRequest {
+/// Adds pattern-matching-related methods to [StartIdentityVerificationRequest].
+extension StartIdentityVerificationRequestPatterns on StartIdentityVerificationRequest {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -398,10 +376,10 @@ extension SubmitKycRequestPatterns on SubmitKycRequest {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SubmitKycRequest value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _StartIdentityVerificationRequest value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _SubmitKycRequest() when $default != null:
+case _StartIdentityVerificationRequest() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -420,10 +398,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SubmitKycRequest value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _StartIdentityVerificationRequest value)  $default,){
 final _that = this;
 switch (_that) {
-case _SubmitKycRequest():
+case _StartIdentityVerificationRequest():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -441,10 +419,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SubmitKycRequest value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _StartIdentityVerificationRequest value)?  $default,){
 final _that = this;
 switch (_that) {
-case _SubmitKycRequest() when $default != null:
+case _StartIdentityVerificationRequest() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -462,10 +440,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_number')  String idNumber, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'issue_date')  String? issueDate, @JsonKey(name: 'issue_place')  String? issuePlace, @JsonKey(name: 'front_card_rs_id')  String? frontCardRsId, @JsonKey(name: 'back_card_rs_id')  String? backCardRsId, @JsonKey(name: 'selfie_rs_id')  String? selfieRsId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'doc_type')  IdentityDocType docType, @JsonKey(name: 'front_resource_id')  String frontResourceId, @JsonKey(name: 'back_resource_id')  String? backResourceId, @JsonKey(name: 'selfie_resource_id')  String selfieResourceId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _SubmitKycRequest() when $default != null:
-return $default(_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,_that.issuePlace,_that.frontCardRsId,_that.backCardRsId,_that.selfieRsId);case _:
+case _StartIdentityVerificationRequest() when $default != null:
+return $default(_that.docType,_that.frontResourceId,_that.backResourceId,_that.selfieResourceId);case _:
   return orElse();
 
 }
@@ -483,10 +461,10 @@ return $default(_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id_number')  String idNumber, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'issue_date')  String? issueDate, @JsonKey(name: 'issue_place')  String? issuePlace, @JsonKey(name: 'front_card_rs_id')  String? frontCardRsId, @JsonKey(name: 'back_card_rs_id')  String? backCardRsId, @JsonKey(name: 'selfie_rs_id')  String? selfieRsId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'doc_type')  IdentityDocType docType, @JsonKey(name: 'front_resource_id')  String frontResourceId, @JsonKey(name: 'back_resource_id')  String? backResourceId, @JsonKey(name: 'selfie_resource_id')  String selfieResourceId)  $default,) {final _that = this;
 switch (_that) {
-case _SubmitKycRequest():
-return $default(_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,_that.issuePlace,_that.frontCardRsId,_that.backCardRsId,_that.selfieRsId);case _:
+case _StartIdentityVerificationRequest():
+return $default(_that.docType,_that.frontResourceId,_that.backResourceId,_that.selfieResourceId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -503,10 +481,10 @@ return $default(_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id_number')  String idNumber, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'date_of_birth')  String? dateOfBirth, @JsonKey(name: 'issue_date')  String? issueDate, @JsonKey(name: 'issue_place')  String? issuePlace, @JsonKey(name: 'front_card_rs_id')  String? frontCardRsId, @JsonKey(name: 'back_card_rs_id')  String? backCardRsId, @JsonKey(name: 'selfie_rs_id')  String? selfieRsId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'doc_type')  IdentityDocType docType, @JsonKey(name: 'front_resource_id')  String frontResourceId, @JsonKey(name: 'back_resource_id')  String? backResourceId, @JsonKey(name: 'selfie_resource_id')  String selfieResourceId)?  $default,) {final _that = this;
 switch (_that) {
-case _SubmitKycRequest() when $default != null:
-return $default(_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,_that.issuePlace,_that.frontCardRsId,_that.backCardRsId,_that.selfieRsId);case _:
+case _StartIdentityVerificationRequest() when $default != null:
+return $default(_that.docType,_that.frontResourceId,_that.backResourceId,_that.selfieResourceId);case _:
   return null;
 
 }
@@ -517,53 +495,49 @@ return $default(_that.idNumber,_that.fullName,_that.dateOfBirth,_that.issueDate,
 /// @nodoc
 @JsonSerializable()
 
-class _SubmitKycRequest implements SubmitKycRequest {
-  const _SubmitKycRequest({@JsonKey(name: 'id_number') required this.idNumber, @JsonKey(name: 'full_name') required this.fullName, @JsonKey(name: 'date_of_birth') this.dateOfBirth, @JsonKey(name: 'issue_date') this.issueDate, @JsonKey(name: 'issue_place') this.issuePlace, @JsonKey(name: 'front_card_rs_id') this.frontCardRsId, @JsonKey(name: 'back_card_rs_id') this.backCardRsId, @JsonKey(name: 'selfie_rs_id') this.selfieRsId});
-  factory _SubmitKycRequest.fromJson(Map<String, dynamic> json) => _$SubmitKycRequestFromJson(json);
+class _StartIdentityVerificationRequest implements StartIdentityVerificationRequest {
+  const _StartIdentityVerificationRequest({@JsonKey(name: 'doc_type') required this.docType, @JsonKey(name: 'front_resource_id') required this.frontResourceId, @JsonKey(name: 'back_resource_id') this.backResourceId, @JsonKey(name: 'selfie_resource_id') required this.selfieResourceId});
+  factory _StartIdentityVerificationRequest.fromJson(Map<String, dynamic> json) => _$StartIdentityVerificationRequestFromJson(json);
 
-@override@JsonKey(name: 'id_number') final  String idNumber;
-@override@JsonKey(name: 'full_name') final  String fullName;
-@override@JsonKey(name: 'date_of_birth') final  String? dateOfBirth;
-@override@JsonKey(name: 'issue_date') final  String? issueDate;
-@override@JsonKey(name: 'issue_place') final  String? issuePlace;
-@override@JsonKey(name: 'front_card_rs_id') final  String? frontCardRsId;
-@override@JsonKey(name: 'back_card_rs_id') final  String? backCardRsId;
-@override@JsonKey(name: 'selfie_rs_id') final  String? selfieRsId;
+@override@JsonKey(name: 'doc_type') final  IdentityDocType docType;
+@override@JsonKey(name: 'front_resource_id') final  String frontResourceId;
+@override@JsonKey(name: 'back_resource_id') final  String? backResourceId;
+@override@JsonKey(name: 'selfie_resource_id') final  String selfieResourceId;
 
-/// Create a copy of SubmitKycRequest
+/// Create a copy of StartIdentityVerificationRequest
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$SubmitKycRequestCopyWith<_SubmitKycRequest> get copyWith => __$SubmitKycRequestCopyWithImpl<_SubmitKycRequest>(this, _$identity);
+_$StartIdentityVerificationRequestCopyWith<_StartIdentityVerificationRequest> get copyWith => __$StartIdentityVerificationRequestCopyWithImpl<_StartIdentityVerificationRequest>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$SubmitKycRequestToJson(this, );
+  return _$StartIdentityVerificationRequestToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubmitKycRequest&&(identical(other.idNumber, idNumber) || other.idNumber == idNumber)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.issueDate, issueDate) || other.issueDate == issueDate)&&(identical(other.issuePlace, issuePlace) || other.issuePlace == issuePlace)&&(identical(other.frontCardRsId, frontCardRsId) || other.frontCardRsId == frontCardRsId)&&(identical(other.backCardRsId, backCardRsId) || other.backCardRsId == backCardRsId)&&(identical(other.selfieRsId, selfieRsId) || other.selfieRsId == selfieRsId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StartIdentityVerificationRequest&&(identical(other.docType, docType) || other.docType == docType)&&(identical(other.frontResourceId, frontResourceId) || other.frontResourceId == frontResourceId)&&(identical(other.backResourceId, backResourceId) || other.backResourceId == backResourceId)&&(identical(other.selfieResourceId, selfieResourceId) || other.selfieResourceId == selfieResourceId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,idNumber,fullName,dateOfBirth,issueDate,issuePlace,frontCardRsId,backCardRsId,selfieRsId);
+int get hashCode => Object.hash(runtimeType,docType,frontResourceId,backResourceId,selfieResourceId);
 
 @override
 String toString() {
-  return 'SubmitKycRequest(idNumber: $idNumber, fullName: $fullName, dateOfBirth: $dateOfBirth, issueDate: $issueDate, issuePlace: $issuePlace, frontCardRsId: $frontCardRsId, backCardRsId: $backCardRsId, selfieRsId: $selfieRsId)';
+  return 'StartIdentityVerificationRequest(docType: $docType, frontResourceId: $frontResourceId, backResourceId: $backResourceId, selfieResourceId: $selfieResourceId)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$SubmitKycRequestCopyWith<$Res> implements $SubmitKycRequestCopyWith<$Res> {
-  factory _$SubmitKycRequestCopyWith(_SubmitKycRequest value, $Res Function(_SubmitKycRequest) _then) = __$SubmitKycRequestCopyWithImpl;
+abstract mixin class _$StartIdentityVerificationRequestCopyWith<$Res> implements $StartIdentityVerificationRequestCopyWith<$Res> {
+  factory _$StartIdentityVerificationRequestCopyWith(_StartIdentityVerificationRequest value, $Res Function(_StartIdentityVerificationRequest) _then) = __$StartIdentityVerificationRequestCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id_number') String idNumber,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'date_of_birth') String? dateOfBirth,@JsonKey(name: 'issue_date') String? issueDate,@JsonKey(name: 'issue_place') String? issuePlace,@JsonKey(name: 'front_card_rs_id') String? frontCardRsId,@JsonKey(name: 'back_card_rs_id') String? backCardRsId,@JsonKey(name: 'selfie_rs_id') String? selfieRsId
+@JsonKey(name: 'doc_type') IdentityDocType docType,@JsonKey(name: 'front_resource_id') String frontResourceId,@JsonKey(name: 'back_resource_id') String? backResourceId,@JsonKey(name: 'selfie_resource_id') String selfieResourceId
 });
 
 
@@ -571,25 +545,860 @@ $Res call({
 
 }
 /// @nodoc
-class __$SubmitKycRequestCopyWithImpl<$Res>
-    implements _$SubmitKycRequestCopyWith<$Res> {
-  __$SubmitKycRequestCopyWithImpl(this._self, this._then);
+class __$StartIdentityVerificationRequestCopyWithImpl<$Res>
+    implements _$StartIdentityVerificationRequestCopyWith<$Res> {
+  __$StartIdentityVerificationRequestCopyWithImpl(this._self, this._then);
 
-  final _SubmitKycRequest _self;
-  final $Res Function(_SubmitKycRequest) _then;
+  final _StartIdentityVerificationRequest _self;
+  final $Res Function(_StartIdentityVerificationRequest) _then;
 
-/// Create a copy of SubmitKycRequest
+/// Create a copy of StartIdentityVerificationRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? idNumber = null,Object? fullName = null,Object? dateOfBirth = freezed,Object? issueDate = freezed,Object? issuePlace = freezed,Object? frontCardRsId = freezed,Object? backCardRsId = freezed,Object? selfieRsId = freezed,}) {
-  return _then(_SubmitKycRequest(
-idNumber: null == idNumber ? _self.idNumber : idNumber // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
-as String?,issueDate: freezed == issueDate ? _self.issueDate : issueDate // ignore: cast_nullable_to_non_nullable
-as String?,issuePlace: freezed == issuePlace ? _self.issuePlace : issuePlace // ignore: cast_nullable_to_non_nullable
-as String?,frontCardRsId: freezed == frontCardRsId ? _self.frontCardRsId : frontCardRsId // ignore: cast_nullable_to_non_nullable
-as String?,backCardRsId: freezed == backCardRsId ? _self.backCardRsId : backCardRsId // ignore: cast_nullable_to_non_nullable
-as String?,selfieRsId: freezed == selfieRsId ? _self.selfieRsId : selfieRsId // ignore: cast_nullable_to_non_nullable
+@override @pragma('vm:prefer-inline') $Res call({Object? docType = null,Object? frontResourceId = null,Object? backResourceId = freezed,Object? selfieResourceId = null,}) {
+  return _then(_StartIdentityVerificationRequest(
+docType: null == docType ? _self.docType : docType // ignore: cast_nullable_to_non_nullable
+as IdentityDocType,frontResourceId: null == frontResourceId ? _self.frontResourceId : frontResourceId // ignore: cast_nullable_to_non_nullable
+as String,backResourceId: freezed == backResourceId ? _self.backResourceId : backResourceId // ignore: cast_nullable_to_non_nullable
+as String?,selfieResourceId: null == selfieResourceId ? _self.selfieResourceId : selfieResourceId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$IdentityVerificationTicket {
+
+ IdentityDocument get document;@JsonKey(name: 'vendor_session_expires_at') String? get vendorSessionExpiresAt;@JsonKey(name: 'vendor_session_url') String? get vendorSessionUrl;
+/// Create a copy of IdentityVerificationTicket
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$IdentityVerificationTicketCopyWith<IdentityVerificationTicket> get copyWith => _$IdentityVerificationTicketCopyWithImpl<IdentityVerificationTicket>(this as IdentityVerificationTicket, _$identity);
+
+  /// Serializes this IdentityVerificationTicket to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IdentityVerificationTicket&&(identical(other.document, document) || other.document == document)&&(identical(other.vendorSessionExpiresAt, vendorSessionExpiresAt) || other.vendorSessionExpiresAt == vendorSessionExpiresAt)&&(identical(other.vendorSessionUrl, vendorSessionUrl) || other.vendorSessionUrl == vendorSessionUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,document,vendorSessionExpiresAt,vendorSessionUrl);
+
+@override
+String toString() {
+  return 'IdentityVerificationTicket(document: $document, vendorSessionExpiresAt: $vendorSessionExpiresAt, vendorSessionUrl: $vendorSessionUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $IdentityVerificationTicketCopyWith<$Res>  {
+  factory $IdentityVerificationTicketCopyWith(IdentityVerificationTicket value, $Res Function(IdentityVerificationTicket) _then) = _$IdentityVerificationTicketCopyWithImpl;
+@useResult
+$Res call({
+ IdentityDocument document,@JsonKey(name: 'vendor_session_expires_at') String? vendorSessionExpiresAt,@JsonKey(name: 'vendor_session_url') String? vendorSessionUrl
+});
+
+
+$IdentityDocumentCopyWith<$Res> get document;
+
+}
+/// @nodoc
+class _$IdentityVerificationTicketCopyWithImpl<$Res>
+    implements $IdentityVerificationTicketCopyWith<$Res> {
+  _$IdentityVerificationTicketCopyWithImpl(this._self, this._then);
+
+  final IdentityVerificationTicket _self;
+  final $Res Function(IdentityVerificationTicket) _then;
+
+/// Create a copy of IdentityVerificationTicket
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? document = null,Object? vendorSessionExpiresAt = freezed,Object? vendorSessionUrl = freezed,}) {
+  return _then(_self.copyWith(
+document: null == document ? _self.document : document // ignore: cast_nullable_to_non_nullable
+as IdentityDocument,vendorSessionExpiresAt: freezed == vendorSessionExpiresAt ? _self.vendorSessionExpiresAt : vendorSessionExpiresAt // ignore: cast_nullable_to_non_nullable
+as String?,vendorSessionUrl: freezed == vendorSessionUrl ? _self.vendorSessionUrl : vendorSessionUrl // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+/// Create a copy of IdentityVerificationTicket
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$IdentityDocumentCopyWith<$Res> get document {
+  
+  return $IdentityDocumentCopyWith<$Res>(_self.document, (value) {
+    return _then(_self.copyWith(document: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [IdentityVerificationTicket].
+extension IdentityVerificationTicketPatterns on IdentityVerificationTicket {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _IdentityVerificationTicket value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _IdentityVerificationTicket() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _IdentityVerificationTicket value)  $default,){
+final _that = this;
+switch (_that) {
+case _IdentityVerificationTicket():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _IdentityVerificationTicket value)?  $default,){
+final _that = this;
+switch (_that) {
+case _IdentityVerificationTicket() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( IdentityDocument document, @JsonKey(name: 'vendor_session_expires_at')  String? vendorSessionExpiresAt, @JsonKey(name: 'vendor_session_url')  String? vendorSessionUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _IdentityVerificationTicket() when $default != null:
+return $default(_that.document,_that.vendorSessionExpiresAt,_that.vendorSessionUrl);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( IdentityDocument document, @JsonKey(name: 'vendor_session_expires_at')  String? vendorSessionExpiresAt, @JsonKey(name: 'vendor_session_url')  String? vendorSessionUrl)  $default,) {final _that = this;
+switch (_that) {
+case _IdentityVerificationTicket():
+return $default(_that.document,_that.vendorSessionExpiresAt,_that.vendorSessionUrl);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( IdentityDocument document, @JsonKey(name: 'vendor_session_expires_at')  String? vendorSessionExpiresAt, @JsonKey(name: 'vendor_session_url')  String? vendorSessionUrl)?  $default,) {final _that = this;
+switch (_that) {
+case _IdentityVerificationTicket() when $default != null:
+return $default(_that.document,_that.vendorSessionExpiresAt,_that.vendorSessionUrl);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _IdentityVerificationTicket implements IdentityVerificationTicket {
+  const _IdentityVerificationTicket({required this.document, @JsonKey(name: 'vendor_session_expires_at') this.vendorSessionExpiresAt, @JsonKey(name: 'vendor_session_url') this.vendorSessionUrl});
+  factory _IdentityVerificationTicket.fromJson(Map<String, dynamic> json) => _$IdentityVerificationTicketFromJson(json);
+
+@override final  IdentityDocument document;
+@override@JsonKey(name: 'vendor_session_expires_at') final  String? vendorSessionExpiresAt;
+@override@JsonKey(name: 'vendor_session_url') final  String? vendorSessionUrl;
+
+/// Create a copy of IdentityVerificationTicket
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$IdentityVerificationTicketCopyWith<_IdentityVerificationTicket> get copyWith => __$IdentityVerificationTicketCopyWithImpl<_IdentityVerificationTicket>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$IdentityVerificationTicketToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IdentityVerificationTicket&&(identical(other.document, document) || other.document == document)&&(identical(other.vendorSessionExpiresAt, vendorSessionExpiresAt) || other.vendorSessionExpiresAt == vendorSessionExpiresAt)&&(identical(other.vendorSessionUrl, vendorSessionUrl) || other.vendorSessionUrl == vendorSessionUrl));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,document,vendorSessionExpiresAt,vendorSessionUrl);
+
+@override
+String toString() {
+  return 'IdentityVerificationTicket(document: $document, vendorSessionExpiresAt: $vendorSessionExpiresAt, vendorSessionUrl: $vendorSessionUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$IdentityVerificationTicketCopyWith<$Res> implements $IdentityVerificationTicketCopyWith<$Res> {
+  factory _$IdentityVerificationTicketCopyWith(_IdentityVerificationTicket value, $Res Function(_IdentityVerificationTicket) _then) = __$IdentityVerificationTicketCopyWithImpl;
+@override @useResult
+$Res call({
+ IdentityDocument document,@JsonKey(name: 'vendor_session_expires_at') String? vendorSessionExpiresAt,@JsonKey(name: 'vendor_session_url') String? vendorSessionUrl
+});
+
+
+@override $IdentityDocumentCopyWith<$Res> get document;
+
+}
+/// @nodoc
+class __$IdentityVerificationTicketCopyWithImpl<$Res>
+    implements _$IdentityVerificationTicketCopyWith<$Res> {
+  __$IdentityVerificationTicketCopyWithImpl(this._self, this._then);
+
+  final _IdentityVerificationTicket _self;
+  final $Res Function(_IdentityVerificationTicket) _then;
+
+/// Create a copy of IdentityVerificationTicket
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? document = null,Object? vendorSessionExpiresAt = freezed,Object? vendorSessionUrl = freezed,}) {
+  return _then(_IdentityVerificationTicket(
+document: null == document ? _self.document : document // ignore: cast_nullable_to_non_nullable
+as IdentityDocument,vendorSessionExpiresAt: freezed == vendorSessionExpiresAt ? _self.vendorSessionExpiresAt : vendorSessionExpiresAt // ignore: cast_nullable_to_non_nullable
+as String?,vendorSessionUrl: freezed == vendorSessionUrl ? _self.vendorSessionUrl : vendorSessionUrl // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+/// Create a copy of IdentityVerificationTicket
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$IdentityDocumentCopyWith<$Res> get document {
+  
+  return $IdentityDocumentCopyWith<$Res>(_self.document, (value) {
+    return _then(_self.copyWith(document: value));
+  });
+}
+}
+
+
+/// @nodoc
+mixin _$AccountCreateUploadRequest {
+
+ String get filename; String get kind; String get mime; int get size;
+/// Create a copy of AccountCreateUploadRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AccountCreateUploadRequestCopyWith<AccountCreateUploadRequest> get copyWith => _$AccountCreateUploadRequestCopyWithImpl<AccountCreateUploadRequest>(this as AccountCreateUploadRequest, _$identity);
+
+  /// Serializes this AccountCreateUploadRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AccountCreateUploadRequest&&(identical(other.filename, filename) || other.filename == filename)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.mime, mime) || other.mime == mime)&&(identical(other.size, size) || other.size == size));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,filename,kind,mime,size);
+
+@override
+String toString() {
+  return 'AccountCreateUploadRequest(filename: $filename, kind: $kind, mime: $mime, size: $size)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AccountCreateUploadRequestCopyWith<$Res>  {
+  factory $AccountCreateUploadRequestCopyWith(AccountCreateUploadRequest value, $Res Function(AccountCreateUploadRequest) _then) = _$AccountCreateUploadRequestCopyWithImpl;
+@useResult
+$Res call({
+ String filename, String kind, String mime, int size
+});
+
+
+
+
+}
+/// @nodoc
+class _$AccountCreateUploadRequestCopyWithImpl<$Res>
+    implements $AccountCreateUploadRequestCopyWith<$Res> {
+  _$AccountCreateUploadRequestCopyWithImpl(this._self, this._then);
+
+  final AccountCreateUploadRequest _self;
+  final $Res Function(AccountCreateUploadRequest) _then;
+
+/// Create a copy of AccountCreateUploadRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? filename = null,Object? kind = null,Object? mime = null,Object? size = null,}) {
+  return _then(_self.copyWith(
+filename: null == filename ? _self.filename : filename // ignore: cast_nullable_to_non_nullable
+as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as String,mime: null == mime ? _self.mime : mime // ignore: cast_nullable_to_non_nullable
+as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [AccountCreateUploadRequest].
+extension AccountCreateUploadRequestPatterns on AccountCreateUploadRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AccountCreateUploadRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _AccountCreateUploadRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AccountCreateUploadRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _AccountCreateUploadRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AccountCreateUploadRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _AccountCreateUploadRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String filename,  String kind,  String mime,  int size)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _AccountCreateUploadRequest() when $default != null:
+return $default(_that.filename,_that.kind,_that.mime,_that.size);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String filename,  String kind,  String mime,  int size)  $default,) {final _that = this;
+switch (_that) {
+case _AccountCreateUploadRequest():
+return $default(_that.filename,_that.kind,_that.mime,_that.size);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String filename,  String kind,  String mime,  int size)?  $default,) {final _that = this;
+switch (_that) {
+case _AccountCreateUploadRequest() when $default != null:
+return $default(_that.filename,_that.kind,_that.mime,_that.size);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _AccountCreateUploadRequest implements AccountCreateUploadRequest {
+  const _AccountCreateUploadRequest({required this.filename, this.kind = 'identity', required this.mime, required this.size});
+  factory _AccountCreateUploadRequest.fromJson(Map<String, dynamic> json) => _$AccountCreateUploadRequestFromJson(json);
+
+@override final  String filename;
+@override@JsonKey() final  String kind;
+@override final  String mime;
+@override final  int size;
+
+/// Create a copy of AccountCreateUploadRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AccountCreateUploadRequestCopyWith<_AccountCreateUploadRequest> get copyWith => __$AccountCreateUploadRequestCopyWithImpl<_AccountCreateUploadRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$AccountCreateUploadRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AccountCreateUploadRequest&&(identical(other.filename, filename) || other.filename == filename)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.mime, mime) || other.mime == mime)&&(identical(other.size, size) || other.size == size));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,filename,kind,mime,size);
+
+@override
+String toString() {
+  return 'AccountCreateUploadRequest(filename: $filename, kind: $kind, mime: $mime, size: $size)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AccountCreateUploadRequestCopyWith<$Res> implements $AccountCreateUploadRequestCopyWith<$Res> {
+  factory _$AccountCreateUploadRequestCopyWith(_AccountCreateUploadRequest value, $Res Function(_AccountCreateUploadRequest) _then) = __$AccountCreateUploadRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ String filename, String kind, String mime, int size
+});
+
+
+
+
+}
+/// @nodoc
+class __$AccountCreateUploadRequestCopyWithImpl<$Res>
+    implements _$AccountCreateUploadRequestCopyWith<$Res> {
+  __$AccountCreateUploadRequestCopyWithImpl(this._self, this._then);
+
+  final _AccountCreateUploadRequest _self;
+  final $Res Function(_AccountCreateUploadRequest) _then;
+
+/// Create a copy of AccountCreateUploadRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? filename = null,Object? kind = null,Object? mime = null,Object? size = null,}) {
+  return _then(_AccountCreateUploadRequest(
+filename: null == filename ? _self.filename : filename // ignore: cast_nullable_to_non_nullable
+as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as String,mime: null == mime ? _self.mime : mime // ignore: cast_nullable_to_non_nullable
+as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$UploadSlot {
+
+@JsonKey(name: 'resource_id') String get resourceId; String get url; Map<String, dynamic>? get headers;@JsonKey(name: 'expires_at') String? get expiresAt;
+/// Create a copy of UploadSlot
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UploadSlotCopyWith<UploadSlot> get copyWith => _$UploadSlotCopyWithImpl<UploadSlot>(this as UploadSlot, _$identity);
+
+  /// Serializes this UploadSlot to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadSlot&&(identical(other.resourceId, resourceId) || other.resourceId == resourceId)&&(identical(other.url, url) || other.url == url)&&const DeepCollectionEquality().equals(other.headers, headers)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,resourceId,url,const DeepCollectionEquality().hash(headers),expiresAt);
+
+@override
+String toString() {
+  return 'UploadSlot(resourceId: $resourceId, url: $url, headers: $headers, expiresAt: $expiresAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $UploadSlotCopyWith<$Res>  {
+  factory $UploadSlotCopyWith(UploadSlot value, $Res Function(UploadSlot) _then) = _$UploadSlotCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'resource_id') String resourceId, String url, Map<String, dynamic>? headers,@JsonKey(name: 'expires_at') String? expiresAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$UploadSlotCopyWithImpl<$Res>
+    implements $UploadSlotCopyWith<$Res> {
+  _$UploadSlotCopyWithImpl(this._self, this._then);
+
+  final UploadSlot _self;
+  final $Res Function(UploadSlot) _then;
+
+/// Create a copy of UploadSlot
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? resourceId = null,Object? url = null,Object? headers = freezed,Object? expiresAt = freezed,}) {
+  return _then(_self.copyWith(
+resourceId: null == resourceId ? _self.resourceId : resourceId // ignore: cast_nullable_to_non_nullable
+as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String,headers: freezed == headers ? _self.headers : headers // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [UploadSlot].
+extension UploadSlotPatterns on UploadSlot {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UploadSlot value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UploadSlot() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UploadSlot value)  $default,){
+final _that = this;
+switch (_that) {
+case _UploadSlot():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UploadSlot value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UploadSlot() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'resource_id')  String resourceId,  String url,  Map<String, dynamic>? headers, @JsonKey(name: 'expires_at')  String? expiresAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UploadSlot() when $default != null:
+return $default(_that.resourceId,_that.url,_that.headers,_that.expiresAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'resource_id')  String resourceId,  String url,  Map<String, dynamic>? headers, @JsonKey(name: 'expires_at')  String? expiresAt)  $default,) {final _that = this;
+switch (_that) {
+case _UploadSlot():
+return $default(_that.resourceId,_that.url,_that.headers,_that.expiresAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'resource_id')  String resourceId,  String url,  Map<String, dynamic>? headers, @JsonKey(name: 'expires_at')  String? expiresAt)?  $default,) {final _that = this;
+switch (_that) {
+case _UploadSlot() when $default != null:
+return $default(_that.resourceId,_that.url,_that.headers,_that.expiresAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _UploadSlot implements UploadSlot {
+  const _UploadSlot({@JsonKey(name: 'resource_id') required this.resourceId, required this.url, final  Map<String, dynamic>? headers, @JsonKey(name: 'expires_at') this.expiresAt}): _headers = headers;
+  factory _UploadSlot.fromJson(Map<String, dynamic> json) => _$UploadSlotFromJson(json);
+
+@override@JsonKey(name: 'resource_id') final  String resourceId;
+@override final  String url;
+ final  Map<String, dynamic>? _headers;
+@override Map<String, dynamic>? get headers {
+  final value = _headers;
+  if (value == null) return null;
+  if (_headers is EqualUnmodifiableMapView) return _headers;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
+@override@JsonKey(name: 'expires_at') final  String? expiresAt;
+
+/// Create a copy of UploadSlot
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UploadSlotCopyWith<_UploadSlot> get copyWith => __$UploadSlotCopyWithImpl<_UploadSlot>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$UploadSlotToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UploadSlot&&(identical(other.resourceId, resourceId) || other.resourceId == resourceId)&&(identical(other.url, url) || other.url == url)&&const DeepCollectionEquality().equals(other._headers, _headers)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,resourceId,url,const DeepCollectionEquality().hash(_headers),expiresAt);
+
+@override
+String toString() {
+  return 'UploadSlot(resourceId: $resourceId, url: $url, headers: $headers, expiresAt: $expiresAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UploadSlotCopyWith<$Res> implements $UploadSlotCopyWith<$Res> {
+  factory _$UploadSlotCopyWith(_UploadSlot value, $Res Function(_UploadSlot) _then) = __$UploadSlotCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'resource_id') String resourceId, String url, Map<String, dynamic>? headers,@JsonKey(name: 'expires_at') String? expiresAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$UploadSlotCopyWithImpl<$Res>
+    implements _$UploadSlotCopyWith<$Res> {
+  __$UploadSlotCopyWithImpl(this._self, this._then);
+
+  final _UploadSlot _self;
+  final $Res Function(_UploadSlot) _then;
+
+/// Create a copy of UploadSlot
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? resourceId = null,Object? url = null,Object? headers = freezed,Object? expiresAt = freezed,}) {
+  return _then(_UploadSlot(
+resourceId: null == resourceId ? _self.resourceId : resourceId // ignore: cast_nullable_to_non_nullable
+as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String,headers: freezed == headers ? _self._headers : headers // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

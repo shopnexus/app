@@ -29,6 +29,20 @@ class ApiEndpoints {
 
   static String accountDetail(String id) => 'accounts/$id';
 
+  // --- Identity & KYC Verification Features ---
+  static const String identityDocuments = 'identity-documents';
+  static const String meIdentityDocuments = 'me/identity-documents';
+  static const String adminIdentityDocuments = 'admin/identity-documents';
+  static const String adminIdentityDocumentVerdictTemplate =
+      'admin/identity-documents/{id}/verdict';
+  static String adminIdentityDocumentVerdict(String id) =>
+      'admin/identity-documents/$id/verdict';
+  static const String taxInfo = 'tax-info';
+  static const String adminTaxInfoVerificationTemplate =
+      'admin/tax-info/{accountID}/verification';
+  static String adminTaxInfoVerification(String accountId) =>
+      'admin/tax-info/$accountId/verification';
+
   // --- Contacts Features ---
   static const String contacts = 'contacts';
   static const String contactDetailTemplate = 'contacts/{id}';
