@@ -36,7 +36,7 @@ final class DisputeNotifierProvider
   DisputeNotifier create() => DisputeNotifier();
 }
 
-String _$disputeNotifierHash() => r'ab82e83e56aa1838e6d78642f076dd9c1c9c71a4';
+String _$disputeNotifierHash() => r'5d2d1c9548fa58b239f0aaecf4d8f6d100128dff';
 
 /// Provider quản lý danh sách & trạng thái chuyển đổi của Đơn Hoàn tiền / Tranh chấp
 

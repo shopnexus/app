@@ -31,15 +31,14 @@ class DisputeNotifier extends _$DisputeNotifier {
     });
   }
 
-  /// Lấy chi tiết thông tin đơn hoàn tiền & lịch sử đối chất Admin
+  /// Lấy chi tiết thông tin đơn hoàn tiền theo OpenAPI chuẩn gộp
   Future<void> fetchRefundDetail(String refundId) async {
     final repository = ref.read(disputeRepositoryProvider);
     final refund = await repository.getRefundById(refundId);
-    final disputes = await repository.getDisputesByRefund(refundId);
 
     final currentState = state.value ?? const DisputeState();
     state = AsyncValue.data(
-      currentState.copyWith(selectedRefund: refund, disputes: disputes),
+      currentState.copyWith(selectedRefund: refund),
     );
   }
 

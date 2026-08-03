@@ -21,12 +21,20 @@ class DisputeStatusBadge extends StatelessWidget {
         iconData = Icons.local_shipping_outlined;
         labelText = 'Đang vận chuyển';
         break;
+      case 'awaiting-seller-review':
       case 'awaitingsellerreview':
       case 'pending':
         bgColor = const Color(0xFFFEF3C7);
         textColor = const Color(0xFFD97706);
         iconData = Icons.timer_outlined;
-        labelText = 'Chờ Shop phản hồi (3 ngày)';
+        labelText = 'Chờ Shop phản hồi';
+        break;
+      case 'awaiting-buyer-action':
+      case 'awaitingbuyeraction':
+        bgColor = const Color(0xFFFEF3C7);
+        textColor = const Color(0xFFD97706);
+        iconData = Icons.person_outline;
+        labelText = 'Chờ Buyer phản hồi';
         break;
       case 'disputed':
       case 'awaitingadminreview':
@@ -34,6 +42,18 @@ class DisputeStatusBadge extends StatelessWidget {
         textColor = const Color(0xFFDC2626);
         iconData = Icons.gavel_outlined;
         labelText = 'Đang chờ Mod phán quyết';
+        break;
+      case 'returning':
+        bgColor = const Color(0xFFE0F2FE);
+        textColor = const Color(0xFF0369A1);
+        iconData = Icons.unarchive_outlined;
+        labelText = 'Đang trả hàng về Shop';
+        break;
+      case 'returned':
+        bgColor = const Color(0xFFE0F2FE);
+        textColor = const Color(0xFF0284C7);
+        iconData = Icons.assignment_return_outlined;
+        labelText = 'Đã hoàn trả hàng';
         break;
       case 'accepted':
       case 'approved':
@@ -46,10 +66,11 @@ class DisputeStatusBadge extends StatelessWidget {
             : 'Đã chấp nhận hoàn tiền';
         break;
       case 'withdrawn':
+      case 'cancelled':
         bgColor = const Color(0xFFF1F5F9);
         textColor = const Color(0xFF64748B);
         iconData = Icons.cancel_outlined;
-        labelText = 'Đã rút yêu cầu';
+        labelText = 'Đã hủy / Rút yêu cầu';
         break;
       case 'rejected':
         bgColor = const Color(0xFFFEE2E2);

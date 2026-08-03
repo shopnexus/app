@@ -106,7 +106,7 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // 3. Buyer Refund Reason & Evidence Gallery Section
+                // 3. Lý do yêu cầu hoàn tiền & Ảnh bằng chứng đính kèm hồ sơ
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -120,13 +120,13 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                       const Row(
                         children: [
                           Icon(
-                            Icons.person_outline,
+                            Icons.article_outlined,
                             size: 18,
                             color: Color(0xFF0F172A),
                           ),
                           SizedBox(width: 8),
                           Text(
-                            'Lý do từ người mua (Buyer)',
+                            'Lý do yêu cầu hoàn tiền',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -157,7 +157,7 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                       if (refund.attachments.isNotEmpty) ...[
                         const SizedBox(height: 14),
                         EvidenceGalleryWidget(
-                          title: 'Ảnh bằng chứng của Buyer',
+                          title: 'Bằng chứng đính kèm hồ sơ',
                           attachments: refund.attachments,
                         ),
                       ],
@@ -166,9 +166,9 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // 4. Seller Response & Counter Evidence Section (if exists)
-                if (refund.sellerResponse != null ||
-                    refund.dispute != null) ...[
+                // 4. Lý do từ chối từ phía Seller (nếu có)
+                if (refund.rejectionReason != null ||
+                    refund.sellerResponse != null) ...[
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -188,7 +188,7 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Phản hồi từ người bán (Seller)',
+                              'Lý do từ chối từ người bán',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
@@ -207,8 +207,8 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            refund.sellerResponse ??
-                                refund.dispute?.sellerReason ??
+                            refund.rejectionReason ??
+                                refund.sellerResponse ??
                                 'Chưa có thông tin lý do',
                             style: const TextStyle(
                               fontSize: 13,
@@ -218,22 +218,14 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                             ),
                           ),
                         ),
-                        if (refund.dispute?.sellerAttachments != null &&
-                            refund.dispute!.sellerAttachments.isNotEmpty) ...[
-                          const SizedBox(height: 14),
-                          EvidenceGalleryWidget(
-                            title: 'Ảnh đối chất của Seller',
-                            attachments: refund.dispute!.sellerAttachments,
-                          ),
-                        ],
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
                 ],
 
-                // 5. Admin Mod Dispute Status Section (if escalated)
-                if (refund.dispute != null) ...[
+                // 5. Trạng thái phán quyết từ Moderator (khi bị Disputed)
+                if (refund.isDisputed || refund.dispute != null) ...[
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -253,7 +245,7 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Phán quyết từ Quản trị viên (Mod)',
+                              'Tranh chấp đang chờ Moderator phán quyết',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
@@ -266,7 +258,7 @@ class _DisputeDetailScreenState extends ConsumerState<DisputeDetailScreen> {
                         const SizedBox(height: 8),
                         Text(
                           refund.dispute?.adminNote ??
-                              'Hệ thống đang tiến hành đối chiếu video đóng gói và hình ảnh bằng chứng của cả hai bên. Kết quả phán quyết sẽ được thông báo ngay khi hoàn tất.',
+                              'Vụ việc đã được chuyển tới Quản trị viên để tiến hành kiểm tra bằng chứng của các bên và đưa ra quyết định cuối cùng.',
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF7F1D1D),

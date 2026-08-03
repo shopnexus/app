@@ -172,53 +172,26 @@ class ApiEndpoints {
 
   static String buyerOrderDetail(String id) => 'orders/$id';
 
-  static const String buyerRefund = 'order/buyer/refund';
-  static const String withdrawBuyerRefundTemplate =
-      'order/refunds/{id}/withdraw';
-
-  static String withdrawBuyerRefund(String id) => 'order/refunds/$id/withdraw';
-
   // --- Seller Features ---
   static const String sellerPendingItems = 'order/seller/pending';
   static const String sellerConfirmPending = 'order/seller/pending/confirm';
-
   static const String sellerCancelConfirmTemplate =
       'order/seller/pending/confirm/{sessionID}/cancel';
-
   static String sellerCancelConfirm(String sessionID) =>
       'order/seller/pending/confirm/$sessionID/cancel';
-
   static const String sellerEnsureConfirmPaymentUrlTemplate =
       'order/seller/pending/confirm/{sessionID}/payment-url';
-
   static String sellerEnsureConfirmPaymentUrl(String sessionID) =>
       'order/seller/pending/confirm/$sessionID/payment-url';
-
   static const String sellerRejectPending = 'order/seller/pending/reject';
   static const String sellerConfirmedOrders = 'order/seller/confirmed';
-
   static const String sellerOrderDetailTemplate = 'order/seller/confirmed/{id}';
-
   static String sellerOrderDetail(String id) => 'order/seller/confirmed/$id';
-
-  static const String sellerRefunds = 'order/seller/refund';
-
-  static const String sellerApproveRefundTemplate =
-      'order/refunds/{id}/approve';
-
-  static String sellerApproveRefund(String id) => 'order/refunds/$id/approve';
-
-  static const String sellerDisputeRefundTemplate =
-      'order/refunds/{id}/dispute';
-
-  static String sellerDisputeRefund(String id) => 'order/refunds/$id/dispute';
 
   // --- SPU/SKU CRUD (Seller) ---
   static const String productSpu = 'catalog/product-spu';
   static const String productSpuDetailTemplate = 'catalog/product-spu/{id}';
-
   static String productSpuDetail(String id) => 'catalog/product-spu/$id';
-
   static const String productSku = 'catalog/product-sku';
   static const String videoToProduct = 'catalog/product-spu/from-video';
   static const String audioToProduct = 'catalog/product-spu/from-audio';
@@ -235,17 +208,13 @@ class ApiEndpoints {
   // --- Promotion Features ---
   static const String promotions = 'catalog/promotion';
   static const String promotionDetailTemplate = 'catalog/promotion/{id}';
-
   static String promotionDetail(String id) => 'catalog/promotion/$id';
 
   // --- Analytic Features ---
   static const String sellerDashboard = 'analytic/seller-dashboard';
   static const String createInteraction = 'analytic/interaction';
-
   static const String productPopularityTemplate = 'analytic/popularity/{spuId}';
-
   static String productPopularity(String spuId) => 'analytic/popularity/$spuId';
-
   static const String topProductPopularity = 'analytic/popularity/top';
 
   // --- Common Utilities & Geocoding ---
@@ -275,33 +244,48 @@ class ApiEndpoints {
       'conversations/uploads/$id/confirmation';
   static const String messageDetailTemplate = 'messages/{id}';
   static String messageDetail(String id) => 'messages/$id';
-
-  // Legacy aliases for backward compatibility
   static const String sendMessage = 'conversations/{id}/messages';
   static const String markRead = 'conversations/{id}/read';
 
+  // --- Refund & Dispute Features (OpenAPI standard) ---
+  static const String createRefundTemplate = 'orders/{id}/refunds';
+  static String createRefund(String orderId) => 'orders/$orderId/refunds';
+
+  static const String refunds = 'refunds';
+  static const String refundDetailTemplate = 'refunds/{id}';
+  static String refundDetail(String id) => 'refunds/$id';
+
+  static const String withdrawRefundTemplate = 'refunds/{id}';
+  static String withdrawRefund(String id) => 'refunds/$id';
+
+  static const String acceptRefundTemplate = 'refunds/{id}/acceptance';
+  static String acceptRefund(String id) => 'refunds/$id/acceptance';
+
+  static const String rejectRefundTemplate = 'refunds/{id}/rejection';
+  static String rejectRefund(String id) => 'refunds/$id/rejection';
+
+  static const String openDisputeTemplate = 'refunds/{id}/dispute';
+  static String openDispute(String id) => 'refunds/$id/dispute';
+
+  static const String addRefundAttachmentsTemplate = 'refunds/{id}/attachments';
+  static String addRefundAttachments(String id) => 'refunds/$id/attachments';
+
   // --- Admin Dispute Features ---
-  static const String adminDisputes = 'order/disputes';
-  static const String adminDisputeDetailTemplate = 'order/disputes/{disputeID}';
+  static const String adminDisputes = 'admin/disputes';
+  static const String adminDisputeRulingTemplate = 'admin/disputes/{id}/ruling';
+  static String adminDisputeRuling(String id) => 'admin/disputes/$id/ruling';
 
-  static String adminDisputeDetail(String disputeID) =>
-      'order/disputes/$disputeID';
-
-  static const String disputesByRefundTemplate =
-      'order/refunds/{refundID}/disputes';
-
-  static String disputesByRefund(String refundID) =>
-      'order/refunds/$refundID/disputes';
-
-  static const String upholdDisputeTemplate =
-      'order/disputes/{disputeID}/uphold';
-
-  static String upholdDispute(String disputeID) =>
-      'order/disputes/$disputeID/uphold';
-
-  static const String dismissDisputeTemplate =
-      'order/disputes/{disputeID}/dismiss';
-
-  static String dismissDispute(String disputeID) =>
-      'order/disputes/$disputeID/dismiss';
+  // --- Backward compatibility aliases ---
+  static const String buyerRefund = createRefundTemplate;
+  static const String withdrawBuyerRefundTemplate = withdrawRefundTemplate;
+  static String withdrawBuyerRefund(String id) => withdrawRefund(id);
+  static const String sellerRefunds = refunds;
+  static const String sellerApproveRefundTemplate = acceptRefundTemplate;
+  static String sellerApproveRefund(String id) => acceptRefund(id);
+  static const String sellerDisputeRefundTemplate = openDisputeTemplate;
+  static String sellerDisputeRefund(String id) => openDispute(id);
+  static const String adminDisputeDetailTemplate = 'admin/disputes/{disputeID}';
+  static String adminDisputeDetail(String disputeID) => 'admin/disputes/$disputeID';
+  static const String disputesByRefundTemplate = 'refunds/{refundID}/disputes';
+  static String disputesByRefund(String refundID) => 'refunds/$refundID/disputes';
 }

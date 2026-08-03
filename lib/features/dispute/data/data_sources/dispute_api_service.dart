@@ -12,55 +12,71 @@ part 'dispute_api_service.g.dart';
 abstract class DisputeApiService {
   factory DisputeApiService(Dio dio, {String baseUrl}) = _DisputeApiService;
 
-  /// Buyer gửi yêu cầu hoàn trả sản phẩm kèm lý do và ảnh bằng chứng
-  @POST(ApiEndpoints.buyerRefund)
+  /// Buyer gửi yêu cầu hoàn trả sản phẩm (POST /orders/{id}/refunds)
+  @POST(ApiEndpoints.createRefundTemplate)
   Future<DataResponse<RefundModel>> createBuyerRefund(
-    @Body() BuyerRefundRequest request,
+    @Path('id') String orderId,
+    @Body() CreateRefundRequest request,
   );
 
-  /// Buyer rút yêu cầu hoàn tiền (chỉ thực hiện được khi chưa bị từ chối/disputed)
-  @POST(ApiEndpoints.withdrawBuyerRefundTemplate)
-  Future<DataResponse<RefundModel>> withdrawBuyerRefund(
-    @Path('id') String refundId,
-  );
-
-  /// Seller chấp nhận yêu cầu hoàn tiền của Buyer
-  @POST(ApiEndpoints.sellerApproveRefundTemplate)
-  Future<DataResponse<RefundModel>> sellerApproveRefund(
-    @Path('id') String refundId,
-  );
-
-  /// Seller từ chối hoàn tiền và khiếu nại lên Admin đối chất (kèm mảng bằng chứng attachments)
-  @POST(ApiEndpoints.sellerDisputeRefundTemplate)
-  Future<DataResponse<RefundDisputeModel>> sellerDisputeRefund(
-    @Path('id') String refundId,
-    @Body() SellerDisputeRequest request,
-  );
-
-  /// Seller lấy danh sách các đơn đang được yêu cầu hoàn tiền
-  @GET(ApiEndpoints.sellerRefunds)
-  Future<DataResponse<List<RefundModel>>> getSellerRefunds(
+  /// Lấy danh sách các đơn yêu cầu hoàn tiền (GET /refunds)
+  @GET(ApiEndpoints.refunds)
+  Future<DataResponse<List<RefundModel>>> getRefunds(
     @Query('page') int? page,
     @Query('limit') int? limit,
   );
 
-  /// Lấy thông tin khiếu nại tranh chấp của một đơn hoàn tiền cụ thể
-  @GET(ApiEndpoints.disputesByRefundTemplate)
-  Future<DataResponse<List<RefundDisputeModel>>> getDisputesByRefund(
-    @Path('refundID') String refundId,
+  /// Lấy chi tiết đơn hoàn tiền theo ID (GET /refunds/{id})
+  @GET(ApiEndpoints.refundDetailTemplate)
+  Future<DataResponse<RefundModel>> getRefundDetail(
+    @Path('id') String refundId,
   );
 
-  /// Admin xem danh sách toàn bộ các ca tranh chấp
+  /// Buyer rút yêu cầu hoàn tiền (DELETE /refunds/{id})
+  @DELETE(ApiEndpoints.withdrawRefundTemplate)
+  Future<void> withdrawBuyerRefund(
+    @Path('id') String refundId,
+  );
+
+  /// Seller chấp nhận yêu cầu hoàn tiền (POST /refunds/{id}/acceptance)
+  @POST(ApiEndpoints.acceptRefundTemplate)
+  Future<DataResponse<RefundModel>> sellerApproveRefund(
+    @Path('id') String refundId,
+  );
+
+  /// Seller từ chối yêu cầu hoàn tiền (POST /refunds/{id}/rejection)
+  @POST(ApiEndpoints.rejectRefundTemplate)
+  Future<DataResponse<RefundModel>> sellerRejectRefund(
+    @Path('id') String refundId,
+    @Body() RejectRefundRequest request,
+  );
+
+  /// Đẩy thêm mảng ID bằng chứng vào đơn hoàn tiền (POST /refunds/{id}/attachments)
+  @POST(ApiEndpoints.addRefundAttachmentsTemplate)
+  Future<DataResponse<RefundModel>> addRefundAttachments(
+    @Path('id') String refundId,
+    @Body() AddAttachmentsRequest request,
+  );
+
+  /// Seller / User leo thang khiếu nại lên Moderator phán quyết (POST /refunds/{id}/dispute)
+  @POST(ApiEndpoints.openDisputeTemplate)
+  Future<DataResponse<RefundDisputeModel>> sellerDisputeRefund(
+    @Path('id') String refundId,
+    @Body() OpenDisputeRequest request,
+  );
+
+  /// Admin / Moderator lấy danh sách các ca tranh chấp (GET /admin/disputes)
   @GET(ApiEndpoints.adminDisputes)
   Future<DataResponse<List<RefundDisputeModel>>> getAdminDisputes(
     @Query('page') int? page,
     @Query('limit') int? limit,
   );
 
-  /// Admin xem chi tiết 1 ca tranh chấp
-  @GET(ApiEndpoints.adminDisputeDetailTemplate)
-  Future<DataResponse<RefundDisputeModel>> getAdminDisputeDetail(
-    @Path('disputeID') String disputeId,
+  /// Admin / Moderator đưa ra phán quyết ca tranh chấp (POST /admin/disputes/{id}/ruling)
+  @POST(ApiEndpoints.adminDisputeRulingTemplate)
+  Future<DataResponse<RefundDisputeModel>> ruleAdminDispute(
+    @Path('id') String disputeId,
+    @Body() DisputeRulingRequest request,
   );
 }
 

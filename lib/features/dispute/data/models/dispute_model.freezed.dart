@@ -306,6 +306,278 @@ $ResourceModelCopyWith<$Res>? get resource {
 
 
 /// @nodoc
+mixin _$CreateRefundRequest {
+
+ String get reason; List<String> get attachments;
+/// Create a copy of CreateRefundRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CreateRefundRequestCopyWith<CreateRefundRequest> get copyWith => _$CreateRefundRequestCopyWithImpl<CreateRefundRequest>(this as CreateRefundRequest, _$identity);
+
+  /// Serializes this CreateRefundRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateRefundRequest&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.attachments, attachments));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,reason,const DeepCollectionEquality().hash(attachments));
+
+@override
+String toString() {
+  return 'CreateRefundRequest(reason: $reason, attachments: $attachments)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CreateRefundRequestCopyWith<$Res>  {
+  factory $CreateRefundRequestCopyWith(CreateRefundRequest value, $Res Function(CreateRefundRequest) _then) = _$CreateRefundRequestCopyWithImpl;
+@useResult
+$Res call({
+ String reason, List<String> attachments
+});
+
+
+
+
+}
+/// @nodoc
+class _$CreateRefundRequestCopyWithImpl<$Res>
+    implements $CreateRefundRequestCopyWith<$Res> {
+  _$CreateRefundRequestCopyWithImpl(this._self, this._then);
+
+  final CreateRefundRequest _self;
+  final $Res Function(CreateRefundRequest) _then;
+
+/// Create a copy of CreateRefundRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? reason = null,Object? attachments = null,}) {
+  return _then(_self.copyWith(
+reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String,attachments: null == attachments ? _self.attachments : attachments // ignore: cast_nullable_to_non_nullable
+as List<String>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CreateRefundRequest].
+extension CreateRefundRequestPatterns on CreateRefundRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CreateRefundRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CreateRefundRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CreateRefundRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _CreateRefundRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CreateRefundRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CreateRefundRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String reason,  List<String> attachments)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CreateRefundRequest() when $default != null:
+return $default(_that.reason,_that.attachments);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String reason,  List<String> attachments)  $default,) {final _that = this;
+switch (_that) {
+case _CreateRefundRequest():
+return $default(_that.reason,_that.attachments);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String reason,  List<String> attachments)?  $default,) {final _that = this;
+switch (_that) {
+case _CreateRefundRequest() when $default != null:
+return $default(_that.reason,_that.attachments);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CreateRefundRequest implements CreateRefundRequest {
+  const _CreateRefundRequest({required this.reason, final  List<String> attachments = const []}): _attachments = attachments;
+  factory _CreateRefundRequest.fromJson(Map<String, dynamic> json) => _$CreateRefundRequestFromJson(json);
+
+@override final  String reason;
+ final  List<String> _attachments;
+@override@JsonKey() List<String> get attachments {
+  if (_attachments is EqualUnmodifiableListView) return _attachments;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_attachments);
+}
+
+
+/// Create a copy of CreateRefundRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CreateRefundRequestCopyWith<_CreateRefundRequest> get copyWith => __$CreateRefundRequestCopyWithImpl<_CreateRefundRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CreateRefundRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateRefundRequest&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._attachments, _attachments));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,reason,const DeepCollectionEquality().hash(_attachments));
+
+@override
+String toString() {
+  return 'CreateRefundRequest(reason: $reason, attachments: $attachments)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CreateRefundRequestCopyWith<$Res> implements $CreateRefundRequestCopyWith<$Res> {
+  factory _$CreateRefundRequestCopyWith(_CreateRefundRequest value, $Res Function(_CreateRefundRequest) _then) = __$CreateRefundRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ String reason, List<String> attachments
+});
+
+
+
+
+}
+/// @nodoc
+class __$CreateRefundRequestCopyWithImpl<$Res>
+    implements _$CreateRefundRequestCopyWith<$Res> {
+  __$CreateRefundRequestCopyWithImpl(this._self, this._then);
+
+  final _CreateRefundRequest _self;
+  final $Res Function(_CreateRefundRequest) _then;
+
+/// Create a copy of CreateRefundRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? reason = null,Object? attachments = null,}) {
+  return _then(_CreateRefundRequest(
+reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String,attachments: null == attachments ? _self._attachments : attachments // ignore: cast_nullable_to_non_nullable
+as List<String>,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$BuyerRefundRequest {
 
 @JsonKey(name: 'order_id') String get orderId; String get reason; List<RefundAttachment> get attachments;
@@ -573,6 +845,532 @@ orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_n
 as String,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,attachments: null == attachments ? _self._attachments : attachments // ignore: cast_nullable_to_non_nullable
 as List<RefundAttachment>,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$RejectRefundRequest {
+
+ String get reason;
+/// Create a copy of RejectRefundRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RejectRefundRequestCopyWith<RejectRefundRequest> get copyWith => _$RejectRefundRequestCopyWithImpl<RejectRefundRequest>(this as RejectRefundRequest, _$identity);
+
+  /// Serializes this RejectRefundRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RejectRefundRequest&&(identical(other.reason, reason) || other.reason == reason));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,reason);
+
+@override
+String toString() {
+  return 'RejectRefundRequest(reason: $reason)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $RejectRefundRequestCopyWith<$Res>  {
+  factory $RejectRefundRequestCopyWith(RejectRefundRequest value, $Res Function(RejectRefundRequest) _then) = _$RejectRefundRequestCopyWithImpl;
+@useResult
+$Res call({
+ String reason
+});
+
+
+
+
+}
+/// @nodoc
+class _$RejectRefundRequestCopyWithImpl<$Res>
+    implements $RejectRefundRequestCopyWith<$Res> {
+  _$RejectRefundRequestCopyWithImpl(this._self, this._then);
+
+  final RejectRefundRequest _self;
+  final $Res Function(RejectRefundRequest) _then;
+
+/// Create a copy of RejectRefundRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? reason = null,}) {
+  return _then(_self.copyWith(
+reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [RejectRefundRequest].
+extension RejectRefundRequestPatterns on RejectRefundRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RejectRefundRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _RejectRefundRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RejectRefundRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _RejectRefundRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RejectRefundRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _RejectRefundRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String reason)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _RejectRefundRequest() when $default != null:
+return $default(_that.reason);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String reason)  $default,) {final _that = this;
+switch (_that) {
+case _RejectRefundRequest():
+return $default(_that.reason);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String reason)?  $default,) {final _that = this;
+switch (_that) {
+case _RejectRefundRequest() when $default != null:
+return $default(_that.reason);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _RejectRefundRequest implements RejectRefundRequest {
+  const _RejectRefundRequest({required this.reason});
+  factory _RejectRefundRequest.fromJson(Map<String, dynamic> json) => _$RejectRefundRequestFromJson(json);
+
+@override final  String reason;
+
+/// Create a copy of RejectRefundRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RejectRefundRequestCopyWith<_RejectRefundRequest> get copyWith => __$RejectRefundRequestCopyWithImpl<_RejectRefundRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$RejectRefundRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RejectRefundRequest&&(identical(other.reason, reason) || other.reason == reason));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,reason);
+
+@override
+String toString() {
+  return 'RejectRefundRequest(reason: $reason)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RejectRefundRequestCopyWith<$Res> implements $RejectRefundRequestCopyWith<$Res> {
+  factory _$RejectRefundRequestCopyWith(_RejectRefundRequest value, $Res Function(_RejectRefundRequest) _then) = __$RejectRefundRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ String reason
+});
+
+
+
+
+}
+/// @nodoc
+class __$RejectRefundRequestCopyWithImpl<$Res>
+    implements _$RejectRefundRequestCopyWith<$Res> {
+  __$RejectRefundRequestCopyWithImpl(this._self, this._then);
+
+  final _RejectRefundRequest _self;
+  final $Res Function(_RejectRefundRequest) _then;
+
+/// Create a copy of RejectRefundRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? reason = null,}) {
+  return _then(_RejectRefundRequest(
+reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$OpenDisputeRequest {
+
+ String get reason;
+/// Create a copy of OpenDisputeRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OpenDisputeRequestCopyWith<OpenDisputeRequest> get copyWith => _$OpenDisputeRequestCopyWithImpl<OpenDisputeRequest>(this as OpenDisputeRequest, _$identity);
+
+  /// Serializes this OpenDisputeRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OpenDisputeRequest&&(identical(other.reason, reason) || other.reason == reason));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,reason);
+
+@override
+String toString() {
+  return 'OpenDisputeRequest(reason: $reason)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $OpenDisputeRequestCopyWith<$Res>  {
+  factory $OpenDisputeRequestCopyWith(OpenDisputeRequest value, $Res Function(OpenDisputeRequest) _then) = _$OpenDisputeRequestCopyWithImpl;
+@useResult
+$Res call({
+ String reason
+});
+
+
+
+
+}
+/// @nodoc
+class _$OpenDisputeRequestCopyWithImpl<$Res>
+    implements $OpenDisputeRequestCopyWith<$Res> {
+  _$OpenDisputeRequestCopyWithImpl(this._self, this._then);
+
+  final OpenDisputeRequest _self;
+  final $Res Function(OpenDisputeRequest) _then;
+
+/// Create a copy of OpenDisputeRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? reason = null,}) {
+  return _then(_self.copyWith(
+reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [OpenDisputeRequest].
+extension OpenDisputeRequestPatterns on OpenDisputeRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _OpenDisputeRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _OpenDisputeRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _OpenDisputeRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _OpenDisputeRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _OpenDisputeRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _OpenDisputeRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String reason)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _OpenDisputeRequest() when $default != null:
+return $default(_that.reason);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String reason)  $default,) {final _that = this;
+switch (_that) {
+case _OpenDisputeRequest():
+return $default(_that.reason);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String reason)?  $default,) {final _that = this;
+switch (_that) {
+case _OpenDisputeRequest() when $default != null:
+return $default(_that.reason);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _OpenDisputeRequest implements OpenDisputeRequest {
+  const _OpenDisputeRequest({required this.reason});
+  factory _OpenDisputeRequest.fromJson(Map<String, dynamic> json) => _$OpenDisputeRequestFromJson(json);
+
+@override final  String reason;
+
+/// Create a copy of OpenDisputeRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OpenDisputeRequestCopyWith<_OpenDisputeRequest> get copyWith => __$OpenDisputeRequestCopyWithImpl<_OpenDisputeRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$OpenDisputeRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OpenDisputeRequest&&(identical(other.reason, reason) || other.reason == reason));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,reason);
+
+@override
+String toString() {
+  return 'OpenDisputeRequest(reason: $reason)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$OpenDisputeRequestCopyWith<$Res> implements $OpenDisputeRequestCopyWith<$Res> {
+  factory _$OpenDisputeRequestCopyWith(_OpenDisputeRequest value, $Res Function(_OpenDisputeRequest) _then) = __$OpenDisputeRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ String reason
+});
+
+
+
+
+}
+/// @nodoc
+class __$OpenDisputeRequestCopyWithImpl<$Res>
+    implements _$OpenDisputeRequestCopyWith<$Res> {
+  __$OpenDisputeRequestCopyWithImpl(this._self, this._then);
+
+  final _OpenDisputeRequest _self;
+  final $Res Function(_OpenDisputeRequest) _then;
+
+/// Create a copy of OpenDisputeRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? reason = null,}) {
+  return _then(_OpenDisputeRequest(
+reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -853,10 +1651,546 @@ as List<RefundAttachment>,
 
 
 /// @nodoc
+mixin _$AddAttachmentsRequest {
+
+ List<String> get attachments;
+/// Create a copy of AddAttachmentsRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AddAttachmentsRequestCopyWith<AddAttachmentsRequest> get copyWith => _$AddAttachmentsRequestCopyWithImpl<AddAttachmentsRequest>(this as AddAttachmentsRequest, _$identity);
+
+  /// Serializes this AddAttachmentsRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AddAttachmentsRequest&&const DeepCollectionEquality().equals(other.attachments, attachments));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(attachments));
+
+@override
+String toString() {
+  return 'AddAttachmentsRequest(attachments: $attachments)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AddAttachmentsRequestCopyWith<$Res>  {
+  factory $AddAttachmentsRequestCopyWith(AddAttachmentsRequest value, $Res Function(AddAttachmentsRequest) _then) = _$AddAttachmentsRequestCopyWithImpl;
+@useResult
+$Res call({
+ List<String> attachments
+});
+
+
+
+
+}
+/// @nodoc
+class _$AddAttachmentsRequestCopyWithImpl<$Res>
+    implements $AddAttachmentsRequestCopyWith<$Res> {
+  _$AddAttachmentsRequestCopyWithImpl(this._self, this._then);
+
+  final AddAttachmentsRequest _self;
+  final $Res Function(AddAttachmentsRequest) _then;
+
+/// Create a copy of AddAttachmentsRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? attachments = null,}) {
+  return _then(_self.copyWith(
+attachments: null == attachments ? _self.attachments : attachments // ignore: cast_nullable_to_non_nullable
+as List<String>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [AddAttachmentsRequest].
+extension AddAttachmentsRequestPatterns on AddAttachmentsRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AddAttachmentsRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _AddAttachmentsRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AddAttachmentsRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _AddAttachmentsRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AddAttachmentsRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _AddAttachmentsRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String> attachments)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _AddAttachmentsRequest() when $default != null:
+return $default(_that.attachments);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String> attachments)  $default,) {final _that = this;
+switch (_that) {
+case _AddAttachmentsRequest():
+return $default(_that.attachments);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String> attachments)?  $default,) {final _that = this;
+switch (_that) {
+case _AddAttachmentsRequest() when $default != null:
+return $default(_that.attachments);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _AddAttachmentsRequest implements AddAttachmentsRequest {
+  const _AddAttachmentsRequest({required final  List<String> attachments}): _attachments = attachments;
+  factory _AddAttachmentsRequest.fromJson(Map<String, dynamic> json) => _$AddAttachmentsRequestFromJson(json);
+
+ final  List<String> _attachments;
+@override List<String> get attachments {
+  if (_attachments is EqualUnmodifiableListView) return _attachments;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_attachments);
+}
+
+
+/// Create a copy of AddAttachmentsRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AddAttachmentsRequestCopyWith<_AddAttachmentsRequest> get copyWith => __$AddAttachmentsRequestCopyWithImpl<_AddAttachmentsRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$AddAttachmentsRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddAttachmentsRequest&&const DeepCollectionEquality().equals(other._attachments, _attachments));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_attachments));
+
+@override
+String toString() {
+  return 'AddAttachmentsRequest(attachments: $attachments)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AddAttachmentsRequestCopyWith<$Res> implements $AddAttachmentsRequestCopyWith<$Res> {
+  factory _$AddAttachmentsRequestCopyWith(_AddAttachmentsRequest value, $Res Function(_AddAttachmentsRequest) _then) = __$AddAttachmentsRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ List<String> attachments
+});
+
+
+
+
+}
+/// @nodoc
+class __$AddAttachmentsRequestCopyWithImpl<$Res>
+    implements _$AddAttachmentsRequestCopyWith<$Res> {
+  __$AddAttachmentsRequestCopyWithImpl(this._self, this._then);
+
+  final _AddAttachmentsRequest _self;
+  final $Res Function(_AddAttachmentsRequest) _then;
+
+/// Create a copy of AddAttachmentsRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? attachments = null,}) {
+  return _then(_AddAttachmentsRequest(
+attachments: null == attachments ? _self._attachments : attachments // ignore: cast_nullable_to_non_nullable
+as List<String>,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$DisputeRulingRequest {
+
+@JsonKey(name: 'buyer_wins') bool get buyerWins; String? get note;
+/// Create a copy of DisputeRulingRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DisputeRulingRequestCopyWith<DisputeRulingRequest> get copyWith => _$DisputeRulingRequestCopyWithImpl<DisputeRulingRequest>(this as DisputeRulingRequest, _$identity);
+
+  /// Serializes this DisputeRulingRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DisputeRulingRequest&&(identical(other.buyerWins, buyerWins) || other.buyerWins == buyerWins)&&(identical(other.note, note) || other.note == note));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,buyerWins,note);
+
+@override
+String toString() {
+  return 'DisputeRulingRequest(buyerWins: $buyerWins, note: $note)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DisputeRulingRequestCopyWith<$Res>  {
+  factory $DisputeRulingRequestCopyWith(DisputeRulingRequest value, $Res Function(DisputeRulingRequest) _then) = _$DisputeRulingRequestCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'buyer_wins') bool buyerWins, String? note
+});
+
+
+
+
+}
+/// @nodoc
+class _$DisputeRulingRequestCopyWithImpl<$Res>
+    implements $DisputeRulingRequestCopyWith<$Res> {
+  _$DisputeRulingRequestCopyWithImpl(this._self, this._then);
+
+  final DisputeRulingRequest _self;
+  final $Res Function(DisputeRulingRequest) _then;
+
+/// Create a copy of DisputeRulingRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? buyerWins = null,Object? note = freezed,}) {
+  return _then(_self.copyWith(
+buyerWins: null == buyerWins ? _self.buyerWins : buyerWins // ignore: cast_nullable_to_non_nullable
+as bool,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DisputeRulingRequest].
+extension DisputeRulingRequestPatterns on DisputeRulingRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DisputeRulingRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DisputeRulingRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DisputeRulingRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _DisputeRulingRequest():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DisputeRulingRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DisputeRulingRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'buyer_wins')  bool buyerWins,  String? note)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DisputeRulingRequest() when $default != null:
+return $default(_that.buyerWins,_that.note);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'buyer_wins')  bool buyerWins,  String? note)  $default,) {final _that = this;
+switch (_that) {
+case _DisputeRulingRequest():
+return $default(_that.buyerWins,_that.note);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'buyer_wins')  bool buyerWins,  String? note)?  $default,) {final _that = this;
+switch (_that) {
+case _DisputeRulingRequest() when $default != null:
+return $default(_that.buyerWins,_that.note);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _DisputeRulingRequest implements DisputeRulingRequest {
+  const _DisputeRulingRequest({@JsonKey(name: 'buyer_wins') required this.buyerWins, this.note});
+  factory _DisputeRulingRequest.fromJson(Map<String, dynamic> json) => _$DisputeRulingRequestFromJson(json);
+
+@override@JsonKey(name: 'buyer_wins') final  bool buyerWins;
+@override final  String? note;
+
+/// Create a copy of DisputeRulingRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DisputeRulingRequestCopyWith<_DisputeRulingRequest> get copyWith => __$DisputeRulingRequestCopyWithImpl<_DisputeRulingRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$DisputeRulingRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DisputeRulingRequest&&(identical(other.buyerWins, buyerWins) || other.buyerWins == buyerWins)&&(identical(other.note, note) || other.note == note));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,buyerWins,note);
+
+@override
+String toString() {
+  return 'DisputeRulingRequest(buyerWins: $buyerWins, note: $note)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DisputeRulingRequestCopyWith<$Res> implements $DisputeRulingRequestCopyWith<$Res> {
+  factory _$DisputeRulingRequestCopyWith(_DisputeRulingRequest value, $Res Function(_DisputeRulingRequest) _then) = __$DisputeRulingRequestCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'buyer_wins') bool buyerWins, String? note
+});
+
+
+
+
+}
+/// @nodoc
+class __$DisputeRulingRequestCopyWithImpl<$Res>
+    implements _$DisputeRulingRequestCopyWith<$Res> {
+  __$DisputeRulingRequestCopyWithImpl(this._self, this._then);
+
+  final _DisputeRulingRequest _self;
+  final $Res Function(_DisputeRulingRequest) _then;
+
+/// Create a copy of DisputeRulingRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? buyerWins = null,Object? note = freezed,}) {
+  return _then(_DisputeRulingRequest(
+buyerWins: null == buyerWins ? _self.buyerWins : buyerWins // ignore: cast_nullable_to_non_nullable
+as bool,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$RefundDisputeModel {
 
- String get id;@JsonKey(name: 'refund_id') String? get refundId; String get status;// 'Pending', 'Uheld', 'Dismissed'
-@JsonKey(name: 'seller_reason') String? get sellerReason;@JsonKey(name: 'seller_attachments') List<RefundAttachment> get sellerAttachments;@JsonKey(name: 'admin_note') String? get adminNote;@JsonKey(name: 'resolved_at') String? get resolvedAt;@JsonKey(name: 'created_at') String? get createdAt;
+ String get id;@JsonKey(name: 'refund_id') String? get refundId;@JsonKey(name: 'opened_by') String? get openedBy; String? get reason; dynamic get round; String get status;// 'open', 'seller-wins', 'buyer-wins'
+ String? get note;@JsonKey(name: 'ruled_at') String? get ruledAt;@JsonKey(name: 'created_at') String? get createdAt;// Backward compatibility fields
+@JsonKey(name: 'seller_reason') String? get legacySellerReason;@JsonKey(name: 'seller_attachments') List<RefundAttachment> get sellerAttachments;@JsonKey(name: 'admin_note') String? get legacyAdminNote;@JsonKey(name: 'resolved_at') String? get legacyResolvedAt;
 /// Create a copy of RefundDisputeModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -869,16 +2203,16 @@ $RefundDisputeModelCopyWith<RefundDisputeModel> get copyWith => _$RefundDisputeM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RefundDisputeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.refundId, refundId) || other.refundId == refundId)&&(identical(other.status, status) || other.status == status)&&(identical(other.sellerReason, sellerReason) || other.sellerReason == sellerReason)&&const DeepCollectionEquality().equals(other.sellerAttachments, sellerAttachments)&&(identical(other.adminNote, adminNote) || other.adminNote == adminNote)&&(identical(other.resolvedAt, resolvedAt) || other.resolvedAt == resolvedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RefundDisputeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.refundId, refundId) || other.refundId == refundId)&&(identical(other.openedBy, openedBy) || other.openedBy == openedBy)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.round, round)&&(identical(other.status, status) || other.status == status)&&(identical(other.note, note) || other.note == note)&&(identical(other.ruledAt, ruledAt) || other.ruledAt == ruledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.legacySellerReason, legacySellerReason) || other.legacySellerReason == legacySellerReason)&&const DeepCollectionEquality().equals(other.sellerAttachments, sellerAttachments)&&(identical(other.legacyAdminNote, legacyAdminNote) || other.legacyAdminNote == legacyAdminNote)&&(identical(other.legacyResolvedAt, legacyResolvedAt) || other.legacyResolvedAt == legacyResolvedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,refundId,status,sellerReason,const DeepCollectionEquality().hash(sellerAttachments),adminNote,resolvedAt,createdAt);
+int get hashCode => Object.hash(runtimeType,id,refundId,openedBy,reason,const DeepCollectionEquality().hash(round),status,note,ruledAt,createdAt,legacySellerReason,const DeepCollectionEquality().hash(sellerAttachments),legacyAdminNote,legacyResolvedAt);
 
 @override
 String toString() {
-  return 'RefundDisputeModel(id: $id, refundId: $refundId, status: $status, sellerReason: $sellerReason, sellerAttachments: $sellerAttachments, adminNote: $adminNote, resolvedAt: $resolvedAt, createdAt: $createdAt)';
+  return 'RefundDisputeModel(id: $id, refundId: $refundId, openedBy: $openedBy, reason: $reason, round: $round, status: $status, note: $note, ruledAt: $ruledAt, createdAt: $createdAt, legacySellerReason: $legacySellerReason, sellerAttachments: $sellerAttachments, legacyAdminNote: $legacyAdminNote, legacyResolvedAt: $legacyResolvedAt)';
 }
 
 
@@ -889,7 +2223,7 @@ abstract mixin class $RefundDisputeModelCopyWith<$Res>  {
   factory $RefundDisputeModelCopyWith(RefundDisputeModel value, $Res Function(RefundDisputeModel) _then) = _$RefundDisputeModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'refund_id') String? refundId, String status,@JsonKey(name: 'seller_reason') String? sellerReason,@JsonKey(name: 'seller_attachments') List<RefundAttachment> sellerAttachments,@JsonKey(name: 'admin_note') String? adminNote,@JsonKey(name: 'resolved_at') String? resolvedAt,@JsonKey(name: 'created_at') String? createdAt
+ String id,@JsonKey(name: 'refund_id') String? refundId,@JsonKey(name: 'opened_by') String? openedBy, String? reason, dynamic round, String status, String? note,@JsonKey(name: 'ruled_at') String? ruledAt,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'seller_reason') String? legacySellerReason,@JsonKey(name: 'seller_attachments') List<RefundAttachment> sellerAttachments,@JsonKey(name: 'admin_note') String? legacyAdminNote,@JsonKey(name: 'resolved_at') String? legacyResolvedAt
 });
 
 
@@ -906,16 +2240,21 @@ class _$RefundDisputeModelCopyWithImpl<$Res>
 
 /// Create a copy of RefundDisputeModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? refundId = freezed,Object? status = null,Object? sellerReason = freezed,Object? sellerAttachments = null,Object? adminNote = freezed,Object? resolvedAt = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? refundId = freezed,Object? openedBy = freezed,Object? reason = freezed,Object? round = freezed,Object? status = null,Object? note = freezed,Object? ruledAt = freezed,Object? createdAt = freezed,Object? legacySellerReason = freezed,Object? sellerAttachments = null,Object? legacyAdminNote = freezed,Object? legacyResolvedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,refundId: freezed == refundId ? _self.refundId : refundId // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,sellerReason: freezed == sellerReason ? _self.sellerReason : sellerReason // ignore: cast_nullable_to_non_nullable
-as String?,sellerAttachments: null == sellerAttachments ? _self.sellerAttachments : sellerAttachments // ignore: cast_nullable_to_non_nullable
-as List<RefundAttachment>,adminNote: freezed == adminNote ? _self.adminNote : adminNote // ignore: cast_nullable_to_non_nullable
-as String?,resolvedAt: freezed == resolvedAt ? _self.resolvedAt : resolvedAt // ignore: cast_nullable_to_non_nullable
+as String?,openedBy: freezed == openedBy ? _self.openedBy : openedBy // ignore: cast_nullable_to_non_nullable
+as String?,reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String?,round: freezed == round ? _self.round : round // ignore: cast_nullable_to_non_nullable
+as dynamic,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,ruledAt: freezed == ruledAt ? _self.ruledAt : ruledAt // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,legacySellerReason: freezed == legacySellerReason ? _self.legacySellerReason : legacySellerReason // ignore: cast_nullable_to_non_nullable
+as String?,sellerAttachments: null == sellerAttachments ? _self.sellerAttachments : sellerAttachments // ignore: cast_nullable_to_non_nullable
+as List<RefundAttachment>,legacyAdminNote: freezed == legacyAdminNote ? _self.legacyAdminNote : legacyAdminNote // ignore: cast_nullable_to_non_nullable
+as String?,legacyResolvedAt: freezed == legacyResolvedAt ? _self.legacyResolvedAt : legacyResolvedAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -1001,10 +2340,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'refund_id')  String? refundId,  String status, @JsonKey(name: 'seller_reason')  String? sellerReason, @JsonKey(name: 'seller_attachments')  List<RefundAttachment> sellerAttachments, @JsonKey(name: 'admin_note')  String? adminNote, @JsonKey(name: 'resolved_at')  String? resolvedAt, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'refund_id')  String? refundId, @JsonKey(name: 'opened_by')  String? openedBy,  String? reason,  dynamic round,  String status,  String? note, @JsonKey(name: 'ruled_at')  String? ruledAt, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'seller_reason')  String? legacySellerReason, @JsonKey(name: 'seller_attachments')  List<RefundAttachment> sellerAttachments, @JsonKey(name: 'admin_note')  String? legacyAdminNote, @JsonKey(name: 'resolved_at')  String? legacyResolvedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RefundDisputeModel() when $default != null:
-return $default(_that.id,_that.refundId,_that.status,_that.sellerReason,_that.sellerAttachments,_that.adminNote,_that.resolvedAt,_that.createdAt);case _:
+return $default(_that.id,_that.refundId,_that.openedBy,_that.reason,_that.round,_that.status,_that.note,_that.ruledAt,_that.createdAt,_that.legacySellerReason,_that.sellerAttachments,_that.legacyAdminNote,_that.legacyResolvedAt);case _:
   return orElse();
 
 }
@@ -1022,10 +2361,10 @@ return $default(_that.id,_that.refundId,_that.status,_that.sellerReason,_that.se
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'refund_id')  String? refundId,  String status, @JsonKey(name: 'seller_reason')  String? sellerReason, @JsonKey(name: 'seller_attachments')  List<RefundAttachment> sellerAttachments, @JsonKey(name: 'admin_note')  String? adminNote, @JsonKey(name: 'resolved_at')  String? resolvedAt, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'refund_id')  String? refundId, @JsonKey(name: 'opened_by')  String? openedBy,  String? reason,  dynamic round,  String status,  String? note, @JsonKey(name: 'ruled_at')  String? ruledAt, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'seller_reason')  String? legacySellerReason, @JsonKey(name: 'seller_attachments')  List<RefundAttachment> sellerAttachments, @JsonKey(name: 'admin_note')  String? legacyAdminNote, @JsonKey(name: 'resolved_at')  String? legacyResolvedAt)  $default,) {final _that = this;
 switch (_that) {
 case _RefundDisputeModel():
-return $default(_that.id,_that.refundId,_that.status,_that.sellerReason,_that.sellerAttachments,_that.adminNote,_that.resolvedAt,_that.createdAt);case _:
+return $default(_that.id,_that.refundId,_that.openedBy,_that.reason,_that.round,_that.status,_that.note,_that.ruledAt,_that.createdAt,_that.legacySellerReason,_that.sellerAttachments,_that.legacyAdminNote,_that.legacyResolvedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1042,10 +2381,10 @@ return $default(_that.id,_that.refundId,_that.status,_that.sellerReason,_that.se
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'refund_id')  String? refundId,  String status, @JsonKey(name: 'seller_reason')  String? sellerReason, @JsonKey(name: 'seller_attachments')  List<RefundAttachment> sellerAttachments, @JsonKey(name: 'admin_note')  String? adminNote, @JsonKey(name: 'resolved_at')  String? resolvedAt, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'refund_id')  String? refundId, @JsonKey(name: 'opened_by')  String? openedBy,  String? reason,  dynamic round,  String status,  String? note, @JsonKey(name: 'ruled_at')  String? ruledAt, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'seller_reason')  String? legacySellerReason, @JsonKey(name: 'seller_attachments')  List<RefundAttachment> sellerAttachments, @JsonKey(name: 'admin_note')  String? legacyAdminNote, @JsonKey(name: 'resolved_at')  String? legacyResolvedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _RefundDisputeModel() when $default != null:
-return $default(_that.id,_that.refundId,_that.status,_that.sellerReason,_that.sellerAttachments,_that.adminNote,_that.resolvedAt,_that.createdAt);case _:
+return $default(_that.id,_that.refundId,_that.openedBy,_that.reason,_that.round,_that.status,_that.note,_that.ruledAt,_that.createdAt,_that.legacySellerReason,_that.sellerAttachments,_that.legacyAdminNote,_that.legacyResolvedAt);case _:
   return null;
 
 }
@@ -1056,15 +2395,22 @@ return $default(_that.id,_that.refundId,_that.status,_that.sellerReason,_that.se
 /// @nodoc
 @JsonSerializable()
 
-class _RefundDisputeModel implements RefundDisputeModel {
-  const _RefundDisputeModel({required this.id, @JsonKey(name: 'refund_id') this.refundId, this.status = 'Pending', @JsonKey(name: 'seller_reason') this.sellerReason, @JsonKey(name: 'seller_attachments') final  List<RefundAttachment> sellerAttachments = const [], @JsonKey(name: 'admin_note') this.adminNote, @JsonKey(name: 'resolved_at') this.resolvedAt, @JsonKey(name: 'created_at') this.createdAt}): _sellerAttachments = sellerAttachments;
+class _RefundDisputeModel extends RefundDisputeModel {
+  const _RefundDisputeModel({required this.id, @JsonKey(name: 'refund_id') this.refundId, @JsonKey(name: 'opened_by') this.openedBy, this.reason, this.round, this.status = 'open', this.note, @JsonKey(name: 'ruled_at') this.ruledAt, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'seller_reason') this.legacySellerReason, @JsonKey(name: 'seller_attachments') final  List<RefundAttachment> sellerAttachments = const [], @JsonKey(name: 'admin_note') this.legacyAdminNote, @JsonKey(name: 'resolved_at') this.legacyResolvedAt}): _sellerAttachments = sellerAttachments,super._();
   factory _RefundDisputeModel.fromJson(Map<String, dynamic> json) => _$RefundDisputeModelFromJson(json);
 
 @override final  String id;
 @override@JsonKey(name: 'refund_id') final  String? refundId;
+@override@JsonKey(name: 'opened_by') final  String? openedBy;
+@override final  String? reason;
+@override final  dynamic round;
 @override@JsonKey() final  String status;
-// 'Pending', 'Uheld', 'Dismissed'
-@override@JsonKey(name: 'seller_reason') final  String? sellerReason;
+// 'open', 'seller-wins', 'buyer-wins'
+@override final  String? note;
+@override@JsonKey(name: 'ruled_at') final  String? ruledAt;
+@override@JsonKey(name: 'created_at') final  String? createdAt;
+// Backward compatibility fields
+@override@JsonKey(name: 'seller_reason') final  String? legacySellerReason;
  final  List<RefundAttachment> _sellerAttachments;
 @override@JsonKey(name: 'seller_attachments') List<RefundAttachment> get sellerAttachments {
   if (_sellerAttachments is EqualUnmodifiableListView) return _sellerAttachments;
@@ -1072,9 +2418,8 @@ class _RefundDisputeModel implements RefundDisputeModel {
   return EqualUnmodifiableListView(_sellerAttachments);
 }
 
-@override@JsonKey(name: 'admin_note') final  String? adminNote;
-@override@JsonKey(name: 'resolved_at') final  String? resolvedAt;
-@override@JsonKey(name: 'created_at') final  String? createdAt;
+@override@JsonKey(name: 'admin_note') final  String? legacyAdminNote;
+@override@JsonKey(name: 'resolved_at') final  String? legacyResolvedAt;
 
 /// Create a copy of RefundDisputeModel
 /// with the given fields replaced by the non-null parameter values.
@@ -1089,16 +2434,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RefundDisputeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.refundId, refundId) || other.refundId == refundId)&&(identical(other.status, status) || other.status == status)&&(identical(other.sellerReason, sellerReason) || other.sellerReason == sellerReason)&&const DeepCollectionEquality().equals(other._sellerAttachments, _sellerAttachments)&&(identical(other.adminNote, adminNote) || other.adminNote == adminNote)&&(identical(other.resolvedAt, resolvedAt) || other.resolvedAt == resolvedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RefundDisputeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.refundId, refundId) || other.refundId == refundId)&&(identical(other.openedBy, openedBy) || other.openedBy == openedBy)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.round, round)&&(identical(other.status, status) || other.status == status)&&(identical(other.note, note) || other.note == note)&&(identical(other.ruledAt, ruledAt) || other.ruledAt == ruledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.legacySellerReason, legacySellerReason) || other.legacySellerReason == legacySellerReason)&&const DeepCollectionEquality().equals(other._sellerAttachments, _sellerAttachments)&&(identical(other.legacyAdminNote, legacyAdminNote) || other.legacyAdminNote == legacyAdminNote)&&(identical(other.legacyResolvedAt, legacyResolvedAt) || other.legacyResolvedAt == legacyResolvedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,refundId,status,sellerReason,const DeepCollectionEquality().hash(_sellerAttachments),adminNote,resolvedAt,createdAt);
+int get hashCode => Object.hash(runtimeType,id,refundId,openedBy,reason,const DeepCollectionEquality().hash(round),status,note,ruledAt,createdAt,legacySellerReason,const DeepCollectionEquality().hash(_sellerAttachments),legacyAdminNote,legacyResolvedAt);
 
 @override
 String toString() {
-  return 'RefundDisputeModel(id: $id, refundId: $refundId, status: $status, sellerReason: $sellerReason, sellerAttachments: $sellerAttachments, adminNote: $adminNote, resolvedAt: $resolvedAt, createdAt: $createdAt)';
+  return 'RefundDisputeModel(id: $id, refundId: $refundId, openedBy: $openedBy, reason: $reason, round: $round, status: $status, note: $note, ruledAt: $ruledAt, createdAt: $createdAt, legacySellerReason: $legacySellerReason, sellerAttachments: $sellerAttachments, legacyAdminNote: $legacyAdminNote, legacyResolvedAt: $legacyResolvedAt)';
 }
 
 
@@ -1109,7 +2454,7 @@ abstract mixin class _$RefundDisputeModelCopyWith<$Res> implements $RefundDisput
   factory _$RefundDisputeModelCopyWith(_RefundDisputeModel value, $Res Function(_RefundDisputeModel) _then) = __$RefundDisputeModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'refund_id') String? refundId, String status,@JsonKey(name: 'seller_reason') String? sellerReason,@JsonKey(name: 'seller_attachments') List<RefundAttachment> sellerAttachments,@JsonKey(name: 'admin_note') String? adminNote,@JsonKey(name: 'resolved_at') String? resolvedAt,@JsonKey(name: 'created_at') String? createdAt
+ String id,@JsonKey(name: 'refund_id') String? refundId,@JsonKey(name: 'opened_by') String? openedBy, String? reason, dynamic round, String status, String? note,@JsonKey(name: 'ruled_at') String? ruledAt,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'seller_reason') String? legacySellerReason,@JsonKey(name: 'seller_attachments') List<RefundAttachment> sellerAttachments,@JsonKey(name: 'admin_note') String? legacyAdminNote,@JsonKey(name: 'resolved_at') String? legacyResolvedAt
 });
 
 
@@ -1126,16 +2471,21 @@ class __$RefundDisputeModelCopyWithImpl<$Res>
 
 /// Create a copy of RefundDisputeModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? refundId = freezed,Object? status = null,Object? sellerReason = freezed,Object? sellerAttachments = null,Object? adminNote = freezed,Object? resolvedAt = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? refundId = freezed,Object? openedBy = freezed,Object? reason = freezed,Object? round = freezed,Object? status = null,Object? note = freezed,Object? ruledAt = freezed,Object? createdAt = freezed,Object? legacySellerReason = freezed,Object? sellerAttachments = null,Object? legacyAdminNote = freezed,Object? legacyResolvedAt = freezed,}) {
   return _then(_RefundDisputeModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,refundId: freezed == refundId ? _self.refundId : refundId // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,sellerReason: freezed == sellerReason ? _self.sellerReason : sellerReason // ignore: cast_nullable_to_non_nullable
-as String?,sellerAttachments: null == sellerAttachments ? _self._sellerAttachments : sellerAttachments // ignore: cast_nullable_to_non_nullable
-as List<RefundAttachment>,adminNote: freezed == adminNote ? _self.adminNote : adminNote // ignore: cast_nullable_to_non_nullable
-as String?,resolvedAt: freezed == resolvedAt ? _self.resolvedAt : resolvedAt // ignore: cast_nullable_to_non_nullable
+as String?,openedBy: freezed == openedBy ? _self.openedBy : openedBy // ignore: cast_nullable_to_non_nullable
+as String?,reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String?,round: freezed == round ? _self.round : round // ignore: cast_nullable_to_non_nullable
+as dynamic,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,ruledAt: freezed == ruledAt ? _self.ruledAt : ruledAt // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,legacySellerReason: freezed == legacySellerReason ? _self.legacySellerReason : legacySellerReason // ignore: cast_nullable_to_non_nullable
+as String?,sellerAttachments: null == sellerAttachments ? _self._sellerAttachments : sellerAttachments // ignore: cast_nullable_to_non_nullable
+as List<RefundAttachment>,legacyAdminNote: freezed == legacyAdminNote ? _self.legacyAdminNote : legacyAdminNote // ignore: cast_nullable_to_non_nullable
+as String?,legacyResolvedAt: freezed == legacyResolvedAt ? _self.legacyResolvedAt : legacyResolvedAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -1147,9 +2497,9 @@ as String?,
 /// @nodoc
 mixin _$RefundModel {
 
- String get id;@JsonKey(name: 'order_id') String get orderId;@JsonKey(name: 'buyer_id') String? get buyerId;@JsonKey(name: 'seller_id') String? get sellerId; String get status;// 'Shipping', 'AwaitingSellerReview', 'Accepted', 'Disputed', 'Withdrawn', 'AutoRefunded'
- String get reason; List<RefundAttachment> get attachments;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'updated_at') String? get updatedAt;@JsonKey(name: 'expires_at') String? get expiresAt;// Hạn chót 3 ngày Seller phải phản hồi
-@JsonKey(name: 'seller_response') String? get sellerResponse; RefundDisputeModel? get dispute;
+ String get id;@JsonKey(name: 'order_id') String get orderId;@JsonKey(name: 'buyer_id') String? get buyerId;@JsonKey(name: 'seller_id') String? get sellerId; String get status;// 'awaiting-seller-review', 'awaiting-buyer-action', 'disputed', 'returning', 'returned', 'accepted', 'rejected', 'cancelled'
+ String get reason; List<RefundAttachment> get attachments;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'deadline_at') String? get deadlineAt;@JsonKey(name: 'rejection_reason') String? get rejectionReason;@JsonKey(name: 'returned_at') String? get returnedAt;@JsonKey(name: 'seller_decided_at') String? get sellerDecidedAt;@JsonKey(name: 'updated_at') String? get updatedAt;// Backward compatibility fields
+@JsonKey(name: 'expires_at') String? get legacyExpiresAt;@JsonKey(name: 'seller_response') String? get legacySellerResponse; RefundDisputeModel? get dispute;
 /// Create a copy of RefundModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1162,16 +2512,16 @@ $RefundModelCopyWith<RefundModel> get copyWith => _$RefundModelCopyWithImpl<Refu
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RefundModel&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.buyerId, buyerId) || other.buyerId == buyerId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.status, status) || other.status == status)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.attachments, attachments)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.sellerResponse, sellerResponse) || other.sellerResponse == sellerResponse)&&(identical(other.dispute, dispute) || other.dispute == dispute));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RefundModel&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.buyerId, buyerId) || other.buyerId == buyerId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.status, status) || other.status == status)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.attachments, attachments)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.deadlineAt, deadlineAt) || other.deadlineAt == deadlineAt)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.returnedAt, returnedAt) || other.returnedAt == returnedAt)&&(identical(other.sellerDecidedAt, sellerDecidedAt) || other.sellerDecidedAt == sellerDecidedAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.legacyExpiresAt, legacyExpiresAt) || other.legacyExpiresAt == legacyExpiresAt)&&(identical(other.legacySellerResponse, legacySellerResponse) || other.legacySellerResponse == legacySellerResponse)&&(identical(other.dispute, dispute) || other.dispute == dispute));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,orderId,buyerId,sellerId,status,reason,const DeepCollectionEquality().hash(attachments),createdAt,updatedAt,expiresAt,sellerResponse,dispute);
+int get hashCode => Object.hash(runtimeType,id,orderId,buyerId,sellerId,status,reason,const DeepCollectionEquality().hash(attachments),createdAt,deadlineAt,rejectionReason,returnedAt,sellerDecidedAt,updatedAt,legacyExpiresAt,legacySellerResponse,dispute);
 
 @override
 String toString() {
-  return 'RefundModel(id: $id, orderId: $orderId, buyerId: $buyerId, sellerId: $sellerId, status: $status, reason: $reason, attachments: $attachments, createdAt: $createdAt, updatedAt: $updatedAt, expiresAt: $expiresAt, sellerResponse: $sellerResponse, dispute: $dispute)';
+  return 'RefundModel(id: $id, orderId: $orderId, buyerId: $buyerId, sellerId: $sellerId, status: $status, reason: $reason, attachments: $attachments, createdAt: $createdAt, deadlineAt: $deadlineAt, rejectionReason: $rejectionReason, returnedAt: $returnedAt, sellerDecidedAt: $sellerDecidedAt, updatedAt: $updatedAt, legacyExpiresAt: $legacyExpiresAt, legacySellerResponse: $legacySellerResponse, dispute: $dispute)';
 }
 
 
@@ -1182,7 +2532,7 @@ abstract mixin class $RefundModelCopyWith<$Res>  {
   factory $RefundModelCopyWith(RefundModel value, $Res Function(RefundModel) _then) = _$RefundModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'order_id') String orderId,@JsonKey(name: 'buyer_id') String? buyerId,@JsonKey(name: 'seller_id') String? sellerId, String status, String reason, List<RefundAttachment> attachments,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'expires_at') String? expiresAt,@JsonKey(name: 'seller_response') String? sellerResponse, RefundDisputeModel? dispute
+ String id,@JsonKey(name: 'order_id') String orderId,@JsonKey(name: 'buyer_id') String? buyerId,@JsonKey(name: 'seller_id') String? sellerId, String status, String reason, List<RefundAttachment> attachments,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deadline_at') String? deadlineAt,@JsonKey(name: 'rejection_reason') String? rejectionReason,@JsonKey(name: 'returned_at') String? returnedAt,@JsonKey(name: 'seller_decided_at') String? sellerDecidedAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'expires_at') String? legacyExpiresAt,@JsonKey(name: 'seller_response') String? legacySellerResponse, RefundDisputeModel? dispute
 });
 
 
@@ -1199,7 +2549,7 @@ class _$RefundModelCopyWithImpl<$Res>
 
 /// Create a copy of RefundModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? orderId = null,Object? buyerId = freezed,Object? sellerId = freezed,Object? status = null,Object? reason = null,Object? attachments = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? expiresAt = freezed,Object? sellerResponse = freezed,Object? dispute = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? orderId = null,Object? buyerId = freezed,Object? sellerId = freezed,Object? status = null,Object? reason = null,Object? attachments = null,Object? createdAt = freezed,Object? deadlineAt = freezed,Object? rejectionReason = freezed,Object? returnedAt = freezed,Object? sellerDecidedAt = freezed,Object? updatedAt = freezed,Object? legacyExpiresAt = freezed,Object? legacySellerResponse = freezed,Object? dispute = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
@@ -1209,9 +2559,13 @@ as String?,status: null == status ? _self.status : status // ignore: cast_nullab
 as String,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,attachments: null == attachments ? _self.attachments : attachments // ignore: cast_nullable_to_non_nullable
 as List<RefundAttachment>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,deadlineAt: freezed == deadlineAt ? _self.deadlineAt : deadlineAt // ignore: cast_nullable_to_non_nullable
+as String?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
+as String?,returnedAt: freezed == returnedAt ? _self.returnedAt : returnedAt // ignore: cast_nullable_to_non_nullable
+as String?,sellerDecidedAt: freezed == sellerDecidedAt ? _self.sellerDecidedAt : sellerDecidedAt // ignore: cast_nullable_to_non_nullable
 as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as String?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
-as String?,sellerResponse: freezed == sellerResponse ? _self.sellerResponse : sellerResponse // ignore: cast_nullable_to_non_nullable
+as String?,legacyExpiresAt: freezed == legacyExpiresAt ? _self.legacyExpiresAt : legacyExpiresAt // ignore: cast_nullable_to_non_nullable
+as String?,legacySellerResponse: freezed == legacySellerResponse ? _self.legacySellerResponse : legacySellerResponse // ignore: cast_nullable_to_non_nullable
 as String?,dispute: freezed == dispute ? _self.dispute : dispute // ignore: cast_nullable_to_non_nullable
 as RefundDisputeModel?,
   ));
@@ -1310,10 +2664,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'order_id')  String orderId, @JsonKey(name: 'buyer_id')  String? buyerId, @JsonKey(name: 'seller_id')  String? sellerId,  String status,  String reason,  List<RefundAttachment> attachments, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'seller_response')  String? sellerResponse,  RefundDisputeModel? dispute)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'order_id')  String orderId, @JsonKey(name: 'buyer_id')  String? buyerId, @JsonKey(name: 'seller_id')  String? sellerId,  String status,  String reason,  List<RefundAttachment> attachments, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deadline_at')  String? deadlineAt, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'returned_at')  String? returnedAt, @JsonKey(name: 'seller_decided_at')  String? sellerDecidedAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'expires_at')  String? legacyExpiresAt, @JsonKey(name: 'seller_response')  String? legacySellerResponse,  RefundDisputeModel? dispute)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RefundModel() when $default != null:
-return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status,_that.reason,_that.attachments,_that.createdAt,_that.updatedAt,_that.expiresAt,_that.sellerResponse,_that.dispute);case _:
+return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status,_that.reason,_that.attachments,_that.createdAt,_that.deadlineAt,_that.rejectionReason,_that.returnedAt,_that.sellerDecidedAt,_that.updatedAt,_that.legacyExpiresAt,_that.legacySellerResponse,_that.dispute);case _:
   return orElse();
 
 }
@@ -1331,10 +2685,10 @@ return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'order_id')  String orderId, @JsonKey(name: 'buyer_id')  String? buyerId, @JsonKey(name: 'seller_id')  String? sellerId,  String status,  String reason,  List<RefundAttachment> attachments, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'seller_response')  String? sellerResponse,  RefundDisputeModel? dispute)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'order_id')  String orderId, @JsonKey(name: 'buyer_id')  String? buyerId, @JsonKey(name: 'seller_id')  String? sellerId,  String status,  String reason,  List<RefundAttachment> attachments, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deadline_at')  String? deadlineAt, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'returned_at')  String? returnedAt, @JsonKey(name: 'seller_decided_at')  String? sellerDecidedAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'expires_at')  String? legacyExpiresAt, @JsonKey(name: 'seller_response')  String? legacySellerResponse,  RefundDisputeModel? dispute)  $default,) {final _that = this;
 switch (_that) {
 case _RefundModel():
-return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status,_that.reason,_that.attachments,_that.createdAt,_that.updatedAt,_that.expiresAt,_that.sellerResponse,_that.dispute);case _:
+return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status,_that.reason,_that.attachments,_that.createdAt,_that.deadlineAt,_that.rejectionReason,_that.returnedAt,_that.sellerDecidedAt,_that.updatedAt,_that.legacyExpiresAt,_that.legacySellerResponse,_that.dispute);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1351,10 +2705,10 @@ return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'order_id')  String orderId, @JsonKey(name: 'buyer_id')  String? buyerId, @JsonKey(name: 'seller_id')  String? sellerId,  String status,  String reason,  List<RefundAttachment> attachments, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'seller_response')  String? sellerResponse,  RefundDisputeModel? dispute)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'order_id')  String orderId, @JsonKey(name: 'buyer_id')  String? buyerId, @JsonKey(name: 'seller_id')  String? sellerId,  String status,  String reason,  List<RefundAttachment> attachments, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deadline_at')  String? deadlineAt, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'returned_at')  String? returnedAt, @JsonKey(name: 'seller_decided_at')  String? sellerDecidedAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'expires_at')  String? legacyExpiresAt, @JsonKey(name: 'seller_response')  String? legacySellerResponse,  RefundDisputeModel? dispute)?  $default,) {final _that = this;
 switch (_that) {
 case _RefundModel() when $default != null:
-return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status,_that.reason,_that.attachments,_that.createdAt,_that.updatedAt,_that.expiresAt,_that.sellerResponse,_that.dispute);case _:
+return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status,_that.reason,_that.attachments,_that.createdAt,_that.deadlineAt,_that.rejectionReason,_that.returnedAt,_that.sellerDecidedAt,_that.updatedAt,_that.legacyExpiresAt,_that.legacySellerResponse,_that.dispute);case _:
   return null;
 
 }
@@ -1366,7 +2720,7 @@ return $default(_that.id,_that.orderId,_that.buyerId,_that.sellerId,_that.status
 @JsonSerializable()
 
 class _RefundModel extends RefundModel {
-  const _RefundModel({required this.id, @JsonKey(name: 'order_id') required this.orderId, @JsonKey(name: 'buyer_id') this.buyerId, @JsonKey(name: 'seller_id') this.sellerId, this.status = 'AwaitingSellerReview', required this.reason, final  List<RefundAttachment> attachments = const [], @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt, @JsonKey(name: 'expires_at') this.expiresAt, @JsonKey(name: 'seller_response') this.sellerResponse, this.dispute}): _attachments = attachments,super._();
+  const _RefundModel({required this.id, @JsonKey(name: 'order_id') required this.orderId, @JsonKey(name: 'buyer_id') this.buyerId, @JsonKey(name: 'seller_id') this.sellerId, this.status = 'awaiting-seller-review', required this.reason, final  List<RefundAttachment> attachments = const [], @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'deadline_at') this.deadlineAt, @JsonKey(name: 'rejection_reason') this.rejectionReason, @JsonKey(name: 'returned_at') this.returnedAt, @JsonKey(name: 'seller_decided_at') this.sellerDecidedAt, @JsonKey(name: 'updated_at') this.updatedAt, @JsonKey(name: 'expires_at') this.legacyExpiresAt, @JsonKey(name: 'seller_response') this.legacySellerResponse, this.dispute}): _attachments = attachments,super._();
   factory _RefundModel.fromJson(Map<String, dynamic> json) => _$RefundModelFromJson(json);
 
 @override final  String id;
@@ -1374,7 +2728,7 @@ class _RefundModel extends RefundModel {
 @override@JsonKey(name: 'buyer_id') final  String? buyerId;
 @override@JsonKey(name: 'seller_id') final  String? sellerId;
 @override@JsonKey() final  String status;
-// 'Shipping', 'AwaitingSellerReview', 'Accepted', 'Disputed', 'Withdrawn', 'AutoRefunded'
+// 'awaiting-seller-review', 'awaiting-buyer-action', 'disputed', 'returning', 'returned', 'accepted', 'rejected', 'cancelled'
 @override final  String reason;
  final  List<RefundAttachment> _attachments;
 @override@JsonKey() List<RefundAttachment> get attachments {
@@ -1384,10 +2738,14 @@ class _RefundModel extends RefundModel {
 }
 
 @override@JsonKey(name: 'created_at') final  String? createdAt;
+@override@JsonKey(name: 'deadline_at') final  String? deadlineAt;
+@override@JsonKey(name: 'rejection_reason') final  String? rejectionReason;
+@override@JsonKey(name: 'returned_at') final  String? returnedAt;
+@override@JsonKey(name: 'seller_decided_at') final  String? sellerDecidedAt;
 @override@JsonKey(name: 'updated_at') final  String? updatedAt;
-@override@JsonKey(name: 'expires_at') final  String? expiresAt;
-// Hạn chót 3 ngày Seller phải phản hồi
-@override@JsonKey(name: 'seller_response') final  String? sellerResponse;
+// Backward compatibility fields
+@override@JsonKey(name: 'expires_at') final  String? legacyExpiresAt;
+@override@JsonKey(name: 'seller_response') final  String? legacySellerResponse;
 @override final  RefundDisputeModel? dispute;
 
 /// Create a copy of RefundModel
@@ -1403,16 +2761,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RefundModel&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.buyerId, buyerId) || other.buyerId == buyerId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.status, status) || other.status == status)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._attachments, _attachments)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.sellerResponse, sellerResponse) || other.sellerResponse == sellerResponse)&&(identical(other.dispute, dispute) || other.dispute == dispute));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RefundModel&&(identical(other.id, id) || other.id == id)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.buyerId, buyerId) || other.buyerId == buyerId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.status, status) || other.status == status)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._attachments, _attachments)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.deadlineAt, deadlineAt) || other.deadlineAt == deadlineAt)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.returnedAt, returnedAt) || other.returnedAt == returnedAt)&&(identical(other.sellerDecidedAt, sellerDecidedAt) || other.sellerDecidedAt == sellerDecidedAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.legacyExpiresAt, legacyExpiresAt) || other.legacyExpiresAt == legacyExpiresAt)&&(identical(other.legacySellerResponse, legacySellerResponse) || other.legacySellerResponse == legacySellerResponse)&&(identical(other.dispute, dispute) || other.dispute == dispute));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,orderId,buyerId,sellerId,status,reason,const DeepCollectionEquality().hash(_attachments),createdAt,updatedAt,expiresAt,sellerResponse,dispute);
+int get hashCode => Object.hash(runtimeType,id,orderId,buyerId,sellerId,status,reason,const DeepCollectionEquality().hash(_attachments),createdAt,deadlineAt,rejectionReason,returnedAt,sellerDecidedAt,updatedAt,legacyExpiresAt,legacySellerResponse,dispute);
 
 @override
 String toString() {
-  return 'RefundModel(id: $id, orderId: $orderId, buyerId: $buyerId, sellerId: $sellerId, status: $status, reason: $reason, attachments: $attachments, createdAt: $createdAt, updatedAt: $updatedAt, expiresAt: $expiresAt, sellerResponse: $sellerResponse, dispute: $dispute)';
+  return 'RefundModel(id: $id, orderId: $orderId, buyerId: $buyerId, sellerId: $sellerId, status: $status, reason: $reason, attachments: $attachments, createdAt: $createdAt, deadlineAt: $deadlineAt, rejectionReason: $rejectionReason, returnedAt: $returnedAt, sellerDecidedAt: $sellerDecidedAt, updatedAt: $updatedAt, legacyExpiresAt: $legacyExpiresAt, legacySellerResponse: $legacySellerResponse, dispute: $dispute)';
 }
 
 
@@ -1423,7 +2781,7 @@ abstract mixin class _$RefundModelCopyWith<$Res> implements $RefundModelCopyWith
   factory _$RefundModelCopyWith(_RefundModel value, $Res Function(_RefundModel) _then) = __$RefundModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'order_id') String orderId,@JsonKey(name: 'buyer_id') String? buyerId,@JsonKey(name: 'seller_id') String? sellerId, String status, String reason, List<RefundAttachment> attachments,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'expires_at') String? expiresAt,@JsonKey(name: 'seller_response') String? sellerResponse, RefundDisputeModel? dispute
+ String id,@JsonKey(name: 'order_id') String orderId,@JsonKey(name: 'buyer_id') String? buyerId,@JsonKey(name: 'seller_id') String? sellerId, String status, String reason, List<RefundAttachment> attachments,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deadline_at') String? deadlineAt,@JsonKey(name: 'rejection_reason') String? rejectionReason,@JsonKey(name: 'returned_at') String? returnedAt,@JsonKey(name: 'seller_decided_at') String? sellerDecidedAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'expires_at') String? legacyExpiresAt,@JsonKey(name: 'seller_response') String? legacySellerResponse, RefundDisputeModel? dispute
 });
 
 
@@ -1440,7 +2798,7 @@ class __$RefundModelCopyWithImpl<$Res>
 
 /// Create a copy of RefundModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? orderId = null,Object? buyerId = freezed,Object? sellerId = freezed,Object? status = null,Object? reason = null,Object? attachments = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? expiresAt = freezed,Object? sellerResponse = freezed,Object? dispute = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? orderId = null,Object? buyerId = freezed,Object? sellerId = freezed,Object? status = null,Object? reason = null,Object? attachments = null,Object? createdAt = freezed,Object? deadlineAt = freezed,Object? rejectionReason = freezed,Object? returnedAt = freezed,Object? sellerDecidedAt = freezed,Object? updatedAt = freezed,Object? legacyExpiresAt = freezed,Object? legacySellerResponse = freezed,Object? dispute = freezed,}) {
   return _then(_RefundModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
@@ -1450,9 +2808,13 @@ as String?,status: null == status ? _self.status : status // ignore: cast_nullab
 as String,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,attachments: null == attachments ? _self._attachments : attachments // ignore: cast_nullable_to_non_nullable
 as List<RefundAttachment>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,deadlineAt: freezed == deadlineAt ? _self.deadlineAt : deadlineAt // ignore: cast_nullable_to_non_nullable
+as String?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
+as String?,returnedAt: freezed == returnedAt ? _self.returnedAt : returnedAt // ignore: cast_nullable_to_non_nullable
+as String?,sellerDecidedAt: freezed == sellerDecidedAt ? _self.sellerDecidedAt : sellerDecidedAt // ignore: cast_nullable_to_non_nullable
 as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as String?,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
-as String?,sellerResponse: freezed == sellerResponse ? _self.sellerResponse : sellerResponse // ignore: cast_nullable_to_non_nullable
+as String?,legacyExpiresAt: freezed == legacyExpiresAt ? _self.legacyExpiresAt : legacyExpiresAt // ignore: cast_nullable_to_non_nullable
+as String?,legacySellerResponse: freezed == legacySellerResponse ? _self.legacySellerResponse : legacySellerResponse // ignore: cast_nullable_to_non_nullable
 as String?,dispute: freezed == dispute ? _self.dispute : dispute // ignore: cast_nullable_to_non_nullable
 as RefundDisputeModel?,
   ));

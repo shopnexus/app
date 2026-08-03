@@ -9,12 +9,11 @@ class DisputeTimelineWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = refund.status.toLowerCase();
     final isDisputed = refund.isDisputed;
     final isResolved = refund.isResolved;
 
     int currentStep = 1;
-    if (status == 'awaitingsellerreview' || status == 'pending') {
+    if (refund.isAwaitingSellerReview) {
       currentStep = 2;
     } else if (isDisputed) {
       currentStep = 3;

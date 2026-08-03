@@ -23,7 +23,8 @@ class _DisputeApiService implements DisputeApiService {
 
   @override
   Future<DataResponse<RefundModel>> createBuyerRefund(
-    BuyerRefundRequest request,
+    String orderId,
+    CreateRefundRequest request,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -33,7 +34,7 @@ class _DisputeApiService implements DisputeApiService {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/buyer/refund',
+            'orders/${orderId}/refunds',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -54,100 +55,7 @@ class _DisputeApiService implements DisputeApiService {
   }
 
   @override
-  Future<DataResponse<RefundModel>> withdrawBuyerRefund(String refundId) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<RefundModel>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'order/refunds/${refundId}/withdraw',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<RefundModel> _value;
-    try {
-      _value = DataResponse<RefundModel>.fromJson(
-        _result.data!,
-        (json) => RefundModel.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DataResponse<RefundModel>> sellerApproveRefund(String refundId) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<RefundModel>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'order/refunds/${refundId}/approve',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<RefundModel> _value;
-    try {
-      _value = DataResponse<RefundModel>.fromJson(
-        _result.data!,
-        (json) => RefundModel.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DataResponse<RefundDisputeModel>> sellerDisputeRefund(
-    String refundId,
-    SellerDisputeRequest request,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = request;
-    final _options = _setStreamType<DataResponse<RefundDisputeModel>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'order/refunds/${refundId}/dispute',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<RefundDisputeModel> _value;
-    try {
-      _value = DataResponse<RefundDisputeModel>.fromJson(
-        _result.data!,
-        (json) => RefundDisputeModel.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DataResponse<List<RefundModel>>> getSellerRefunds(
+  Future<DataResponse<List<RefundModel>>> getRefunds(
     int? page,
     int? limit,
   ) async {
@@ -160,7 +68,7 @@ class _DisputeApiService implements DisputeApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/seller/refund',
+            'refunds',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -187,36 +95,175 @@ class _DisputeApiService implements DisputeApiService {
   }
 
   @override
-  Future<DataResponse<List<RefundDisputeModel>>> getDisputesByRefund(
-    String refundId,
-  ) async {
+  Future<DataResponse<RefundModel>> getRefundDetail(String refundId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<List<RefundDisputeModel>>>(
+    final _options = _setStreamType<DataResponse<RefundModel>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/refunds/${refundId}/disputes',
+            'refunds/${refundId}',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<List<RefundDisputeModel>> _value;
+    late DataResponse<RefundModel> _value;
     try {
-      _value = DataResponse<List<RefundDisputeModel>>.fromJson(
+      _value = DataResponse<RefundModel>.fromJson(
         _result.data!,
-        (json) => json is List<dynamic>
-            ? json
-                  .map<RefundDisputeModel>(
-                    (i) =>
-                        RefundDisputeModel.fromJson(i as Map<String, dynamic>),
-                  )
-                  .toList()
-            : List.empty(),
+        (json) => RefundModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<void> withdrawBuyerRefund(String refundId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<void>(
+      Options(method: 'DELETE', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'refunds/${refundId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
+  Future<DataResponse<RefundModel>> sellerApproveRefund(String refundId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<DataResponse<RefundModel>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'refunds/${refundId}/acceptance',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<RefundModel> _value;
+    try {
+      _value = DataResponse<RefundModel>.fromJson(
+        _result.data!,
+        (json) => RefundModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<DataResponse<RefundModel>> sellerRejectRefund(
+    String refundId,
+    RejectRefundRequest request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = request;
+    final _options = _setStreamType<DataResponse<RefundModel>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'refunds/${refundId}/rejection',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<RefundModel> _value;
+    try {
+      _value = DataResponse<RefundModel>.fromJson(
+        _result.data!,
+        (json) => RefundModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<DataResponse<RefundModel>> addRefundAttachments(
+    String refundId,
+    AddAttachmentsRequest request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = request;
+    final _options = _setStreamType<DataResponse<RefundModel>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'refunds/${refundId}/attachments',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<RefundModel> _value;
+    try {
+      _value = DataResponse<RefundModel>.fromJson(
+        _result.data!,
+        (json) => RefundModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<DataResponse<RefundDisputeModel>> sellerDisputeRefund(
+    String refundId,
+    OpenDisputeRequest request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = request;
+    final _options = _setStreamType<DataResponse<RefundDisputeModel>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'refunds/${refundId}/dispute',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<RefundDisputeModel> _value;
+    try {
+      _value = DataResponse<RefundDisputeModel>.fromJson(
+        _result.data!,
+        (json) => RefundDisputeModel.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -239,7 +286,7 @@ class _DisputeApiService implements DisputeApiService {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/disputes',
+            'admin/disputes',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -267,18 +314,19 @@ class _DisputeApiService implements DisputeApiService {
   }
 
   @override
-  Future<DataResponse<RefundDisputeModel>> getAdminDisputeDetail(
+  Future<DataResponse<RefundDisputeModel>> ruleAdminDispute(
     String disputeId,
+    DisputeRulingRequest request,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
+    final _data = request;
     final _options = _setStreamType<DataResponse<RefundDisputeModel>>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
+      Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'order/disputes/${disputeId}',
+            'admin/disputes/${disputeId}/ruling',
             queryParameters: queryParameters,
             data: _data,
           )
