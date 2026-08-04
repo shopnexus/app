@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/money_utils.dart';
+import '../../../refund/presentation/widgets/request_refund_sheet.dart';
+import '../../../ticket/presentation/widgets/raise_ticket_sheet.dart';
+import '../../../../api/generated/model/ticket_kind.dart';
 import '../../data/models/account_model.dart';
 import '../providers/buyer_orders_provider.dart';
 
@@ -40,6 +43,25 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          PopupMenuButton<_OrderHelpAction>(
+            icon: Icon(
+              Icons.more_horiz_rounded,
+              color: theme.colorScheme.onSurface,
+            ),
+            onSelected: (action) => _handleHelpAction(context, action),
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: _OrderHelpAction.requestRefund,
+                child: Text('Yêu cầu hoàn tiền'),
+              ),
+              PopupMenuItem(
+                value: _OrderHelpAction.reportIssue,
+                child: Text('Báo sự cố đơn hàng'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: RefreshIndicator(
         color: theme.colorScheme.primary,
@@ -556,4 +578,31 @@ class OrderDetailScreen extends ConsumerWidget {
       ),
     );
   }
+
+  /// Both live on the order, but only one of them is about money: a refund is
+  /// order's own state machine, while a `order-issue` ticket is a question for
+  /// support.
+  Future<void> _handleHelpAction(
+    BuildContext context,
+    _OrderHelpAction action,
+  ) async {
+    switch (action) {
+      case _OrderHelpAction.requestRefund:
+        final refund = await RequestRefundSheet.show(context, orderId);
+        if (refund == null || !context.mounted) return;
+        context.push('/account/refunds/${refund.id}');
+      case _OrderHelpAction.reportIssue:
+        final ticket = await RaiseTicketSheet.show(
+          context,
+          kind: TicketKind.orderIssue,
+          refId: orderId,
+          subjectHint: 'Sự cố đơn hàng $orderId',
+          refLabel: orderId,
+        );
+        if (ticket == null || !context.mounted) return;
+        context.push('/account/help-center/${ticket.id}');
+    }
+  }
 }
+
+enum _OrderHelpAction { requestRefund, reportIssue }

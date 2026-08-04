@@ -32,6 +32,8 @@ import '../../features/seller/presentation/screens/seller_earnings_screen.dart';
 import '../../features/chat/presentation/screens/chat_list_screen.dart';
 import '../../features/chat/presentation/screens/chat_detail_screen.dart';
 import '../../features/help_center/presentation/screens/help_center_screen.dart';
+import '../../features/refund/presentation/screens/refund_detail_screen.dart';
+import '../../features/refund/presentation/screens/refund_list_screen.dart';
 import '../../features/ticket/presentation/screens/ticket_detail_screen.dart';
 
 part 'app_router.g.dart';
@@ -220,6 +222,21 @@ GoRouter appRouter(Ref ref) {
                 path: 'kyc',
                 name: 'kyc_verification',
                 builder: (context, state) => const KycVerificationScreen(),
+              ),
+              GoRoute(
+                path: 'refunds',
+                name: 'refund_list',
+                builder: (context, state) => const RefundListScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    name: 'refund_detail',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return RefundDetailScreen(refundId: id);
+                    },
+                  ),
+                ],
               ),
               GoRoute(
                 path: 'help-center',

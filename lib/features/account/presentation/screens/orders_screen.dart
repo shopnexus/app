@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../refund/presentation/screens/refund_list_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/money_utils.dart';
@@ -174,7 +175,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
           _PendingOrdersTab(),
           _CompletedOrdersTab(),
           _CancelledOrdersTab(),
-          const _RefundsTab(),
+          const RefundListScreen(showAppBar: false),
         ],
       ),
     );
@@ -628,66 +629,6 @@ class _CancelledOrdersTab extends ConsumerWidget {
                   ),
                 ),
               ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ======================== TAB 5: REFUNDS ========================
-class _RefundsTab extends StatelessWidget {
-  const _RefundsTab();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 76,
-              height: 76,
-              decoration: BoxDecoration(
-                color: isDarkMode
-                    ? const Color(0xFFEF4444).withAlpha(40)
-                    : const Color(0xFFFFDAD6),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.history_rounded,
-                size: 38,
-                color: isDarkMode
-                    ? const Color(0xFFEF4444)
-                    : const Color(0xFFBA1A1A),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Chưa có yêu cầu hoàn tiền',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-                fontFamily: 'Inter',
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Lịch sử các đơn hàng được yêu cầu hoàn tiền hoặc tranh chấp khiếu nại của bạn sẽ xuất hiện tại đây.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: theme.colorScheme.onSurfaceVariant,
-                fontFamily: 'Inter',
-                height: 1.4,
-              ),
             ),
           ],
         ),
