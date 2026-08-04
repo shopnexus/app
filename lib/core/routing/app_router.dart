@@ -25,7 +25,7 @@ import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/checkout/presentation/screens/checkout_screen.dart';
 import '../../features/seller/presentation/screens/seller_profile_screen.dart';
 import '../../features/seller/presentation/screens/seller_dashboard_screen.dart';
-import '../../features/seller/presentation/screens/ai_video_wizard_screen.dart';
+import '../../features/seller/presentation/screens/listing_suggestion_screen.dart';
 import '../../features/seller/presentation/screens/seller_products_screen.dart';
 import '../../features/seller/presentation/screens/seller_orders_screen.dart';
 import '../../features/seller/presentation/screens/seller_earnings_screen.dart';
@@ -128,9 +128,9 @@ GoRouter appRouter(Ref ref) {
             builder: (context, state) => const SellerDashboardScreen(),
             routes: [
               GoRoute(
-                path: 'ai-wizard',
-                name: 'ai_wizard',
-                builder: (context, state) => const AiVideoWizardScreen(),
+                path: 'new-listing',
+                name: 'seller_new_listing',
+                builder: (context, state) => const ListingSuggestionScreen(),
               ),
               GoRoute(
                 path: 'products',

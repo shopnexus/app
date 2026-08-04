@@ -209,11 +209,10 @@ class ApiEndpoints {
   static const String productSpuDetailTemplate = 'catalog/product-spu/{id}';
   static String productSpuDetail(String id) => 'catalog/product-spu/$id';
   static const String productSku = 'catalog/product-sku';
-  static const String videoToProduct = 'catalog/product-spu/from-video';
-  static const String audioToProduct = 'catalog/product-spu/from-audio';
-  static const String refineDescription =
-      'catalog/product-spu/refine-description';
-  static const String aiStyles = 'catalog/styles';
+  /// AI-assisted posting. Reads photos and what the seller said and answers a
+  /// filled-in form; it writes nothing, so `listings` is still the only way a
+  /// listing comes into existence.
+  static const String listingSuggestions = 'listings/suggestions';
 
   // --- Inventory Features ---
   static const String stock = 'inventory/stock';

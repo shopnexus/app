@@ -20,23 +20,9 @@ abstract class SellerApiService {
     @Query('period') String? period,
   });
 
-  // --- AI Video & Voice Wizards ---
-  @POST(ApiEndpoints.videoToProduct)
-  @MultiPart()
-  Future<DataResponse<VideoToProductResponse>> uploadVideoToProduct(
-    @Part(name: 'video') MultipartFile video,
-  );
-
-  @POST(ApiEndpoints.audioToProduct)
-  @MultiPart()
-  Future<DataResponse<AudioToDescriptionResponse>> uploadAudioToProduct(
-    @Part(name: 'audio') MultipartFile audio,
-  );
-
-  @POST(ApiEndpoints.refineDescription)
-  Future<DataResponse<RefineDescriptionResponse>> refineDescription(
-    @Body() RefineDescriptionRequest request,
-  );
+  // The AI-assisted posting flow is not here: it speaks to the generated client
+  // (`POST /listings/suggestions`, the upload slots, `POST /listings`) through
+  // ListingComposerRepository.
 
   // --- Product SPU Management ---
   @GET(ApiEndpoints.productSpu)

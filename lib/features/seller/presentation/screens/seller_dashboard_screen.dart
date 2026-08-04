@@ -203,7 +203,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // --- AI Video & Voice Description Wizard Banner ---
-                _buildAiWizardBanner(context),
+                _buildAiPostingBanner(context),
                 const SizedBox(height: 24),
 
                 // --- Inventory & Logistics Section ---
@@ -293,7 +293,7 @@ class SellerDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAiWizardBanner(BuildContext context) {
+  Widget _buildAiPostingBanner(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -339,7 +339,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'AI Product Wizard',
+                      'Đăng bán bằng AI',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -348,7 +348,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Sinh tiêu đề & mô tả từ Image + Audio hoặc Image + Text',
+                      'Chụp ảnh, nói vài câu — AI điền sẵn tin đăng để bạn sửa',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withValues(alpha: 0.7),
@@ -363,9 +363,9 @@ class SellerDashboardScreen extends ConsumerWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => context.push('/seller/ai-wizard'),
+              onPressed: () => context.push('/seller/new-listing'),
               icon: const Icon(Icons.auto_awesome, size: 20),
-              label: const Text('Tạo sản phẩm với AI Wizard'),
+              label: const Text('Đăng sản phẩm mới'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,

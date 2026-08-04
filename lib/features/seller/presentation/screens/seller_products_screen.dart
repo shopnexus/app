@@ -138,7 +138,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/seller/ai-wizard'),
+        onPressed: () => context.push('/seller/new-listing'),
         backgroundColor: theme.colorScheme.primary,
         child: Icon(Icons.add, color: theme.colorScheme.onPrimary, size: 28),
       ),
@@ -641,20 +641,9 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                   context.push('/home/product/${product.id}');
                 },
               ),
-              ListTile(
-                leading: Icon(
-                  Icons.edit_outlined,
-                  color: theme.colorScheme.onSurface,
-                ),
-                title: Text(
-                  'Chỉnh sửa với AI Wizard',
-                  style: TextStyle(color: theme.colorScheme.onSurface),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  context.push('/seller/ai-wizard');
-                },
-              ),
+              // No "edit with AI" entry: the AI flow fills in a *new* listing and
+              // `POST /listings` is the only thing it can end in. Editing a live
+              // listing is `PATCH /listings/{id}`, a screen that does not exist yet.
               ListTile(
                 leading: Icon(
                   Icons.delete_outline,
@@ -803,7 +792,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: () => context.push('/seller/ai-wizard'),
+            onPressed: () => context.push('/seller/new-listing'),
             icon: const Icon(Icons.add),
             label: const Text('Tạo sản phẩm mới'),
             style: ElevatedButton.styleFrom(

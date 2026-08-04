@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/constants/app_config.dart';
 import '../../../catalog/data/models/catalog_model.dart';
@@ -44,34 +43,6 @@ class SellerRepository {
       );
     }
     final response = await _apiService.getSellerDashboard(period: period);
-    return response.data;
-  }
-
-  /// Upload video to generate AI product template
-  Future<VideoToProductResponse> uploadVideoToProduct(
-    MultipartFile videoFile,
-  ) async {
-    final response = await _apiService.uploadVideoToProduct(videoFile);
-    return response.data;
-  }
-
-  /// Upload audio to extract raw text & AI refined product description
-  Future<AudioToDescriptionResponse> uploadAudioToProduct(
-    MultipartFile audioFile,
-  ) async {
-    final response = await _apiService.uploadAudioToProduct(audioFile);
-    return response.data;
-  }
-
-  /// Refine raw description text using AI with optional tone/prompt
-  Future<RefineDescriptionResponse> refineDescription(
-    String rawText, {
-    String? tone,
-    String? prompt,
-  }) async {
-    final response = await _apiService.refineDescription(
-      RefineDescriptionRequest(rawText: rawText, tone: tone, prompt: prompt),
-    );
     return response.data;
   }
 

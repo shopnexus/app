@@ -813,7 +813,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => context.push('/seller/ai-wizard'),
+              onPressed: () => context.push('/seller/new-listing'),
               icon: const Icon(Icons.auto_awesome, size: 18),
               label: const Text('Tạo sản phẩm với AI Wizard'),
               style: ElevatedButton.styleFrom(
