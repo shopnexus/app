@@ -2,8 +2,10 @@
 class ApiEndpoints {
   // Base URLs & WebSocket
   static const String baseUrl = 'https://shopnexus.hopto.org/api/v1/';
-  static const String webSocketUrl =
-      'wss://shopnexus.hopto.org/api/v1/chat'; // Placeholder cho WebSocket Chat
+  /// The one per-account event stream (asyncapi `userStream`). Authorised by a
+  /// single-use ticket from `POST /ws/tickets`, never by a token in the URL.
+  static const String webSocketUrl = 'wss://shopnexus.hopto.org/api/v1/ws';
+  static const String webSocketTickets = 'ws/tickets';
 
   // --- Auth Features ---
   static const String login = 'login';
@@ -261,7 +263,9 @@ class ApiEndpoints {
   static const String sendMessage = 'conversations/{id}/messages';
   static const String markRead = 'conversations/{id}/read';
 
-  // --- Refund & Dispute Features (OpenAPI standard) ---
+  // --- Refund Features ---
+  // There is no escalation route: a party who disagrees opens a `refund-dispute`
+  // ticket, and staff decide the money on the admin surface.
   static const String createRefundTemplate = 'orders/{id}/refunds';
   static String createRefund(String orderId) => 'orders/$orderId/refunds';
 
@@ -278,28 +282,13 @@ class ApiEndpoints {
   static const String rejectRefundTemplate = 'refunds/{id}/rejection';
   static String rejectRefund(String id) => 'refunds/$id/rejection';
 
-  static const String openDisputeTemplate = 'refunds/{id}/dispute';
-  static String openDispute(String id) => 'refunds/$id/dispute';
-
   static const String addRefundAttachmentsTemplate = 'refunds/{id}/attachments';
   static String addRefundAttachments(String id) => 'refunds/$id/attachments';
 
-  // --- Admin Dispute Features ---
-  static const String adminDisputes = 'admin/disputes';
-  static const String adminDisputeRulingTemplate = 'admin/disputes/{id}/ruling';
-  static String adminDisputeRuling(String id) => 'admin/disputes/$id/ruling';
-
-  // --- Backward compatibility aliases ---
-  static const String buyerRefund = createRefundTemplate;
-  static const String withdrawBuyerRefundTemplate = withdrawRefundTemplate;
-  static String withdrawBuyerRefund(String id) => withdrawRefund(id);
-  static const String sellerRefunds = refunds;
-  static const String sellerApproveRefundTemplate = acceptRefundTemplate;
-  static String sellerApproveRefund(String id) => acceptRefund(id);
-  static const String sellerDisputeRefundTemplate = openDisputeTemplate;
-  static String sellerDisputeRefund(String id) => openDispute(id);
-  static const String adminDisputeDetailTemplate = 'admin/disputes/{disputeID}';
-  static String adminDisputeDetail(String disputeID) => 'admin/disputes/$disputeID';
-  static const String disputesByRefundTemplate = 'refunds/{refundID}/disputes';
-  static String disputesByRefund(String refundID) => 'refunds/$refundID/disputes';
+  // --- Ticket Features ---
+  // One surface for abuse reports, refund disputes, order issues, payment
+  // problems and feature requests; `kind` is what differs.
+  static const String tickets = 'tickets';
+  static const String ticketDetailTemplate = 'tickets/{id}';
+  static String ticketDetail(String id) => 'tickets/$id';
 }
