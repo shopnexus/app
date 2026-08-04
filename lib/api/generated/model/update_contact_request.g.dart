@@ -1,0 +1,98 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'update_contact_request.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+UpdateContactRequest _$UpdateContactRequestFromJson(
+  Map<String, dynamic> json,
+) => $checkedCreate(
+  'UpdateContactRequest',
+  json,
+  ($checkedConvert) {
+    final val = UpdateContactRequest(
+      address: $checkedConvert('address', (v) => v as String?),
+      addressDetail: $checkedConvert('address_detail', (v) => v as String?),
+      addressType: $checkedConvert(
+        'address_type',
+        (v) => $enumDecodeNullable(_$ContactAddressTypeEnumMap, v),
+      ),
+      clearAddressDetail: $checkedConvert(
+        'clear_address_detail',
+        (v) => v as bool?,
+      ),
+      clearDistrict: $checkedConvert('clear_district', (v) => v as bool?),
+      clearLocation: $checkedConvert('clear_location', (v) => v as bool?),
+      clearPostalCode: $checkedConvert('clear_postal_code', (v) => v as bool?),
+      country: $checkedConvert('country', (v) => v as String?),
+      districtCode: $checkedConvert('district_code', (v) => v as String?),
+      districtName: $checkedConvert('district_name', (v) => v as String?),
+      fullName: $checkedConvert('full_name', (v) => v as String?),
+      isDefaultDelivery: $checkedConvert(
+        'is_default_delivery',
+        (v) => v as bool?,
+      ),
+      isDefaultPickup: $checkedConvert('is_default_pickup', (v) => v as bool?),
+      latitude: $checkedConvert('latitude', (v) => (v as num?)?.toDouble()),
+      longitude: $checkedConvert('longitude', (v) => (v as num?)?.toDouble()),
+      phone: $checkedConvert('phone', (v) => v as String?),
+      postalCode: $checkedConvert('postal_code', (v) => v as String?),
+      provinceCode: $checkedConvert('province_code', (v) => v as String?),
+      provinceName: $checkedConvert('province_name', (v) => v as String?),
+      wardCode: $checkedConvert('ward_code', (v) => v as String?),
+      wardName: $checkedConvert('ward_name', (v) => v as String?),
+    );
+    return val;
+  },
+  fieldKeyMap: const {
+    'addressDetail': 'address_detail',
+    'addressType': 'address_type',
+    'clearAddressDetail': 'clear_address_detail',
+    'clearDistrict': 'clear_district',
+    'clearLocation': 'clear_location',
+    'clearPostalCode': 'clear_postal_code',
+    'districtCode': 'district_code',
+    'districtName': 'district_name',
+    'fullName': 'full_name',
+    'isDefaultDelivery': 'is_default_delivery',
+    'isDefaultPickup': 'is_default_pickup',
+    'postalCode': 'postal_code',
+    'provinceCode': 'province_code',
+    'provinceName': 'province_name',
+    'wardCode': 'ward_code',
+    'wardName': 'ward_name',
+  },
+);
+
+Map<String, dynamic> _$UpdateContactRequestToJson(
+  UpdateContactRequest instance,
+) => <String, dynamic>{
+  'address': ?instance.address,
+  'address_detail': ?instance.addressDetail,
+  'address_type': ?_$ContactAddressTypeEnumMap[instance.addressType],
+  'clear_address_detail': ?instance.clearAddressDetail,
+  'clear_district': ?instance.clearDistrict,
+  'clear_location': ?instance.clearLocation,
+  'clear_postal_code': ?instance.clearPostalCode,
+  'country': ?instance.country,
+  'district_code': ?instance.districtCode,
+  'district_name': ?instance.districtName,
+  'full_name': ?instance.fullName,
+  'is_default_delivery': ?instance.isDefaultDelivery,
+  'is_default_pickup': ?instance.isDefaultPickup,
+  'latitude': ?instance.latitude,
+  'longitude': ?instance.longitude,
+  'phone': ?instance.phone,
+  'postal_code': ?instance.postalCode,
+  'province_code': ?instance.provinceCode,
+  'province_name': ?instance.provinceName,
+  'ward_code': ?instance.wardCode,
+  'ward_name': ?instance.wardName,
+};
+
+const _$ContactAddressTypeEnumMap = {
+  ContactAddressType.home: 'home',
+  ContactAddressType.work: 'work',
+};

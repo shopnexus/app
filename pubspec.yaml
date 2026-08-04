@@ -19,7 +19,12 @@ dependencies:
   hive_flutter: ^1.1.0
   go_router: ^13.2.0
   freezed_annotation: ^3.0.0
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
+  # `@CopyWith()` on the generated DTOs in lib/api/generated. The annotation
+  # only has to resolve: copy_with_extension_gen is deliberately not wired in,
+  # since generating copyWith for 240 edge DTOs buys nothing and its analyzer
+  # pin collides with the other generators'.
+  copy_with_extension: ^7.1.0
 
   cupertino_icons: ^1.0.8
   google_fonts: ^8.1.0

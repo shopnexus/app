@@ -1,0 +1,8 @@
+# The client under generated/ is machine-written, so the project's style lints do
+# not apply to it. This narrows the rules instead of excluding the directory:
+# a real error in the generated code still has to surface in `flutter analyze`.
+analyzer:
+  errors:
+    invalid_annotation_target: ignore
+    # every *Api file imports Error for its doc comments' sake
+    unused_import: ignore
