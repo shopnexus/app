@@ -129,14 +129,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   void _navigateToTarget(BuildContext context, model.Notification item) {
     final redirectUrl = item.metadata?.redirectUrl;
     final orderId = item.metadata?.orderId;
-    final refundId = item.metadata?.refundId;
+    final ticketId = item.metadata?.ticketId;
 
     if (redirectUrl != null && redirectUrl.isNotEmpty) {
       context.push(redirectUrl);
     } else if (orderId != null && orderId.isNotEmpty) {
       context.push('/account/order-detail/$orderId');
-    } else if (refundId != null && refundId.isNotEmpty) {
-      context.push('/dispute/$refundId');
+    } else if (ticketId != null && ticketId.isNotEmpty) {
+      context.push('/account/help-center/$ticketId');
     } else {
       final lowerTitle = item.title.toLowerCase();
       if (lowerTitle.contains('tin nhắn') || lowerTitle.contains('chat')) {

@@ -29,12 +29,10 @@ import '../../features/seller/presentation/screens/ai_video_wizard_screen.dart';
 import '../../features/seller/presentation/screens/seller_products_screen.dart';
 import '../../features/seller/presentation/screens/seller_orders_screen.dart';
 import '../../features/seller/presentation/screens/seller_earnings_screen.dart';
-import '../../features/dispute/presentation/screens/dispute_list_screen.dart';
-import '../../features/dispute/presentation/screens/dispute_detail_screen.dart';
 import '../../features/chat/presentation/screens/chat_list_screen.dart';
 import '../../features/chat/presentation/screens/chat_detail_screen.dart';
 import '../../features/help_center/presentation/screens/help_center_screen.dart';
-import '../../features/help_center/presentation/screens/support_chat_screen.dart';
+import '../../features/ticket/presentation/screens/ticket_detail_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -229,29 +227,14 @@ GoRouter appRouter(Ref ref) {
                 builder: (context, state) => const HelpCenterScreen(),
                 routes: [
                   GoRoute(
-                    path: 'chat/:id',
-                    name: 'support_chat_detail',
+                    path: ':id',
+                    name: 'ticket_detail',
                     builder: (context, state) {
                       final id = state.pathParameters['id']!;
-                      return SupportChatScreen(ticketId: id);
+                      return TicketDetailScreen(ticketId: id);
                     },
                   ),
                 ],
-              ),
-            ],
-          ),
-          GoRoute(
-            path: '/dispute',
-            name: 'dispute_list',
-            builder: (context, state) => const DisputeListScreen(),
-            routes: [
-              GoRoute(
-                path: ':id',
-                name: 'dispute_detail',
-                builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return DisputeDetailScreen(refundId: id);
-                },
               ),
             ],
           ),

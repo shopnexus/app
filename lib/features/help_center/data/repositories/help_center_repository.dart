@@ -3,61 +3,9 @@ import '../models/help_ticket_model.dart';
 
 part 'help_center_repository.g.dart';
 
+/// FAQ content only. Tickets come from `TicketRepository`, which talks to
+/// `/tickets`; there is no FAQ endpoint to talk to.
 class HelpCenterRepository {
-  final List<HelpTicket> _mockTickets = [
-    const HelpTicket(
-      id: 'TCK-8924',
-      title: 'Lỗi thanh toán không thành công qua thẻ tín dụng',
-      description:
-          'Tôi thực hiện thanh toán cho đơn hàng #ORD-9821 qua thẻ Visa nhưng hệ thống báo lỗi timeout và tiền đã bị trừ.',
-      category: 'Thanh toán',
-      status: 'in_progress',
-      // Đang xử lý
-      createdAt: '2026-07-31 18:45',
-      updatedAt: '10 phút trước',
-      lastMessage:
-          'Bộ phận kỹ thuật đang kiểm tra cổng thanh toán với ngân hàng kết nối.',
-    ),
-    const HelpTicket(
-      id: 'TCK-8921',
-      title: 'Yêu cầu hoàn tiền đơn hàng #ORD-1234',
-      description:
-          'Sản phẩm giao đến bị hư hỏng hộp bên ngoài và thiếu phụ kiện đi kèm. Tôi đã chụp ảnh làm bằng chứng.',
-      category: 'Hoàn tiền',
-      status: 'waiting',
-      // Chờ phản hồi
-      createdAt: '2026-07-30 14:30',
-      updatedAt: 'Hôm qua, 14:30',
-      lastMessage:
-          'Vui lòng cung cấp thêm video quay lại cảnh mở hộp sản phẩm để đối soát.',
-    ),
-    const HelpTicket(
-      id: 'TCK-8915',
-      title: 'Không nhận được mã xác thực OTP qua SMS',
-      description:
-          'Tôi nhấn gửi lại OTP 3 lần nhưng điện thoại không nhận được tin nhắn SMS xác thực thay đổi số điện thoại.',
-      category: 'Tài khoản',
-      status: 'resolved',
-      // Đã giải quyết
-      createdAt: '2026-07-28 09:15',
-      updatedAt: '28/07/2026',
-      lastMessage:
-          'Hệ thống tổng đài SMS đã khắc phục nghẽn mạng. Đã gửi thành công OTP.',
-    ),
-    const HelpTicket(
-      id: 'TCK-8902',
-      title: 'Hỏi về chính sách phí vận chuyển vùng sâu vùng xa',
-      description:
-          'ShopNexus có hỗ trợ mã miễn phí vận chuyển cho khu vực huyện đảo không?',
-      category: 'Vận chuyển',
-      status: 'resolved',
-      createdAt: '2026-07-25 11:20',
-      updatedAt: '25/07/2026',
-      lastMessage:
-          'ShopNexus áp dụng voucher Freeship Extra áp dụng cho mọi tỉnh thành toàn quốc.',
-    ),
-  ];
-
   final List<FaqItem> _mockFaqs = const [
     FaqItem(
       id: 'faq_1',
@@ -118,31 +66,6 @@ class HelpCenterRepository {
     ),
   ];
 
-  /// Lấy số liệu thống kê Ticket
-  Future<HelpCenterStats> getStats() async {
-    final openCount = _mockTickets
-        .where(
-          (t) =>
-              t.status == 'open' ||
-              t.status == 'in_progress' ||
-              t.status == 'waiting',
-        )
-        .length;
-    final resolvedCount = _mockTickets
-        .where((t) => t.status == 'resolved' || t.status == 'closed')
-        .length;
-    return HelpCenterStats(
-      openCount: openCount,
-      resolvedCount: resolvedCount,
-      totalCount: _mockTickets.length,
-    );
-  }
-
-  /// Lấy danh sách Ticket
-  Future<List<HelpTicket>> getTickets() async {
-    return List.unmodifiable(_mockTickets);
-  }
-
   /// Lấy danh sách FAQ với bộ lọc category và query
   Future<List<FaqItem>> getFaqs({String? category, String? query}) async {
     return _mockFaqs.where((faq) {
@@ -160,28 +83,6 @@ class HelpCenterRepository {
     }).toList();
   }
 
-  /// Tạo Ticket mới
-  Future<HelpTicket> createTicket({
-    required String title,
-    required String category,
-    required String description,
-    List<String>? attachments,
-  }) async {
-    final newId = 'TCK-${8925 + _mockTickets.length}';
-    final newTicket = HelpTicket(
-      id: newId,
-      title: title,
-      description: description,
-      category: category,
-      status: 'open',
-      createdAt: 'Vừa xong',
-      updatedAt: 'Vừa xong',
-      lastMessage: 'Ticket vừa được khởi tạo và chờ tiếp nhận.',
-      attachments: attachments,
-    );
-    _mockTickets.insert(0, newTicket);
-    return newTicket;
-  }
 }
 
 @riverpod

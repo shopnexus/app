@@ -305,7 +305,7 @@ abstract class AccountFavorite with _$AccountFavorite {
 abstract class NotificationMetadata with _$NotificationMetadata {
   const factory NotificationMetadata({
     @JsonKey(name: 'order_id') String? orderId,
-    @JsonKey(name: 'refund_id') String? refundId,
+    @JsonKey(name: 'ticket_id') String? ticketId,
     @JsonKey(name: 'redirect_url') String? redirectUrl,
   }) = _NotificationMetadata;
 

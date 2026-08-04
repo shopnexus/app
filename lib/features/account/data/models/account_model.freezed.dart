@@ -3580,7 +3580,7 @@ as String,
 /// @nodoc
 mixin _$NotificationMetadata {
 
-@JsonKey(name: 'order_id') String? get orderId;@JsonKey(name: 'refund_id') String? get refundId;@JsonKey(name: 'redirect_url') String? get redirectUrl;
+@JsonKey(name: 'order_id') String? get orderId;@JsonKey(name: 'ticket_id') String? get ticketId;@JsonKey(name: 'redirect_url') String? get redirectUrl;
 /// Create a copy of NotificationMetadata
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3593,16 +3593,16 @@ $NotificationMetadataCopyWith<NotificationMetadata> get copyWith => _$Notificati
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NotificationMetadata&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.refundId, refundId) || other.refundId == refundId)&&(identical(other.redirectUrl, redirectUrl) || other.redirectUrl == redirectUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NotificationMetadata&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.ticketId, ticketId) || other.ticketId == ticketId)&&(identical(other.redirectUrl, redirectUrl) || other.redirectUrl == redirectUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,orderId,refundId,redirectUrl);
+int get hashCode => Object.hash(runtimeType,orderId,ticketId,redirectUrl);
 
 @override
 String toString() {
-  return 'NotificationMetadata(orderId: $orderId, refundId: $refundId, redirectUrl: $redirectUrl)';
+  return 'NotificationMetadata(orderId: $orderId, ticketId: $ticketId, redirectUrl: $redirectUrl)';
 }
 
 
@@ -3613,7 +3613,7 @@ abstract mixin class $NotificationMetadataCopyWith<$Res>  {
   factory $NotificationMetadataCopyWith(NotificationMetadata value, $Res Function(NotificationMetadata) _then) = _$NotificationMetadataCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'order_id') String? orderId,@JsonKey(name: 'refund_id') String? refundId,@JsonKey(name: 'redirect_url') String? redirectUrl
+@JsonKey(name: 'order_id') String? orderId,@JsonKey(name: 'ticket_id') String? ticketId,@JsonKey(name: 'redirect_url') String? redirectUrl
 });
 
 
@@ -3630,10 +3630,10 @@ class _$NotificationMetadataCopyWithImpl<$Res>
 
 /// Create a copy of NotificationMetadata
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? orderId = freezed,Object? refundId = freezed,Object? redirectUrl = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? orderId = freezed,Object? ticketId = freezed,Object? redirectUrl = freezed,}) {
   return _then(_self.copyWith(
 orderId: freezed == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
-as String?,refundId: freezed == refundId ? _self.refundId : refundId // ignore: cast_nullable_to_non_nullable
+as String?,ticketId: freezed == ticketId ? _self.ticketId : ticketId // ignore: cast_nullable_to_non_nullable
 as String?,redirectUrl: freezed == redirectUrl ? _self.redirectUrl : redirectUrl // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -3720,10 +3720,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'refund_id')  String? refundId, @JsonKey(name: 'redirect_url')  String? redirectUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'ticket_id')  String? ticketId, @JsonKey(name: 'redirect_url')  String? redirectUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NotificationMetadata() when $default != null:
-return $default(_that.orderId,_that.refundId,_that.redirectUrl);case _:
+return $default(_that.orderId,_that.ticketId,_that.redirectUrl);case _:
   return orElse();
 
 }
@@ -3741,10 +3741,10 @@ return $default(_that.orderId,_that.refundId,_that.redirectUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'refund_id')  String? refundId, @JsonKey(name: 'redirect_url')  String? redirectUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'ticket_id')  String? ticketId, @JsonKey(name: 'redirect_url')  String? redirectUrl)  $default,) {final _that = this;
 switch (_that) {
 case _NotificationMetadata():
-return $default(_that.orderId,_that.refundId,_that.redirectUrl);case _:
+return $default(_that.orderId,_that.ticketId,_that.redirectUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -3761,10 +3761,10 @@ return $default(_that.orderId,_that.refundId,_that.redirectUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'refund_id')  String? refundId, @JsonKey(name: 'redirect_url')  String? redirectUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'order_id')  String? orderId, @JsonKey(name: 'ticket_id')  String? ticketId, @JsonKey(name: 'redirect_url')  String? redirectUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _NotificationMetadata() when $default != null:
-return $default(_that.orderId,_that.refundId,_that.redirectUrl);case _:
+return $default(_that.orderId,_that.ticketId,_that.redirectUrl);case _:
   return null;
 
 }
@@ -3776,11 +3776,11 @@ return $default(_that.orderId,_that.refundId,_that.redirectUrl);case _:
 @JsonSerializable()
 
 class _NotificationMetadata implements NotificationMetadata {
-  const _NotificationMetadata({@JsonKey(name: 'order_id') this.orderId, @JsonKey(name: 'refund_id') this.refundId, @JsonKey(name: 'redirect_url') this.redirectUrl});
+  const _NotificationMetadata({@JsonKey(name: 'order_id') this.orderId, @JsonKey(name: 'ticket_id') this.ticketId, @JsonKey(name: 'redirect_url') this.redirectUrl});
   factory _NotificationMetadata.fromJson(Map<String, dynamic> json) => _$NotificationMetadataFromJson(json);
 
 @override@JsonKey(name: 'order_id') final  String? orderId;
-@override@JsonKey(name: 'refund_id') final  String? refundId;
+@override@JsonKey(name: 'ticket_id') final  String? ticketId;
 @override@JsonKey(name: 'redirect_url') final  String? redirectUrl;
 
 /// Create a copy of NotificationMetadata
@@ -3796,16 +3796,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NotificationMetadata&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.refundId, refundId) || other.refundId == refundId)&&(identical(other.redirectUrl, redirectUrl) || other.redirectUrl == redirectUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NotificationMetadata&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.ticketId, ticketId) || other.ticketId == ticketId)&&(identical(other.redirectUrl, redirectUrl) || other.redirectUrl == redirectUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,orderId,refundId,redirectUrl);
+int get hashCode => Object.hash(runtimeType,orderId,ticketId,redirectUrl);
 
 @override
 String toString() {
-  return 'NotificationMetadata(orderId: $orderId, refundId: $refundId, redirectUrl: $redirectUrl)';
+  return 'NotificationMetadata(orderId: $orderId, ticketId: $ticketId, redirectUrl: $redirectUrl)';
 }
 
 
@@ -3816,7 +3816,7 @@ abstract mixin class _$NotificationMetadataCopyWith<$Res> implements $Notificati
   factory _$NotificationMetadataCopyWith(_NotificationMetadata value, $Res Function(_NotificationMetadata) _then) = __$NotificationMetadataCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'order_id') String? orderId,@JsonKey(name: 'refund_id') String? refundId,@JsonKey(name: 'redirect_url') String? redirectUrl
+@JsonKey(name: 'order_id') String? orderId,@JsonKey(name: 'ticket_id') String? ticketId,@JsonKey(name: 'redirect_url') String? redirectUrl
 });
 
 
@@ -3833,10 +3833,10 @@ class __$NotificationMetadataCopyWithImpl<$Res>
 
 /// Create a copy of NotificationMetadata
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? orderId = freezed,Object? refundId = freezed,Object? redirectUrl = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? orderId = freezed,Object? ticketId = freezed,Object? redirectUrl = freezed,}) {
   return _then(_NotificationMetadata(
 orderId: freezed == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
-as String?,refundId: freezed == refundId ? _self.refundId : refundId // ignore: cast_nullable_to_non_nullable
+as String?,ticketId: freezed == ticketId ? _self.ticketId : ticketId // ignore: cast_nullable_to_non_nullable
 as String?,redirectUrl: freezed == redirectUrl ? _self.redirectUrl : redirectUrl // ignore: cast_nullable_to_non_nullable
 as String?,
   ));

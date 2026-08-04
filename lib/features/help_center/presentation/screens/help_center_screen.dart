@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../data/models/help_ticket_model.dart';
+import '../../../../api/generated/model/ticket.dart';
+import '../../../../api/generated/model/ticket_status.dart';
+import '../../../ticket/data/models/ticket_kind_info.dart';
+import '../../../ticket/presentation/widgets/raise_ticket_sheet.dart';
 import '../providers/help_center_provider.dart';
-import '../widgets/ticket_create_modal.dart';
 
 class HelpCenterScreen extends ConsumerStatefulWidget {
   const HelpCenterScreen({super.key});
@@ -24,47 +26,31 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
     super.dispose();
   }
 
-  Widget _buildStatusChip(String status, bool isDarkMode) {
-    String label;
-    Color bgColor;
-    Color textColor;
+  Widget _buildStatusChip(TicketStatus status, bool isDarkMode) {
+    final label = ticketStatusLabel(status);
+    final Color bgColor;
+    final Color textColor;
 
     switch (status) {
-      case 'in_progress':
-        label = 'Đang xử lý';
+      case TicketStatus.reviewing:
         bgColor = isDarkMode
             ? const Color(0xFF0284C7).withAlpha(40)
             : const Color(0xFFE6F4F1);
         textColor = isDarkMode
             ? const Color(0xFF38BDF8)
             : const Color(0xFF0F766E);
-        break;
-      case 'waiting':
-        label = 'Chờ phản hồi';
-        bgColor = isDarkMode
-            ? const Color(0xFFD97706).withAlpha(40)
-            : const Color(0xFFFEF3C7);
-        textColor = isDarkMode
-            ? const Color(0xFFFBBF24)
-            : const Color(0xFFD97706);
-        break;
-      case 'resolved':
-        label = 'Đã giải quyết';
+      case TicketStatus.resolved:
         bgColor = isDarkMode
             ? const Color(0xFF059669).withAlpha(40)
             : const Color(0xFFDCFCE7);
         textColor = isDarkMode
             ? const Color(0xFF34D399)
             : const Color(0xFF16A34A);
-        break;
-      case 'open':
-      default:
-        label = 'Đang mở';
+      case TicketStatus.open:
         bgColor = isDarkMode
             ? const Color(0xFF1E293B)
             : const Color(0xFFE2E8F0);
         textColor = isDarkMode ? Colors.white70 : const Color(0xFF475569);
-        break;
     }
 
     return Container(
@@ -223,7 +209,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                             ),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () => TicketCreateModal.show(context),
+                            onPressed: () => _raiseTicket(context),
                             icon: const Icon(Icons.add_rounded, size: 18),
                             label: const Text(
                               'Tạo Ticket mới',
@@ -288,7 +274,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        '${helpState.stats?.openCount ?? 0}',
+                                        '${helpState.openCount}',
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 28,
@@ -351,7 +337,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        '${helpState.stats?.resolvedCount ?? 0}',
+                                        '${helpState.resolvedCount}',
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 28,
@@ -718,7 +704,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
 
   Widget _buildTicketCard(
     BuildContext context,
-    HelpTicket ticket,
+    Ticket ticket,
     bool isDarkMode,
   ) {
     final theme = Theme.of(context);
@@ -761,7 +747,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            ticket.title,
+            ticket.subject,
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
@@ -771,7 +757,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Cập nhật lần cuối: ${ticket.updatedAt}',
+            '${TicketKindInfo.of(ticket.kind).label} · ${_formatDate(ticket.createdAt)}',
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 12,
@@ -783,7 +769,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
               onPressed: () {
-                context.push('/account/help-center/chat/${ticket.id}');
+                context.push('/account/help-center/${ticket.id}');
               },
               icon: Icon(
                 Icons.forum_outlined,
@@ -791,7 +777,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                 color: theme.colorScheme.onSurface,
               ),
               label: Text(
-                'Trao đổi trực tiếp',
+                'Xem chi tiết',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,
@@ -819,5 +805,21 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
         ],
       ),
     );
+  }
+
+  /// A ticket's opening message and its attachments go through the one form that
+  /// raises every kind, so the help centre has no create flow of its own.
+  Future<void> _raiseTicket(BuildContext context) async {
+    final ticket = await RaiseTicketSheet.show(context);
+    if (ticket == null || !mounted) return;
+    await ref.read(helpCenterProvider.notifier).refresh();
+    if (!mounted) return;
+    context.push('/account/help-center/${ticket.id}');
+  }
+
+  String _formatDate(DateTime at) {
+    final local = at.toLocal();
+    final two = (int n) => n.toString().padLeft(2, '0');
+    return '${two(local.day)}/${two(local.month)}/${local.year} ${two(local.hour)}:${two(local.minute)}';
   }
 }

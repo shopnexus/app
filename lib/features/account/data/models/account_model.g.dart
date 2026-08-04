@@ -354,7 +354,7 @@ _NotificationMetadata _$NotificationMetadataFromJson(
   Map<String, dynamic> json,
 ) => _NotificationMetadata(
   orderId: json['order_id'] as String?,
-  refundId: json['refund_id'] as String?,
+  ticketId: json['ticket_id'] as String?,
   redirectUrl: json['redirect_url'] as String?,
 );
 
@@ -362,7 +362,7 @@ Map<String, dynamic> _$NotificationMetadataToJson(
   _NotificationMetadata instance,
 ) => <String, dynamic>{
   'order_id': instance.orderId,
-  'refund_id': instance.refundId,
+  'ticket_id': instance.ticketId,
   'redirect_url': instance.redirectUrl,
 };
 
