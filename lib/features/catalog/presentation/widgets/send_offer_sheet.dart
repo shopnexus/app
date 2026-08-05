@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_offer_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/variant.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
@@ -12,8 +14,8 @@ import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model
 /// the buyer still checks out afterwards — so this sheet takes terms, not money.
 void showSendOfferSheet(
   BuildContext context, {
-  required TProductDetail detail,
-  required ProductSku variant,
+  required ListingDetail detail,
+  required Variant variant,
   required int quantity,
 }) {
   final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -39,8 +41,8 @@ void showSendOfferSheet(
 }
 
 class SendOfferSheet extends ConsumerStatefulWidget {
-  final TProductDetail detail;
-  final ProductSku variant;
+  final ListingDetail detail;
+  final Variant variant;
   final int quantity;
 
   const SendOfferSheet({
@@ -144,6 +146,7 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
     final isDarkMode = theme.brightness == Brightness.dark;
     final unitPrice = _unitPrice;
     final askingPrice = widget.variant.price;
+    final label = variantLabel(widget.variant);
 
     return SafeArea(
       child: Padding(
@@ -186,7 +189,7 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
             ),
             const SizedBox(height: 12),
             Text(
-              '${widget.detail.name}${widget.variant.name.isNotEmpty ? " • ${widget.variant.name}" : ""}',
+              '${widget.detail.name}${label.isNotEmpty ? " • $label" : ""}',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

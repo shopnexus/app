@@ -332,7 +332,7 @@ as int,
 /// @nodoc
 mixin _$CatalogProductsState {
 
- List<TProductCard> get products; bool get hasMore; bool get isLoadingMore; CatalogSearchFilters get filters;
+ List<Listing> get products; bool get hasMore; bool get isLoadingMore; CatalogSearchFilters get filters;
 /// Create a copy of CatalogProductsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -363,7 +363,7 @@ abstract mixin class $CatalogProductsStateCopyWith<$Res>  {
   factory $CatalogProductsStateCopyWith(CatalogProductsState value, $Res Function(CatalogProductsState) _then) = _$CatalogProductsStateCopyWithImpl;
 @useResult
 $Res call({
- List<TProductCard> products, bool hasMore, bool isLoadingMore, CatalogSearchFilters filters
+ List<Listing> products, bool hasMore, bool isLoadingMore, CatalogSearchFilters filters
 });
 
 
@@ -383,7 +383,7 @@ class _$CatalogProductsStateCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? products = null,Object? hasMore = null,Object? isLoadingMore = null,Object? filters = null,}) {
   return _then(_self.copyWith(
 products: null == products ? _self.products : products // ignore: cast_nullable_to_non_nullable
-as List<TProductCard>,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
+as List<Listing>,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
 as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
 as bool,filters: null == filters ? _self.filters : filters // ignore: cast_nullable_to_non_nullable
 as CatalogSearchFilters,
@@ -480,7 +480,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TProductCard> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CatalogProductsState() when $default != null:
 return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);case _:
@@ -501,7 +501,7 @@ return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TProductCard> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)  $default,) {final _that = this;
 switch (_that) {
 case _CatalogProductsState():
 return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);case _:
@@ -521,7 +521,7 @@ return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TProductCard> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)?  $default,) {final _that = this;
 switch (_that) {
 case _CatalogProductsState() when $default != null:
 return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);case _:
@@ -536,11 +536,11 @@ return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);
 
 
 class _CatalogProductsState implements CatalogProductsState {
-  const _CatalogProductsState({required final  List<TProductCard> products, required this.hasMore, required this.isLoadingMore, required this.filters}): _products = products;
+  const _CatalogProductsState({required final  List<Listing> products, required this.hasMore, required this.isLoadingMore, required this.filters}): _products = products;
   
 
- final  List<TProductCard> _products;
-@override List<TProductCard> get products {
+ final  List<Listing> _products;
+@override List<Listing> get products {
   if (_products is EqualUnmodifiableListView) return _products;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_products);
@@ -580,7 +580,7 @@ abstract mixin class _$CatalogProductsStateCopyWith<$Res> implements $CatalogPro
   factory _$CatalogProductsStateCopyWith(_CatalogProductsState value, $Res Function(_CatalogProductsState) _then) = __$CatalogProductsStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<TProductCard> products, bool hasMore, bool isLoadingMore, CatalogSearchFilters filters
+ List<Listing> products, bool hasMore, bool isLoadingMore, CatalogSearchFilters filters
 });
 
 
@@ -600,7 +600,7 @@ class __$CatalogProductsStateCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? products = null,Object? hasMore = null,Object? isLoadingMore = null,Object? filters = null,}) {
   return _then(_CatalogProductsState(
 products: null == products ? _self._products : products // ignore: cast_nullable_to_non_nullable
-as List<TProductCard>,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
+as List<Listing>,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
 as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
 as bool,filters: null == filters ? _self.filters : filters // ignore: cast_nullable_to_non_nullable
 as CatalogSearchFilters,
@@ -617,6 +617,275 @@ $CatalogSearchFiltersCopyWith<$Res> get filters {
     return _then(_self.copyWith(filters: value));
   });
 }
+}
+
+/// @nodoc
+mixin _$ProductReviewsState {
+
+ List<Review> get reviews; String? get nextCursor; bool get isLoadingMore;
+/// Create a copy of ProductReviewsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ProductReviewsStateCopyWith<ProductReviewsState> get copyWith => _$ProductReviewsStateCopyWithImpl<ProductReviewsState>(this as ProductReviewsState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductReviewsState&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(reviews),nextCursor,isLoadingMore);
+
+@override
+String toString() {
+  return 'ProductReviewsState(reviews: $reviews, nextCursor: $nextCursor, isLoadingMore: $isLoadingMore)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ProductReviewsStateCopyWith<$Res>  {
+  factory $ProductReviewsStateCopyWith(ProductReviewsState value, $Res Function(ProductReviewsState) _then) = _$ProductReviewsStateCopyWithImpl;
+@useResult
+$Res call({
+ List<Review> reviews, String? nextCursor, bool isLoadingMore
+});
+
+
+
+
+}
+/// @nodoc
+class _$ProductReviewsStateCopyWithImpl<$Res>
+    implements $ProductReviewsStateCopyWith<$Res> {
+  _$ProductReviewsStateCopyWithImpl(this._self, this._then);
+
+  final ProductReviewsState _self;
+  final $Res Function(ProductReviewsState) _then;
+
+/// Create a copy of ProductReviewsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? reviews = null,Object? nextCursor = freezed,Object? isLoadingMore = null,}) {
+  return _then(_self.copyWith(
+reviews: null == reviews ? _self.reviews : reviews // ignore: cast_nullable_to_non_nullable
+as List<Review>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
+as String?,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ProductReviewsState].
+extension ProductReviewsStatePatterns on ProductReviewsState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ProductReviewsState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ProductReviewsState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ProductReviewsState value)  $default,){
+final _that = this;
+switch (_that) {
+case _ProductReviewsState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ProductReviewsState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ProductReviewsState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Review> reviews,  String? nextCursor,  bool isLoadingMore)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ProductReviewsState() when $default != null:
+return $default(_that.reviews,_that.nextCursor,_that.isLoadingMore);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Review> reviews,  String? nextCursor,  bool isLoadingMore)  $default,) {final _that = this;
+switch (_that) {
+case _ProductReviewsState():
+return $default(_that.reviews,_that.nextCursor,_that.isLoadingMore);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Review> reviews,  String? nextCursor,  bool isLoadingMore)?  $default,) {final _that = this;
+switch (_that) {
+case _ProductReviewsState() when $default != null:
+return $default(_that.reviews,_that.nextCursor,_that.isLoadingMore);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _ProductReviewsState extends ProductReviewsState {
+  const _ProductReviewsState({required final  List<Review> reviews, this.nextCursor, this.isLoadingMore = false}): _reviews = reviews,super._();
+  
+
+ final  List<Review> _reviews;
+@override List<Review> get reviews {
+  if (_reviews is EqualUnmodifiableListView) return _reviews;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_reviews);
+}
+
+@override final  String? nextCursor;
+@override@JsonKey() final  bool isLoadingMore;
+
+/// Create a copy of ProductReviewsState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ProductReviewsStateCopyWith<_ProductReviewsState> get copyWith => __$ProductReviewsStateCopyWithImpl<_ProductReviewsState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductReviewsState&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_reviews),nextCursor,isLoadingMore);
+
+@override
+String toString() {
+  return 'ProductReviewsState(reviews: $reviews, nextCursor: $nextCursor, isLoadingMore: $isLoadingMore)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ProductReviewsStateCopyWith<$Res> implements $ProductReviewsStateCopyWith<$Res> {
+  factory _$ProductReviewsStateCopyWith(_ProductReviewsState value, $Res Function(_ProductReviewsState) _then) = __$ProductReviewsStateCopyWithImpl;
+@override @useResult
+$Res call({
+ List<Review> reviews, String? nextCursor, bool isLoadingMore
+});
+
+
+
+
+}
+/// @nodoc
+class __$ProductReviewsStateCopyWithImpl<$Res>
+    implements _$ProductReviewsStateCopyWith<$Res> {
+  __$ProductReviewsStateCopyWithImpl(this._self, this._then);
+
+  final _ProductReviewsState _self;
+  final $Res Function(_ProductReviewsState) _then;
+
+/// Create a copy of ProductReviewsState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? reviews = null,Object? nextCursor = freezed,Object? isLoadingMore = null,}) {
+  return _then(_ProductReviewsState(
+reviews: null == reviews ? _self._reviews : reviews // ignore: cast_nullable_to_non_nullable
+as List<Review>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
+as String?,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
 }
 
 // dart format on

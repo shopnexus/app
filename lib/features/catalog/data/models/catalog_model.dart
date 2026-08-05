@@ -1,6 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_location.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/variant.dart';
 
 part 'catalog_model.freezed.dart';
 part 'catalog_model.g.dart';
@@ -18,44 +22,65 @@ abstract final class ListingSort {
   static const distance = 'distance';
 }
 
+/// What the "vừa xem" carousel draws, cached in Hive. Not a wire type: a
+/// `ListingDetail` carries no card price, so the featured variant's price is
+/// resolved here instead of being stored as if the server had sent one.
 @freezed
-abstract class Category with _$Category {
-  const Category._();
+abstract class RecentListing with _$RecentListing {
+  const RecentListing._();
 
-  const factory Category({
+  const factory RecentListing({
     required String id,
     required String name,
-    @Default('') String description,
-    @JsonKey(name: 'parent_id') String? parentId,
-    double? score,
-    String? slug,
-    String? icon,
-  }) = _Category;
+    required int price,
+    @JsonKey(name: 'cover_url') String? coverUrl,
+    @JsonKey(name: 'seller_name') String? sellerName,
+    @Default(0.0) double rating,
+    @Default(false) bool negotiable,
+  }) = _RecentListing;
 
-  factory Category.fromJson(Map<String, dynamic> json) =>
-      _$CategoryFromJson(Category._preprocessJson(json));
+  factory RecentListing.fromJson(Map<String, dynamic> json) =>
+      _$RecentListingFromJson(json);
 
-  static Map<String, dynamic> _preprocessJson(Map<String, dynamic> json) {
-    final modified = Map<String, dynamic>.from(json);
-    if (!modified.containsKey('slug') || modified['slug'] == null) {
-      modified['slug'] = modified['id'];
+  factory RecentListing.fromDetail(ListingDetail detail) => RecentListing(
+    id: detail.id,
+    name: detail.name,
+    price: featuredPrice(detail),
+    coverUrl: detail.images.firstOrNull?.url,
+    sellerName: detail.seller.name,
+    rating: detail.rating,
+    negotiable: detail.priceMode == PriceMode.negotiable,
+  );
+}
+
+/// The one price a card can show for a listing whose variants may differ: the
+/// featured variant's, or the cheapest when none is featured.
+int featuredPrice(ListingDetail detail) {
+  final featured = featuredVariant(detail);
+  if (featured != null) return featured.price;
+  if (detail.variants.isEmpty) return 0;
+  return detail.variants.map((v) => v.price).reduce((a, b) => a < b ? a : b);
+}
+
+Variant? featuredVariant(ListingDetail detail) {
+  for (final variant in detail.variants) {
+    if (variant.id == detail.featuredVariantId || variant.isFeatured) {
+      return variant;
     }
-    return modified;
   }
-
-  String get effectiveSlug => slug ?? id;
+  return null;
 }
 
-@freezed
-abstract class Tag with _$Tag {
-  const factory Tag({
-    required String slug,
-    String? description,
-    double? score,
-  }) = _Tag;
+/// Size and colour, in the order the seller entered them. `Variant.attributes` is
+/// an open `type: object`, so a value may be any JSON scalar.
+String variantLabel(Variant variant) =>
+    variant.attributes.values.map((v) => v.toString()).join(' • ');
 
-  factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
-}
+// Everything below is the pre-generated-client shape, kept alive only because
+// `lib/features/seller` and `lib/features/cart` still parse and construct it.
+// Catalog itself reads the generated `Listing`/`ListingDetail`/`Variant`/`Review`.
+// It goes when those two features migrate — along with the legacy fields no
+// response has ever carried (`thumbnail`, `vendor_*`, `is_negotiable`, `skus`).
 
 @freezed
 abstract class ListingSeller with _$ListingSeller {
@@ -260,8 +285,6 @@ abstract class TProductDetail with _$TProductDetail {
     @JsonKey(name: 'vendor_avatar') String? vendorAvatar,
     @JsonKey(name: 'category_id') String? categoryId,
     @JsonKey(name: 'is_negotiable') @Default(false) bool isNegotiable,
-    @JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,
-    @JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice,
   }) = _TProductDetail;
 
   factory TProductDetail.fromJson(Map<String, dynamic> json) =>
@@ -312,163 +335,4 @@ abstract class TProductDetail with _$TProductDetail {
   bool get effectiveIsNegotiable => isNegotiable || priceMode == 'negotiable';
   List<ProductSku> get effectiveSkus => skus ?? variants ?? const [];
   int get effectiveSoldCount => soldCount ?? sold;
-}
-
-@freezed
-abstract class CommentProfile with _$CommentProfile {
-  const factory CommentProfile({
-    required String id,
-    String? username,
-    String? name,
-    @JsonKey(name: 'avatar_url') String? avatarUrl,
-  }) = _CommentProfile;
-
-  factory CommentProfile.fromJson(Map<String, dynamic> json) =>
-      _$CommentProfileFromJson(json);
-}
-
-@freezed
-abstract class ReviewAuthor with _$ReviewAuthor {
-  const factory ReviewAuthor({
-    required String id,
-    required String name,
-    Resource? avatar,
-  }) = _ReviewAuthor;
-
-  factory ReviewAuthor.fromJson(Map<String, dynamic> json) =>
-      _$ReviewAuthorFromJson(json);
-}
-
-@freezed
-abstract class ReviewVoteTally with _$ReviewVoteTally {
-  const factory ReviewVoteTally({
-    @Default(0) int helpful,
-    @JsonKey(name: 'not_helpful') @Default(0) int notHelpful,
-    @JsonKey(name: 'my_vote') int? myVote,
-  }) = _ReviewVoteTally;
-
-  factory ReviewVoteTally.fromJson(Map<String, dynamic> json) =>
-      _$ReviewVoteTallyFromJson(json);
-}
-
-@freezed
-abstract class ProductComment with _$ProductComment {
-  const ProductComment._();
-
-  const factory ProductComment({
-    required String id,
-    @JsonKey(name: 'listing_id') String? listingId,
-    @JsonKey(name: 'ref_id') String? refId,
-    @JsonKey(name: 'ref_type') String? refType,
-    @JsonKey(name: 'account_id') String? accountId,
-    @JsonKey(name: 'order_id') String? orderId,
-    CommentProfile? profile,
-    ReviewAuthor? author,
-    String? body,
-    @Default(0) int rating,
-    int? upvote,
-    int? downvote,
-    double? score,
-    ReviewVoteTally? votes,
-    @JsonKey(name: 'created_at') String? createdAt,
-    @JsonKey(name: 'date_created') String? dateCreated,
-    @JsonKey(name: 'date_updated') String? dateUpdated,
-    @JsonKey(name: 'resources') List<Resource>? attachments,
-    List<SkuAttribute>? attributes,
-  }) = _ProductComment;
-
-  factory ProductComment.fromJson(Map<String, dynamic> json) =>
-      _$ProductCommentFromJson(ProductComment._preprocessJson(json));
-
-  static Map<String, dynamic> _preprocessJson(Map<String, dynamic> json) {
-    final modified = Map<String, dynamic>.from(json);
-
-    // Profile mapping from author
-    if (modified['profile'] == null && modified['author'] != null) {
-      final aObj = modified['author'] as Map<String, dynamic>;
-      String? avUrl;
-      if (aObj['avatar'] != null) {
-        avUrl = (aObj['avatar'] as Map<String, dynamic>)['url'] as String?;
-      }
-      modified['profile'] = {
-        'id': aObj['id'],
-        'name': aObj['name'],
-        'avatar_url': avUrl,
-      };
-    }
-
-    modified['ref_id'] ??= modified['listing_id'];
-    modified['date_created'] ??= modified['created_at'];
-
-    return modified;
-  }
-
-  String get effectiveRefId => refId ?? listingId ?? '';
-  double get effectiveScore => score ?? rating.toDouble();
-  CommentProfile? get effectiveProfile =>
-      profile ??
-      (author != null
-          ? CommentProfile(
-              id: author!.id,
-              name: author!.name,
-              avatarUrl: author!.avatar?.url,
-            )
-          : null);
-}
-
-@freezed
-abstract class CreateListingRequest with _$CreateListingRequest {
-  const factory CreateListingRequest({
-    @JsonKey(name: 'name') required String name,
-    @JsonKey(name: 'category_id') required String categoryId,
-    @JsonKey(name: 'condition') required String condition,
-    @JsonKey(name: 'currency') required String currency,
-    @JsonKey(name: 'price_mode') required String priceMode,
-    String? description,
-    List<String>? tags,
-    List<String>? attachments,
-    Map<String, dynamic>? specifications,
-    required List<Map<String, dynamic>> variants,
-  }) = _CreateListingRequest;
-
-  factory CreateListingRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateListingRequestFromJson(json);
-}
-
-@freezed
-abstract class UpdateListingRequest with _$UpdateListingRequest {
-  const factory UpdateListingRequest({
-    String? name,
-    @JsonKey(name: 'category_id') String? categoryId,
-    String? condition,
-    String? description,
-    @JsonKey(name: 'price_mode') String? priceMode,
-    List<String>? tags,
-    List<String>? attachments,
-    Map<String, dynamic>? specifications,
-  }) = _UpdateListingRequest;
-
-  factory UpdateListingRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateListingRequestFromJson(json);
-}
-
-@freezed
-abstract class SubmitReviewRequest with _$SubmitReviewRequest {
-  const factory SubmitReviewRequest({
-    @JsonKey(name: 'order_id') required String orderId,
-    required int rating,
-    String? body,
-    List<String>? attachments,
-  }) = _SubmitReviewRequest;
-
-  factory SubmitReviewRequest.fromJson(Map<String, dynamic> json) =>
-      _$SubmitReviewRequestFromJson(json);
-}
-
-@freezed
-abstract class VoteReviewRequest with _$VoteReviewRequest {
-  const factory VoteReviewRequest({required int vote}) = _VoteReviewRequest;
-
-  factory VoteReviewRequest.fromJson(Map<String, dynamic> json) =>
-      _$VoteReviewRequestFromJson(json);
 }

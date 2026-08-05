@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 /// The feed card plus what only a geo browse knows: how far the goods are.
 /// `distance_km` arrives only when the browse sent a position, so no badge means
 /// "not asked", never "far away".
 class CatalogProductCard extends StatelessWidget {
-  final TProductCard product;
+  final Listing product;
   final VoidCallback? onTap;
   final double aspectRatio;
   final bool isFavorite;
@@ -28,16 +28,7 @@ class CatalogProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final card = SharedProductCard(
-      // TProductCard is still the feed's parse target; the catalog wave replaces
-      // it with `Listing` and this becomes `ProductCardView.fromListing`.
-      product: ProductCardView(
-        name: product.name,
-        price: product.price,
-        coverUrl: product.effectiveThumbnail,
-        sellerName: product.effectiveVendorName,
-        rating: product.rating,
-        negotiable: product.effectiveIsNegotiable,
-      ),
+      product: ProductCardView.fromListing(product),
       onTap: onTap,
       aspectRatio: aspectRatio,
       isFavorite: isFavorite,
@@ -46,7 +37,7 @@ class CatalogProductCard extends StatelessWidget {
       showVendor: showVendor,
     );
 
-    final distanceKm = product.distanceKm;
+    final distanceKm = product.location?.distanceKm;
     if (distanceKm == null) return card;
 
     return Stack(

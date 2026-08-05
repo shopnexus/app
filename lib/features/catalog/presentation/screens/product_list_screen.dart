@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
@@ -296,7 +297,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                     // Chia danh sách sản phẩm thành các cột tương ứng
                     final columns = List.generate(
                       crossAxisCount,
-                      (_) => <TProductCard>[],
+                      (_) => <Listing>[],
                     );
                     for (int i = 0; i < products.length; i++) {
                       columns[i % crossAxisCount].add(products[i]);
@@ -512,12 +513,12 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     // Chip danh mục
     if (activeFilters.categoryId != null) {
       final catName = categoriesState.maybeWhen(
-        data: (cats) => cats
-            .firstWhere(
-              (c) => c.id == activeFilters.categoryId,
-              orElse: () => Category(id: '', name: '', slug: ''),
-            )
-            .name,
+        data: (cats) =>
+            cats
+                .where((c) => c.id == activeFilters.categoryId)
+                .firstOrNull
+                ?.name ??
+            '',
         orElse: () => '',
       );
       if (catName.isNotEmpty) {

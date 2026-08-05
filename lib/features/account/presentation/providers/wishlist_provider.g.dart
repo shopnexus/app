@@ -8,20 +8,31 @@ part of 'wishlist_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// The wishlist is a catalog query, not a list of its own: `GET /listings` with
+/// `favorited=true` answers cards, so the screen gets the price and the cover it
+/// draws. Resolving saved ids one detail request at a time gave neither — a
+/// `ListingDetail` carries no card price, which is why every row read 0 ₫.
 
 @ProviderFor(wishlistProducts)
 const wishlistProductsProvider = WishlistProductsProvider._();
 
+/// The wishlist is a catalog query, not a list of its own: `GET /listings` with
+/// `favorited=true` answers cards, so the screen gets the price and the cover it
+/// draws. Resolving saved ids one detail request at a time gave neither — a
+/// `ListingDetail` carries no card price, which is why every row read 0 ₫.
+
 final class WishlistProductsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<TProductCard>>,
-          List<TProductCard>,
-          FutureOr<List<TProductCard>>
+          AsyncValue<List<Listing>>,
+          List<Listing>,
+          FutureOr<List<Listing>>
         >
-    with
-        $FutureModifier<List<TProductCard>>,
-        $FutureProvider<List<TProductCard>> {
+    with $FutureModifier<List<Listing>>, $FutureProvider<List<Listing>> {
+  /// The wishlist is a catalog query, not a list of its own: `GET /listings` with
+  /// `favorited=true` answers cards, so the screen gets the price and the cover it
+  /// draws. Resolving saved ids one detail request at a time gave neither — a
+  /// `ListingDetail` carries no card price, which is why every row read 0 ₫.
   const WishlistProductsProvider._()
     : super(
         from: null,
@@ -38,17 +49,17 @@ final class WishlistProductsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<TProductCard>> $createElement(
+  $FutureProviderElement<List<Listing>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<TProductCard>> create(Ref ref) {
+  FutureOr<List<Listing>> create(Ref ref) {
     return wishlistProducts(ref);
   }
 }
 
-String _$wishlistProductsHash() => r'232b9bb9640c23114158775cc05bff8c5b36a002';
+String _$wishlistProductsHash() => r'2ed77c7a3d39e28708fcabe13ec8fd36d315b06a';
 
 @ProviderFor(WishlistController)
 const wishlistControllerProvider = WishlistControllerProvider._();

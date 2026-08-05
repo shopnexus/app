@@ -1,5 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 
@@ -48,7 +52,7 @@ abstract class CatalogSearchFilters with _$CatalogSearchFilters {
 @freezed
 abstract class CatalogProductsState with _$CatalogProductsState {
   const factory CatalogProductsState({
-    required List<TProductCard> products,
+    required List<Listing> products,
     required bool hasMore,
     required bool isLoadingMore,
     required CatalogSearchFilters filters,
@@ -57,16 +61,16 @@ abstract class CatalogProductsState with _$CatalogProductsState {
 
 @riverpod
 Future<List<Category>> categories(Ref ref) {
-  return ref.watch(catalogRepositoryProvider).getCategories();
+  return ref.watch(catalogRepositoryProvider).categories();
 }
 
 @riverpod
 class CatalogProducts extends _$CatalogProducts {
-  Future<List<TProductCard>> _fetch(
+  Future<List<Listing>> _fetch(
     CatalogRepository repo,
     CatalogSearchFilters filters,
   ) {
-    return repo.getProductCards(
+    return repo.listings(
       keyword: filters.keyword,
       categoryId: filters.categoryId,
       priceMin: filters.priceMin,
@@ -217,22 +221,69 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
 }
 
 @riverpod
-Future<TProductDetail> productDetail(Ref ref, {required String id}) async {
-  final detail = await ref
-      .watch(catalogRepositoryProvider)
-      .getProductDetail(id: id);
+Future<ListingDetail> productDetail(Ref ref, {required String id}) async {
+  final detail = await ref.watch(catalogRepositoryProvider).listingDetail(id);
   ref.invalidate(recentlyViewedProductsProvider);
   return detail;
 }
 
+@freezed
+abstract class ProductReviewsState with _$ProductReviewsState {
+  const ProductReviewsState._();
+
+  const factory ProductReviewsState({
+    required List<Review> reviews,
+    String? nextCursor,
+    @Default(false) bool isLoadingMore,
+  }) = _ProductReviewsState;
+
+  bool get hasMore => nextCursor != null && nextCursor!.isNotEmpty;
+}
+
+/// Reviews are cursor-paginated, so "show more" carries the cursor the last page
+/// ended on — a page number would re-read rows a new review has already shifted.
 @riverpod
-Future<List<ProductComment>> productComments(Ref ref, {required String spuId}) {
-  return ref
-      .watch(catalogRepositoryProvider)
-      .getComments(spuId: spuId, page: 1, size: 50);
+class ProductReviews extends _$ProductReviews {
+  static const _pageSize = 20;
+
+  @override
+  FutureOr<ProductReviewsState> build(String listingId) async {
+    final page = await ref
+        .watch(catalogRepositoryProvider)
+        .reviews(listingId, limit: _pageSize);
+    return ProductReviewsState(
+      reviews: page.reviews,
+      nextCursor: page.nextCursor,
+    );
+  }
+
+  Future<void> loadNextPage() async {
+    final current = state.asData?.value;
+    if (current == null || current.isLoadingMore || !current.hasMore) return;
+
+    state = AsyncValue.data(current.copyWith(isLoadingMore: true));
+
+    try {
+      final page = await ref
+          .read(catalogRepositoryProvider)
+          .reviews(listingId, cursor: current.nextCursor, limit: _pageSize);
+      state = AsyncValue.data(
+        current.copyWith(
+          reviews: [...current.reviews, ...page.reviews],
+          nextCursor: page.nextCursor,
+          isLoadingMore: false,
+        ),
+      );
+    } catch (e) {
+      // Keeping the cursor would offer a button that fails again on every press.
+      state = AsyncValue.data(
+        current.copyWith(isLoadingMore: false, nextCursor: null),
+      );
+    }
+  }
 }
 
 @riverpod
-Future<List<TProductCard>> recentlyViewedProducts(Ref ref) {
-  return ref.watch(catalogRepositoryProvider).getRecentlyViewed();
+Future<List<RecentListing>> recentlyViewedProducts(Ref ref) {
+  return ref.watch(catalogRepositoryProvider).recentlyViewed();
 }

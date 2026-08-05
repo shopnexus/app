@@ -1,67 +1,20 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shopnexus_flutter_app/core/constants/app_config.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 
 part 'wishlist_provider.g.dart';
 
+/// The wishlist is a catalog query, not a list of its own: `GET /listings` with
+/// `favorited=true` answers cards, so the screen gets the price and the cover it
+/// draws. Resolving saved ids one detail request at a time gave neither — a
+/// `ListingDetail` carries no card price, which is why every row read 0 ₫.
 @riverpod
-Future<List<TProductCard>> wishlistProducts(Ref ref) async {
-  if (AppConfig.useMockData) {
-    return _mockWishlistProducts;
-  }
-
-  final accountRepo = ref.watch(accountRepositoryProvider);
-  final catalogRepo = ref.watch(catalogRepositoryProvider);
-
-  final favorites = await accountRepo.getFavorites(page: 1, limit: 100);
-  if (favorites.isEmpty) return [];
-
-  final futures = favorites.map(
-    (fav) => catalogRepo.getProductCardDetail(fav.spuId),
-  );
-  return Future.wait(futures);
+Future<List<Listing>> wishlistProducts(Ref ref) {
+  return ref
+      .watch(catalogRepositoryProvider)
+      .listings(favorited: true, page: 1, size: 100);
 }
-
-const List<TProductCard> _mockWishlistProducts = [
-  TProductCard(
-    id: 'spu_1',
-    name: 'Ví da bò sáp thủ công Classic',
-    slug: 'vi-da-bo-sap-thu-cong-classic',
-    price: 850000,
-    thumbnail:
-        'https://images.unsplash.com/photo-1627123424574-724758594e93?w=400',
-    vendorName: 'ClassicLeather',
-  ),
-  TProductCard(
-    id: 'spu_2',
-    name: 'Bình giữ nhiệt Titan 750ml Matte Black',
-    slug: 'binh-giu-nhiet-titan-750ml',
-    price: 420000,
-    thumbnail:
-        'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400',
-    vendorName: 'TitanGear',
-  ),
-  TProductCard(
-    id: 'spu_3',
-    name: 'Set Tinh dầu thiên nhiên Relax Organics',
-    slug: 'set-tinh-dau-thien-nhien-relax',
-    price: 350000,
-    thumbnail:
-        'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400',
-    vendorName: 'OrganicRelax',
-  ),
-  TProductCard(
-    id: 'spu_4',
-    name: 'Tai nghe Wireless Studio Pro Slate',
-    slug: 'tai-nghe-wireless-studio-pro',
-    price: 2450000,
-    thumbnail:
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
-    vendorName: 'AudioCraft',
-  ),
-];
 
 @riverpod
 class WishlistController extends _$WishlistController {

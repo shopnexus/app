@@ -4,16 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/review_reply.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/variant.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/buy_or_negotiate_sheet.dart';
-import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/send_offer_sheet.dart';
 import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
-import 'package:shopnexus_flutter_app/features/cart/data/models/cart_model.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
@@ -21,6 +24,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/ac
 import 'package:flutter/services.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/providers/chat_providers.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -39,7 +43,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // Lưu trữ các thuộc tính biến thể đã chọn, ví dụ: {'Màu sắc': 'Đỏ', 'Kích cỡ': 'L'}
   final Map<String, String> _selectedAttributes = {};
-  ProductSku? _selectedSku;
+  Variant? _selectedVariant;
   int _quantity = 1;
 
   @override
@@ -48,102 +52,68 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     super.dispose();
   }
 
-  // Lấy các tùy chọn thuộc tính độc nhất từ danh sách SKUs
-  Map<String, List<String>> _getAttributeOptions(List<ProductSku> skus) {
+  // Lấy các tùy chọn thuộc tính độc nhất từ danh sách biến thể
+  Map<String, List<String>> _getAttributeOptions(List<Variant> variants) {
     final options = <String, Set<String>>{};
-    for (final sku in skus) {
-      if (sku.attributes != null) {
-        for (final attr in sku.attributes!) {
-          options.putIfAbsent(attr.key, () => <String>{}).add(attr.value);
-        }
-      }
+    for (final variant in variants) {
+      variant.attributes.forEach((key, value) {
+        options.putIfAbsent(key, () => <String>{}).add(value.toString());
+      });
     }
     return options.map((key, val) => MapEntry(key, val.toList()));
   }
 
-  // Tìm SKU khớp với các thuộc tính đang chọn
-  ProductSku? _getSelectedSku(List<ProductSku> skus) {
-    for (final sku in skus) {
-      if (sku.attributes == null) continue;
-      bool matches = true;
-      for (final attr in sku.attributes!) {
-        if (_selectedAttributes[attr.key] != attr.value) {
-          matches = false;
-          break;
-        }
-      }
-      if (matches && _selectedAttributes.length == sku.attributes!.length) {
-        return sku;
-      }
+  // Tìm biến thể khớp với các thuộc tính đang chọn
+  Variant? _getSelectedVariant(List<Variant> variants) {
+    for (final variant in variants) {
+      if (variant.attributes.length != _selectedAttributes.length) continue;
+      final matches = variant.attributes.entries.every(
+        (attr) => _selectedAttributes[attr.key] == attr.value.toString(),
+      );
+      if (matches) return variant;
     }
     return null;
   }
 
-  // Tự động chọn các giá trị đầu tiên của SKU khi mới tải trang
-  void _initializeDefaultSelection(List<ProductSku> skus) {
-    if (_selectedAttributes.isNotEmpty || skus.isEmpty) return;
+  // Tự động chọn các giá trị đầu tiên khi mới tải trang
+  void _initializeDefaultSelection(List<Variant> variants) {
+    if (_selectedAttributes.isNotEmpty || variants.isEmpty) return;
 
-    final options = _getAttributeOptions(skus);
+    final options = _getAttributeOptions(variants);
     options.forEach((key, values) {
       if (values.isNotEmpty) {
         _selectedAttributes[key] = values.first;
       }
     });
-    _selectedSku = _getSelectedSku(skus);
+    _selectedVariant = _getSelectedVariant(variants);
   }
 
   @override
   Widget build(BuildContext context) {
     final detailState = ref.watch(productDetailProvider(id: widget.productId));
-    final commentsState = ref.watch(
-      productCommentsProvider(spuId: widget.productId),
-    );
+    final reviewsState = ref.watch(productReviewsProvider(widget.productId));
     final recentlyViewedState = ref.watch(recentlyViewedProductsProvider);
 
     return detailState.when(
       data: (detail) {
-        // Tự động khởi tạo lựa chọn thuộc tính mặc định nếu có SKUs
-        if (detail.skus != null && detail.skus!.isNotEmpty) {
-          _initializeDefaultSelection(detail.skus!);
-        }
+        _initializeDefaultSelection(detail.variants);
 
         // Lấy danh sách ảnh hiển thị trong Gallery (Ưu tiên ảnh biến thể nếu được chọn)
-        List<Resource> galleryItems = detail.images ?? [];
-        if (_selectedSku != null &&
-            _selectedSku!.images != null &&
-            _selectedSku!.images!.isNotEmpty) {
-          galleryItems = _selectedSku!.images!;
-        }
+        final variantImages = _selectedVariant?.images ?? const <Resource>[];
+        final galleryItems = variantImages.isNotEmpty
+            ? variantImages
+            : detail.images;
 
         // Xác định tổng lượng tồn kho hiển thị
         final int totalStock =
-            _selectedSku?.stock ??
-            detail.skus?.fold<int>(0, (prev, s) => prev + s.stock) ??
-            0;
+            _selectedVariant?.stock.available ??
+            detail.variants.fold<int>(0, (prev, v) => prev + v.stock.available);
 
-        // Tính toán khoảng giá hiển thị
-        String priceText = MoneyUtils.format(detail.price);
-        String? originalPriceText;
-        if (detail.originalPrice != null) {
-          originalPriceText = MoneyUtils.format(detail.originalPrice!);
-        }
-
-        if (_selectedSku != null) {
-          priceText = MoneyUtils.format(_selectedSku!.price);
-          if (_selectedSku!.originalPrice != null) {
-            originalPriceText = MoneyUtils.format(_selectedSku!.originalPrice!);
-          }
-        } else if (detail.skus != null && detail.skus!.isNotEmpty) {
-          final prices = detail.skus!.map((s) => s.price).toList();
-          final minPrice = prices.reduce((a, b) => a < b ? a : b);
-          final maxPrice = prices.reduce((a, b) => a > b ? a : b);
-          if (minPrice == maxPrice) {
-            priceText = MoneyUtils.format(minPrice);
-          } else {
-            priceText =
-                '${MoneyUtils.format(minPrice)} - ${MoneyUtils.format(maxPrice)}';
-          }
-        }
+        // Tính toán khoảng giá hiển thị: một biến thể đã chọn có giá của nó, còn
+        // lại là khoảng giá của cả tin đăng.
+        final String priceText = _selectedVariant != null
+            ? MoneyUtils.format(_selectedVariant!.price)
+            : _priceRangeText(detail);
 
         final theme = Theme.of(context);
 
@@ -161,17 +131,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       _buildGallerySection(galleryItems),
 
                       // 2. Thông tin chính SPU (Giá cả, Tên sản phẩm, Đánh giá)
-                      _buildProductPrimaryInfo(
-                        detail,
-                        priceText,
-                        originalPriceText,
-                      ),
+                      _buildProductPrimaryInfo(detail, priceText),
 
                       const SizedBox(height: 8.0),
 
-                      // 3. Bộ chọn biến thể (SKU Selector) & Số lượng
-                      if (detail.skus != null && detail.skus!.isNotEmpty)
-                        _buildSkuSelectorSection(detail.skus!, totalStock),
+                      // 3. Bộ chọn biến thể & Số lượng
+                      if (detail.variants.isNotEmpty)
+                        _buildVariantSelectorSection(
+                          detail.variants,
+                          totalStock,
+                        ),
 
                       const SizedBox(height: 8.0),
 
@@ -185,8 +154,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
                       const SizedBox(height: 8.0),
 
-                      // 6. Khu vực Đánh giá (Review & Comments Section)
-                      _buildReviewsSection(commentsState),
+                      // 6. Khu vực Đánh giá (Review Section)
+                      _buildReviewsSection(detail, reviewsState),
 
                       const SizedBox(height: 8.0),
 
@@ -463,30 +432,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   // 2. Thông tin chính SPU (Giá cả, Tên sản phẩm, Đánh giá)
-  Widget _buildProductPrimaryInfo(
-    TProductDetail detail,
-    String priceText,
-    String? originalPriceText,
-  ) {
+  //
+  // Không còn giá gạch ngang hay phần trăm giảm: một tin đăng chỉ có một giá,
+  // `original_price` là trường server chưa từng gửi.
+  Widget _buildProductPrimaryInfo(ListingDetail detail, String priceText) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-
-    // Tính toán phần trăm giảm giá nếu có
-    int? discountPercent;
-    if (_selectedSku != null &&
-        _selectedSku!.originalPrice != null &&
-        _selectedSku!.originalPrice! > _selectedSku!.price) {
-      discountPercent =
-          ((_selectedSku!.originalPrice! - _selectedSku!.price) /
-                  _selectedSku!.originalPrice! *
-                  100)
-              .round();
-    } else if (detail.originalPrice != null &&
-        detail.originalPrice! > detail.price) {
-      discountPercent =
-          ((detail.originalPrice! - detail.price) / detail.originalPrice! * 100)
-              .round();
-    }
 
     final accentStarColor = isDarkMode
         ? AppColors.darkPrimary
@@ -512,41 +463,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   color: theme.colorScheme.primary,
                 ),
               ),
-              if (originalPriceText != null) ...[
-                const SizedBox(width: 8.0),
-                Text(
-                  originalPriceText,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 14,
-                    color: theme.colorScheme.onSurfaceVariant,
-                    decoration: TextDecoration.lineThrough,
-                  ),
-                ),
-              ],
-              if (discountPercent != null && discountPercent > 0) ...[
-                const SizedBox(width: 8.0),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: accentStarColor.withAlpha(30),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    '-$discountPercent%',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: accentStarColor,
-                    ),
-                  ),
-                ),
-              ],
-              if (detail.effectiveIsNegotiable) ...[
+              if (detail.priceMode == PriceMode.negotiable) ...[
                 const SizedBox(width: 8.0),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -584,7 +501,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ],
             ],
           ),
-          if (detail.effectiveIsNegotiable) ...[
+          if (detail.priceMode == PriceMode.negotiable) ...[
             const SizedBox(height: 10.0),
             Container(
               padding: const EdgeInsets.all(12),
@@ -627,7 +544,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Mua ngay ở giá ${MoneyUtils.format(_selectedSku?.price ?? detail.price)}, hoặc gửi đề xuất giá của bạn cho người bán.',
+                          'Mua ngay ở giá ${MoneyUtils.format(_selectedVariant?.price ?? featuredPrice(detail))}, hoặc gửi đề xuất giá của bạn cho người bán.',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 11,
@@ -693,7 +610,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
               ],
               Text(
-                'Đã bán ${detail.soldCount ?? 0}',
+                'Đã bán ${detail.sold}',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 12,
@@ -709,10 +626,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   // 3. Bộ chọn biến thể (SKU Selector) & Số lượng
-  Widget _buildSkuSelectorSection(List<ProductSku> skus, int totalStock) {
+  Widget _buildVariantSelectorSection(List<Variant> variants, int totalStock) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final options = _getAttributeOptions(skus);
+    final options = _getAttributeOptions(variants);
 
     return Container(
       color: isDarkMode ? AppColors.darkSurface : Colors.white,
@@ -733,9 +650,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
               ),
               const Spacer(),
-              if (_selectedSku != null)
+              if (_selectedVariant != null)
                 Text(
-                  'Đã chọn: ${_selectedSku!.name}',
+                  'Đã chọn: ${variantLabel(_selectedVariant!)}',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -815,11 +732,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               _selectedAttributes.remove(attrKey);
                             }
                             // Cập nhật SKU mới tương ứng sau khi đổi lựa chọn
-                            _selectedSku = _getSelectedSku(skus);
+                            _selectedVariant = _getSelectedVariant(variants);
                             // Reset lại số lượng đặt nếu vượt quá tồn kho mới
-                            if (_selectedSku != null &&
-                                _quantity > _selectedSku!.stock) {
-                              _quantity = _selectedSku!.stock > 0 ? 1 : 0;
+                            final available = _selectedVariant?.stock.available;
+                            if (available != null && _quantity > available) {
+                              _quantity = available > 0 ? 1 : 0;
                             }
                           });
                         },
@@ -915,32 +832,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   // 4. Thông tin người bán (Vendor Info)
-  Widget _buildVendorSection(TProductDetail detail) {
+  Widget _buildVendorSection(ListingDetail detail) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    final sellerProfileState = detail.vendorId != null
-        ? ref.watch(publicProfileProvider(detail.vendorId!))
-        : null;
+    final seller = detail.seller;
+    // The listing already names the seller, so the profile lookup only upgrades
+    // what is drawn — a slow or failed one leaves the card readable.
+    final sellerProfileState = ref.watch(publicProfileProvider(seller.id));
 
-    final String name =
-        sellerProfileState?.when(
-          data: (profile) => profile.name.isNotEmpty
-              ? profile.name
-              : (detail.vendorName ?? 'Cửa hàng đối tác'),
-          loading: () => 'Đang tải...',
-          error: (_, _) => detail.vendorName ?? 'Shop đối tác',
-        ) ??
-        detail.vendorName ??
-        'Shop đối tác';
+    final String name = sellerProfileState.when(
+      data: (profile) => profile.name.isNotEmpty ? profile.name : seller.name,
+      loading: () => seller.name,
+      error: (_, _) => seller.name,
+    );
 
-    final String? avatarUrl =
-        sellerProfileState?.when(
-          data: (profile) => profile.avatarUrl,
-          loading: () => null,
-          error: (_, _) => detail.vendorAvatar,
-        ) ??
-        detail.vendorAvatar;
+    final String? avatarUrl = sellerProfileState.when(
+      data: (profile) => profile.avatarUrl ?? seller.avatar?.url,
+      loading: () => seller.avatar?.url,
+      error: (_, _) => seller.avatar?.url,
+    );
 
     return Container(
       color: isDarkMode ? AppColors.darkSurface : Colors.white,
@@ -948,9 +859,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: detail.vendorId != null
-                ? () => context.push('/vendor/${detail.vendorId}')
-                : null,
+            onTap: () => context.push('/vendor/${seller.id}'),
             child: CircleAvatar(
               radius: 24,
               backgroundImage: avatarUrl != null
@@ -970,9 +879,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           const SizedBox(width: 12.0),
           Expanded(
             child: GestureDetector(
-              onTap: detail.vendorId != null
-                  ? () => context.push('/vendor/${detail.vendorId}')
-                  : null,
+              onTap: () => context.push('/vendor/${seller.id}'),
               behavior: HitTestBehavior.opaque,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1021,9 +928,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   // 5. Bảng thông số kỹ thuật (Specifications) & Mô tả (Description)
-  Widget _buildSpecsAndDescSection(TProductDetail detail) {
+  Widget _buildSpecsAndDescSection(ListingDetail detail) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+    // `specifications` is an open object keyed by the seller's own labels, so the
+    // table is its entries in order — there is no fixed set of rows to expect.
+    final specs = detail.specifications.entries.toList();
 
     return Container(
       color: isDarkMode ? AppColors.darkSurface : Colors.white,
@@ -1032,8 +942,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Bảng thông số kỹ thuật
-          if (detail.specifications != null &&
-              detail.specifications!.isNotEmpty) ...[
+          if (specs.isNotEmpty) ...[
             Text(
               'Thông số kỹ thuật',
               style: TextStyle(
@@ -1044,9 +953,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ),
             ),
             const SizedBox(height: 10.0),
-            ...detail.specifications!.map((spec) {
-              final isEven = detail.specifications!.indexOf(spec).isEven;
-              final rowBg = isEven
+            ...specs.indexed.map((entry) {
+              final (index, spec) = entry;
+              final rowBg = index.isEven
                   ? (isDarkMode
                         ? theme.colorScheme.surfaceContainerHighest
                         : const Color(0xFFF9F9F7))
@@ -1076,7 +985,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     Expanded(
                       flex: 7,
                       child: Text(
-                        spec.value,
+                        spec.value.toString(),
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
@@ -1109,7 +1018,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
           const SizedBox(height: 10.0),
           Text(
-            detail.description ?? 'Sản phẩm chưa cập nhật mô tả chi tiết.',
+            detail.description.isEmpty
+                ? 'Sản phẩm chưa cập nhật mô tả chi tiết.'
+                : detail.description,
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
@@ -1150,8 +1061,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
-  // 6. Khu vực Đánh giá (Review & Comments Section)
-  Widget _buildReviewsSection(AsyncValue<List<ProductComment>> commentsState) {
+  // 6. Khu vực Đánh giá (Review Section)
+  //
+  // Điểm trung bình và số lượt lấy từ chính tin đăng: trang chỉ tải một trang
+  // đánh giá, nên tính lại từ đó sẽ sai ngay khi có nhiều hơn một trang.
+  Widget _buildReviewsSection(
+    ListingDetail detail,
+    AsyncValue<ProductReviewsState> reviewsState,
+  ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -1176,9 +1093,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
           const SizedBox(height: 12.0),
 
-          commentsState.when(
-            data: (comments) {
-              if (comments.isEmpty) {
+          reviewsState.when(
+            data: (state) {
+              final reviews = state.reviews;
+              if (reviews.isEmpty) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Center(
@@ -1193,292 +1111,52 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 );
               }
 
-              // Tính toán phân tích điểm sao
-              final double avgScore =
-                  comments
-                      .map((c) => c.effectiveScore)
-                      .reduce((a, b) => a + b) /
-                  comments.length;
-
               return Column(
                 children: [
-                  // Breakdown Tóm tắt sao
-                  Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: isDarkMode
-                          ? theme.colorScheme.surfaceContainerHighest
-                          : const Color(0xFFF9F9F7),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: Row(
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              avgScore.toStringAsFixed(1),
-                              style: TextStyle(
-                                fontFamily: 'Manrope',
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: accentStarColor,
-                              ),
-                            ),
-                            Row(
-                              children: List.generate(5, (index) {
-                                return Icon(
-                                  index < avgScore.floor()
-                                      ? Icons.star_rounded
-                                      : Icons.star_border_rounded,
-                                  color: accentStarColor,
-                                  size: 14,
-                                );
-                              }),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              '${comments.length} đánh giá',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 11,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 24.0),
-                        // Thanh phân phối sao đơn giản
-                        Expanded(
-                          child: Column(
-                            children: List.generate(5, (starIdx) {
-                              final int starVal = 5 - starIdx;
-                              final int count = comments
-                                  .where(
-                                    (c) => c.effectiveScore.round() == starVal,
-                                  )
-                                  .length;
-                              final double pct = comments.isEmpty
-                                  ? 0
-                                  : count / comments.length;
-
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 1.0,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      '$starVal',
-                                      style: TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontSize: 10,
-                                        color: theme.colorScheme.onSurface,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4.0),
-                                    Icon(
-                                      Icons.star_rounded,
-                                      size: 10,
-                                      color: accentStarColor,
-                                    ),
-                                    const SizedBox(width: 6.0),
-                                    Expanded(
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          999,
-                                        ),
-                                        child: LinearProgressIndicator(
-                                          value: pct,
-                                          backgroundColor: isDarkMode
-                                              ? AppColors.darkSurface
-                                              : const Color(0xFFEEEEEB),
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                accentStarColor,
-                                              ),
-                                          minHeight: 4,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8.0),
-                                    Text(
-                                      '${(pct * 100).round()}%',
-                                      style: TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontSize: 10,
-                                        color:
-                                            theme.colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
+                  _buildRatingBreakdown(detail, reviews, accentStarColor),
                   const SizedBox(height: 16.0),
-
-                  // Danh sách các comment của người dùng
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: comments.take(3).length,
+                    itemCount: reviews.length,
                     separatorBuilder: (context, index) => Divider(
                       color: isDarkMode
                           ? AppColors.darkPrimary.withAlpha(20)
                           : const Color(0xFFEEEEEB),
                       height: 24,
                     ),
-                    itemBuilder: (context, index) {
-                      final comment = comments[index];
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 14,
-                                backgroundImage:
-                                    comment.profile?.avatarUrl != null
-                                    ? CachedNetworkImageProvider(
-                                        comment.profile!.avatarUrl!,
-                                      )
-                                    : null,
-                                backgroundColor: isDarkMode
-                                    ? theme.colorScheme.surfaceContainerHighest
-                                    : const Color(0xFFEEEEEB),
-                                child: comment.profile?.avatarUrl == null
-                                    ? Icon(
-                                        Icons.person,
-                                        size: 14,
-                                        color:
-                                            theme.colorScheme.onSurfaceVariant,
-                                      )
-                                    : null,
-                              ),
-                              const SizedBox(width: 8.0),
-                              Text(
-                                comment.profile?.name ??
-                                    comment.profile?.username ??
-                                    'Người dùng ẩn danh',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                comment.dateCreated?.split('T').first ?? '',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 11,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6.0),
-                          Row(
-                            children: List.generate(5, (sIdx) {
-                              return Icon(
-                                sIdx < comment.effectiveScore.floor()
-                                    ? Icons.star_rounded
-                                    : Icons.star_border_rounded,
-                                color: accentStarColor,
-                                size: 12,
-                              );
-                            }),
-                          ),
-                          if (comment.attributes != null &&
-                              comment.attributes!.isNotEmpty) ...[
-                            const SizedBox(height: 4.0),
-                            Text(
-                              'Phân loại: ${comment.attributes!.map((a) => '${a.key}: ${a.value}').join(', ')}',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 11,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                          if (comment.body != null &&
-                              comment.body!.isNotEmpty) ...[
-                            const SizedBox(height: 6.0),
-                            Text(
-                              comment.body!,
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 13,
-                                color: theme.colorScheme.onSurface,
-                                height: 1.4,
-                              ),
-                            ),
-                          ],
-                          // Hình ảnh đính kèm nhận định của đánh giá
-                          if (comment.attachments != null &&
-                              comment.attachments!.isNotEmpty) ...[
-                            const SizedBox(height: 8.0),
-                            SizedBox(
-                              height: 60.0,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: comment.attachments!.length,
-                                itemBuilder: (context, aIdx) {
-                                  final attachUrl =
-                                      comment.attachments![aIdx].url;
-                                  if (attachUrl == null || attachUrl.isEmpty) {
-                                    return const Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: SizedBox(
-                                        width: 60.0,
-                                        height: 60.0,
-                                        child: Center(
-                                          child: Icon(Icons.image_outlined),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => Dialog(
-                                            child: CachedNetworkImage(
-                                              imageUrl: attachUrl,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          6.0,
-                                        ),
-                                        child: CachedNetworkImage(
-                                          imageUrl: attachUrl,
-                                          width: 60.0,
-                                          height: 60.0,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ],
-                      );
-                    },
+                    itemBuilder: (context, index) =>
+                        _buildReviewTile(reviews[index], accentStarColor),
                   ),
+                  if (state.hasMore) ...[
+                    const SizedBox(height: 8.0),
+                    Center(
+                      child: state.isLoadingMore
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : TextButton(
+                              onPressed: () => ref
+                                  .read(
+                                    productReviewsProvider(
+                                      widget.productId,
+                                    ).notifier,
+                                  )
+                                  .loadNextPage(),
+                              child: const Text(
+                                'Xem thêm đánh giá',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
                 ],
               );
             },
@@ -1490,9 +1168,358 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
+  /// Thanh phân phối sao chỉ tính trên các đánh giá đã tải — nhãn nói rõ như vậy.
+  Widget _buildRatingBreakdown(
+    ListingDetail detail,
+    List<Review> loaded,
+    Color accentStarColor,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: isDarkMode
+            ? theme.colorScheme.surfaceContainerHighest
+            : const Color(0xFFF9F9F7),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Row(
+        children: [
+          Column(
+            children: [
+              Text(
+                detail.rating.toStringAsFixed(1),
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: accentStarColor,
+                ),
+              ),
+              Row(
+                children: List.generate(5, (index) {
+                  return Icon(
+                    index < detail.rating.floor()
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color: accentStarColor,
+                    size: 14,
+                  );
+                }),
+              ),
+              const SizedBox(height: 4.0),
+              Text(
+                '${detail.reviewCount} đánh giá',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 11,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 24.0),
+          Expanded(
+            child: Column(
+              children: List.generate(5, (starIdx) {
+                final int starVal = 5 - starIdx;
+                final int count = loaded
+                    .where((r) => r.rating == starVal)
+                    .length;
+                final double pct = loaded.isEmpty ? 0 : count / loaded.length;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 1.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        '$starVal',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 10,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      Icon(
+                        Icons.star_rounded,
+                        size: 10,
+                        color: accentStarColor,
+                      ),
+                      const SizedBox(width: 6.0),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(999),
+                          child: LinearProgressIndicator(
+                            value: pct,
+                            backgroundColor: isDarkMode
+                                ? AppColors.darkSurface
+                                : const Color(0xFFEEEEEB),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              accentStarColor,
+                            ),
+                            minHeight: 4,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        '${(pct * 100).round()}%',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 10,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewTile(Review review, Color accentStarColor) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final avatarUrl = review.author.avatar?.url;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 14,
+              backgroundImage: avatarUrl != null
+                  ? CachedNetworkImageProvider(avatarUrl)
+                  : null,
+              backgroundColor: isDarkMode
+                  ? theme.colorScheme.surfaceContainerHighest
+                  : const Color(0xFFEEEEEB),
+              child: avatarUrl == null
+                  ? Icon(
+                      Icons.person,
+                      size: 14,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 8.0),
+            Expanded(
+              child: Text(
+                review.author.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            Text(
+              _formatDate(review.updatedAt ?? review.createdAt),
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6.0),
+        Row(
+          children: [
+            ...List.generate(5, (sIdx) {
+              return Icon(
+                sIdx < review.rating
+                    ? Icons.star_rounded
+                    : Icons.star_border_rounded,
+                color: accentStarColor,
+                size: 12,
+              );
+            }),
+            if (review.updatedAt != null) ...[
+              const SizedBox(width: 6.0),
+              Text(
+                'đã sửa',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 10,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+        if (review.body.isNotEmpty) ...[
+          const SizedBox(height: 6.0),
+          Text(
+            review.body,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              color: theme.colorScheme.onSurface,
+              height: 1.4,
+            ),
+          ),
+        ],
+        if (review.attachments.isNotEmpty) ...[
+          const SizedBox(height: 8.0),
+          SizedBox(
+            height: 60.0,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: review.attachments.length,
+              itemBuilder: (context, aIdx) =>
+                  _buildReviewAttachment(review.attachments[aIdx]),
+            ),
+          ),
+        ],
+        // Phần trả lời của người bán: trang chỉ nhận vài trả lời đầu tiên, phần
+        // còn lại nằm ở `GET /reviews/{id}`, nên chỉ hiện số còn thiếu.
+        if (review.replies.isNotEmpty) ...[
+          const SizedBox(height: 8.0),
+          ...review.replies.map(
+            (reply) => _buildReviewReply(reply, accentStarColor),
+          ),
+          if (review.replyCount > review.replies.length)
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+              child: Text(
+                'Còn ${review.replyCount - review.replies.length} phản hồi nữa',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 11,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildReviewReply(ReviewReply reply, Color accentStarColor) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Container(
+      margin: const EdgeInsets.only(left: 12.0, top: 6.0),
+      padding: const EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+        color: isDarkMode
+            ? theme.colorScheme.surfaceContainerHighest
+            : const Color(0xFFF4F4F1),
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                reply.author.name,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              if (reply.isSeller) ...[
+                const SizedBox(width: 6.0),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withAlpha(25),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'Người bán',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+              const Spacer(),
+              Text(
+                _formatDate(reply.createdAt),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 10,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            reply.body,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              color: theme.colorScheme.onSurface,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewAttachment(Resource attachment) {
+    final url = attachment.url;
+    if (url == null || url.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.only(right: 8.0),
+        child: SizedBox(
+          width: 60.0,
+          height: 60.0,
+          child: Center(child: Icon(Icons.image_outlined)),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: GestureDetector(
+        onTap: () => showDialog(
+          context: context,
+          builder: (context) => Dialog(
+            child: CachedNetworkImage(imageUrl: url, fit: BoxFit.contain),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6.0),
+          child: CachedNetworkImage(
+            imageUrl: url,
+            width: 60.0,
+            height: 60.0,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
   // 7. Sản phẩm vừa xem gần nhất (Recently Viewed)
   Widget _buildRecentlyViewedSection(
-    AsyncValue<List<TProductCard>> recentlyViewedState,
+    AsyncValue<List<RecentListing>> recentlyViewedState,
   ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -1538,9 +1565,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     return Container(
                       width: 150.0,
                       margin: const EdgeInsets.only(right: 12.0),
-                      child: CatalogProductCard(
-                        product: product,
-                        aspectRatio: 1.0,
+                      child: SharedProductCard(
+                        product: ProductCardView(
+                          name: product.name,
+                          price: product.price,
+                          coverUrl: product.coverUrl,
+                          sellerName: product.sellerName,
+                          rating: product.rating,
+                          negotiable: product.negotiable,
+                        ),
                         onTap: () {
                           context.push('/home/product/${product.id}');
                         },
@@ -1559,7 +1592,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   // 8. Sticky Bottom Bar đặt hàng dưới cùng
-  Widget _buildStickyBottomBar(TProductDetail detail, int totalStock) {
+  Widget _buildStickyBottomBar(ListingDetail detail, int totalStock) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final bool isOutOfStock = totalStock <= 0;
@@ -1621,7 +1654,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               onPressed: isOutOfStock
                   ? null
                   : () async {
-                      if (_selectedSku == null) {
+                      if (_selectedVariant == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
@@ -1643,7 +1676,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
                         await ref
                             .read(cartProvider.notifier)
-                            .addItem(_selectedSku!.id, _quantity);
+                            .addItem(_selectedVariant!.id, _quantity);
 
                         if (!mounted) return;
 
@@ -1774,10 +1807,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         // A negotiable listing is buyable at its asking price and
                         // negotiable — the buyer says which, nothing is refused
                         // here.
-                        if (detail.effectiveIsNegotiable) {
+                        if (detail.priceMode == PriceMode.negotiable) {
                           showBuyOrNegotiateSheet(
                             context,
-                            askingPrice: _selectedSku?.price ?? detail.price,
+                            askingPrice:
+                                _selectedVariant?.price ??
+                                featuredPrice(detail),
                             onBuyNow: () => _startBuyNowCheckout(detail),
                             onNegotiate: () => _startNegotiation(detail),
                           );
@@ -1797,7 +1832,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 child: Text(
                   isOutOfStock
                       ? 'HẾT HÀNG'
-                      : (detail.effectiveIsNegotiable
+                      : (detail.priceMode == PriceMode.negotiable
                             ? 'MUA HÀNG'
                             : 'MUA NGAY'),
                   style: const TextStyle(
@@ -1837,8 +1872,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   /// The ordinary draft checkout: the same path a fixed-price listing takes, and
   /// what "Mua ngay" on a negotiable one opens too.
-  void _startBuyNowCheckout(TProductDetail detail) {
-    if (_selectedSku == null) {
+  void _startBuyNowCheckout(ListingDetail detail) {
+    final variant = _selectedVariant;
+    if (variant == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Vui lòng chọn phân loại sản phẩm trước!'),
@@ -1848,36 +1884,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       return;
     }
 
-    // Tạo CartItem giả lập từ chi tiết SKU và SPU hiện tại
-    final buyNowCartItem = CartItem(
-      id: 'buynow_${_selectedSku!.id}',
-      listingId: detail.id,
-      variantId: _selectedSku!.id,
-      spuId: detail.id,
-      sku: CartSku(
-        id: _selectedSku!.id,
-        spuId: detail.id,
-        name: detail.name,
-        price: _selectedSku!.price,
-        stock: _selectedSku!.stock,
-        attributes: _selectedSku!.attributes,
-      ),
-      quantity: _quantity,
-      currency: 'USD',
-      resource: _selectedSku!.images?.firstOrNull ?? detail.images?.firstOrNull,
-    );
-
+    // Không có dòng giỏ hàng nào: mua ngay đi thẳng từ trang tin đăng, và tin
+    // đăng đã ở trong tay nên bước thanh toán không phải tải lại.
     ref
         .read(checkoutProvider.notifier)
         .initialize(
-          items: [
-            CheckoutItem(
-              skuId: _selectedSku!.id,
+          lines: [
+            PurchaseLine(
+              listingId: detail.id,
+              variantId: variant.id,
               quantity: _quantity,
-              transportOption: 'Standard',
+              listing: detail,
             ),
           ],
-          resolvedItems: [buyNowCartItem],
           buyNow: true,
         );
 
@@ -1886,7 +1905,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   /// A report is a ticket like any other, so it is the shared sheet rather than a
   /// form of this screen's own. The thread it opens is where staff answer.
-  Future<void> _reportListing(TProductDetail detail) async {
+  Future<void> _reportListing(ListingDetail detail) async {
     final ticket = await RaiseTicketSheet.show(
       context,
       kind: TicketKind.reportListing,
@@ -1900,8 +1919,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   /// Opens a negotiation on the selected variant. It needs one, because an offer
   /// is terms for a variant rather than for the listing.
-  void _startNegotiation(TProductDetail detail) {
-    if (_selectedSku == null) {
+  void _startNegotiation(ListingDetail detail) {
+    if (_selectedVariant == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Vui lòng chọn phân loại sản phẩm trước!'),
@@ -1914,7 +1933,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     showSendOfferSheet(
       context,
       detail: detail,
-      variant: _selectedSku!,
+      variant: _selectedVariant!,
       quantity: _quantity,
     );
   }
@@ -1922,7 +1941,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   void _showShareModal(
     BuildContext context,
     WidgetRef ref,
-    TProductDetail detail,
+    ListingDetail detail,
   ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -1982,7 +2001,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
                 child: Row(
                   children: [
-                    if (detail.images?.firstOrNull?.url case final coverUrl?
+                    if (detail.images.firstOrNull?.url case final coverUrl?
                         when coverUrl.isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -2011,7 +2030,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            MoneyUtils.format(detail.price),
+                            MoneyUtils.format(featuredPrice(detail)),
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 13,
@@ -2110,10 +2129,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
+  /// Khoảng giá của cả tin đăng khi người mua chưa chọn biến thể nào.
+  String _priceRangeText(ListingDetail detail) {
+    if (detail.variants.isEmpty) return MoneyUtils.format(0);
+    final prices = detail.variants.map((v) => v.price);
+    final minPrice = prices.reduce((a, b) => a < b ? a : b);
+    final maxPrice = prices.reduce((a, b) => a > b ? a : b);
+    return minPrice == maxPrice
+        ? MoneyUtils.format(minPrice)
+        : '${MoneyUtils.format(minPrice)} - ${MoneyUtils.format(maxPrice)}';
+  }
+
+  String _formatDate(DateTime at) =>
+      '${at.day.toString().padLeft(2, '0')}/${at.month.toString().padLeft(2, '0')}/${at.year}';
+
   void _showShareToChatModal(
     BuildContext context,
     WidgetRef ref,
-    TProductDetail detail,
+    ListingDetail detail,
   ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;

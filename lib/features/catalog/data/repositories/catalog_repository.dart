@@ -1,30 +1,55 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/data_sources/catalog_api_service.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 part 'catalog_repository.g.dart';
 
+/// One page of reviews plus the cursor that follows it. The listing feed is
+/// page-paginated and reviews are cursor-paginated, so the two cannot share a
+/// page type.
+class ReviewsPage {
+  const ReviewsPage({required this.reviews, this.nextCursor});
+
+  final List<Review> reviews;
+  final String? nextCursor;
+
+  bool get hasMore => nextCursor != null && nextCursor!.isNotEmpty;
+}
+
 class CatalogRepository {
-  final CatalogApiService _apiService;
+  const CatalogRepository(this._api, this._trustApi, this._hiveService);
+
+  final CatalogApi _api;
+
+  /// Product reviews live in `trust`, not in catalog: the average they feed into
+  /// a listing's `rating` is pushed across, because the two are separate schemas.
+  final TrustApi _trustApi;
+
   final HiveService _hiveService;
 
-  CatalogRepository(this._apiService, this._hiveService);
-
-  /// `province_code`/`district_code`/`ward_code` filter on the listing's own
-  /// snapshot of the seller's pickup address; `nearContactId` (or `lat`+`lon`)
-  /// is where the buyer is measuring from, which is what makes every card carry
+  /// `province_code`/`ward_code` filter on the listing's own snapshot of the
+  /// seller's pickup address; `nearContactId` (or `lat`+`lon`) is where the buyer
+  /// is measuring from, which is what makes every card carry
   /// `location.distance_km`.
-  Future<List<TProductCard>> getProductCards({
+  Future<List<Listing>> listings({
     String? keyword,
     String? mode,
     bool? mine,
     bool? favorited,
-    String? status,
+    ListingStatus? status,
     String? categoryId,
     String? vendorId,
     String? tag,
-    String? condition,
+    ListingCondition? condition,
     int? priceMin,
     int? priceMax,
     String? provinceCode,
@@ -56,7 +81,7 @@ class CatalogRepository {
       effectiveSort = null;
     }
 
-    final response = await _apiService.getProductCards(
+    final response = await _api.listingsGet(
       q: hasQuery ? keyword.trim() : null,
       mode: hasQuery ? mode : null,
       mine: isMine ? true : null,
@@ -81,74 +106,69 @@ class CatalogRepository {
       page: page,
       limit: size,
     );
-    return response.data;
+    return response.data?.data ?? const [];
   }
 
-  Future<TProductCard> getProductCardDetail(String id) async {
-    final response = await _apiService.getProductCardDetail(id);
-    return response.data;
-  }
-
-  /// Lấy chi tiết sản phẩm và tự động lưu vào danh sách sản phẩm vừa xem (recentBox)
-  ///
-  /// A listing has one route, `GET /listings/{id}`: the id goes in the path. It
-  /// used to be sent as a query on the unsubstituted template, so every request
-  /// asked for the literal `listings/{id}`.
-  Future<TProductDetail> getProductDetail({String? id, String? slug}) async {
-    final response = await _apiService.getListingDetail(id ?? slug ?? '');
-    final productDetail = response.data;
-
-    // Chuyển đổi thông tin SPU Detail sang dạng SPU Card để lưu cache
-    final productCard = TProductCard(
-      id: productDetail.id,
-      name: productDetail.name,
-      slug: productDetail.slug,
-      thumbnail: productDetail.images?.firstOrNull?.url,
-      price: productDetail.price,
-      originalPrice: productDetail.originalPrice,
-      rating: productDetail.rating,
-      reviewCount: productDetail.reviewCount,
-      sold: productDetail.sold,
-      vendorId: productDetail.effectiveVendorId,
-      vendorName: productDetail.effectiveVendorName,
-      isNegotiable: productDetail.effectiveIsNegotiable,
-    );
-
-    // Lưu sản phẩm vào Hive recentBox
-    await addToRecentlyViewed(productCard);
-
-    return productDetail;
-  }
-
-  Future<List<Category>> getCategories() async {
-    final response = await _apiService.getCategories();
-    return response.data;
-  }
-
-  Future<List<ProductComment>> getComments({
-    String? spuId,
+  /// Bridges the two call sites in `lib/features/seller` that still read the
+  /// hand-written card. Delete it with them.
+  Future<List<TProductCard>> getProductCards({
+    String? keyword,
+    String? categoryId,
+    String? vendorId,
     int? page,
     int? size,
   }) async {
-    if (spuId != null && spuId.isNotEmpty) {
-      final response = await _apiService.getListingReviews(
-        spuId,
-        page: page,
-        size: size,
-      );
-      return response.data;
-    }
-    final response = await _apiService.getComments(
-      refType: 'listing',
-      refId: spuId ?? '',
+    final items = await listings(
+      keyword: keyword,
+      categoryId: categoryId,
+      vendorId: vendorId,
       page: page,
       size: size,
     );
-    return response.data;
+    return items.map(_asProductCard).toList();
   }
 
-  /// Thêm sản phẩm vào danh sách vừa xem (tối đa 10 sản phẩm, đẩy lên đầu, xóa trùng lặp)
-  Future<void> addToRecentlyViewed(TProductCard product) async {
+  /// Also records the listing in the "vừa xem" carousel. A failure to cache is
+  /// swallowed: a broken Hive box must not take the product page down with it.
+  Future<ListingDetail> listingDetail(String id) async {
+    final response = await _api.listingsIdGet(id: id);
+    final detail = response.data?.data;
+    if (detail == null) throw StateError('empty listing detail response');
+
+    await _addToRecentlyViewed(RecentListing.fromDetail(detail));
+    return detail;
+  }
+
+  Future<List<Category>> categories() async {
+    final response = await _api.categoriesGet();
+    return response.data?.data ?? const [];
+  }
+
+  /// `rating` narrows to one star bucket; `sort` is the contract's own
+  /// (`newest`|`helpful`|`rating-desc`|`rating-asc`), and null means `newest`.
+  Future<ReviewsPage> reviews(
+    String listingId, {
+    int? rating,
+    String? sort,
+    String? cursor,
+    int? limit,
+  }) async {
+    final response = await _trustApi.listingsListingIDReviewsGet(
+      listingID: listingId,
+      rating: rating,
+      sort: sort,
+      cursor: cursor,
+      limit: limit,
+    );
+    final page = response.data;
+    return ReviewsPage(
+      reviews: page?.data ?? const [],
+      nextCursor: page?.meta.nextCursor,
+    );
+  }
+
+  /// Newest first, most recent at the front, ten at most, no duplicates.
+  Future<void> _addToRecentlyViewed(RecentListing listing) async {
     try {
       final box = _hiveService.recentBox;
       final rawList = box.get('recently_viewed') as List?;
@@ -158,32 +178,24 @@ class CatalogRepository {
             )
           : <Map<String, dynamic>>[];
 
-      // Xóa sản phẩm nếu đã tồn tại để tránh trùng lặp và cập nhật vị trí mới nhất
-      list.removeWhere((item) => item['id'] == product.id);
-
-      // Đưa sản phẩm mới lên đầu danh sách
-      list.insert(0, product.toJson());
-
-      // Giới hạn danh sách tối đa 10 sản phẩm
-      if (list.length > 10) {
-        list.removeRange(10, list.length);
-      }
+      list.removeWhere((item) => item['id'] == listing.id);
+      list.insert(0, listing.toJson());
+      if (list.length > 10) list.removeRange(10, list.length);
 
       await box.put('recently_viewed', list);
     } catch (e) {
-      // Không ném ngoại lệ để tránh làm crash UI khi truy cập chi tiết sản phẩm nếu Hive bị lỗi
+      // Ignored on purpose — see the doc on listingDetail.
     }
   }
 
-  /// Lấy danh sách sản phẩm xem gần đây từ Hive
-  Future<List<TProductCard>> getRecentlyViewed() async {
+  Future<List<RecentListing>> recentlyViewed() async {
     try {
       final box = _hiveService.recentBox;
       final rawList = box.get('recently_viewed') as List?;
       if (rawList == null) return [];
       return rawList
           .map(
-            (e) => TProductCard.fromJson(Map<String, dynamic>.from(e as Map)),
+            (e) => RecentListing.fromJson(Map<String, dynamic>.from(e as Map)),
           )
           .toList();
     } catch (e) {
@@ -192,9 +204,40 @@ class CatalogRepository {
   }
 }
 
+TProductCard _asProductCard(Listing listing) => TProductCard(
+  id: listing.id,
+  name: listing.name,
+  slug: listing.slug,
+  price: listing.price,
+  priceMode: listing.priceMode.value,
+  currency: listing.currency,
+  categoryId: listing.categoryId,
+  condition: listing.condition.value,
+  cover: listing.cover,
+  thumbnail: listing.cover?.url,
+  rating: listing.rating,
+  reviewCount: listing.reviewCount,
+  sold: listing.sold,
+  status: listing.status.value,
+  favorited: listing.favorited,
+  seller: ListingSeller(
+    id: listing.seller.id,
+    name: listing.seller.name,
+    avatar: listing.seller.avatar,
+  ),
+  vendorId: listing.seller.id,
+  vendorName: listing.seller.name,
+  location: listing.location,
+  createdAt: listing.createdAt.toIso8601String(),
+  deletedAt: listing.deletedAt?.toIso8601String(),
+  score: listing.score,
+);
+
 @riverpod
 CatalogRepository catalogRepository(Ref ref) {
-  final apiService = ref.watch(catalogApiServiceProvider);
-  final hiveService = ref.watch(hiveServiceProvider);
-  return CatalogRepository(apiService, hiveService);
+  return CatalogRepository(
+    ref.watch(catalogApiProvider),
+    ref.watch(trustApiProvider),
+    ref.watch(hiveServiceProvider),
+  );
 }
