@@ -12,38 +12,40 @@ part 'catalog_api_service.g.dart';
 abstract class CatalogApiService {
   factory CatalogApiService(Dio dio, {String baseUrl}) = _CatalogApiService;
 
+  /// Parameter names are the contract's own (`GET /listings`); the query is
+  /// narrowed by whatever is non-null.
   @GET(ApiEndpoints.listings)
   Future<DataResponse<List<TProductCard>>> getProductCards({
-    @Query('query') String? keyword,
-    @Query('search') String? search,
+    @Query('q') String? q,
+    @Query('mode') String? mode,
+    @Query('mine') bool? mine,
+    @Query('favorited') bool? favorited,
+    @Query('status') String? status,
     @Query('category_id') String? categoryId,
-    @Query('vendor_id') String? vendorId,
+    @Query('tag') String? tag,
     @Query('seller_id') String? sellerId,
-    @Query('price_min') int? priceMin,
-    @Query('price_max') int? priceMax,
-    @Query('tags') List<String>? tags,
+    @Query('condition') String? condition,
+    @Query('min_price') int? minPrice,
+    @Query('max_price') int? maxPrice,
+    @Query('province_code') String? provinceCode,
+    @Query('district_code') String? districtCode,
+    @Query('ward_code') String? wardCode,
+    @Query('lat') double? lat,
+    @Query('lon') double? lon,
+    @Query('near_contact_id') String? nearContactId,
+    @Query('radius_km') double? radiusKm,
     @Query('sort') String? sort,
-    @Query('location') String? location,
     @Query('page') int? page,
-    @Query('size') int? size,
     @Query('limit') int? limit,
   });
 
   @GET(ApiEndpoints.listingDetailTemplate)
-  Future<DataResponse<TProductDetail>> getListingDetail(
-    @Path('id') String id,
-  );
+  Future<DataResponse<TProductDetail>> getListingDetail(@Path('id') String id);
 
   @GET(ApiEndpoints.listingDetailTemplate)
   Future<DataResponse<TProductCard>> getProductCardDetail(
     @Path('id') String id,
   );
-
-  @GET(ApiEndpoints.listingDetailTemplate)
-  Future<DataResponse<TProductDetail>> getProductDetail({
-    @Query('id') String? id,
-    @Query('slug') String? slug,
-  });
 
   @GET(ApiEndpoints.categories)
   Future<DataResponse<List<Category>>> getCategories();

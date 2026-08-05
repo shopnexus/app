@@ -9,17 +9,40 @@ part 'catalog_provider.g.dart';
 
 @freezed
 abstract class CatalogSearchFilters with _$CatalogSearchFilters {
+  const CatalogSearchFilters._();
+
   const factory CatalogSearchFilters({
     String? keyword,
     String? categoryId,
     int? priceMin,
     int? priceMax,
-    List<String>? tags,
+    String? tag,
     String? sort,
-    String? location,
+
+    // Where to look: the listing's own snapshot of the seller's pickup address.
+    // Send the narrowest level meant — a ward is already inside its province.
+    String? provinceCode,
+    String? districtCode,
+    String? wardCode,
+    // Codes carry no name, so the chip needs the label the user picked.
+    String? areaLabel,
+
+    // Where the buyer is. A saved contact is the usual answer; lat/lon is
+    // supported all the way down to the request but no screen sets it, since
+    // the app has no geolocation plugin.
+    String? nearContactId,
+    String? nearLabel,
+    double? lat,
+    double? lon,
+    double? radiusKm,
     @Default(1) int page,
     @Default(20) int size,
   }) = _CatalogSearchFilters;
+
+  bool get hasPosition => nearContactId != null || (lat != null && lon != null);
+
+  bool get hasArea =>
+      provinceCode != null || districtCode != null || wardCode != null;
 }
 
 @freezed
@@ -39,22 +62,35 @@ Future<List<Category>> categories(Ref ref) {
 
 @riverpod
 class CatalogProducts extends _$CatalogProducts {
+  Future<List<TProductCard>> _fetch(
+    CatalogRepository repo,
+    CatalogSearchFilters filters,
+  ) {
+    return repo.getProductCards(
+      keyword: filters.keyword,
+      categoryId: filters.categoryId,
+      priceMin: filters.priceMin,
+      priceMax: filters.priceMax,
+      tag: filters.tag,
+      sort: filters.sort,
+      provinceCode: filters.provinceCode,
+      districtCode: filters.districtCode,
+      wardCode: filters.wardCode,
+      nearContactId: filters.nearContactId,
+      lat: filters.lat,
+      lon: filters.lon,
+      radiusKm: filters.radiusKm,
+      page: filters.page,
+      size: filters.size,
+    );
+  }
+
   @override
   FutureOr<CatalogProductsState> build(
     CatalogSearchFilters initialFilters,
   ) async {
     final repo = ref.watch(catalogRepositoryProvider);
-    final products = await repo.getProductCards(
-      keyword: initialFilters.keyword,
-      categoryId: initialFilters.categoryId,
-      priceMin: initialFilters.priceMin,
-      priceMax: initialFilters.priceMax,
-      tags: initialFilters.tags,
-      sort: initialFilters.sort,
-      location: initialFilters.location,
-      page: initialFilters.page,
-      size: initialFilters.size,
-    );
+    final products = await _fetch(repo, initialFilters);
     return CatalogProductsState(
       products: products,
       hasMore: products.length >= initialFilters.size,
@@ -74,23 +110,13 @@ class CatalogProducts extends _$CatalogProducts {
 
     state = AsyncValue.data(currentState.copyWith(isLoadingMore: true));
 
-    final repo = ref.watch(catalogRepositoryProvider);
+    final repo = ref.read(catalogRepositoryProvider);
     final nextFilters = currentState.filters.copyWith(
       page: currentState.filters.page + 1,
     );
 
     try {
-      final newProducts = await repo.getProductCards(
-        keyword: nextFilters.keyword,
-        categoryId: nextFilters.categoryId,
-        priceMin: nextFilters.priceMin,
-        priceMax: nextFilters.priceMax,
-        tags: nextFilters.tags,
-        sort: nextFilters.sort,
-        location: nextFilters.location,
-        page: nextFilters.page,
-        size: nextFilters.size,
-      );
+      final newProducts = await _fetch(repo, nextFilters);
 
       state = AsyncValue.data(
         currentState.copyWith(
@@ -112,18 +138,8 @@ class CatalogProducts extends _$CatalogProducts {
   Future<void> updateFilters(CatalogSearchFilters newFilters) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final repo = ref.watch(catalogRepositoryProvider);
-      final products = await repo.getProductCards(
-        keyword: newFilters.keyword,
-        categoryId: newFilters.categoryId,
-        priceMin: newFilters.priceMin,
-        priceMax: newFilters.priceMax,
-        tags: newFilters.tags,
-        sort: newFilters.sort,
-        location: newFilters.location,
-        page: newFilters.page,
-        size: newFilters.size,
-      );
+      final repo = ref.read(catalogRepositoryProvider);
+      final products = await _fetch(repo, newFilters);
       return CatalogProductsState(
         products: products,
         hasMore: products.length >= newFilters.size,
@@ -157,8 +173,49 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
     state = state.copyWith(sort: sort, page: 1);
   }
 
-  void setLocation(String? location) {
-    state = state.copyWith(location: location, page: 1);
+  /// The administrative area to look in. Pass the narrowest level meant — a ward
+  /// is already inside its province — and null to clear all three.
+  void setArea({
+    String? provinceCode,
+    String? districtCode,
+    String? wardCode,
+    String? label,
+  }) {
+    state = state.copyWith(
+      provinceCode: provinceCode,
+      districtCode: districtCode,
+      wardCode: wardCode,
+      areaLabel: label,
+      page: 1,
+    );
+  }
+
+  /// Where to measure from. Clearing it also drops a distance sort and the
+  /// radius, which the API refuses without a position.
+  void setNearby({
+    String? contactId,
+    String? label,
+    double? lat,
+    double? lon,
+    double? radiusKm,
+  }) {
+    final hasPosition = contactId != null || (lat != null && lon != null);
+    state = state.copyWith(
+      nearContactId: contactId,
+      nearLabel: label,
+      lat: lat,
+      lon: lon,
+      radiusKm: hasPosition ? radiusKm : null,
+      sort: !hasPosition && state.sort == ListingSort.distance
+          ? null
+          : state.sort,
+      page: 1,
+    );
+  }
+
+  /// Applies a whole draft at once, which is what a filter sheet edits.
+  void apply(CatalogSearchFilters filters) {
+    state = filters.copyWith(page: 1);
   }
 
   void reset() {

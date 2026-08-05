@@ -75,6 +75,9 @@ _TProductCard _$TProductCardFromJson(Map<String, dynamic> json) =>
       seller: json['seller'] == null
           ? null
           : ListingSeller.fromJson(json['seller'] as Map<String, dynamic>),
+      location: json['location'] == null
+          ? null
+          : ListingLocation.fromJson(json['location'] as Map<String, dynamic>),
       createdAt: json['created_at'] as String?,
       deletedAt: json['deleted_at'] as String?,
       score: (json['score'] as num?)?.toDouble(),
@@ -108,6 +111,7 @@ Map<String, dynamic> _$TProductCardToJson(_TProductCard instance) =>
       'status': instance.status,
       'favorited': instance.favorited,
       'seller': instance.seller,
+      'location': instance.location,
       'created_at': instance.createdAt,
       'deleted_at': instance.deletedAt,
       'score': instance.score,
@@ -214,6 +218,9 @@ _TProductDetail _$TProductDetailFromJson(Map<String, dynamic> json) =>
       seller: json['seller'] == null
           ? null
           : ListingSeller.fromJson(json['seller'] as Map<String, dynamic>),
+      location: json['location'] == null
+          ? null
+          : ListingLocation.fromJson(json['location'] as Map<String, dynamic>),
       images: (json['resources'] as List<dynamic>?)
           ?.map((e) => ResourceModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -258,6 +265,7 @@ Map<String, dynamic> _$TProductDetailToJson(_TProductDetail instance) =>
       'sold_count': instance.soldCount,
       'category': instance.category,
       'seller': instance.seller,
+      'location': instance.location,
       'resources': instance.images,
       'specifications': instance.specifications,
       'skus': instance.skus,

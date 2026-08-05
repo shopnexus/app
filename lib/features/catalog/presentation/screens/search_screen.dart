@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../shared/widgets/shared_product_card.dart';
 import '../../data/models/catalog_model.dart';
 import '../providers/catalog_provider.dart';
+import '../widgets/location_filter_section.dart';
+import '../widgets/product_card.dart';
+import '../widgets/sort_options_sheet.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -88,6 +90,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         filters.categoryId != null ||
         filters.priceMin != null ||
         filters.priceMax != null ||
+        filters.hasArea ||
+        filters.hasPosition ||
         filters.sort != null;
   }
 
@@ -455,7 +459,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                 : 1.0;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12.0),
-                              child: SharedProductCard(
+                              child: CatalogProductCard(
                                 product: product,
                                 aspectRatio: aspect,
                                 onTap: () =>
@@ -571,7 +575,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                     padding: const EdgeInsets.only(
                                       bottom: 12.0,
                                     ),
-                                    child: SharedProductCard(
+                                    child: CatalogProductCard(
                                       product: product,
                                       aspectRatio: aspect,
                                       onTap: () => context.push(
@@ -648,10 +652,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    String sortText = 'Mới nhất';
-    if (activeFilters.sort == 'price_asc') sortText = 'Giá: Thấp đến Cao';
-    if (activeFilters.sort == 'price_desc') sortText = 'Giá: Cao đến Thấp';
-    if (activeFilters.sort == 'sold_count_desc') sortText = 'Bán chạy nhất';
+    final sortText = sortLabel(activeFilters.sort);
 
     final chipBgColor = isDarkMode
         ? AppColors.darkSurface
@@ -684,7 +685,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   activeFilters.priceMin != null ||
                   activeFilters.priceMax != null ||
                   activeFilters.categoryId != null ||
-                  activeFilters.location != null,
+                  activeFilters.hasArea ||
+                  activeFilters.hasPosition,
               selectedColor: theme.colorScheme.primary.withAlpha(40),
               onSelected: (_) => _showFilterBottomSheet(
                 context,
@@ -692,7 +694,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 categoriesState,
               ),
             ),
-            if (activeFilters.location != null) ...[
+            if (activeFilters.hasArea) ...[
               const SizedBox(width: 8.0),
               Chip(
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -703,13 +705,32 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   color: theme.colorScheme.primary,
                 ),
                 label: Text(
-                  activeFilters.location!,
+                  activeFilters.areaLabel ?? 'Khu vực đã chọn',
                   style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
                 ),
                 onDeleted: () {
-                  ref
-                      .read(activeSearchFiltersProvider.notifier)
-                      .setLocation(null);
+                  ref.read(activeSearchFiltersProvider.notifier).setArea();
+                },
+              ),
+            ],
+            if (activeFilters.hasPosition) ...[
+              const SizedBox(width: 8.0),
+              Chip(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                avatar: Icon(
+                  Icons.near_me_rounded,
+                  size: 14,
+                  color: theme.colorScheme.primary,
+                ),
+                label: Text(
+                  activeFilters.radiusKm != null
+                      ? 'Quanh ${activeFilters.nearLabel ?? "vị trí của tôi"} • ${activeFilters.radiusKm!.round()} km'
+                      : 'Quanh ${activeFilters.nearLabel ?? "vị trí của tôi"}',
+                  style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
+                ),
+                onDeleted: () {
+                  ref.read(activeSearchFiltersProvider.notifier).setNearby();
                 },
               ),
             ],
@@ -729,7 +750,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 fontWeight: FontWeight.w600,
               ),
               backgroundColor: chipBgColor,
-              onPressed: () => _showSortOptions(context, activeFilters),
+              onPressed: () => showSortOptionsSheet(
+                context,
+                filters: activeFilters,
+                onSelected: (sort) => ref
+                    .read(activeSearchFiltersProvider.notifier)
+                    .setSort(sort),
+              ),
             ),
             if (activeFilters.categoryId != null) ...[
               const SizedBox(width: 8.0),
@@ -768,92 +795,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  void _showSortOptions(
-    BuildContext context,
-    CatalogSearchFilters activeFilters,
-  ) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Sắp xếp theo',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-              ),
-              Divider(color: theme.colorScheme.outlineVariant),
-              _buildSortTile(context, 'Mới nhất', null, activeFilters.sort),
-              _buildSortTile(
-                context,
-                'Bán chạy nhất',
-                'sold_count_desc',
-                activeFilters.sort,
-              ),
-              _buildSortTile(
-                context,
-                'Giá: Thấp đến Cao',
-                'price_asc',
-                activeFilters.sort,
-              ),
-              _buildSortTile(
-                context,
-                'Giá: Cao đến Thấp',
-                'price_desc',
-                activeFilters.sort,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSortTile(
-    BuildContext context,
-    String label,
-    String? value,
-    String? currentValue,
-  ) {
-    final theme = Theme.of(context);
-    final isSelected = value == currentValue;
-    return ListTile(
-      title: Text(
-        label,
-        style: TextStyle(
-          fontFamily: 'Inter',
-          color: isSelected
-              ? theme.colorScheme.primary
-              : theme.colorScheme.onSurface,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-      trailing: isSelected
-          ? Icon(Icons.check_rounded, color: theme.colorScheme.primary)
-          : null,
-      onTap: () {
-        ref.read(activeSearchFiltersProvider.notifier).setSort(value);
-        context.pop();
-      },
-    );
-  }
-
   void _showFilterBottomSheet(
     BuildContext context,
     CatalogSearchFilters activeFilters,
@@ -862,7 +803,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     _minPriceController.text = activeFilters.priceMin?.toString() ?? '';
     _maxPriceController.text = activeFilters.priceMax?.toString() ?? '';
     String? localSelectedCategory = activeFilters.categoryId;
-    String? localSelectedLocation = activeFilters.location;
+    // The location half is edited as a draft of the whole filter set, so the
+    // area, the position and the distance sort stay consistent with each other.
+    CatalogSearchFilters draft = activeFilters;
 
     final parentTheme = Theme.of(context);
     final isParentDark = parentTheme.brightness == Brightness.dark;
@@ -909,7 +852,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                 _minPriceController.clear();
                                 _maxPriceController.clear();
                                 localSelectedCategory = null;
-                                localSelectedLocation = null;
+                                draft = const CatalogSearchFilters().copyWith(
+                                  keyword: draft.keyword,
+                                );
                               });
                             },
                             child: Text(
@@ -925,60 +870,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         ],
                       ),
                       const SizedBox(height: 16.0),
-                      Text(
-                        'Khu vực / Địa điểm',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 8.0),
-                      SizedBox(
-                        height: 40.0,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children:
-                              [
-                                'Hà Nội',
-                                'TP. Hồ Chí Minh',
-                                'Đà Nẵng',
-                                'San Francisco',
-                                'New York',
-                              ].map((loc) {
-                                final isSelected = localSelectedLocation == loc;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: ChoiceChip(
-                                    label: Text(loc),
-                                    selected: isSelected,
-                                    labelStyle: TextStyle(
-                                      fontFamily: 'Inter',
-                                      color: isSelected
-                                          ? theme.colorScheme.onPrimary
-                                          : theme.colorScheme.onSurface,
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                    selectedColor: theme.colorScheme.primary,
-                                    backgroundColor: isDarkMode
-                                        ? theme
-                                              .colorScheme
-                                              .surfaceContainerHighest
-                                        : const Color(0xFFEEEEEB),
-                                    onSelected: (selected) {
-                                      setModalState(() {
-                                        localSelectedLocation = selected
-                                            ? loc
-                                            : null;
-                                      });
-                                    },
-                                  ),
-                                );
-                              }).toList(),
-                        ),
+                      LocationFilterSection(
+                        filters: draft,
+                        onChanged: (updated) =>
+                            setModalState(() => draft = updated),
                       ),
                       const SizedBox(height: 20.0),
                       Text(
@@ -1138,13 +1033,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
                             ref
                                 .read(activeSearchFiltersProvider.notifier)
-                                .setCategory(localSelectedCategory);
-                            ref
-                                .read(activeSearchFiltersProvider.notifier)
-                                .setLocation(localSelectedLocation);
-                            ref
-                                .read(activeSearchFiltersProvider.notifier)
-                                .setPriceRange(minVal, maxVal);
+                                .apply(
+                                  draft.copyWith(
+                                    categoryId: localSelectedCategory,
+                                    priceMin: minVal,
+                                    priceMax: maxVal,
+                                  ),
+                                );
                             context.pop();
                           },
                           style: ElevatedButton.styleFrom(

@@ -1,9 +1,23 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../../api/generated/model/listing_location.dart';
 import '../../../../shared/models/rating_model.dart';
 import '../../../../shared/models/resource_model.dart';
 
 part 'catalog_model.freezed.dart';
 part 'catalog_model.g.dart';
+
+/// The `sort` values `GET /listings` accepts. `newest` is also what a null sort
+/// means, so the UI keeps sending null for the default.
+abstract final class ListingSort {
+  static const newest = 'newest';
+  static const rating = 'rating';
+  static const priceAsc = 'price-asc';
+  static const priceDesc = 'price-desc';
+  static const bestSelling = 'best-selling';
+  static const relevance = 'relevance';
+  static const recommended = 'recommended';
+  static const distance = 'distance';
+}
 
 @freezed
 abstract class Category with _$Category {
@@ -76,6 +90,7 @@ abstract class TProductCard with _$TProductCard {
     String? status,
     @Default(false) bool favorited,
     ListingSeller? seller,
+    ListingLocation? location,
     @JsonKey(name: 'created_at') String? createdAt,
     @JsonKey(name: 'deleted_at') String? deletedAt,
     double? score,
@@ -131,8 +146,11 @@ abstract class TProductCard with _$TProductCard {
   String? get effectiveThumbnail => thumbnail ?? cover?.url;
   String? get effectiveVendorId => vendorId ?? seller?.id;
   String? get effectiveVendorName => vendorName ?? seller?.name;
-  bool get effectiveIsNegotiable =>
-      isNegotiable || priceMode == 'negotiable';
+  bool get effectiveIsNegotiable => isNegotiable || priceMode == 'negotiable';
+
+  /// Only set when the browse sent a position, so its absence is "not asked",
+  /// not "far away".
+  double? get distanceKm => location?.distanceKm;
   RatingModel get effectiveRating =>
       ratingModel ?? RatingModel(score: rating, count: reviewCount);
   int get effectiveSoldCount => soldCount ?? sold;
@@ -233,6 +251,7 @@ abstract class TProductDetail with _$TProductDetail {
     @JsonKey(name: 'sold_count') int? soldCount,
     Category? category,
     ListingSeller? seller,
+    ListingLocation? location,
     @JsonKey(name: 'resources') List<ResourceModel>? images,
     List<ProductSpecification>? specifications,
     List<ProductSku>? skus,
@@ -294,8 +313,7 @@ abstract class TProductDetail with _$TProductDetail {
   String? get effectiveVendorName => vendorName ?? seller?.name;
   String? get effectiveVendorAvatar => vendorAvatar ?? seller?.avatar?.url;
   String? get effectiveCategoryId => categoryId ?? category?.id;
-  bool get effectiveIsNegotiable =>
-      isNegotiable || priceMode == 'negotiable';
+  bool get effectiveIsNegotiable => isNegotiable || priceMode == 'negotiable';
   List<ProductSku> get effectiveSkus => skus ?? variants ?? const [];
   int get effectiveSoldCount => soldCount ?? sold;
 }
@@ -453,9 +471,7 @@ abstract class SubmitReviewRequest with _$SubmitReviewRequest {
 
 @freezed
 abstract class VoteReviewRequest with _$VoteReviewRequest {
-  const factory VoteReviewRequest({
-    required int vote,
-  }) = _VoteReviewRequest;
+  const factory VoteReviewRequest({required int vote}) = _VoteReviewRequest;
 
   factory VoteReviewRequest.fromJson(Map<String, dynamic> json) =>
       _$VoteReviewRequestFromJson(json);

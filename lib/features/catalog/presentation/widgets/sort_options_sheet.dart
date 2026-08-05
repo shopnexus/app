@@ -1,0 +1,117 @@
+import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../data/models/catalog_model.dart';
+import '../providers/catalog_provider.dart';
+
+/// A null sort is the API's default, which is `newest` (or `relevance` once
+/// there is a query).
+String sortLabel(String? sort) {
+  switch (sort) {
+    case ListingSort.relevance:
+      return 'Liên quan nhất';
+    case ListingSort.bestSelling:
+      return 'Bán chạy nhất';
+    case ListingSort.priceAsc:
+      return 'Giá: Thấp đến Cao';
+    case ListingSort.priceDesc:
+      return 'Giá: Cao đến Thấp';
+    case ListingSort.rating:
+      return 'Đánh giá cao';
+    case ListingSort.distance:
+      return 'Gần tôi nhất';
+    default:
+      return 'Mới nhất';
+  }
+}
+
+/// The sort choices this browse can legally send: `relevance` needs a query and
+/// `distance` needs a position, so an unreachable option is not offered rather
+/// than offered and refused.
+void showSortOptionsSheet(
+  BuildContext context, {
+  required CatalogSearchFilters filters,
+  required ValueChanged<String?> onSelected,
+}) {
+  final theme = Theme.of(context);
+  final isDarkMode = theme.brightness == Brightness.dark;
+  final hasQuery =
+      filters.keyword != null && filters.keyword!.trim().isNotEmpty;
+
+  final options = <String?>[
+    null,
+    if (hasQuery) ListingSort.relevance,
+    ListingSort.bestSelling,
+    ListingSort.priceAsc,
+    ListingSort.priceDesc,
+    ListingSort.rating,
+    if (filters.hasPosition) ListingSort.distance,
+  ];
+
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+    ),
+    builder: (sheetContext) {
+      final sheetTheme = Theme.of(sheetContext);
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Sắp xếp theo',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: sheetTheme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            Divider(color: sheetTheme.colorScheme.outlineVariant),
+            for (final option in options)
+              ListTile(
+                title: Text(
+                  sortLabel(option),
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    color: option == filters.sort
+                        ? sheetTheme.colorScheme.primary
+                        : sheetTheme.colorScheme.onSurface,
+                    fontWeight: option == filters.sort
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+                trailing: option == filters.sort
+                    ? Icon(
+                        Icons.check_rounded,
+                        color: sheetTheme.colorScheme.primary,
+                      )
+                    : null,
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  onSelected(option);
+                },
+              ),
+            if (!filters.hasPosition)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 16.0),
+                child: Text(
+                  'Chọn một địa chỉ đã lưu trong bộ lọc để sắp xếp theo khoảng cách.',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: sheetTheme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    },
+  );
+}

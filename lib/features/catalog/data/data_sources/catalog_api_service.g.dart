@@ -23,34 +23,50 @@ class _CatalogApiService implements CatalogApiService {
 
   @override
   Future<DataResponse<List<TProductCard>>> getProductCards({
-    String? keyword,
-    String? search,
+    String? q,
+    String? mode,
+    bool? mine,
+    bool? favorited,
+    String? status,
     String? categoryId,
-    String? vendorId,
+    String? tag,
     String? sellerId,
-    int? priceMin,
-    int? priceMax,
-    List<String>? tags,
+    String? condition,
+    int? minPrice,
+    int? maxPrice,
+    String? provinceCode,
+    String? districtCode,
+    String? wardCode,
+    double? lat,
+    double? lon,
+    String? nearContactId,
+    double? radiusKm,
     String? sort,
-    String? location,
     int? page,
-    int? size,
     int? limit,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'query': keyword,
-      r'search': search,
+      r'q': q,
+      r'mode': mode,
+      r'mine': mine,
+      r'favorited': favorited,
+      r'status': status,
       r'category_id': categoryId,
-      r'vendor_id': vendorId,
+      r'tag': tag,
       r'seller_id': sellerId,
-      r'price_min': priceMin,
-      r'price_max': priceMax,
-      r'tags': tags,
+      r'condition': condition,
+      r'min_price': minPrice,
+      r'max_price': maxPrice,
+      r'province_code': provinceCode,
+      r'district_code': districtCode,
+      r'ward_code': wardCode,
+      r'lat': lat,
+      r'lon': lon,
+      r'near_contact_id': nearContactId,
+      r'radius_km': radiusKm,
       r'sort': sort,
-      r'location': location,
       r'page': page,
-      r'size': size,
       r'limit': limit,
     };
     queryParameters.removeWhere((k, v) => v == null);
@@ -138,40 +154,6 @@ class _CatalogApiService implements CatalogApiService {
       _value = DataResponse<TProductCard>.fromJson(
         _result.data!,
         (json) => TProductCard.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DataResponse<TProductDetail>> getProductDetail({
-    String? id,
-    String? slug,
-  }) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'id': id, r'slug': slug};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<TProductDetail>>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'listings/{id}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<TProductDetail> _value;
-    try {
-      _value = DataResponse<TProductDetail>.fromJson(
-        _result.data!,
-        (json) => TProductDetail.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);

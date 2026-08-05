@@ -5,9 +5,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/utils/money_utils.dart';
 import '../../../../shared/models/resource_model.dart';
-import '../../../../shared/widgets/shared_product_card.dart';
+import '../../../../api/generated/model/ticket_kind.dart';
+import '../../../ticket/presentation/widgets/raise_ticket_sheet.dart';
 import '../../data/models/catalog_model.dart';
 import '../providers/catalog_provider.dart';
+import '../widgets/buy_or_negotiate_sheet.dart';
+import '../widgets/product_card.dart';
+import '../widgets/send_offer_sheet.dart';
 import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../../cart/data/models/cart_model.dart';
 import '../../../checkout/presentation/providers/checkout_provider.dart';
@@ -241,6 +245,34 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             ),
                           );
                         },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    CircleAvatar(
+                      backgroundColor: Colors.black.withAlpha(100),
+                      child: PopupMenuButton<String>(
+                        icon: const Icon(
+                          Icons.more_vert_rounded,
+                          color: Colors.white,
+                        ),
+                        onSelected: (value) {
+                          if (value == 'report') _reportListing(detail);
+                        },
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(
+                            value: 'report',
+                            child: Row(
+                              children: [
+                                Icon(Icons.flag_outlined, size: 18),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Báo cáo tin đăng',
+                                  style: TextStyle(fontFamily: 'Inter'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -499,7 +531,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   ),
                 ),
               ],
-              if (detail.isNegotiable) ...[
+              if (detail.effectiveIsNegotiable) ...[
                 const SizedBox(width: 8.0),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -523,7 +555,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Thương lượng giá',
+                        'Có thể thương lượng',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 11,
@@ -537,7 +569,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ],
             ],
           ),
-          if (detail.isNegotiable) ...[
+          if (detail.effectiveIsNegotiable) ...[
             const SizedBox(height: 10.0),
             Container(
               padding: const EdgeInsets.all(12),
@@ -569,30 +601,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Khoảng giá tham khảo: ',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 12,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            Text(
-                              '${MoneyUtils.format(detail.minNegotiablePrice ?? (detail.price * 0.85).round())} - ${MoneyUtils.format(detail.maxNegotiablePrice ?? detail.price)}',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          'Hai cách mua',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Tham khảo khoảng giá trước khi bấm "Thương lượng" để gửi đề xuất cho người bán.',
+                          'Mua ngay ở giá ${MoneyUtils.format(_selectedSku?.price ?? detail.price)}, hoặc gửi đề xuất giá của bạn cho người bán.',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 11,
@@ -1160,7 +1180,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
               // Tính toán phân tích điểm sao
               final double avgScore =
-                  comments.map((c) => c.effectiveScore).reduce((a, b) => a + b) /
+                  comments
+                      .map((c) => c.effectiveScore)
+                      .reduce((a, b) => a + b) /
                   comments.length;
 
               return Column(
@@ -1216,7 +1238,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             children: List.generate(5, (starIdx) {
                               final int starVal = 5 - starIdx;
                               final int count = comments
-                                  .where((c) => c.effectiveScore.round() == starVal)
+                                  .where(
+                                    (c) => c.effectiveScore.round() == starVal,
+                                  )
                                   .length;
                               final double pct = comments.isEmpty
                                   ? 0
@@ -1486,7 +1510,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     return Container(
                       width: 150.0,
                       margin: const EdgeInsets.only(right: 12.0),
-                      child: SharedProductCard(
+                      child: CatalogProductCard(
                         product: product,
                         aspectRatio: 1.0,
                         onTap: () {
@@ -1554,35 +1578,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
           const SizedBox(width: 10.0),
 
-          // Nút Icon Thêm vào giỏ hàng
+          // Nút Icon Thêm vào giỏ hàng — giá niêm yết của tin thương lượng cũng
+          // là giá mua được, nên không còn chặn theo price_mode.
           Container(
             decoration: BoxDecoration(
-              color: detail.isNegotiable
-                  ? iconBgColor.withAlpha(120)
-                  : iconBgColor,
+              color: iconBgColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: IconButton(
               icon: Icon(
                 Icons.add_shopping_cart_rounded,
-                color: detail.isNegotiable
-                    ? theme.colorScheme.onSurfaceVariant.withAlpha(100)
-                    : theme.colorScheme.onSurface,
+                color: theme.colorScheme.onSurface,
               ),
-              onPressed: (isOutOfStock || detail.isNegotiable)
-                  ? () {
-                      if (detail.isNegotiable) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Sản phẩm thương lượng giá không thể thêm trực tiếp vào giỏ hàng.',
-                            ),
-                            backgroundColor: Colors.orange,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    }
+              onPressed: isOutOfStock
+                  ? null
                   : () async {
                       if (_selectedSku == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -1734,59 +1743,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 onPressed: isOutOfStock
                     ? null
                     : () {
-                        if (detail.isNegotiable) {
-                          _showOfferModal(context, ref, detail);
-                          return;
-                        }
-
-                        if (_selectedSku == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Vui lòng chọn phân loại sản phẩm trước!',
-                              ),
-                              backgroundColor: Colors.orange,
-                            ),
+                        // A negotiable listing is buyable at its asking price and
+                        // negotiable — the buyer says which, nothing is refused
+                        // here.
+                        if (detail.effectiveIsNegotiable) {
+                          showBuyOrNegotiateSheet(
+                            context,
+                            askingPrice: _selectedSku?.price ?? detail.price,
+                            onBuyNow: () => _startBuyNowCheckout(detail),
+                            onNegotiate: () => _startNegotiation(detail),
                           );
                           return;
                         }
 
-                        // Tạo CartItem giả lập từ chi tiết SKU và SPU hiện tại
-                        final buyNowCartItem = CartItem(
-                          id: 'buynow_${_selectedSku!.id}',
-                          listingId: detail.id,
-                          variantId: _selectedSku!.id,
-                          spuId: detail.id,
-                          sku: CartSku(
-                            id: _selectedSku!.id,
-                            spuId: detail.id,
-                            name: detail.name,
-                            price: _selectedSku!.price,
-                            stock: _selectedSku!.stock,
-                            attributes: _selectedSku!.attributes,
-                          ),
-                          quantity: _quantity,
-                          currency: 'USD',
-                          resource:
-                              _selectedSku!.images?.firstOrNull ??
-                              detail.images?.firstOrNull,
-                        );
-
-                        ref
-                            .read(checkoutProvider.notifier)
-                            .initialize(
-                              items: [
-                                CheckoutItem(
-                                  skuId: _selectedSku!.id,
-                                  quantity: _quantity,
-                                  transportOption: 'Standard',
-                                ),
-                              ],
-                              resolvedItems: [buyNowCartItem],
-                              buyNow: true,
-                            );
-
-                        context.push('/checkout');
+                        _startBuyNowCheckout(detail);
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
@@ -1799,7 +1769,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 child: Text(
                   isOutOfStock
                       ? 'HẾT HÀNG'
-                      : (detail.isNegotiable ? 'THƯƠNG LƯỢNG' : 'MUA NGAY'),
+                      : (detail.effectiveIsNegotiable
+                            ? 'MUA HÀNG'
+                            : 'MUA NGAY'),
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.bold,
@@ -1814,276 +1786,108 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
-  void _navigateToChatDetail(BuildContext context, WidgetRef ref) async {
+  Future<void> _navigateToChatDetail(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     try {
-      final conversations = await ref
+      final page = await ref
           .read(chatRepositoryProvider)
-          .getConversations();
-      final targetConvId = conversations.isNotEmpty
-          ? conversations.first.id
-          : 'conv_001';
-      if (context.mounted) {
-        context.push('/chat/$targetConvId');
+          .conversations(limit: 1);
+      if (!context.mounted) return;
+      // No thread yet is the inbox, not a fabricated id: chat has one thread per
+      // pair of accounts and it is opened by starting one, never by guessing.
+      if (page.items.isEmpty) {
+        context.push('/chat');
+        return;
       }
-    } catch (e) {
-      if (context.mounted) {
-        context.push('/chat/conv_001');
-      }
+      context.push('/chat/${page.items.first.id}');
+    } catch (_) {
+      if (context.mounted) context.push('/chat');
     }
   }
 
-  void _showOfferModal(
-    BuildContext context,
-    WidgetRef ref,
-    TProductDetail detail,
-  ) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final minPrice = detail.minNegotiablePrice ?? (detail.price * 0.85).round();
-    final maxPrice = detail.maxNegotiablePrice ?? detail.price;
+  /// The ordinary draft checkout: the same path a fixed-price listing takes, and
+  /// what "Mua ngay" on a negotiable one opens too.
+  void _startBuyNowCheckout(TProductDetail detail) {
+    if (_selectedSku == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vui lòng chọn phân loại sản phẩm trước!'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
-    final priceController = TextEditingController(
-      text: detail.price.toString(),
-    );
-    final noteController = TextEditingController(
-      text:
-          'Tôi muốn thương lượng mua sản phẩm này với giá ${MoneyUtils.format(detail.price)}.',
-    );
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    // Tạo CartItem giả lập từ chi tiết SKU và SPU hiện tại
+    final buyNowCartItem = CartItem(
+      id: 'buynow_${_selectedSku!.id}',
+      listingId: detail.id,
+      variantId: _selectedSku!.id,
+      spuId: detail.id,
+      sku: CartSku(
+        id: _selectedSku!.id,
+        spuId: detail.id,
+        name: detail.name,
+        price: _selectedSku!.price,
+        stock: _selectedSku!.stock,
+        attributes: _selectedSku!.attributes,
       ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: 20 + MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.onSurfaceVariant.withAlpha(60),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.handshake_outlined,
-                    color: theme.colorScheme.primary,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Thương lượng giá',
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
+      quantity: _quantity,
+      currency: 'USD',
+      resource: _selectedSku!.images?.firstOrNull ?? detail.images?.firstOrNull,
+    );
 
-              // Khoảng giá tham khảo
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isDarkMode
-                      ? theme.colorScheme.surfaceContainerHighest
-                      : const Color(0xFFF4F4F1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withAlpha(50),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      color: theme.colorScheme.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Khoảng giá tham khảo từ người bán:',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 12,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${MoneyUtils.format(minPrice)} - ${MoneyUtils.format(maxPrice)}',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Nhập giá đề xuất
-              Text(
-                'Mức giá bạn đề xuất',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.attach_money_rounded),
-                  hintText: 'Nhập số tiền...',
-                  filled: true,
-                  fillColor: isDarkMode
-                      ? theme.colorScheme.surfaceContainerHighest
-                      : const Color(0xFFF8FAFC),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Ghi chú
-              Text(
-                'Lời nhắn cho người bán',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: noteController,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  hintText: 'Nhập lời nhắn ngắn...',
-                  filled: true,
-                  fillColor: isDarkMode
-                      ? theme.colorScheme.surfaceContainerHighest
-                      : const Color(0xFFF8FAFC),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Nút Gửi đề xuất
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final offerVal =
-                        int.tryParse(priceController.text) ?? detail.price;
-                    final noteText = noteController.text.trim();
-                    final offerMessage =
-                        'Đề xuất giá thương lượng: ${MoneyUtils.format(offerVal)}. $noteText (Sản phẩm: ${detail.name})';
-
-                    try {
-                      final repo = ref.read(chatRepositoryProvider);
-                      final conversations = await repo.getConversations();
-                      final convId = conversations.isNotEmpty
-                          ? conversations.first.id
-                          : 'conv_001';
-
-                      await repo.sendMessage(
-                        conversationId: convId,
-                        content: offerMessage,
-                        type: MessageType.user,
-                        metadata: ChatMessageMetadata(
-                          productId: detail.id,
-                          productTitle: detail.name,
-                          productImage: detail.images?.firstOrNull?.url,
-                          productPrice: detail.price.toDouble(),
-                          offerPrice: offerVal.toDouble(),
-                          offerOriginalPrice: detail.price.toDouble(),
-                          offerNote: noteText,
-                          offerStatus: OfferStatus.pending,
-                        ),
-                      );
-
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Đã gửi đề xuất thương lượng vào Chat!',
-                            ),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                        context.push('/chat/$convId');
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Lỗi gửi đề xuất: $e')),
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    'GỬI ĐỀ XUẤT THƯƠNG LƯỢNG',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+    ref
+        .read(checkoutProvider.notifier)
+        .initialize(
+          items: [
+            CheckoutItem(
+              skuId: _selectedSku!.id,
+              quantity: _quantity,
+              transportOption: 'Standard',
+            ),
+          ],
+          resolvedItems: [buyNowCartItem],
+          buyNow: true,
         );
-      },
+
+    context.push('/checkout');
+  }
+
+  /// A report is a ticket like any other, so it is the shared sheet rather than a
+  /// form of this screen's own. The thread it opens is where staff answer.
+  Future<void> _reportListing(TProductDetail detail) async {
+    final ticket = await RaiseTicketSheet.show(
+      context,
+      kind: TicketKind.reportListing,
+      refId: detail.id,
+      subjectHint: 'Báo cáo tin đăng',
+      refLabel: detail.name,
+    );
+    if (ticket == null || !mounted) return;
+    context.push('/account/help-center/${ticket.id}');
+  }
+
+  /// Opens a negotiation on the selected variant. It needs one, because an offer
+  /// is terms for a variant rather than for the listing.
+  void _startNegotiation(TProductDetail detail) {
+    if (_selectedSku == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vui lòng chọn phân loại sản phẩm trước!'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    showSendOfferSheet(
+      context,
+      detail: detail,
+      variant: _selectedSku!,
+      quantity: _quantity,
     );
   }
 
@@ -2374,10 +2178,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
                             try {
                               final repo = ref.read(chatRepositoryProvider);
-                              await repo.sendMessage(
+                              await repo.send(
                                 conversationId: conv.id,
-                                content: shareText,
-                                type: MessageType.user,
+                                body: shareText,
+                                refs: {'listing_id': detail.id},
                               );
 
                               if (context.mounted) {
