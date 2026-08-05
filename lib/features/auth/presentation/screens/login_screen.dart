@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/custom_text_field.dart';
-import '../providers/auth_provider.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/custom_button.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/custom_text_field.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -41,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // Lắng nghe AuthState để tự động chuyển hướng sang trang chủ hoặc trang đích
     ref.listen<AuthState>(authProvider, (previous, next) {
       next.maybeWhen(
-        authenticated: (_) {
+        authenticated: (_, _) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Đăng nhập thành công!'),
@@ -202,8 +202,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             onPressed: isLoading
                                 ? null
                                 : () => context.push(
-                                      '/forgot-password?from=${Uri.encodeComponent(from ?? '/home')}&target=${Uri.encodeComponent(target ?? '/home')}',
-                                    ),
+                                    '/forgot-password?from=${Uri.encodeComponent(from ?? '/home')}&target=${Uri.encodeComponent(target ?? '/home')}',
+                                  ),
                             child: Text(
                               'Quên mật khẩu?',
                               style: TextStyle(
@@ -239,8 +239,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onTap: isLoading
                                   ? null
                                   : () => context.push(
-                                        '/register?from=${Uri.encodeComponent(from ?? '/home')}&target=${Uri.encodeComponent(target ?? '/home')}',
-                                      ),
+                                      '/register?from=${Uri.encodeComponent(from ?? '/home')}&target=${Uri.encodeComponent(target ?? '/home')}',
+                                    ),
                               child: Text(
                                 'Đăng ký ngay',
                                 style: TextStyle(

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_list_screen.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
-import '../../data/models/account_model.dart';
-import '../providers/buyer_orders_provider.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
   final int initialTab;
@@ -20,9 +21,11 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  // 'Chờ thanh toán' rather than 'Chờ duyệt': nobody approves a sale, and a line
+  // sits here only while the money has not produced an order yet.
   final List<String> _tabs = const [
     'Tất cả',
-    'Chờ duyệt',
+    'Chờ thanh toán',
     'Đang xử lý',
     'Hoàn thành',
     'Đã hủy',
@@ -81,7 +84,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
         data: (_) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Hủy sản phẩm thành công, tiền đã hoàn về ví!'),
+              content: Text('Đã hủy sản phẩm, số lượng được trả lại kho.'),
               backgroundColor: Color(0xFF10B981),
             ),
           );
@@ -174,7 +177,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
           _PendingOrdersTab(),
           _CompletedOrdersTab(),
           _CancelledOrdersTab(),
-          const _RefundsTab(),
+          const RefundListScreen(showAppBar: false),
         ],
       ),
     );
@@ -188,10 +191,10 @@ class _AllOrdersTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final pendingItemsAsync = ref.watch(buyerPendingItemsProvider());
-    final pendingOrdersAsync = ref.watch(buyerPendingOrdersProvider());
-    final completedOrdersAsync = ref.watch(buyerCompletedOrdersProvider());
-    final cancelledOrdersAsync = ref.watch(buyerCancelledOrdersProvider());
+    final pendingItemsAsync = ref.watch(buyerUnsettledItemsProvider);
+    final pendingOrdersAsync = ref.watch(buyerOpenOrdersProvider);
+    final completedOrdersAsync = ref.watch(buyerCompletedOrdersProvider);
+    final cancelledOrdersAsync = ref.watch(buyerCancelledOrdersProvider);
 
     final isLoading =
         pendingItemsAsync.isLoading ||
@@ -222,8 +225,8 @@ class _AllOrdersTab extends ConsumerWidget {
     return RefreshIndicator(
       color: theme.colorScheme.primary,
       onRefresh: () async {
-        ref.invalidate(buyerPendingItemsProvider);
-        ref.invalidate(buyerPendingOrdersProvider);
+        ref.invalidate(buyerUnsettledItemsProvider);
+        ref.invalidate(buyerOpenOrdersProvider);
         ref.invalidate(buyerCompletedOrdersProvider);
         ref.invalidate(buyerCancelledOrdersProvider);
       },
@@ -232,25 +235,25 @@ class _AllOrdersTab extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           if (pendingItems.isNotEmpty) ...[
-            _buildSectionHeader(context, 'SẢN PHẨM CHỜ DUYỆT GOM ĐƠN'),
+            _buildSectionHeader(context, 'SẢN PHẨM CHỜ HOÀN TẤT THANH TOÁN'),
             ...pendingItems.map(
-              (item) => _buildPendingItemCard(context, ref, item),
+              (line) => _buildPendingItemCard(context, ref, line),
             ),
             const SizedBox(height: 12),
           ],
           if (pendingOrders.isNotEmpty) ...[
             _buildSectionHeader(context, 'ĐƠN HÀNG ĐANG XỬ LÝ / VẬN CHUYỂN'),
-            ...pendingOrders.map((order) => _buildOrderCard(context, order)),
+            ...pendingOrders.map((view) => _buildOrderCard(context, view)),
             const SizedBox(height: 12),
           ],
           if (completedOrders.isNotEmpty) ...[
             _buildSectionHeader(context, 'ĐƠN HÀNG ĐÃ HOÀN THÀNH'),
-            ...completedOrders.map((order) => _buildOrderCard(context, order)),
+            ...completedOrders.map((view) => _buildOrderCard(context, view)),
             const SizedBox(height: 12),
           ],
           if (cancelledOrders.isNotEmpty) ...[
             _buildSectionHeader(context, 'ĐƠN HÀNG ĐÃ HỦY'),
-            ...cancelledOrders.map((order) => _buildOrderCard(context, order)),
+            ...cancelledOrders.map((view) => _buildOrderCard(context, view)),
           ],
         ],
       ),
@@ -280,19 +283,19 @@ class _PendingItemsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final pendingItemsAsync = ref.watch(buyerPendingItemsProvider());
+    final pendingItemsAsync = ref.watch(buyerUnsettledItemsProvider);
     final controllerState = ref.watch(buyerOrderControllerProvider);
 
     return RefreshIndicator(
       color: theme.colorScheme.primary,
-      onRefresh: () => ref.refresh(buyerPendingItemsProvider().future),
+      onRefresh: () => ref.refresh(buyerUnsettledItemsProvider.future),
       child: pendingItemsAsync.when(
         data: (items) {
           if (items.isEmpty) {
             return const _EmptyState(
               icon: Icons.hourglass_empty_rounded,
-              title: 'Không có sản phẩm chờ duyệt',
-              subtitle: 'Các món lẻ chờ shop gom đơn sẽ xuất hiện ở đây.',
+              title: 'Không có sản phẩm chờ thanh toán',
+              subtitle: 'Sản phẩm đã đặt mà tiền chưa vào sẽ xuất hiện ở đây.',
             );
           }
           return Stack(
@@ -300,10 +303,8 @@ class _PendingItemsTab extends ConsumerWidget {
               ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return _buildPendingItemCard(context, ref, item);
-                },
+                itemBuilder: (context, index) =>
+                    _buildPendingItemCard(context, ref, items[index]),
               ),
               if (controllerState.isLoading) const ContainerOverlayLoading(),
             ],
@@ -312,7 +313,7 @@ class _PendingItemsTab extends ConsumerWidget {
         loading: () => _buildShimmerList(context),
         error: (err, stack) => _ErrorState(
           error: err,
-          onRetry: () => ref.refresh(buyerPendingItemsProvider()),
+          onRetry: () => ref.refresh(buyerUnsettledItemsProvider),
         ),
       ),
     );
@@ -324,11 +325,11 @@ class _PendingOrdersTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final pendingOrdersAsync = ref.watch(buyerPendingOrdersProvider());
+    final pendingOrdersAsync = ref.watch(buyerOpenOrdersProvider);
 
     return RefreshIndicator(
       color: theme.colorScheme.primary,
-      onRefresh: () => ref.refresh(buyerPendingOrdersProvider().future),
+      onRefresh: () => ref.refresh(buyerOpenOrdersProvider.future),
       child: pendingOrdersAsync.when(
         data: (orders) {
           if (orders.isEmpty) {
@@ -343,15 +344,14 @@ class _PendingOrdersTab extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             itemCount: orders.length,
             itemBuilder: (context, index) {
-              final order = orders[index];
-              return _buildOrderCard(context, order);
+              return _buildOrderCard(context, orders[index]);
             },
           );
         },
         loading: () => _buildShimmerList(context),
         error: (err, stack) => _ErrorState(
           error: err,
-          onRetry: () => ref.refresh(buyerPendingOrdersProvider()),
+          onRetry: () => ref.refresh(buyerOpenOrdersProvider),
         ),
       ),
     );
@@ -363,11 +363,11 @@ class _CompletedOrdersTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final completedOrdersAsync = ref.watch(buyerCompletedOrdersProvider());
+    final completedOrdersAsync = ref.watch(buyerCompletedOrdersProvider);
 
     return RefreshIndicator(
       color: theme.colorScheme.primary,
-      onRefresh: () => ref.refresh(buyerCompletedOrdersProvider().future),
+      onRefresh: () => ref.refresh(buyerCompletedOrdersProvider.future),
       child: completedOrdersAsync.when(
         data: (orders) {
           if (orders.isEmpty) {
@@ -381,15 +381,14 @@ class _CompletedOrdersTab extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             itemCount: orders.length,
             itemBuilder: (context, index) {
-              final order = orders[index];
-              return _buildOrderCard(context, order);
+              return _buildOrderCard(context, orders[index]);
             },
           );
         },
         loading: () => _buildShimmerList(context),
         error: (err, stack) => _ErrorState(
           error: err,
-          onRetry: () => ref.refresh(buyerCompletedOrdersProvider()),
+          onRetry: () => ref.refresh(buyerCompletedOrdersProvider),
         ),
       ),
     );
@@ -403,8 +402,8 @@ class _CancelledOrdersTab extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    final cancelledOrdersAsync = ref.watch(buyerCancelledOrdersProvider());
-    final cancelledItemsAsync = ref.watch(buyerCancelledItemsProvider());
+    final cancelledOrdersAsync = ref.watch(buyerCancelledOrdersProvider);
+    final cancelledItemsAsync = ref.watch(buyerCancelledItemsProvider);
 
     final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
     final cardBorderColor = isDarkMode
@@ -515,8 +514,7 @@ class _CancelledOrdersTab extends ConsumerWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: items.length,
                   itemBuilder: (context, index) {
-                    final item = items[index];
-                    return _buildCancelledItemCard(context, item);
+                    return _buildCancelledItemCard(context, items[index]);
                   },
                 );
               },
@@ -529,7 +527,7 @@ class _CancelledOrdersTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildCancelledItemCard(BuildContext context, BuyerOrderItem item) {
+  Widget _buildCancelledItemCard(BuildContext context, OrderLineView line) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -568,8 +566,8 @@ class _CancelledOrdersTab extends ConsumerWidget {
                     width: 72,
                     height: 72,
                     color: imageBgColor,
-                    child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                        ? Image.network(item.imageUrl!, fit: BoxFit.cover)
+                    child: line.imageUrl != null && line.imageUrl!.isNotEmpty
+                        ? Image.network(line.imageUrl!, fit: BoxFit.cover)
                         : Icon(
                             Icons.image_rounded,
                             color: theme.colorScheme.onSurfaceVariant,
@@ -586,7 +584,7 @@ class _CancelledOrdersTab extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              item.skuName,
+                              line.displayName,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -606,7 +604,7 @@ class _CancelledOrdersTab extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'SL: x${item.quantity}',
+                            'SL: x${line.item.quantity}',
                             style: TextStyle(
                               fontSize: 13,
                               color: theme.colorScheme.onSurfaceVariant,
@@ -614,7 +612,10 @@ class _CancelledOrdersTab extends ConsumerWidget {
                             ),
                           ),
                           Text(
-                            MoneyUtils.format(item.totalAmount),
+                            MoneyUtils.format(
+                              line.item.totalAmount,
+                              currency: line.item.currency,
+                            ),
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -636,79 +637,16 @@ class _CancelledOrdersTab extends ConsumerWidget {
   }
 }
 
-// ======================== TAB 5: REFUNDS ========================
-class _RefundsTab extends StatelessWidget {
-  const _RefundsTab();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 76,
-              height: 76,
-              decoration: BoxDecoration(
-                color: isDarkMode
-                    ? const Color(0xFFEF4444).withAlpha(40)
-                    : const Color(0xFFFFDAD6),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.history_rounded,
-                size: 38,
-                color: isDarkMode
-                    ? const Color(0xFFEF4444)
-                    : const Color(0xFFBA1A1A),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Chưa có yêu cầu hoàn tiền',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-                fontFamily: 'Inter',
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Lịch sử các đơn hàng được yêu cầu hoàn tiền hoặc tranh chấp khiếu nại của bạn sẽ xuất hiện tại đây.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: theme.colorScheme.onSurfaceVariant,
-                fontFamily: 'Inter',
-                height: 1.4,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 // ======================== COMMON STITCH CARD BUILDERS ========================
 
 /// Xây dựng thẻ đơn hàng chính (Order Card) theo phong cách Stitch/Seller Center
-Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
+Widget _buildOrderCard(BuildContext context, OrderView view) {
   final theme = Theme.of(context);
   final isDarkMode = theme.brightness == Brightness.dark;
 
-  final firstItem = order.items.isNotEmpty ? order.items.first : null;
-  final totalItems = order.items.fold<int>(
-    0,
-    (prev, element) => prev + element.quantity,
-  );
-  final rawStatus = order.transport?.status ?? 'Đang xử lý';
+  final order = view.order;
+  final firstLine = view.lines.isEmpty ? null : view.lines.first;
+  final status = view.statusLabel;
 
   final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
   final cardBorderColor = isDarkMode
@@ -774,7 +712,7 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                     ),
                   ],
                 ),
-                _buildStatusBadge(context, rawStatus),
+                _buildStatusBadge(context, status),
               ],
             ),
             const SizedBox(height: 12),
@@ -782,7 +720,7 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
             const SizedBox(height: 12),
 
             // Item Details
-            if (firstItem != null)
+            if (firstLine != null)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -793,10 +731,10 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                       height: 76,
                       color: imageBgColor,
                       child:
-                          firstItem.imageUrl != null &&
-                              firstItem.imageUrl!.isNotEmpty
+                          firstLine.imageUrl != null &&
+                              firstLine.imageUrl!.isNotEmpty
                           ? Image.network(
-                              firstItem.imageUrl!,
+                              firstLine.imageUrl!,
                               fit: BoxFit.cover,
                             )
                           : Icon(
@@ -811,7 +749,7 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          firstItem.skuName,
+                          firstLine.displayName,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -826,7 +764,7 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'SL: x${firstItem.quantity}',
+                              'SL: x${firstLine.item.quantity}',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: theme.colorScheme.onSurfaceVariant,
@@ -834,7 +772,10 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                               ),
                             ),
                             Text(
-                              MoneyUtils.format(firstItem.totalAmount),
+                              MoneyUtils.format(
+                                firstLine.item.totalAmount,
+                                currency: firstLine.item.currency,
+                              ),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -850,11 +791,11 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                 ],
               ),
 
-            if (order.items.length > 1) ...[
+            if (view.lines.length > 1) ...[
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Xem thêm ${order.items.length - 1} sản phẩm khác...',
+                  'Xem thêm ${view.lines.length - 1} sản phẩm khác...',
                   style: TextStyle(
                     fontSize: 12,
                     color: theme.colorScheme.onSurfaceVariant,
@@ -880,9 +821,12 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                     children: [
-                      TextSpan(text: '$totalItems sản phẩm: '),
+                      TextSpan(text: '${view.quantity} sản phẩm: '),
                       TextSpan(
-                        text: MoneyUtils.format(order.totalAmount),
+                        text: MoneyUtils.format(
+                          order.total,
+                          currency: order.currency,
+                        ),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -925,7 +869,7 @@ Widget _buildOrderCard(BuildContext context, BuyerOrder order) {
 Widget _buildPendingItemCard(
   BuildContext context,
   WidgetRef ref,
-  BuyerOrderItem item,
+  OrderLineView line,
 ) {
   final theme = Theme.of(context);
   final isDarkMode = theme.brightness == Brightness.dark;
@@ -969,8 +913,8 @@ Widget _buildPendingItemCard(
                   width: 76,
                   height: 76,
                   color: imageBgColor,
-                  child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                      ? Image.network(item.imageUrl!, fit: BoxFit.cover)
+                  child: line.imageUrl != null && line.imageUrl!.isNotEmpty
+                      ? Image.network(line.imageUrl!, fit: BoxFit.cover)
                       : Icon(
                           Icons.image_rounded,
                           color: theme.colorScheme.onSurfaceVariant,
@@ -988,7 +932,7 @@ Widget _buildPendingItemCard(
                       children: [
                         Expanded(
                           child: Text(
-                            item.skuName,
+                            line.displayName,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -1000,7 +944,7 @@ Widget _buildPendingItemCard(
                           ),
                         ),
                         const SizedBox(width: 8),
-                        _buildStatusBadge(context, 'Chờ gom đơn'),
+                        _buildStatusBadge(context, 'Chờ thanh toán'),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -1008,7 +952,7 @@ Widget _buildPendingItemCard(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'SL: x${item.quantity}',
+                          'SL: x${line.item.quantity}',
                           style: TextStyle(
                             fontSize: 13,
                             color: theme.colorScheme.onSurfaceVariant,
@@ -1016,7 +960,10 @@ Widget _buildPendingItemCard(
                           ),
                         ),
                         Text(
-                          MoneyUtils.format(item.totalAmount),
+                          MoneyUtils.format(
+                            line.item.totalAmount,
+                            currency: line.item.currency,
+                          ),
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -1046,7 +993,7 @@ Widget _buildPendingItemCard(
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'Chờ shop xác nhận',
+                    'Chờ hoàn tất thanh toán',
                     style: TextStyle(
                       fontSize: 12,
                       color: theme.colorScheme.onSurfaceVariant,
@@ -1058,7 +1005,7 @@ Widget _buildPendingItemCard(
               // Nút bấm Hủy dạng Outlined Pill
               InkWell(
                 borderRadius: BorderRadius.circular(20),
-                onTap: () => _confirmCancelItem(context, ref, item),
+                onTap: () => _confirmCancelItem(context, ref, line),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -1099,7 +1046,7 @@ Widget _buildPendingItemCard(
 void _confirmCancelItem(
   BuildContext context,
   WidgetRef ref,
-  BuyerOrderItem item,
+  OrderLineView line,
 ) {
   final theme = Theme.of(context);
   final isDarkMode = theme.brightness == Brightness.dark;
@@ -1117,7 +1064,7 @@ void _confirmCancelItem(
         ),
       ),
       content: Text(
-        'Bạn có chắc chắn muốn hủy sản phẩm này? Tiền thanh toán sẽ được hoàn trả tự động về ví nội bộ của bạn.',
+        'Bạn có chắc chắn muốn hủy sản phẩm này? Chỉ sản phẩm chưa thanh toán mới hủy được; số lượng sẽ trả lại kho.',
         style: TextStyle(
           fontFamily: 'Inter',
           color: theme.colorScheme.onSurfaceVariant,
@@ -1139,7 +1086,7 @@ void _confirmCancelItem(
             Navigator.of(context).pop();
             ref
                 .read(buyerOrderControllerProvider.notifier)
-                .cancelPendingItem(item.id.toString());
+                .cancelItem(line.item.id);
           },
           child: Text(
             'Đồng ý',

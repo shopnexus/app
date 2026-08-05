@@ -128,12 +128,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( AuthResponse authResponse)?  authenticated,TResult Function()?  unauthenticated,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String accessToken,  String refreshToken)?  authenticated,TResult Function()?  unauthenticated,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Authenticated() when authenticated != null:
-return authenticated(_that.authResponse);case _Unauthenticated() when unauthenticated != null:
+return authenticated(_that.accessToken,_that.refreshToken);case _Unauthenticated() when unauthenticated != null:
 return unauthenticated();case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
@@ -153,12 +153,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( AuthResponse authResponse)  authenticated,required TResult Function()  unauthenticated,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String accessToken,  String refreshToken)  authenticated,required TResult Function()  unauthenticated,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Authenticated():
-return authenticated(_that.authResponse);case _Unauthenticated():
+return authenticated(_that.accessToken,_that.refreshToken);case _Unauthenticated():
 return unauthenticated();case _Error():
 return error(_that.message);}
 }
@@ -174,12 +174,12 @@ return error(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( AuthResponse authResponse)?  authenticated,TResult? Function()?  unauthenticated,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String accessToken,  String refreshToken)?  authenticated,TResult? Function()?  unauthenticated,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Authenticated() when authenticated != null:
-return authenticated(_that.authResponse);case _Unauthenticated() when unauthenticated != null:
+return authenticated(_that.accessToken,_that.refreshToken);case _Unauthenticated() when unauthenticated != null:
 return unauthenticated();case _Error() when error != null:
 return error(_that.message);case _:
   return null;
@@ -257,10 +257,11 @@ String toString() {
 
 
 class _Authenticated implements AuthState {
-  const _Authenticated({required this.authResponse});
+  const _Authenticated({required this.accessToken, required this.refreshToken});
   
 
- final  AuthResponse authResponse;
+ final  String accessToken;
+ final  String refreshToken;
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
@@ -272,16 +273,16 @@ _$AuthenticatedCopyWith<_Authenticated> get copyWith => __$AuthenticatedCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Authenticated&&(identical(other.authResponse, authResponse) || other.authResponse == authResponse));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Authenticated&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,authResponse);
+int get hashCode => Object.hash(runtimeType,accessToken,refreshToken);
 
 @override
 String toString() {
-  return 'AuthState.authenticated(authResponse: $authResponse)';
+  return 'AuthState.authenticated(accessToken: $accessToken, refreshToken: $refreshToken)';
 }
 
 
@@ -292,11 +293,11 @@ abstract mixin class _$AuthenticatedCopyWith<$Res> implements $AuthStateCopyWith
   factory _$AuthenticatedCopyWith(_Authenticated value, $Res Function(_Authenticated) _then) = __$AuthenticatedCopyWithImpl;
 @useResult
 $Res call({
- AuthResponse authResponse
+ String accessToken, String refreshToken
 });
 
 
-$AuthResponseCopyWith<$Res> get authResponse;
+
 
 }
 /// @nodoc
@@ -309,23 +310,15 @@ class __$AuthenticatedCopyWithImpl<$Res>
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? authResponse = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,}) {
   return _then(_Authenticated(
-authResponse: null == authResponse ? _self.authResponse : authResponse // ignore: cast_nullable_to_non_nullable
-as AuthResponse,
+accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
-/// Create a copy of AuthState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$AuthResponseCopyWith<$Res> get authResponse {
-  
-  return $AuthResponseCopyWith<$Res>(_self.authResponse, (value) {
-    return _then(_self.copyWith(authResponse: value));
-  });
-}
+
 }
 
 /// @nodoc

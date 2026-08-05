@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../storage/hive_storage.dart';
+import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 
 part 'theme_provider.g.dart';
 

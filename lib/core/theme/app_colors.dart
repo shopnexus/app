@@ -4,36 +4,36 @@ import 'package:flutter/material.dart';
 class AppColors {
   // --- Light Theme Colors ---
   /// Màu chủ đạo (Trustworthy Teal)
-  static const Color primary = Color(0xFF005049); 
-  
+  static const Color primary = Color(0xFF005049);
+
   /// Màu phụ / Muted Teal
-  static const Color accent = Color(0xFF216963); 
-  
+  static const Color accent = Color(0xFF216963);
+
   /// Nền (Warm Off-white)
-  static const Color background = Color(0xFFF9F9F7); 
-  
+  static const Color background = Color(0xFFF9F9F7);
+
   /// Surface - Nền cho Card, BottomSheet (Sử dụng Pure White atop Base)
   static const Color surface = Colors.white;
-  
+
   /// Màu chữ chính (On-Surface)
   static const Color textPrimary = Color(0xFF1A1C1B);
-  
+
   /// Màu chữ phụ (On-Surface-Variant)
   static const Color textSecondary = Color(0xFF3E4947);
 
   // --- Dark Theme Colors ---
   /// Màu chủ đạo tối (Soft Teal)
-  static const Color darkPrimary = Color(0xFF85D5C9); 
-  
+  static const Color darkPrimary = Color(0xFF85D5C9);
+
   /// Nền tối (Teal-tinted Near Black)
-  static const Color darkBackground = Color(0xFF00201D); 
-  
+  static const Color darkBackground = Color(0xFF00201D);
+
   /// Surface tối (Slightly lighter Teal)
-  static const Color darkSurface = Color(0xFF00302C);    
-  
+  static const Color darkSurface = Color(0xFF00302C);
+
   /// Màu chữ chính tối (Off-white)
   static const Color darkTextPrimary = Color(0xFFF1F1EF);
-  
+
   /// Màu chữ phụ tối (Slate Teal)
   static const Color darkTextSecondary = Color(0xFFBEC9C6);
 }
@@ -90,8 +90,8 @@ class EcommerceColors extends ThemeExtension<EcommerceColors> {
   static const light = EcommerceColors(
     statusDelivering: Color(0xFF005049), // Đồng nhất với brand primary
     statusCanceled: Color(0xFFBA1A1A), // Màu lỗi từ Stitch
-    freeshipBadge: Color(0xFFE6F4EA), 
-    freeshipText: Color(0xFF005049), 
+    freeshipBadge: Color(0xFFE6F4EA),
+    freeshipText: Color(0xFF005049),
     saleBadge: Color(0xFF773115), // Tông màu tertiary của Stitch
   );
 

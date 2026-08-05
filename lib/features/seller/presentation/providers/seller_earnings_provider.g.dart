@@ -13,7 +13,8 @@ part of 'seller_earnings_provider.dart';
 const sellerEarningsProvider = SellerEarningsNotifierProvider._();
 
 final class SellerEarningsNotifierProvider
-    extends $NotifierProvider<SellerEarningsNotifier, SellerEarningsState> {
+    extends
+        $AsyncNotifierProvider<SellerEarningsNotifier, SellerEarningsState> {
   const SellerEarningsNotifierProvider._()
     : super(
         from: null,
@@ -31,31 +32,25 @@ final class SellerEarningsNotifierProvider
   @$internal
   @override
   SellerEarningsNotifier create() => SellerEarningsNotifier();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(SellerEarningsState value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<SellerEarningsState>(value),
-    );
-  }
 }
 
 String _$sellerEarningsNotifierHash() =>
-    r'7c724c2c0221f6591b4cbc01f19346cadb5d838c';
+    r'f12d6ffbf3d07761a0c00d5d1de40963dff38fc1';
 
-abstract class _$SellerEarningsNotifier extends $Notifier<SellerEarningsState> {
-  SellerEarningsState build();
+abstract class _$SellerEarningsNotifier
+    extends $AsyncNotifier<SellerEarningsState> {
+  FutureOr<SellerEarningsState> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<SellerEarningsState, SellerEarningsState>;
+    final ref =
+        this.ref as $Ref<AsyncValue<SellerEarningsState>, SellerEarningsState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<SellerEarningsState, SellerEarningsState>,
-              SellerEarningsState,
+              AnyNotifier<AsyncValue<SellerEarningsState>, SellerEarningsState>,
+              AsyncValue<SellerEarningsState>,
               Object?,
               Object?
             >;

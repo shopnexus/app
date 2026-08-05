@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../shared/widgets/shared_product_card.dart';
-import '../../data/models/catalog_model.dart';
-import '../providers/catalog_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/sort_options_sheet.dart';
 
 class ProductListScreen extends ConsumerStatefulWidget {
   const ProductListScreen({super.key});
@@ -52,7 +55,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     final productsState = ref.watch(catalogProductsProvider(activeFilters));
 
     final isFiltered =
-        activeFilters.location != null ||
+        activeFilters.hasArea ||
+        activeFilters.hasPosition ||
         activeFilters.categoryId != null ||
         activeFilters.priceMin != null ||
         activeFilters.priceMax != null ||
@@ -293,7 +297,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                     // Chia danh sách sản phẩm thành các cột tương ứng
                     final columns = List.generate(
                       crossAxisCount,
-                      (_) => <TProductCard>[],
+                      (_) => <Listing>[],
                     );
                     for (int i = 0; i < products.length; i++) {
                       columns[i % crossAxisCount].add(products[i]);
@@ -326,7 +330,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                       padding: const EdgeInsets.only(
                                         bottom: 12.0,
                                       ),
-                                      child: SharedProductCard(
+                                      child: CatalogProductCard(
                                         product: product,
                                         aspectRatio: aspect,
                                         onTap: () {
@@ -435,8 +439,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
       ),
     );
 
-    // Chip địa điểm (chỉ hiển thị khi có bộ lọc địa điểm)
-    if (activeFilters.location != null) {
+    // Chip khu vực hành chính đang lọc
+    if (activeFilters.hasArea) {
       chips.add(
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
@@ -448,10 +452,47 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
               size: 14,
               color: theme.colorScheme.primary,
             ),
-            label: Text(activeFilters.location!),
-            onDeleted: () => ref
-                .read(activeSearchFiltersProvider.notifier)
-                .setLocation(null),
+            label: Text(activeFilters.areaLabel ?? 'Khu vực đã chọn'),
+            onDeleted: () =>
+                ref.read(activeSearchFiltersProvider.notifier).setArea(),
+            backgroundColor: theme.colorScheme.primary.withAlpha(30),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(9999.0),
+              side: BorderSide(color: theme.colorScheme.primary, width: 0.5),
+            ),
+            labelStyle: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.primary,
+            ),
+            deleteIconColor: theme.colorScheme.primary,
+          ),
+        ),
+      );
+    }
+
+    // Chip "quanh đây": vị trí đo khoảng cách và bán kính
+    if (activeFilters.hasPosition) {
+      final nearLabel = activeFilters.nearLabel ?? 'vị trí của tôi';
+      chips.add(
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: InputChip(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+            avatar: Icon(
+              Icons.near_me_rounded,
+              size: 14,
+              color: theme.colorScheme.primary,
+            ),
+            label: Text(
+              activeFilters.radiusKm != null
+                  ? 'Quanh $nearLabel • ${activeFilters.radiusKm!.round()} km'
+                  : 'Quanh $nearLabel',
+            ),
+            onDeleted: () =>
+                ref.read(activeSearchFiltersProvider.notifier).setNearby(),
             backgroundColor: theme.colorScheme.primary.withAlpha(30),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(9999.0),
@@ -472,12 +513,12 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     // Chip danh mục
     if (activeFilters.categoryId != null) {
       final catName = categoriesState.maybeWhen(
-        data: (cats) => cats
-            .firstWhere(
-              (c) => c.id == activeFilters.categoryId,
-              orElse: () => Category(id: '', name: '', slug: ''),
-            )
-            .name,
+        data: (cats) =>
+            cats
+                .where((c) => c.id == activeFilters.categoryId)
+                .firstOrNull
+                ?.name ??
+            '',
         orElse: () => '',
       );
       if (catName.isNotEmpty) {
@@ -568,17 +609,19 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
     // Chip sắp xếp
     if (activeFilters.sort != null) {
-      String sortLbl = 'Mới nhất';
-      if (activeFilters.sort == 'price_asc') sortLbl = 'Giá thấp - cao';
-      if (activeFilters.sort == 'price_desc') sortLbl = 'Giá cao - thấp';
-      if (activeFilters.sort == 'sold_count_desc') sortLbl = 'Bán chạy';
       chips.add(
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: InputChip(
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             visualDensity: VisualDensity.compact,
-            label: Text('Sắp xếp: $sortLbl'),
+            label: Text('Sắp xếp: ${sortLabel(activeFilters.sort)}'),
+            onPressed: () => showSortOptionsSheet(
+              context,
+              filters: activeFilters,
+              onSelected: (sort) =>
+                  ref.read(activeSearchFiltersProvider.notifier).setSort(sort),
+            ),
             onDeleted: () =>
                 ref.read(activeSearchFiltersProvider.notifier).setSort(null),
             backgroundColor: chipBgColor,
@@ -609,7 +652,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     _minPriceController.text = activeFilters.priceMin?.toString() ?? '';
     _maxPriceController.text = activeFilters.priceMax?.toString() ?? '';
     String? localSelectedCategory = activeFilters.categoryId;
-    String? localSelectedLocation = activeFilters.location;
+    // The location half is edited as a draft of the whole filter set, so the
+    // area, the position and the distance sort stay consistent with each other.
+    CatalogSearchFilters draft = activeFilters;
 
     final parentTheme = Theme.of(context);
     final isParentDark = parentTheme.brightness == Brightness.dark;
@@ -656,7 +701,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                 _minPriceController.clear();
                                 _maxPriceController.clear();
                                 localSelectedCategory = null;
-                                localSelectedLocation = null;
+                                draft = const CatalogSearchFilters().copyWith(
+                                  keyword: draft.keyword,
+                                );
                               });
                             },
                             child: Text(
@@ -673,61 +720,11 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       ),
                       const SizedBox(height: 16.0),
 
-                      // Phần chọn Vị trí / Địa chỉ như yêu cầu của người dùng
-                      Text(
-                        'Khu vực / Địa điểm',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 8.0),
-                      SizedBox(
-                        height: 40.0,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children:
-                              [
-                                'Hà Nội',
-                                'TP. Hồ Chí Minh',
-                                'Đà Nẵng',
-                                'San Francisco',
-                                'New York',
-                              ].map((loc) {
-                                final isSelected = localSelectedLocation == loc;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: ChoiceChip(
-                                    label: Text(loc),
-                                    selected: isSelected,
-                                    labelStyle: TextStyle(
-                                      fontFamily: 'Inter',
-                                      color: isSelected
-                                          ? theme.colorScheme.onPrimary
-                                          : theme.colorScheme.onSurface,
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                    selectedColor: theme.colorScheme.primary,
-                                    backgroundColor: isDarkMode
-                                        ? theme
-                                              .colorScheme
-                                              .surfaceContainerHighest
-                                        : const Color(0xFFEEEEEB),
-                                    onSelected: (selected) {
-                                      setModalState(() {
-                                        localSelectedLocation = selected
-                                            ? loc
-                                            : null;
-                                      });
-                                    },
-                                  ),
-                                );
-                              }).toList(),
-                        ),
+                      // Khu vực, vị trí đo khoảng cách và bán kính
+                      LocationFilterSection(
+                        filters: draft,
+                        onChanged: (updated) =>
+                            setModalState(() => draft = updated),
                       ),
                       const SizedBox(height: 20.0),
 
@@ -893,13 +890,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
                             ref
                                 .read(activeSearchFiltersProvider.notifier)
-                                .setCategory(localSelectedCategory);
-                            ref
-                                .read(activeSearchFiltersProvider.notifier)
-                                .setLocation(localSelectedLocation);
-                            ref
-                                .read(activeSearchFiltersProvider.notifier)
-                                .setPriceRange(minVal, maxVal);
+                                .apply(
+                                  draft.copyWith(
+                                    categoryId: localSelectedCategory,
+                                    priceMin: minVal,
+                                    priceMax: maxVal,
+                                  ),
+                                );
                             context.pop();
                           },
                           style: ElevatedButton.styleFrom(

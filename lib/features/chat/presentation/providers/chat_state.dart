@@ -1,31 +1,35 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../data/models/chat_model.dart';
+
+import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 
 part 'chat_state.freezed.dart';
 
 @freezed
 abstract class ChatListState with _$ChatListState {
   const factory ChatListState({
-    @Default([]) List<ChatConversation> conversations,
+    @Default([]) List<Conversation> conversations,
     @Default('') String searchQuery,
-    @Default(false) bool isLoading,
-    String? errorMessage,
+    String? nextCursor,
   }) = _ChatListState;
 
   const ChatListState._();
 
-  List<ChatConversation> get filteredConversations {
-    if (searchQuery.trim().isEmpty) {
-      return conversations;
-    }
-    final query = searchQuery.toLowerCase();
-    return conversations.where((conv) {
-      final name = conv.participantName.toLowerCase();
-      final lastMsg = (conv.lastMessage ?? '').toLowerCase();
-      final product = (conv.productTitle ?? '').toLowerCase();
-      return name.contains(query) ||
-          lastMsg.contains(query) ||
-          product.contains(query);
+  /// A ticket's thread is read in the help centre, so it never appears here —
+  /// `ticket_id` on the row is what tells the two apart.
+  List<Conversation> get inboxConversations => conversations
+      .where((conversation) => !conversation.isTicketThread)
+      .toList();
+
+  /// Filtering is local to what is already loaded — the inbox route has no search
+  /// parameter, so this narrows the page on screen rather than querying.
+  List<Conversation> get filteredConversations {
+    final query = searchQuery.trim().toLowerCase();
+    final inbox = inboxConversations;
+    if (query.isEmpty) return inbox;
+    return inbox.where((conversation) {
+      final name = conversation.participantName.toLowerCase();
+      final lastMessage = (conversation.lastMessageText ?? '').toLowerCase();
+      return name.contains(query) || lastMessage.contains(query);
     }).toList();
   }
 }
@@ -33,12 +37,34 @@ abstract class ChatListState with _$ChatListState {
 @freezed
 abstract class ChatDetailState with _$ChatDetailState {
   const factory ChatDetailState({
-    String? conversationId,
-    ChatConversation? conversation,
+    required String conversationId,
+    Conversation? conversation,
+
+    /// Oldest first, which is the reading order; the route answers newest first.
     @Default([]) List<ChatMessage> messages,
-    @Default(false) bool isLoading,
+
+    /// The negotiations the thread's cards point at, by offer id. A card carries
+    /// only the id, so the terms are read from here and a counter-offer can never
+    /// leave an old price on screen.
+    @Default({}) Map<String, Offer> offers,
+    String? nextCursor,
     @Default(false) bool isSending,
-    @Default('') String draftText,
     String? errorMessage,
   }) = _ChatDetailState;
+
+  const ChatDetailState._();
+
+  /// A thread has two sides, so an id that is not the counterparty's is the
+  /// viewer's. That places them in a negotiation without a second lookup of
+  /// their own account.
+  bool _isViewer(String accountId) {
+    final conversation = this.conversation;
+    return conversation != null && accountId != conversation.counterparty.id;
+  }
+
+  bool viewerIsBuyer(Offer offer) => _isViewer(offer.buyerId);
+
+  /// Whoever owns the standing proposal cannot accept or counter it — the two
+  /// sides alternate.
+  bool viewerIsAuthor(Offer offer) => _isViewer(offer.authorId);
 }

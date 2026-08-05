@@ -1,85 +1,114 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/storage/hive_storage.dart';
-import '../../../../shared/data_sources/common_api_service.dart';
-import '../../../../shared/models/geocode_model.dart';
-import '../models/kyc_model.dart';
+
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
+import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
 
 part 'kyc_repository.g.dart';
 
 class KycRepository {
-  final HiveService _hiveService;
-  final CommonApiService _commonApiService;
-
-  KycRepository({
+  const KycRepository({
     required HiveService hiveService,
-    required CommonApiService commonApiService,
+    required AccountApi api,
   }) : _hiveService = hiveService,
-       _commonApiService = commonApiService;
+       _api = api;
 
-  /// Lấy thông tin KYC hiện tại của tài khoản (ưu tiên từ Hive cache)
-  Future<KycModel?> getKycStatus(String accountId) async {
-    final rawData = _hiveService.authBox.get('kyc_data_$accountId');
-    if (rawData != null) {
-      try {
-        final Map<String, dynamic> jsonMap = jsonDecode(rawData.toString());
-        return KycModel.fromJson(jsonMap);
-      } catch (_) {
-        return null;
+  final HiveService _hiveService;
+  final AccountApi _api;
+
+  /// The document that decides whether this account may sell, or null when there
+  /// is nothing on file. Cached so the account centre still renders offline.
+  Future<IdentityDocument?> getKycStatus(String accountId) async {
+    try {
+      final documents = (await _api.meIdentityDocumentsGet()).data?.data;
+      if (documents != null && documents.isNotEmpty) {
+        final active = documents.firstWhere(
+          (d) =>
+              d.status == IdentityStatus.verified ||
+              d.status == IdentityStatus.pending,
+          orElse: () => documents.first,
+        );
+        await _hiveService.authBox.put(
+          'kyc_data_$accountId',
+          jsonEncode(active.toJson()),
+        );
+        return active;
       }
+      return null;
+    } catch (_) {
+      // Offline: fall back to what was last seen.
     }
-    return null;
+
+    final cached = _hiveService.authBox.get('kyc_data_$accountId');
+    if (cached == null) return null;
+    try {
+      return IdentityDocument.fromJson(
+        jsonDecode(cached.toString()) as Map<String, dynamic>,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
-  /// Upload file hình ảnh CCCD/Chân dung lên server để lấy FileUploadResponse
-  Future<FileUploadResponse> uploadKycImage(
-    List<int> bytes,
-    String fileName,
-  ) async {
-    final multipartFile = MultipartFile.fromBytes(bytes, filename: fileName);
-    final response = await _commonApiService.uploadFile(multipartFile);
-    return response.data;
-  }
-
-  /// Nộp hồ sơ xác minh KYC và lưu vào storage local
-  Future<KycModel> submitKyc({
-    required String accountId,
-    required SubmitKycRequest request,
-    String? frontCardUrl,
-    String? backCardUrl,
-    String? selfieUrl,
+  /// Reserve a slot, PUT the bytes, and hand back the resource id the
+  /// verification request references. The bytes never pass through the API.
+  Future<String> uploadKycScan({
+    required List<int> bytes,
+    required String fileName,
+    required String mimeType,
   }) async {
-    // Giả lập lưu thông tin xác minh KYC gửi lên hệ thống
-    final kycModel = KycModel(
-      id: 'kyc_${DateTime.now().millisecondsSinceEpoch}',
-      accountId: accountId,
-      idNumber: request.idNumber,
-      fullName: request.fullName,
-      dateOfBirth: request.dateOfBirth,
-      issueDate: request.issueDate,
-      issuePlace: request.issuePlace,
-      frontCardUrl: frontCardUrl,
-      backCardUrl: backCardUrl,
-      selfieUrl: selfieUrl,
-      status: KycStatus.pending,
-      submittedAt: DateTime.now().toIso8601String(),
+    final reserved = (await _api.meUploadsPost(
+      accountCreateUploadRequest: AccountCreateUploadRequest(
+        filename: fileName,
+        kind: AccountCreateUploadRequestKindEnum.identity,
+        mime: mimeType,
+        size: bytes.length,
+      ),
+    )).data?.data;
+    if (reserved == null) throw StateError('empty upload slot');
+
+    // A bare Dio: the signed URL is the storage provider's origin and must not
+    // be sent this platform's bearer token.
+    await Dio().put<void>(
+      reserved.url,
+      data: Stream.fromIterable([bytes]),
+      options: Options(
+        headers: {
+          ...?reserved.headers,
+          Headers.contentLengthHeader: bytes.length,
+        },
+        contentType: mimeType,
+      ),
     );
 
-    // Lưu vào Hive box để duy trì trạng thái ứng dụng
-    final jsonStr = jsonEncode(kycModel.toJson());
-    await _hiveService.authBox.put('kyc_data_$accountId', jsonStr);
+    await _api.meUploadsIdConfirmationPost(id: reserved.resourceId);
+    return reserved.resourceId;
+  }
 
-    return kycModel;
+  /// A vendor either decides now or runs its own web flow, so the ticket may
+  /// carry a session URL beside the document. Whichever came back is stored.
+  Future<IdentityVerificationTicket> submitKyc({
+    required String accountId,
+    required StartIdentityVerificationRequest request,
+  }) async {
+    final ticket = (await _api.identityDocumentsPost(
+      startIdentityVerificationRequest: request,
+    )).data?.data;
+    if (ticket == null) throw StateError('empty verification ticket');
+    await _hiveService.authBox.put(
+      'kyc_data_$accountId',
+      jsonEncode(ticket.document.toJson()),
+    );
+    return ticket;
   }
 }
 
 @riverpod
-KycRepository kycRepository(Ref ref) {
-  final hiveService = ref.watch(hiveServiceProvider);
-  final commonApiService = ref.watch(commonApiServiceProvider);
-  return KycRepository(
-    hiveService: hiveService,
-    commonApiService: commonApiService,
-  );
-}
+KycRepository kycRepository(Ref ref) => KycRepository(
+  hiveService: ref.watch(hiveServiceProvider),
+  api: ref.watch(accountApiProvider),
+);

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../shared/widgets/shared_product_card.dart';
-import '../../../account/presentation/providers/account_provider.dart';
-import '../../../catalog/data/models/catalog_model.dart';
-import '../providers/seller_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_provider.dart';
 
 class SellerProfileScreen extends ConsumerStatefulWidget {
   final String vendorId;
@@ -92,9 +92,9 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          profile.name ??
-                              profile.username ??
-                              'Cửa hàng đối tác',
+                          profile.name.isNotEmpty
+                              ? profile.name
+                              : 'Cửa hàng đối tác',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 22,
@@ -235,7 +235,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
 
   Widget _buildTabContent(
     dynamic profile,
-    AsyncValue<List<TProductCard>> productsAsync,
+    AsyncValue<List<Listing>> productsAsync,
   ) {
     switch (_selectedTabIndex) {
       case 0: // About
@@ -354,10 +354,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                 ? 4
                 : (width >= 600 ? 3 : 2);
 
-            final columns = List.generate(
-              crossAxisCount,
-              (_) => <TProductCard>[],
-            );
+            final columns = List.generate(crossAxisCount, (_) => <Listing>[]);
             for (int i = 0; i < products.length; i++) {
               columns[i % crossAxisCount].add(products[i]);
             }
@@ -380,7 +377,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: SharedProductCard(
-                            product: product,
+                            product: ProductCardView.fromListing(product),
                             aspectRatio: aspect,
                             showVendor: false,
                             onTap: () {

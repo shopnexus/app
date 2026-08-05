@@ -8,20 +8,28 @@ part of 'seller_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
+/// visitor sees exactly what is public — there is no shop-scoped route and no
+/// `mine=true` here, which is what would be needed to see a draft.
 
 @ProviderFor(sellerProducts)
 const sellerProductsProvider = SellerProductsFamily._();
 
+/// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
+/// visitor sees exactly what is public — there is no shop-scoped route and no
+/// `mine=true` here, which is what would be needed to see a draft.
+
 final class SellerProductsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<TProductCard>>,
-          List<TProductCard>,
-          FutureOr<List<TProductCard>>
+          AsyncValue<List<Listing>>,
+          List<Listing>,
+          FutureOr<List<Listing>>
         >
-    with
-        $FutureModifier<List<TProductCard>>,
-        $FutureProvider<List<TProductCard>> {
+    with $FutureModifier<List<Listing>>, $FutureProvider<List<Listing>> {
+  /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
+  /// visitor sees exactly what is public — there is no shop-scoped route and no
+  /// `mine=true` here, which is what would be needed to see a draft.
   const SellerProductsProvider._({
     required SellerProductsFamily super.from,
     required String super.argument,
@@ -45,12 +53,12 @@ final class SellerProductsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<TProductCard>> $createElement(
+  $FutureProviderElement<List<Listing>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<TProductCard>> create(Ref ref) {
+  FutureOr<List<Listing>> create(Ref ref) {
     final argument = this.argument as String;
     return sellerProducts(ref, argument);
   }
@@ -66,10 +74,14 @@ final class SellerProductsProvider
   }
 }
 
-String _$sellerProductsHash() => r'69bc360c3974a00bb8b2138a7a0884df1640fc97';
+String _$sellerProductsHash() => r'b719579b13ef528724735755b8425ed3322ed441';
+
+/// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
+/// visitor sees exactly what is public — there is no shop-scoped route and no
+/// `mine=true` here, which is what would be needed to see a draft.
 
 final class SellerProductsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<TProductCard>>, String> {
+    with $FunctionalFamilyOverride<FutureOr<List<Listing>>, String> {
   const SellerProductsFamily._()
     : super(
         retry: null,
@@ -78,6 +90,10 @@ final class SellerProductsFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
+  /// visitor sees exactly what is public — there is no shop-scoped route and no
+  /// `mine=true` here, which is what would be needed to see a draft.
 
   SellerProductsProvider call(String vendorId) =>
       SellerProductsProvider._(argument: vendorId, from: this);

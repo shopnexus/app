@@ -1,7 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../data/models/help_ticket_model.dart';
-import '../../data/repositories/help_center_repository.dart';
+
+import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/repositories/ticket_repository.dart';
+import 'package:shopnexus_flutter_app/features/help_center/data/models/help_ticket_model.dart';
+import 'package:shopnexus_flutter_app/features/help_center/data/repositories/help_center_repository.dart';
 
 part 'help_center_provider.freezed.dart';
 
@@ -10,8 +15,7 @@ part 'help_center_provider.g.dart';
 @freezed
 abstract class HelpCenterState with _$HelpCenterState {
   const factory HelpCenterState({
-    HelpCenterStats? stats,
-    @Default([]) List<HelpTicket> tickets,
+    @Default([]) List<Ticket> tickets,
     @Default([]) List<FaqItem> faqs,
     @Default('Tất cả') String selectedCategory,
     @Default('') String searchQuery,
@@ -35,36 +39,43 @@ abstract class HelpCenterState with _$HelpCenterState {
     }).toList();
   }
 
-  /// Danh sách Ticket đã được lọc theo từ khóa tìm kiếm (nếu có)
-  List<HelpTicket> get filteredTickets {
+  /// Danh sách yêu cầu đã được lọc theo từ khóa tìm kiếm (nếu có)
+  List<Ticket> get filteredTickets {
     if (searchQuery.isEmpty) return tickets;
     final query = searchQuery.toLowerCase();
-    return tickets.where((t) {
-      return t.id.toLowerCase().contains(query) ||
-          t.title.toLowerCase().contains(query) ||
-          t.category.toLowerCase().contains(query);
+    return tickets.where((ticket) {
+      return ticket.id.toLowerCase().contains(query) ||
+          ticket.subject.toLowerCase().contains(query) ||
+          TicketKindInfo.of(ticket.kind).label.toLowerCase().contains(query);
     }).toList();
   }
+
+  /// Counted from the tickets themselves rather than fetched: `/tickets` has no
+  /// summary route, and a count derived from the list cannot disagree with it.
+  int get openCount =>
+      tickets.where((t) => t.status != TicketStatus.resolved).length;
+
+  int get resolvedCount =>
+      tickets.where((t) => t.status == TicketStatus.resolved).length;
+
+  int get totalCount => tickets.length;
 }
 
 @riverpod
 class HelpCenterNotifier extends _$HelpCenterNotifier {
   @override
   HelpCenterState build() {
-    Future.microtask(() => _loadInitialData());
+    Future.microtask(_loadInitialData);
     return const HelpCenterState(isLoading: true);
   }
 
   Future<void> _loadInitialData() async {
     try {
-      final repo = ref.read(helpCenterRepositoryProvider);
-      final stats = await repo.getStats();
-      final tickets = await repo.getTickets();
-      final faqs = await repo.getFaqs();
+      final faqs = await ref.read(helpCenterRepositoryProvider).getFaqs();
+      final page = await ref.read(ticketRepositoryProvider).list();
 
       state = HelpCenterState(
-        stats: stats,
-        tickets: tickets,
+        tickets: page.tickets,
         faqs: faqs,
         isLoading: false,
       );
@@ -84,34 +95,5 @@ class HelpCenterNotifier extends _$HelpCenterNotifier {
     state = state.copyWith(searchQuery: query);
   }
 
-  Future<bool> createTicket({
-    required String title,
-    required String category,
-    required String description,
-    List<String>? attachments,
-  }) async {
-    try {
-      final repo = ref.read(helpCenterRepositoryProvider);
-      await repo.createTicket(
-        title: title,
-        category: category,
-        description: description,
-        attachments: attachments,
-      );
-      final updatedStats = await repo.getStats();
-      final updatedTickets = await repo.getTickets();
-
-      state = state.copyWith(stats: updatedStats, tickets: updatedTickets);
-      return true;
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: 'Tạo Ticket không thành công: ${e.toString()}',
-      );
-      return false;
-    }
-  }
-
-  Future<void> refresh() async {
-    await _loadInitialData();
-  }
+  Future<void> refresh() => _loadInitialData();
 }

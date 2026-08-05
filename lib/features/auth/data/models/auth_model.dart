@@ -1,48 +1,18 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+/// The auth request/response shapes are the generated ones — this file only
+/// re-exports them, so the feature's own layers keep one import.
+///
+/// There used to be a hand-written freezed twin of every request here, each the
+/// same fields under the same json keys. A drift between the two was a runtime
+/// 400 nobody saw until a user hit it.
+library;
 
-part 'auth_model.freezed.dart';
-
-part 'auth_model.g.dart';
-
-@freezed
-abstract class LoginRequest with _$LoginRequest {
-  const factory LoginRequest({required String id, required String password}) =
-      _LoginRequest;
-
-  factory LoginRequest.fromJson(Map<String, dynamic> json) =>
-      _$LoginRequestFromJson(json);
-}
-
-@freezed
-abstract class RegisterRequest with _$RegisterRequest {
-  const factory RegisterRequest({
-    String? username,
-    String? email,
-    String? phone,
-    required String password,
-    required String country,
-  }) = _RegisterRequest;
-
-  factory RegisterRequest.fromJson(Map<String, dynamic> json) =>
-      _$RegisterRequestFromJson(json);
-}
-
-@freezed
-abstract class ForgotPasswordRequest with _$ForgotPasswordRequest {
-  const factory ForgotPasswordRequest({required String email}) =
-      _ForgotPasswordRequest;
-
-  factory ForgotPasswordRequest.fromJson(Map<String, dynamic> json) =>
-      _$ForgotPasswordRequestFromJson(json);
-}
-
-@freezed
-abstract class AuthResponse with _$AuthResponse {
-  const factory AuthResponse({
-    @JsonKey(name: 'access_token') required String accessToken,
-    @JsonKey(name: 'refresh_token') required String refreshToken,
-  }) = _AuthResponse;
-
-  factory AuthResponse.fromJson(Map<String, dynamic> json) =>
-      _$AuthResponseFromJson(json);
-}
+export 'package:shopnexus_flutter_app/api/generated/model/auth_result.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/change_password_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/email_verification_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/login_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/logout_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/o_auth_login_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/password_reset_confirm_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/password_reset_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/refresh_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/register_request.dart';

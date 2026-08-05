@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../shared/data_sources/common_api_service.dart';
-import '../../../../shared/models/geocode_model.dart';
-import '../../data/models/account_model.dart';
-import '../providers/addresses_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact_address_type.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/area_picker_sheet.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
 
 class AddressFormSheet extends ConsumerStatefulWidget {
   final Contact? contact;
@@ -22,13 +24,18 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
   late TextEditingController _addressController;
   late TextEditingController _detailController;
 
-  String _addressType = 'Home'; // 'Home' | 'Office' | 'Other'
+  ContactAddressType _addressType = ContactAddressType.home;
   double? _latitude;
   double? _longitude;
 
-  bool _isSearching = false;
-  List<dynamic> _suggestions = [];
-  final FocusNode _addressFocusNode = FocusNode();
+  /// The picked area, code and display name together. A saved contact already
+  /// carries both, which is why an edit needs no lookup to show where it is.
+  AdministrativeArea? _province;
+  AdministrativeArea? _ward;
+
+  /// The pickers are not form fields, so their "required" is reported here rather
+  /// than by the validator.
+  String? _areaError;
 
   @override
   void initState() {
@@ -39,21 +46,23 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
     _detailController = TextEditingController(
       text: widget.contact?.addressDetail,
     );
-    _addressType = widget.contact?.addressType ?? 'Home';
+    _addressType = widget.contact?.addressType ?? ContactAddressType.home;
     _latitude = widget.contact?.latitude;
     _longitude = widget.contact?.longitude;
 
-    _addressFocusNode.addListener(() {
-      if (!_addressFocusNode.hasFocus) {
-        Future.delayed(const Duration(milliseconds: 200), () {
-          if (mounted) {
-            setState(() {
-              _suggestions = [];
-            });
-          }
-        });
-      }
-    });
+    final contact = widget.contact;
+    if (contact != null) {
+      _province = AdministrativeArea(
+        code: contact.provinceCode,
+        name: contact.provinceName,
+        kind: AdministrativeAreaKindEnum.province,
+      );
+      _ward = AdministrativeArea(
+        code: contact.wardCode,
+        name: contact.wardName,
+        kind: AdministrativeAreaKindEnum.ward,
+      );
+    }
   }
 
   @override
@@ -62,84 +71,74 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
     _phoneController.dispose();
     _addressController.dispose();
     _detailController.dispose();
-    _addressFocusNode.dispose();
     super.dispose();
-  }
-
-  void _onAddressChanged(String query) async {
-    if (query.trim().length < 3) {
-      setState(() {
-        _suggestions = [];
-      });
-      return;
-    }
-
-    setState(() {
-      _isSearching = true;
-    });
-
-    try {
-      final commonApi = ref.read(commonApiServiceProvider);
-      final response = await commonApi.searchGeocode(query, 5);
-      setState(() {
-        _suggestions = response.data;
-      });
-    } catch (e) {
-      // Bỏ qua
-    } finally {
-      setState(() {
-        _isSearching = false;
-      });
-    }
-  }
-
-  void _selectSuggestion(GeocodeSuggestion suggestion) {
-    setState(() {
-      _addressController.text = suggestion.displayName;
-      _latitude = suggestion.latitude;
-      _longitude = suggestion.longitude;
-      _suggestions = [];
-    });
-    _addressFocusNode.unfocus();
   }
 
   void _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // The codes are what a carrier is called with, so an address cannot be saved
+    // without them and neither is ever typed — both come from the picker.
+    final province = _province;
+    final ward = _ward;
+    if (province == null || ward == null) {
+      setState(() => _areaError = 'Vui lòng chọn tỉnh/thành và phường/xã');
+      return;
+    }
 
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final address = _addressController.text.trim();
     final detail = _detailController.text.trim();
 
-    if (widget.contact == null) {
-      await ref
-          .read(addressesControllerProvider.notifier)
-          .createContact(
-            CreateContactRequest(
-              fullName: name,
-              phone: phone,
-              address: address,
-              addressDetail: detail.isNotEmpty ? detail : null,
-              addressType: _addressType,
-              latitude: _latitude ?? 0.0,
-              longitude: _longitude ?? 0.0,
-            ),
-          );
+    final controller = ref.read(addressesControllerProvider.notifier);
+    final existing = widget.contact;
+
+    // Nothing sends a district: Vietnam goes province to ward and the backend
+    // drops the pair, so a code invented here would be silently lost.
+    if (existing == null) {
+      await controller.createContact(
+        CreateContactRequest(
+          fullName: name,
+          phone: phone,
+          address: address,
+          addressDetail: detail.isNotEmpty ? detail : null,
+          addressType: _addressType,
+          country: 'VN',
+          provinceCode: province.code,
+          provinceName: province.name,
+          wardCode: ward.code,
+          wardName: ward.name,
+          latitude: _latitude,
+          longitude: _longitude,
+        ),
+      );
     } else {
-      await ref
-          .read(addressesControllerProvider.notifier)
-          .updateContact(
-            UpdateContactRequest(
-              contactId: widget.contact!.id,
-              fullName: name,
-              phone: phone,
-              address: address,
-              addressDetail: detail.isNotEmpty ? detail : null,
-              addressType: _addressType,
-              latitude: _latitude,
-              longitude: _longitude,
-            ),
-          );
+      // A null reads as "leave alone", so emptying the unit-and-floor line is the
+      // clear flag or nothing happens at all. Same for the coordinates, which no
+      // longer come from anywhere once the address is typed rather than geocoded.
+      final emptied = detail.isEmpty && existing.addressDetail != null;
+      final lostLocation =
+          _latitude == null && existing.latitude != null ||
+          _longitude == null && existing.longitude != null;
+      await controller.updateContact(
+        existing.id,
+        UpdateContactRequest(
+          fullName: name,
+          phone: phone,
+          address: address,
+          addressDetail: detail.isNotEmpty ? detail : null,
+          clearAddressDetail: emptied ? true : null,
+          addressType: _addressType,
+          provinceCode: province.code,
+          provinceName: province.name,
+          wardCode: ward.code,
+          wardName: ward.name,
+          latitude: _latitude,
+          longitude: _longitude,
+          clearLocation: lostLocation ? true : null,
+        ),
+      );
     }
 
     if (mounted && !ref.read(addressesControllerProvider).hasError) {
@@ -265,98 +264,96 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
               ),
               const SizedBox(height: 16),
 
-              // Address Search Autocomplete Field
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  TextFormField(
-                    controller: _addressController,
-                    focusNode: _addressFocusNode,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 14,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Address (Search / Autocomplete)',
-                      labelStyle: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 13,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      filled: true,
-                      fillColor: inputFillColor,
-                      suffixIcon: _isSearching
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                            )
-                          : Icon(
-                              Icons.map_rounded,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.primary,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                    onChanged: _onAddressChanged,
-                    validator: (val) => (val == null || val.trim().isEmpty)
-                        ? 'Please enter address'
-                        : null,
+              // Province and ward, from the backend's own list. The codes are
+              // what a carrier is routed by, so they are chosen and never typed.
+              _areaField(
+                label: 'Tỉnh/Thành phố',
+                value: _province?.name,
+                fillColor: inputFillColor,
+                onTap: () async {
+                  final picked = await showAreaPicker(
+                    context,
+                    title: 'Chọn tỉnh, thành phố',
+                    selectedCode: _province?.code,
+                  );
+                  if (picked == null) return;
+                  // The ward belonged to the old province, so it cannot stand.
+                  setState(() {
+                    _province = picked;
+                    _ward = null;
+                    _areaError = null;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              _areaField(
+                label: 'Phường/Xã',
+                value: _ward?.name,
+                fillColor: inputFillColor,
+                enabled: _province != null,
+                onTap: () async {
+                  final province = _province;
+                  if (province == null) return;
+                  final picked = await showAreaPicker(
+                    context,
+                    title: 'Chọn phường, xã',
+                    parent: province.code,
+                    selectedCode: _ward?.code,
+                  );
+                  if (picked == null) return;
+                  setState(() {
+                    _ward = picked;
+                    _areaError = null;
+                  });
+                },
+              ),
+              if (_areaError != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  _areaError!,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: theme.colorScheme.error,
                   ),
+                ),
+              ],
+              const SizedBox(height: 16),
 
-                  // Suggestions list overlay
-                  if (_suggestions.isNotEmpty)
-                    Positioned(
-                      top: 60,
-                      left: 0,
-                      right: 0,
-                      child: Material(
-                        elevation: 4,
-                        borderRadius: BorderRadius.circular(12),
-                        color: isDarkMode
-                            ? AppColors.darkSurface
-                            : Colors.white,
-                        child: Container(
-                          constraints: const BoxConstraints(maxHeight: 200),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: _suggestions.length,
-                            itemBuilder: (context, idx) {
-                              final GeocodeSuggestion sug = _suggestions[idx];
-                              return ListTile(
-                                dense: true,
-                                title: Text(
-                                  sug.displayName,
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 13,
-                                    color: theme.colorScheme.onSurface,
-                                  ),
-                                ),
-                                onTap: () => _selectSuggestion(sug),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
+              // The street line, typed. There is no geocoding search behind this
+              // platform, and the province and ward above already carry the codes
+              // a carrier is routed by.
+              TextFormField(
+                controller: _addressController,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 14,
+                  color: theme.colorScheme.onSurface,
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Số nhà, tên đường',
+                  labelStyle: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  filled: true,
+                  fillColor: inputFillColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
+                      width: 1.5,
                     ),
-                ],
+                  ),
+                ),
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'Please enter address'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -403,13 +400,13 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                 ),
               ),
               const SizedBox(height: 8),
+              // The contract has two kinds and no more, so there is no 'Other'
+              // chip to send a value the route answers 422 to.
               Row(
                 children: [
-                  _buildTypeChip('Home', 'Home'),
+                  _buildTypeChip(ContactAddressType.home, 'Nhà riêng'),
                   const SizedBox(width: 8),
-                  _buildTypeChip('Office', 'Office'),
-                  const SizedBox(width: 8),
-                  _buildTypeChip('Other', 'Other'),
+                  _buildTypeChip(ContactAddressType.work, 'Công ty'),
                 ],
               ),
 
@@ -445,7 +442,56 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
     );
   }
 
-  Widget _buildTypeChip(String type, String label) {
+  /// Looks like the text fields around it but opens the area picker; a free-text
+  /// area would produce a name with no code behind it.
+  Widget _areaField({
+    required String label,
+    required String? value,
+    required Color fillColor,
+    required VoidCallback onTap,
+    bool enabled = true,
+  }) {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: enabled ? onTap : null,
+      borderRadius: BorderRadius.circular(12),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          filled: true,
+          fillColor: fillColor,
+          enabled: enabled,
+          suffixIcon: Icon(
+            Icons.expand_more_rounded,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        isEmpty: value == null,
+        child: Text(
+          value ?? '',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            color: enabled
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTypeChip(ContactAddressType type, String label) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final isSelected = _addressType == type;

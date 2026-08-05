@@ -8,15 +8,24 @@ part of 'chat_notifier.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Provider quản lý danh sách cuộc hội thoại chat
+/// The inbox.
+///
+/// Every change to it arrives on the account's one socket; nothing is polled and
+/// nothing is replayed, so a re-handshake means refetching over REST.
 
 @ProviderFor(ChatListNotifier)
 const chatListProvider = ChatListNotifierProvider._();
 
-/// Provider quản lý danh sách cuộc hội thoại chat
+/// The inbox.
+///
+/// Every change to it arrives on the account's one socket; nothing is polled and
+/// nothing is replayed, so a re-handshake means refetching over REST.
 final class ChatListNotifierProvider
     extends $AsyncNotifierProvider<ChatListNotifier, ChatListState> {
-  /// Provider quản lý danh sách cuộc hội thoại chat
+  /// The inbox.
+  ///
+  /// Every change to it arrives on the account's one socket; nothing is polled and
+  /// nothing is replayed, so a re-handshake means refetching over REST.
   const ChatListNotifierProvider._()
     : super(
         from: null,
@@ -36,9 +45,12 @@ final class ChatListNotifierProvider
   ChatListNotifier create() => ChatListNotifier();
 }
 
-String _$chatListNotifierHash() => r'cb0ba9409eca17a789a831b17715686c204955f1';
+String _$chatListNotifierHash() => r'b7533ee0aaf204f4dff929fb8b928209221ae978';
 
-/// Provider quản lý danh sách cuộc hội thoại chat
+/// The inbox.
+///
+/// Every change to it arrives on the account's one socket; nothing is polled and
+/// nothing is replayed, so a re-handshake means refetching over REST.
 
 abstract class _$ChatListNotifier extends $AsyncNotifier<ChatListState> {
   FutureOr<ChatListState> build();
@@ -59,15 +71,24 @@ abstract class _$ChatListNotifier extends $AsyncNotifier<ChatListState> {
   }
 }
 
-/// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
+/// One open thread.
+///
+/// Messages, read receipts and the negotiations its cards point at all arrive on
+/// the same socket; what the app sends, it sends over REST.
 
 @ProviderFor(ChatDetailNotifier)
 const chatDetailProvider = ChatDetailNotifierFamily._();
 
-/// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
+/// One open thread.
+///
+/// Messages, read receipts and the negotiations its cards point at all arrive on
+/// the same socket; what the app sends, it sends over REST.
 final class ChatDetailNotifierProvider
     extends $AsyncNotifierProvider<ChatDetailNotifier, ChatDetailState> {
-  /// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
+  /// One open thread.
+  ///
+  /// Messages, read receipts and the negotiations its cards point at all arrive on
+  /// the same socket; what the app sends, it sends over REST.
   const ChatDetailNotifierProvider._({
     required ChatDetailNotifierFamily super.from,
     required String super.argument,
@@ -105,9 +126,12 @@ final class ChatDetailNotifierProvider
 }
 
 String _$chatDetailNotifierHash() =>
-    r'82f0967daca599dd1b962703cf89d45b4c0e19e0';
+    r'b0a8f67a1ede49fdb3f68263a7085be2a183b63b';
 
-/// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
+/// One open thread.
+///
+/// Messages, read receipts and the negotiations its cards point at all arrive on
+/// the same socket; what the app sends, it sends over REST.
 
 final class ChatDetailNotifierFamily extends $Family
     with
@@ -127,7 +151,10 @@ final class ChatDetailNotifierFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
+  /// One open thread.
+  ///
+  /// Messages, read receipts and the negotiations its cards point at all arrive on
+  /// the same socket; what the app sends, it sends over REST.
 
   ChatDetailNotifierProvider call(String conversationId) =>
       ChatDetailNotifierProvider._(argument: conversationId, from: this);
@@ -136,7 +163,10 @@ final class ChatDetailNotifierFamily extends $Family
   String toString() => r'chatDetailProvider';
 }
 
-/// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
+/// One open thread.
+///
+/// Messages, read receipts and the negotiations its cards point at all arrive on
+/// the same socket; what the app sends, it sends over REST.
 
 abstract class _$ChatDetailNotifier extends $AsyncNotifier<ChatDetailState> {
   late final _$args = ref.$arg as String;

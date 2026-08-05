@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../constants/api_endpoints.dart';
-import 'api_interceptors.dart';
+import 'package:shopnexus_flutter_app/core/constants/api_endpoints.dart';
+import 'package:shopnexus_flutter_app/core/network/api_interceptors.dart';
 
 part 'dio_client.g.dart';
 

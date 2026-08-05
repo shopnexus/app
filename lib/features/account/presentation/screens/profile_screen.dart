@@ -1,15 +1,19 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../shared/data_sources/common_api_service.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../data/models/account_model.dart';
-import '../providers/account_provider.dart';
-import '../../../seller/presentation/providers/seller_dashboard_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/profile_gender.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/profile_fields.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -22,7 +26,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isUploadingAvatar = false;
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> _pickAndUploadAvatar(AccountProfile profile) async {
+  Future<void> _pickAndUploadAvatar(Me profile) async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
@@ -37,20 +41,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     });
 
     try {
-      final fileBytes = await image.readAsBytes();
-      final multipartFile = MultipartFile.fromBytes(
-        fileBytes,
-        filename: image.name,
-      );
-
-      final commonApi = ref.read(commonApiServiceProvider);
-      final response = await commonApi.uploadFile(multipartFile);
-
-      final rsId = response.data.rsId;
+      final rsId = await ref
+          .read(accountRepositoryProvider)
+          .uploadAvatar(
+            bytes: await image.readAsBytes(),
+            filename: image.name,
+            mime: image.mimeType ?? 'image/jpeg',
+          );
 
       await ref
           .read(accountControllerProvider.notifier)
-          .updateProfile(UpdateProfileRequest(avatarRsId: rsId));
+          .updateProfile(UpdateProfileRequest(avatarResourceId: rsId));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -78,7 +79,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  void _showEditProfileBottomSheet(AccountProfile profile) {
+  void _showEditProfileBottomSheet(Me profile) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
@@ -107,7 +108,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final profileAsync = ref.watch(profileProvider);
-    final statsAsync = ref.watch(sellerDashboardProvider);
+    final dashboardAsync = ref.watch(sellerDashboardProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -215,9 +216,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      profile.name ??
-                                          profile.username ??
-                                          'Chưa đặt tên',
+                                      profile.name.isNotEmpty
+                                          ? profile.name
+                                          : (profile.username ??
+                                                'Chưa đặt tên'),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -356,8 +358,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
 
                       // --- 2. My Sales (Single Row options) ---
-                      statsAsync.when(
-                        data: (stats) => Column(
+                      dashboardAsync.when(
+                        data: (dashboard) => Column(
                           children: [
                             ListTile(
                               leading: Container(
@@ -404,40 +406,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                               child: Row(
                                 children: [
+                                  // OrderState's three values. `shipping` and
+                                  // `disputing` were never states of an order.
                                   _buildQuickActionButton(
                                     context,
                                     icon: Icons.pending_actions,
-                                    label: 'Processing',
-                                    count: stats.pendingOrders,
-                                    onTap: () =>
-                                        context.push('/seller/orders?tab=1'),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _buildQuickActionButton(
-                                    context,
-                                    icon: Icons.local_shipping_outlined,
-                                    label: 'Shipping',
-                                    count: stats.shippingOrders,
-                                    onTap: () =>
-                                        context.push('/seller/orders?tab=2'),
+                                    label: 'Đang xử lý',
+                                    count: dashboard.summary.open,
+                                    onTap: () => context.push(
+                                      '/seller/orders?state=open',
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   _buildQuickActionButton(
                                     context,
                                     icon: Icons.check_circle_outline,
-                                    label: 'Completed',
-                                    count: stats.completedOrders,
-                                    onTap: () =>
-                                        context.push('/seller/orders?tab=3'),
+                                    label: 'Hoàn thành',
+                                    count: dashboard.summary.completed,
+                                    onTap: () => context.push(
+                                      '/seller/orders?state=completed',
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   _buildQuickActionButton(
                                     context,
-                                    icon: Icons.warning_amber_rounded,
-                                    label: 'Disputing',
-                                    count: stats.disputingOrders,
-                                    onTap: () =>
-                                        context.push('/seller/orders?tab=4'),
+                                    icon: Icons.cancel_outlined,
+                                    label: 'Đã hủy',
+                                    count: dashboard.summary.cancelled,
+                                    onTap: () => context.push(
+                                      '/seller/orders?state=cancelled',
+                                    ),
                                   ),
                                 ],
                               ),
@@ -496,11 +494,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                               child: Row(
                                 children: [
+                                  // ListingStatus's own values: `inactive` and
+                                  // `violated` matched no listing at all.
                                   _buildQuickActionButton(
                                     context,
                                     icon: Icons.inventory_2_outlined,
-                                    label: 'Active',
-                                    count: stats.activeProducts,
+                                    label: 'Đang bán',
+                                    count: dashboard.listingsWith(
+                                      ListingStatus.active,
+                                    ),
                                     onTap: () => context.push(
                                       '/seller/products?status=active',
                                     ),
@@ -508,21 +510,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   const SizedBox(width: 8),
                                   _buildQuickActionButton(
                                     context,
-                                    icon: Icons.visibility_off_outlined,
-                                    label: 'Inactive',
-                                    count: stats.inactiveProducts,
+                                    icon: Icons.hourglass_empty,
+                                    label: 'Chờ duyệt',
+                                    count: dashboard.listingsWith(
+                                      ListingStatus.pending,
+                                    ),
                                     onTap: () => context.push(
-                                      '/seller/products?status=inactive',
+                                      '/seller/products?status=pending',
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   _buildQuickActionButton(
                                     context,
-                                    icon: Icons.report_problem_outlined,
-                                    label: 'Violated',
-                                    count: stats.violatedProducts,
+                                    icon: Icons.visibility_off_outlined,
+                                    label: 'Đã ẩn',
+                                    count: dashboard.listingsWith(
+                                      ListingStatus.hidden,
+                                    ),
                                     onTap: () => context.push(
-                                      '/seller/products?status=violated',
+                                      '/seller/products?status=hidden',
                                     ),
                                   ),
                                 ],
@@ -535,19 +541,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   : const Color(0xFFF1F5F9),
                               indent: 56,
                             ),
-
-                            // --- Rich AI Product Wizard Banner Card ---
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: _buildAiWizardBanner(context),
-                            ),
                           ],
                         ),
                         loading: () => const SizedBox.shrink(),
                         error: (_, _) => const SizedBox.shrink(),
+                      ),
+                      // Outside the `when`: posting a listing does not depend on
+                      // the sales figures, and this used to vanish with them.
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: _buildAiWizardBanner(context),
                       ),
                       Divider(
                         height: 1,
@@ -812,7 +818,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => context.push('/seller/ai-wizard'),
+              onPressed: () => context.push('/seller/new-listing'),
               icon: const Icon(Icons.auto_awesome, size: 18),
               label: const Text('Tạo sản phẩm với AI Wizard'),
               style: ElevatedButton.styleFrom(
@@ -1063,7 +1069,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
 // ======================== EDIT PROFILE SHEET WIDGET ========================
 class _EditProfileFormSheet extends ConsumerStatefulWidget {
-  final AccountProfile profile;
+  final Me profile;
 
   const _EditProfileFormSheet({required this.profile});
 
@@ -1078,7 +1084,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
   late TextEditingController _phoneController;
   late TextEditingController _emailController;
 
-  String? _gender;
+  ProfileGender? _gender;
   DateTime? _dob;
 
   @override
@@ -1087,17 +1093,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
     _nameController = TextEditingController(text: widget.profile.name);
     _phoneController = TextEditingController(text: widget.profile.phone);
     _emailController = TextEditingController(text: widget.profile.email);
-
-    final profileGender = widget.profile.gender;
-    if (profileGender == 'Male' || profileGender == '0') {
-      _gender = 'Male';
-    } else if (profileGender == 'Female' || profileGender == '1') {
-      _gender = 'Female';
-    } else if (profileGender == 'Other' || profileGender == '2') {
-      _gender = 'Other';
-    } else {
-      _gender = profileGender;
-    }
+    _gender = genderOf(widget.profile.gender);
 
     if (widget.profile.dateOfBirth != null) {
       _dob = DateTime.tryParse(widget.profile.dateOfBirth!);
@@ -1126,30 +1122,57 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
     }
   }
 
-  void _submit() async {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final String? dobString = _dob != null
-        ? '${_dob!.year}-${_dob!.month.toString().padLeft(2, '0')}-${_dob!.day.toString().padLeft(2, '0')}'
-        : null;
+    final controller = ref.read(accountControllerProvider.notifier);
 
-    ref
-        .read(accountControllerProvider.notifier)
-        .updateProfile(
-          UpdateProfileRequest(
-            name: _nameController.text.trim(),
-            phone: _phoneController.text.trim().isNotEmpty
-                ? _phoneController.text.trim()
-                : null,
-            email: _emailController.text.trim().isNotEmpty
-                ? _emailController.text.trim()
-                : null,
-            gender: _gender,
-            dateOfBirth: dobString,
-          ),
-        );
+    await controller.updateProfile(
+      UpdateProfileRequest(
+        name: _nameController.text.trim(),
+        gender: _gender,
+        // The picker answers a local midnight; the day is the whole fact, so the
+        // wall-clock date is what goes on the wire.
+        dateOfBirth: _dob?.toIso8601String().split('T').first,
+      ),
+    );
 
+    // A phone and an email are identifiers on `PATCH /me`, not profile fields,
+    // and only a real change may be sent: re-posting the same email would clear
+    // `email_verified` and mail out a fresh verification.
+    final identifiers = _identifierChanges();
+    if (identifiers != null && ref.read(accountControllerProvider).hasValue) {
+      await controller.updateAccount(identifiers);
+    }
+
+    if (!mounted) return;
+    final failure = ref.read(accountControllerProvider).error;
+    if (failure != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi cập nhật: $failure'),
+          backgroundColor: const Color(0xFFBA1A1A),
+        ),
+      );
+      return;
+    }
     Navigator.of(context).pop();
+  }
+
+  /// Null when neither identifier moved, so an unchanged form sends nothing.
+  UpdateAccountRequest? _identifierChanges() {
+    final phone = _phoneController.text.trim();
+    final email = _emailController.text.trim();
+    final phoneChanged = phone != (widget.profile.phone ?? '');
+    final emailChanged = email != (widget.profile.email ?? '');
+    if (!phoneChanged && !emailChanged) return null;
+
+    return UpdateAccountRequest(
+      phone: phoneChanged && phone.isNotEmpty ? phone : null,
+      clearPhone: phoneChanged && phone.isEmpty ? true : null,
+      email: emailChanged && email.isNotEmpty ? email : null,
+      clearEmail: emailChanged && email.isEmpty ? true : null,
+    );
   }
 
   @override
@@ -1300,7 +1323,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
               const SizedBox(height: 16),
 
               // Gender Selection Dropdown
-              DropdownButtonFormField<String>(
+              DropdownButtonFormField<ProfileGender>(
                 initialValue: _gender,
                 dropdownColor: isDarkMode
                     ? AppColors.darkSurface
@@ -1325,36 +1348,17 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                   ),
                 ),
                 items: [
-                  DropdownMenuItem(
-                    value: 'Male',
-                    child: Text(
-                      'Nam',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: theme.colorScheme.onSurface,
+                  for (final gender in ProfileGender.values)
+                    DropdownMenuItem(
+                      value: gender,
+                      child: Text(
+                        genderLabel(gender),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Female',
-                    child: Text(
-                      'Nữ',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Other',
-                    child: Text(
-                      'Khác',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
                 ],
                 onChanged: (val) {
                   setState(() {

@@ -13,13 +13,8 @@ part of 'account_provider.dart';
 const profileProvider = ProfileProvider._();
 
 final class ProfileProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<AccountProfile>,
-          AccountProfile,
-          FutureOr<AccountProfile>
-        >
-    with $FutureModifier<AccountProfile>, $FutureProvider<AccountProfile> {
+    extends $FunctionalProvider<AsyncValue<Me>, Me, FutureOr<Me>>
+    with $FutureModifier<Me>, $FutureProvider<Me> {
   const ProfileProvider._()
     : super(
         from: null,
@@ -36,17 +31,16 @@ final class ProfileProvider
 
   @$internal
   @override
-  $FutureProviderElement<AccountProfile> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  $FutureProviderElement<Me> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
 
   @override
-  FutureOr<AccountProfile> create(Ref ref) {
+  FutureOr<Me> create(Ref ref) {
     return profile(ref);
   }
 }
 
-String _$profileHash() => r'6dff79fce6bbff2c7916a56488b501c1f87375c0';
+String _$profileHash() => r'5f4ca96096caad1c75abb32ca4013f387cb76fbb';
 
 @ProviderFor(publicProfile)
 const publicProfileProvider = PublicProfileFamily._();
@@ -54,11 +48,11 @@ const publicProfileProvider = PublicProfileFamily._();
 final class PublicProfileProvider
     extends
         $FunctionalProvider<
-          AsyncValue<AccountProfile>,
-          AccountProfile,
-          FutureOr<AccountProfile>
+          AsyncValue<PublicAccount>,
+          PublicAccount,
+          FutureOr<PublicAccount>
         >
-    with $FutureModifier<AccountProfile>, $FutureProvider<AccountProfile> {
+    with $FutureModifier<PublicAccount>, $FutureProvider<PublicAccount> {
   const PublicProfileProvider._({
     required PublicProfileFamily super.from,
     required String super.argument,
@@ -82,12 +76,12 @@ final class PublicProfileProvider
 
   @$internal
   @override
-  $FutureProviderElement<AccountProfile> $createElement(
+  $FutureProviderElement<PublicAccount> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<AccountProfile> create(Ref ref) {
+  FutureOr<PublicAccount> create(Ref ref) {
     final argument = this.argument as String;
     return publicProfile(ref, argument);
   }
@@ -103,10 +97,10 @@ final class PublicProfileProvider
   }
 }
 
-String _$publicProfileHash() => r'7ede5e23f2b27c35e81f36f6545cde5a612d06be';
+String _$publicProfileHash() => r'34d64cd73a71c9663e0919fc480853985677a1c2';
 
 final class PublicProfileFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<AccountProfile>, String> {
+    with $FunctionalFamilyOverride<FutureOr<PublicAccount>, String> {
   const PublicProfileFamily._()
     : super(
         retry: null,
@@ -147,7 +141,7 @@ final class AccountControllerProvider
   AccountController create() => AccountController();
 }
 
-String _$accountControllerHash() => r'df471519f63af31022b1d9ec156c87bdf47e264a';
+String _$accountControllerHash() => r'7e8f449dc547fcd4ffdd120f6ce6bffc7c2d1a49';
 
 abstract class _$AccountController extends $AsyncNotifier<void> {
   FutureOr<void> build();

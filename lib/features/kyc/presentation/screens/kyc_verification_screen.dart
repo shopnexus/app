@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../data/models/kyc_model.dart';
-import '../providers/kyc_provider.dart';
-import '../widgets/kyc_card_picker_widget.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
+import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/kyc_provider.dart';
+import 'package:shopnexus_flutter_app/features/kyc/presentation/widgets/kyc_card_picker_widget.dart';
 
 class KycVerificationScreen extends ConsumerStatefulWidget {
   const KycVerificationScreen({super.key});
@@ -15,70 +15,11 @@ class KycVerificationScreen extends ConsumerStatefulWidget {
 }
 
 class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
-  late TextEditingController _idNumberController;
-  late TextEditingController _fullNameController;
-  late TextEditingController _issuePlaceController;
-
-  @override
-  void initState() {
-    super.initState();
-    _idNumberController = TextEditingController();
-    _fullNameController = TextEditingController();
-    _issuePlaceController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _idNumberController.dispose();
-    _fullNameController.dispose();
-    _issuePlaceController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selectDate(
-    BuildContext context,
-    String? initialDateStr,
-    Function(String) onDateSelected,
-  ) async {
-    DateTime initialDate = DateTime.now().subtract(
-      const Duration(days: 365 * 20),
-    );
-    if (initialDateStr != null && initialDateStr.isNotEmpty) {
-      final parsed = DateTime.tryParse(initialDateStr);
-      if (parsed != null) initialDate = parsed;
-    }
-
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(1940),
-      lastDate: DateTime.now(),
-    );
-
-    if (picked != null) {
-      final formatted =
-          "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-      onDateSelected(formatted);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final state = ref.watch(kycProvider);
     final notifier = ref.read(kycProvider.notifier);
-
-    // Synchronize controller values if state was initialized from saved KYC
-    if (_idNumberController.text != state.idNumber) {
-      _idNumberController.text = state.idNumber;
-    }
-    if (_fullNameController.text != state.fullName) {
-      _fullNameController.text = state.fullName;
-    }
-    if (state.issuePlace != null &&
-        _issuePlaceController.text != state.issuePlace) {
-      _issuePlaceController.text = state.issuePlace!;
-    }
 
     // Listen to error and success messages
     ref.listen<KycFormState>(kycProvider, (prev, next) {
@@ -102,9 +43,10 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
       }
     });
 
-    final isReadOnly =
-        state.kycModel?.status == KycStatus.pending ||
-        state.kycModel?.status == KycStatus.verified;
+    final currentStatus = state.kycModel?.status;
+    final isSubmittedOrVerified =
+        currentStatus == IdentityStatus.pending ||
+        currentStatus == IdentityStatus.verified;
 
     return PopScope(
       canPop: true,
@@ -148,170 +90,87 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
 
                     const SizedBox(height: 20),
 
-                    // Section: Image Pickers
-                    _buildSectionHeader('1. Ảnh chụp CCCD / CMND'),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Vui lòng tải lên ảnh chụp rõ nét, không bị lóa hoặc mất góc',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                    if (isSubmittedOrVerified)
+                      // Khi đã nộp / được xác minh: Chỉ hiển thị thông tin văn bản đã xác minh
+                      _buildVerifiedInfoCard(state.kycModel!)
+                    else ...[
+                      // Khi chưa xác minh hoặc bị từ chối: Cho phép chọn loại giấy tờ và chụp ảnh
+                      _buildSectionHeader('1. Loại giấy tờ xác minh'),
+                      const SizedBox(height: 10),
+                      _buildDocTypeSelector(state.docType, notifier),
 
-                    // Front Card
-                    KycCardPickerWidget(
-                      title: 'Mặt trước CCCD',
-                      description:
-                          'Ảnh chụp mặt trước có chứa ảnh đại diện và thông tin cá nhân',
-                      icon: Icons.badge_outlined,
-                      localPath: state.frontCardPath,
-                      networkUrl: state.frontCardUrl,
-                      isUploading: state.isUploadingFront,
-                      onPickImage: (source) {
-                        if (!isReadOnly) {
+                      const SizedBox(height: 24),
+
+                      _buildSectionHeader(
+                        '2. Tải lên ảnh chụp giấy tờ & Chân dung',
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Vui lòng tải lên ảnh chụp rõ nét, không bị lóa hoặc mất góc',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Front Card Picker
+                      KycCardPickerWidget(
+                        title: _getFrontCardTitle(state.docType),
+                        description:
+                            'Chụp/Chọn ảnh mặt trước chứa ảnh chân dung và thông tin cá nhân',
+                        icon: Icons.badge_outlined,
+                        localPath: state.frontCardPath,
+                        isUploading: state.isUploadingFront,
+                        onPickImage: (source) {
                           notifier.pickAndUploadImage(
                             KycImageType.frontCard,
                             source,
                           );
-                        }
-                      },
-                    ),
+                        },
+                      ),
 
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 12),
 
-                    // Back Card
-                    KycCardPickerWidget(
-                      title: 'Mặt sau CCCD',
-                      description:
-                          'Ảnh chụp mặt sau có dấu vân tay và đặc điểm nhân dạng',
-                      icon: Icons.fingerprint_rounded,
-                      localPath: state.backCardPath,
-                      networkUrl: state.backCardUrl,
-                      isUploading: state.isUploadingBack,
-                      onPickImage: (source) {
-                        if (!isReadOnly) {
-                          notifier.pickAndUploadImage(
-                            KycImageType.backCard,
-                            source,
-                          );
-                        }
-                      },
-                    ),
+                      // Back Card Picker (if required)
+                      if (state.docType == IdentityDocumentType.nationalId) ...[
+                        KycCardPickerWidget(
+                          title: 'Mặt sau CCCD / CMND',
+                          description:
+                              'Chụp/Chọn ảnh mặt sau chứa thông tin đặc điểm nhân dạng',
+                          icon: Icons.fingerprint_rounded,
+                          localPath: state.backCardPath,
+                          isUploading: state.isUploadingBack,
+                          onPickImage: (source) {
+                            notifier.pickAndUploadImage(
+                              KycImageType.backCard,
+                              source,
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                      ],
 
-                    const SizedBox(height: 12),
-
-                    // Selfie Card
-                    KycCardPickerWidget(
-                      title: 'Ảnh chân dung',
-                      description:
-                          'Chụp ảnh chân dung hiện rõ khuôn mặt của bạn',
-                      icon: Icons.face_rounded,
-                      localPath: state.selfiePath,
-                      networkUrl: state.selfieUrl,
-                      isUploading: state.isUploadingSelfie,
-                      onPickImage: (source) {
-                        if (!isReadOnly) {
+                      // Selfie Card Picker
+                      KycCardPickerWidget(
+                        title: 'Ảnh chân dung',
+                        description:
+                            'Chụp/Chọn ảnh chân dung hiện rõ khuôn mặt khuôn hình',
+                        icon: Icons.face_rounded,
+                        localPath: state.selfiePath,
+                        isUploading: state.isUploadingSelfie,
+                        onPickImage: (source) {
                           notifier.pickAndUploadImage(
                             KycImageType.selfie,
                             source,
                           );
-                        }
-                      },
-                    ),
+                        },
+                      ),
 
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 32),
 
-                    // Section: Document Info Form
-                    _buildSectionHeader('2. Thông tin giấy tờ'),
-                    const SizedBox(height: 12),
-
-                    // ID Number Field
-                    _buildInputField(
-                      label: 'Số CCCD / CMND *',
-                      hint: 'Nhập 12 chữ số trên CCCD',
-                      controller: _idNumberController,
-                      enabled: !isReadOnly,
-                      keyboardType: TextInputType.number,
-                      onChanged: (val) =>
-                          notifier.updateFormFields(idNumber: val),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Full Name Field
-                    _buildInputField(
-                      label: 'Họ và tên trên CCCD *',
-                      hint: 'Ví dụ: NGUYỄN VĂN A',
-                      controller: _fullNameController,
-                      enabled: !isReadOnly,
-                      onChanged: (val) =>
-                          notifier.updateFormFields(fullName: val),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Date of Birth Picker
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: isReadOnly
-                                ? null
-                                : () => _selectDate(
-                                    context,
-                                    state.dateOfBirth,
-                                    (date) => notifier.updateFormFields(
-                                      dateOfBirth: date,
-                                    ),
-                                  ),
-                            child: _buildInputDecorator(
-                              label: 'Ngày sinh',
-                              value: state.dateOfBirth ?? 'Chọn ngày sinh',
-                              icon: Icons.calendar_today_rounded,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: InkWell(
-                            onTap: isReadOnly
-                                ? null
-                                : () => _selectDate(
-                                    context,
-                                    state.issueDate,
-                                    (date) => notifier.updateFormFields(
-                                      issueDate: date,
-                                    ),
-                                  ),
-                            child: _buildInputDecorator(
-                              label: 'Ngày cấp',
-                              value: state.issueDate ?? 'Chọn ngày cấp',
-                              icon: Icons.event_rounded,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Issue Place Field
-                    _buildInputField(
-                      label: 'Nơi cấp',
-                      hint: 'Ví dụ: Cục Cảnh sát QLHC về trật tự xã hội',
-                      controller: _issuePlaceController,
-                      enabled: !isReadOnly,
-                      onChanged: (val) =>
-                          notifier.updateFormFields(issuePlace: val),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Submit Button
-                    if (!isReadOnly)
+                      // Submit Button
                       SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -321,7 +180,13 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
                               : () async {
                                   final success = await notifier.submitKyc();
                                   if (success && context.mounted) {
-                                    context.pop();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Hồ sơ của bạn đã được cập nhật thành công',
+                                        ),
+                                      ),
+                                    );
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
@@ -351,6 +216,7 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
                                 ),
                         ),
                       ),
+                    ],
 
                     const SizedBox(height: 32),
                   ],
@@ -360,43 +226,45 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
     );
   }
 
-  Widget _buildKycStatusBanner(KycModel? kyc) {
+  Widget _buildKycStatusBanner(IdentityDocument? kyc) {
     final theme = Theme.of(context);
-    final status = kyc?.status ?? KycStatus.unverified;
+    // No document on file is its own case: the contract has no `unverified`
+    // status, because absence already says it.
+    final status = kyc?.status;
 
-    Color bgColor;
-    Color textColor;
-    IconData iconData;
-    String statusTitle;
-    String statusSubtitle;
+    final Color bgColor;
+    final Color textColor;
+    final IconData iconData;
+    final String statusTitle;
+    final String statusSubtitle;
 
     switch (status) {
-      case KycStatus.verified:
+      case IdentityStatus.verified:
         bgColor = const Color(0xFFD1FAE5);
         textColor = const Color(0xFF065F46);
         iconData = Icons.verified_rounded;
         statusTitle = 'Đã xác minh KYC (Verified)';
         statusSubtitle =
-            'Tài khoản của bạn đã được xác minh danh tính thành công.';
+            'Danh tính của bạn đã được xác minh chính thức trên hệ thống ShopNexus.';
         break;
-      case KycStatus.pending:
+      case IdentityStatus.pending:
         bgColor = const Color(0xFFFEF3C7);
         textColor = const Color(0xFF92400E);
         iconData = Icons.pending_actions_rounded;
         statusTitle = 'Đang chờ xét duyệt (Pending)';
         statusSubtitle =
-            'Hồ sơ của bạn đã được gửi thành công và đang được quản trị viên xử lý.';
+            'Hồ sơ xác minh đã được gửi thành công và đang được bộ phận chuyên trách xử lý.';
         break;
-      case KycStatus.rejected:
+      case IdentityStatus.rejected:
         bgColor = const Color(0xFFFEE2E2);
         textColor = const Color(0xFF991B1B);
         iconData = Icons.cancel_rounded;
         statusTitle = 'Hồ sơ bị từ chối (Rejected)';
         statusSubtitle =
-            kyc?.rejectedReason ??
-            'Hồ sơ chưa đạt yêu cầu. Vui lòng kiểm tra lại ảnh chụp CCCD và gửi lại.';
+            kyc?.rejectionReason ??
+            'Hồ sơ chưa đạt yêu cầu. Vui lòng kiểm tra lại hình ảnh và gửi lại.';
         break;
-      case KycStatus.unverified:
+      case null:
         bgColor = theme.brightness == Brightness.dark
             ? theme.colorScheme.surfaceContainerHighest
             : const Color(0xFFF8FAFC);
@@ -404,7 +272,7 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
         iconData = Icons.shield_outlined;
         statusTitle = 'Chưa xác minh danh tính';
         statusSubtitle =
-            'Hoàn tất xác minh CCCD để mở khóa đầy đủ quyền lợi Mua/Bán trên ShopNexus.';
+            'Hoàn tất gửi ảnh giấy tờ để mở khóa đầy đủ quyền lợi Mua/Bán trên ShopNexus.';
         break;
     }
 
@@ -452,6 +320,217 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
     );
   }
 
+  Widget _buildVerifiedInfoCard(IdentityDocument doc) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDarkMode ? AppColors.darkSurface : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDarkMode
+              ? AppColors.darkPrimary.withValues(alpha: 0.2)
+              : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.verified_user_rounded,
+                color: theme.colorScheme.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Thông tin hồ sơ xác minh',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Manrope',
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 24, thickness: 1),
+          _buildInfoRow('Loại giấy tờ', _getDocTypeName(doc.docType)),
+          _buildInfoRow(
+            'Trạng thái',
+            doc.status == IdentityStatus.verified
+                ? 'Đã xác minh'
+                : 'Đang chờ xử lý',
+          ),
+          if (doc.id.isNotEmpty) _buildInfoRow('Mã hồ sơ', doc.id),
+          if (doc.provider.isNotEmpty)
+            _buildInfoRow('Nhà cung cấp', doc.provider),
+          _buildInfoRow(
+            'Ngày nộp',
+            _formatDateTime(doc.createdAt.toIso8601String()),
+          ),
+          if (doc.verifiedAt != null)
+            _buildInfoRow(
+              'Ngày duyệt',
+              _formatDateTime(doc.verifiedAt?.toIso8601String()),
+            ),
+          if (doc.expiresAt != null)
+            _buildInfoRow(
+              'Ngày hết hạn',
+              _formatDateTime(doc.expiresAt?.toIso8601String()),
+            ),
+          if (doc.rejectionReason != null && doc.rejectionReason!.isNotEmpty)
+            _buildInfoRow('Lý do từ chối', doc.rejectionReason!, isError: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, {bool isError = false}) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontFamily: 'Inter',
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'Inter',
+                color: isError
+                    ? const Color(0xFFBA1A1A)
+                    : theme.colorScheme.onSurface,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDocTypeSelector(
+    IdentityDocumentType selected,
+    KycNotifier notifier,
+  ) {
+    return Column(
+      children: [
+        _buildDocTypeOption(
+          type: IdentityDocumentType.nationalId,
+          title: 'Căn cước công dân / CMND',
+          subtitle: 'Sử dụng thẻ CCCD gắn chíp hoặc CMND hợp lệ',
+          isSelected: selected == IdentityDocumentType.nationalId,
+          onTap: () => notifier.setDocType(IdentityDocumentType.nationalId),
+        ),
+        const SizedBox(height: 8),
+        _buildDocTypeOption(
+          type: IdentityDocumentType.passport,
+          title: 'Hộ chiếu (Passport)',
+          subtitle: 'Sử dụng trang thông tin chính trên hộ chiếu còn hạn',
+          isSelected: selected == IdentityDocumentType.passport,
+          onTap: () => notifier.setDocType(IdentityDocumentType.passport),
+        ),
+        const SizedBox(height: 8),
+        _buildDocTypeOption(
+          type: IdentityDocumentType.driverLicense,
+          title: 'Bằng lái xe (Driver License)',
+          subtitle: 'Giấy phép lái xe bản gốc do cơ quan nhà nước cấp',
+          isSelected: selected == IdentityDocumentType.driverLicense,
+          onTap: () => notifier.setDocType(IdentityDocumentType.driverLicense),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDocTypeOption({
+    required IdentityDocumentType type,
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.08)
+              : (isDarkMode ? AppColors.darkSurface : const Color(0xFFF8FAFC)),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : (isDarkMode
+                      ? AppColors.darkPrimary.withValues(alpha: 0.2)
+                      : const Color(0xFFE2E8F0)),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              isSelected
+                  ? Icons.radio_button_checked_rounded
+                  : Icons.radio_button_off_rounded,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+              size: 22,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Manrope',
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Inter',
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSectionHeader(String title) {
     final theme = Theme.of(context);
     return Text(
@@ -465,129 +544,32 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
     );
   }
 
-  Widget _buildInputField({
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    bool enabled = true,
-    TextInputType keyboardType = TextInputType.text,
-    required Function(String) onChanged,
-  }) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          enabled: enabled,
-          keyboardType: keyboardType,
-          onChanged: onChanged,
-          style: TextStyle(
-            fontSize: 14,
-            fontFamily: 'Inter',
-            color: theme.colorScheme.onSurface,
-          ),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-              fontSize: 14,
-            ),
-            filled: true,
-            fillColor: enabled
-                ? (isDarkMode ? AppColors.darkSurface : const Color(0xFFF8FAFC))
-                : (isDarkMode ? Colors.black26 : const Color(0xFFE2E8F0)),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 14,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: isDarkMode
-                    ? AppColors.darkPrimary.withValues(alpha: 0.2)
-                    : const Color(0xFFE2E8F0),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: theme.colorScheme.primary,
-                width: 1.5,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+  String _getFrontCardTitle(IdentityDocumentType docType) {
+    switch (docType) {
+      case IdentityDocumentType.nationalId:
+        return 'Mặt trước CCCD / CMND';
+      case IdentityDocumentType.passport:
+        return 'Ảnh trang nhân thân Hộ chiếu';
+      case IdentityDocumentType.driverLicense:
+        return 'Mặt trước Giấy phép lái xe';
+    }
   }
 
-  Widget _buildInputDecorator({
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+  String _getDocTypeName(IdentityDocumentType docType) {
+    switch (docType) {
+      case IdentityDocumentType.nationalId:
+        return 'Căn cước công dân (National ID)';
+      case IdentityDocumentType.passport:
+        return 'Hộ chiếu (Passport)';
+      case IdentityDocumentType.driverLicense:
+        return 'Giấy phép lái xe (Driver License)';
+    }
+  }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          decoration: BoxDecoration(
-            color: isDarkMode ? AppColors.darkSurface : const Color(0xFFF8FAFC),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isDarkMode
-                  ? AppColors.darkPrimary.withValues(alpha: 0.2)
-                  : const Color(0xFFE2E8F0),
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, size: 18, color: theme.colorScheme.primary),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'Inter',
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+  String _formatDateTime(String? rawStr) {
+    if (rawStr == null || rawStr.isEmpty) return '-';
+    final parsed = DateTime.tryParse(rawStr);
+    if (parsed == null) return rawStr;
+    return '${parsed.day.toString().padLeft(2, '0')}/${parsed.month.toString().padLeft(2, '0')}/${parsed.year} ${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}';
   }
 }

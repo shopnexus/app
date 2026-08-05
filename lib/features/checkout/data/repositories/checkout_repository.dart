@@ -1,132 +1,133 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/constants/app_config.dart';
-import '../data_sources/checkout_api_service.dart';
-import '../models/checkout_model.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/checkout_offer_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/checkout_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/checkout_result.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_draft_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/draft_order.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/start_payment_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
 
 part 'checkout_repository.g.dart';
 
 class CheckoutRepository {
-  final CheckoutApiService _apiService;
+  final OrderApi _orderApi;
+  final FinanceApi _financeApi;
+  final CatalogApi _catalogApi;
 
-  CheckoutRepository(this._apiService);
+  CheckoutRepository(this._orderApi, this._financeApi, this._catalogApi);
 
-  Future<QuoteTransportResponse> quoteTransport(
-    QuoteTransportRequest request,
+  /// Đọc thông tin listing của các dòng đang mua.
+  ///
+  /// One read per distinct listing, not per line: several lines commonly point at
+  /// one listing (two colours of the same thing). It is the detail read rather
+  /// than `GET /listings?ids=`, because that answers `price` for the cheapest
+  /// variant while a line names a specific one — and `variants[]` is the only
+  /// place a variant is priced. A listing since withdrawn is skipped, so one gone
+  /// line does not blank the whole page.
+  Future<Map<String, ListingDetail>> listings(Iterable<String> ids) async {
+    final reads = ids.toSet().map((id) async {
+      try {
+        return (await _catalogApi.listingsIdGet(id: id)).data?.data;
+      } catch (_) {
+        return null;
+      }
+    });
+
+    final resolved = <String, ListingDetail>{};
+    for (final listing in await Future.wait(reads)) {
+      if (listing != null) resolved[listing.id] = listing;
+    }
+    return resolved;
+  }
+
+  /// Tạo một purchase session (DraftOrder) cho 1 listing
+  Future<DraftOrder> createDraft(String listingId) async {
+    final response = await _orderApi.draftsPost(
+      createDraftRequest: CreateDraftRequest(listingId: listingId),
+    );
+    return _body(response.data?.data, 'draft');
+  }
+
+  /// Lấy thông tin draft order theo id
+  Future<DraftOrder> getDraft(String id) async {
+    final response = await _orderApi.draftsIdGet(id: id);
+    return _body(response.data?.data, 'draft');
+  }
+
+  /// Hủy purchase session draft
+  Future<void> cancelDraft(String id) => _orderApi.draftsIdDelete(id: id);
+
+  /// Thực hiện checkout cho draft order
+  Future<CheckoutResult> checkoutDraft(
+    String draftId,
+    CheckoutRequest request,
   ) async {
-    if (AppConfig.useMockData) {
-      final results = request.items.map((item) {
-        final isExpress =
-            item.transportOption.toLowerCase().contains('express') ||
-            item.transportOption.toLowerCase().contains('hỏa tốc');
-        return QuoteTransportResult(
-          skuId: item.skuId,
-          transportOption: item.transportOption,
-          cost: isExpress ? 50000 : 30000,
-          currency: 'VND',
-        );
-      }).toList();
-      return QuoteTransportResponse(items: results);
-    }
-    try {
-      final response = await _apiService.quoteTransport(request);
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
+    final response = await _orderApi.draftsIdCheckoutPost(
+      id: draftId,
+      checkoutRequest: request,
+    );
+    return _body(response.data?.data, 'checkout result');
   }
 
-  Future<CheckoutResponse> checkout(CheckoutRequest request) async {
-    if (AppConfig.useMockData) {
-      return CheckoutResponse(
-        checkoutSessionId:
-            'session_mock_${DateTime.now().millisecondsSinceEpoch}',
-        paymentUrl: 'https://payment.shopnexus.com/checkout',
-      );
-    }
-    try {
-      final response = await _apiService.checkout(request);
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
+  /// Thực hiện checkout cho thương lượng (offer) đã được chấp nhận
+  Future<CheckoutResult> checkoutOffer(
+    String offerId,
+    CheckoutOfferRequest request,
+  ) async {
+    final response = await _orderApi.offersIdCheckoutPost(
+      id: offerId,
+      checkoutOfferRequest: request,
+    );
+    return _body(response.data?.data, 'checkout result');
   }
 
-  Future<void> cancelCheckout(String sessionID) async {
-    if (AppConfig.useMockData) {
-      return;
-    }
-    try {
-      await _apiService.cancelCheckout(sessionID);
-    } catch (e) {
-      rethrow;
-    }
+  /// Khởi tạo thông tin thanh toán qua cổng thanh toán
+  Future<Transaction> startPayment(
+    String sessionId,
+    StartPaymentRequest request,
+  ) async {
+    final response = await _financeApi.paymentSessionsIdPaymentsPost(
+      id: sessionId,
+      startPaymentRequest: request,
+    );
+    return _body(response.data?.data, 'transaction');
   }
 
-  Future<PaymentUrlResponse> getPaymentUrl(String sessionID) async {
-    if (AppConfig.useMockData) {
-      return const PaymentUrlResponse(
-        paymentUrl: 'https://payment.shopnexus.com/checkout',
-      );
-    }
-    try {
-      final response = await _apiService.getPaymentUrl(sessionID);
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
+  /// Lấy báo giá phí vận chuyển từ server
+  Future<ShippingQuotes> getShippingQuotes(
+    ShippingQuotesRequest request,
+  ) async {
+    final response = await _orderApi.shippingQuotesPost(
+      shippingQuotesRequest: request,
+    );
+    return _body(response.data?.data, 'shipping quotes');
   }
 
-  Future<CheckoutSummary> getCheckoutSummary(String txID) async {
-    if (AppConfig.useMockData) {
-      return CheckoutSummary(
-        session: CheckoutSession(
-          id: 8474,
-          kind: 'cart_checkout',
-          status: 'SUCCESS',
-          currency: 'VND',
-          totalAmount: 1200000,
-          dateCreated: '2026-07-30T17:00:00Z',
-          datePaid: '2026-07-30T17:01:00Z',
-        ),
-        items: const [
-          CheckoutSummaryItem(
-            id: 1,
-            skuId: 'sku_1_1',
-            spuId: 'spu_1',
-            slug: 'vi-da-bo-sap-thu-cong-classic',
-            skuName: 'Ví da bò sáp thủ công Classic - Nâu Dark Brown',
-            quantity: 1,
-            totalAmount: 850000,
-            currency: 'VND',
-            imageUrl:
-                'https://images.unsplash.com/photo-1627123424574-724758594e93?w=400',
-          ),
-          CheckoutSummaryItem(
-            id: 2,
-            skuId: 'sku_3_1',
-            spuId: 'spu_3',
-            slug: 'set-tinh-dau-thien-nhien-relax',
-            skuName: 'Set Tinh dầu thiên nhiên Relax Organics',
-            quantity: 1,
-            totalAmount: 350000,
-            currency: 'VND',
-            imageUrl:
-                'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400',
-          ),
-        ],
-      );
-    }
-    try {
-      final response = await _apiService.getCheckoutSummary(txID);
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
+  /// Polling reads the payment session itself. There is no summary route: the
+  /// session carries its own status, and the lines are already in hand from the
+  /// checkout that opened it.
+  Future<PaymentSession> paymentSession(String id) async {
+    final response = await _financeApi.paymentSessionsIdGet(id: id);
+    return _body(response.data?.data, 'payment session');
+  }
+
+  T _body<T>(T? data, String what) {
+    if (data == null) throw StateError('empty $what');
+    return data;
   }
 }
 
 @riverpod
-CheckoutRepository checkoutRepository(Ref ref) {
-  final apiService = ref.watch(checkoutApiServiceProvider);
-  return CheckoutRepository(apiService);
-}
+CheckoutRepository checkoutRepository(Ref ref) => CheckoutRepository(
+  ref.watch(orderApiProvider),
+  ref.watch(financeApiProvider),
+  ref.watch(catalogApiProvider),
+);

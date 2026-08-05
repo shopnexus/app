@@ -1,7 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../data/models/catalog_model.dart';
-import '../../data/repositories/catalog_repository.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 
 part 'catalog_provider.freezed.dart';
 
@@ -9,23 +13,46 @@ part 'catalog_provider.g.dart';
 
 @freezed
 abstract class CatalogSearchFilters with _$CatalogSearchFilters {
+  const CatalogSearchFilters._();
+
   const factory CatalogSearchFilters({
     String? keyword,
     String? categoryId,
     int? priceMin,
     int? priceMax,
-    List<String>? tags,
+    String? tag,
     String? sort,
-    String? location,
+
+    // Where to look: the listing's own snapshot of the seller's pickup address.
+    // Send the narrowest level meant — a ward is already inside its province.
+    // There is no district: Vietnam goes province to ward, so a listing's
+    // snapshot has no district code for one to be matched against.
+    String? provinceCode,
+    String? wardCode,
+    // Codes carry no name, so the chip needs the label the user picked.
+    String? areaLabel,
+
+    // Where the buyer is. A saved contact is the usual answer; lat/lon is
+    // supported all the way down to the request but no screen sets it, since
+    // the app has no geolocation plugin.
+    String? nearContactId,
+    String? nearLabel,
+    double? lat,
+    double? lon,
+    double? radiusKm,
     @Default(1) int page,
     @Default(20) int size,
   }) = _CatalogSearchFilters;
+
+  bool get hasPosition => nearContactId != null || (lat != null && lon != null);
+
+  bool get hasArea => provinceCode != null || wardCode != null;
 }
 
 @freezed
 abstract class CatalogProductsState with _$CatalogProductsState {
   const factory CatalogProductsState({
-    required List<TProductCard> products,
+    required List<Listing> products,
     required bool hasMore,
     required bool isLoadingMore,
     required CatalogSearchFilters filters,
@@ -34,27 +61,39 @@ abstract class CatalogProductsState with _$CatalogProductsState {
 
 @riverpod
 Future<List<Category>> categories(Ref ref) {
-  return ref.watch(catalogRepositoryProvider).getCategories();
+  return ref.watch(catalogRepositoryProvider).categories();
 }
 
 @riverpod
 class CatalogProducts extends _$CatalogProducts {
+  Future<List<Listing>> _fetch(
+    CatalogRepository repo,
+    CatalogSearchFilters filters,
+  ) {
+    return repo.listings(
+      keyword: filters.keyword,
+      categoryId: filters.categoryId,
+      priceMin: filters.priceMin,
+      priceMax: filters.priceMax,
+      tag: filters.tag,
+      sort: filters.sort,
+      provinceCode: filters.provinceCode,
+      wardCode: filters.wardCode,
+      nearContactId: filters.nearContactId,
+      lat: filters.lat,
+      lon: filters.lon,
+      radiusKm: filters.radiusKm,
+      page: filters.page,
+      size: filters.size,
+    );
+  }
+
   @override
   FutureOr<CatalogProductsState> build(
     CatalogSearchFilters initialFilters,
   ) async {
     final repo = ref.watch(catalogRepositoryProvider);
-    final products = await repo.getProductCards(
-      keyword: initialFilters.keyword,
-      categoryId: initialFilters.categoryId,
-      priceMin: initialFilters.priceMin,
-      priceMax: initialFilters.priceMax,
-      tags: initialFilters.tags,
-      sort: initialFilters.sort,
-      location: initialFilters.location,
-      page: initialFilters.page,
-      size: initialFilters.size,
-    );
+    final products = await _fetch(repo, initialFilters);
     return CatalogProductsState(
       products: products,
       hasMore: products.length >= initialFilters.size,
@@ -74,23 +113,13 @@ class CatalogProducts extends _$CatalogProducts {
 
     state = AsyncValue.data(currentState.copyWith(isLoadingMore: true));
 
-    final repo = ref.watch(catalogRepositoryProvider);
+    final repo = ref.read(catalogRepositoryProvider);
     final nextFilters = currentState.filters.copyWith(
       page: currentState.filters.page + 1,
     );
 
     try {
-      final newProducts = await repo.getProductCards(
-        keyword: nextFilters.keyword,
-        categoryId: nextFilters.categoryId,
-        priceMin: nextFilters.priceMin,
-        priceMax: nextFilters.priceMax,
-        tags: nextFilters.tags,
-        sort: nextFilters.sort,
-        location: nextFilters.location,
-        page: nextFilters.page,
-        size: nextFilters.size,
-      );
+      final newProducts = await _fetch(repo, nextFilters);
 
       state = AsyncValue.data(
         currentState.copyWith(
@@ -112,18 +141,8 @@ class CatalogProducts extends _$CatalogProducts {
   Future<void> updateFilters(CatalogSearchFilters newFilters) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final repo = ref.watch(catalogRepositoryProvider);
-      final products = await repo.getProductCards(
-        keyword: newFilters.keyword,
-        categoryId: newFilters.categoryId,
-        priceMin: newFilters.priceMin,
-        priceMax: newFilters.priceMax,
-        tags: newFilters.tags,
-        sort: newFilters.sort,
-        location: newFilters.location,
-        page: newFilters.page,
-        size: newFilters.size,
-      );
+      final repo = ref.read(catalogRepositoryProvider);
+      final products = await _fetch(repo, newFilters);
       return CatalogProductsState(
         products: products,
         hasMore: products.length >= newFilters.size,
@@ -157,8 +176,43 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
     state = state.copyWith(sort: sort, page: 1);
   }
 
-  void setLocation(String? location) {
-    state = state.copyWith(location: location, page: 1);
+  /// The administrative area to look in. Pass the narrowest level meant — a ward
+  /// is already inside its province — and nothing to clear both.
+  void setArea({String? provinceCode, String? wardCode, String? label}) {
+    state = state.copyWith(
+      provinceCode: provinceCode,
+      wardCode: wardCode,
+      areaLabel: label,
+      page: 1,
+    );
+  }
+
+  /// Where to measure from. Clearing it also drops a distance sort and the
+  /// radius, which the API refuses without a position.
+  void setNearby({
+    String? contactId,
+    String? label,
+    double? lat,
+    double? lon,
+    double? radiusKm,
+  }) {
+    final hasPosition = contactId != null || (lat != null && lon != null);
+    state = state.copyWith(
+      nearContactId: contactId,
+      nearLabel: label,
+      lat: lat,
+      lon: lon,
+      radiusKm: hasPosition ? radiusKm : null,
+      sort: !hasPosition && state.sort == ListingSort.distance
+          ? null
+          : state.sort,
+      page: 1,
+    );
+  }
+
+  /// Applies a whole draft at once, which is what a filter sheet edits.
+  void apply(CatalogSearchFilters filters) {
+    state = filters.copyWith(page: 1);
   }
 
   void reset() {
@@ -167,22 +221,69 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
 }
 
 @riverpod
-Future<TProductDetail> productDetail(Ref ref, {required String id}) async {
-  final detail = await ref
-      .watch(catalogRepositoryProvider)
-      .getProductDetail(id: id);
+Future<ListingDetail> productDetail(Ref ref, {required String id}) async {
+  final detail = await ref.watch(catalogRepositoryProvider).listingDetail(id);
   ref.invalidate(recentlyViewedProductsProvider);
   return detail;
 }
 
+@freezed
+abstract class ProductReviewsState with _$ProductReviewsState {
+  const ProductReviewsState._();
+
+  const factory ProductReviewsState({
+    required List<Review> reviews,
+    String? nextCursor,
+    @Default(false) bool isLoadingMore,
+  }) = _ProductReviewsState;
+
+  bool get hasMore => nextCursor != null && nextCursor!.isNotEmpty;
+}
+
+/// Reviews are cursor-paginated, so "show more" carries the cursor the last page
+/// ended on — a page number would re-read rows a new review has already shifted.
 @riverpod
-Future<List<ProductComment>> productComments(Ref ref, {required String spuId}) {
-  return ref
-      .watch(catalogRepositoryProvider)
-      .getComments(spuId: spuId, page: 1, size: 50);
+class ProductReviews extends _$ProductReviews {
+  static const _pageSize = 20;
+
+  @override
+  FutureOr<ProductReviewsState> build(String listingId) async {
+    final page = await ref
+        .watch(catalogRepositoryProvider)
+        .reviews(listingId, limit: _pageSize);
+    return ProductReviewsState(
+      reviews: page.reviews,
+      nextCursor: page.nextCursor,
+    );
+  }
+
+  Future<void> loadNextPage() async {
+    final current = state.asData?.value;
+    if (current == null || current.isLoadingMore || !current.hasMore) return;
+
+    state = AsyncValue.data(current.copyWith(isLoadingMore: true));
+
+    try {
+      final page = await ref
+          .read(catalogRepositoryProvider)
+          .reviews(listingId, cursor: current.nextCursor, limit: _pageSize);
+      state = AsyncValue.data(
+        current.copyWith(
+          reviews: [...current.reviews, ...page.reviews],
+          nextCursor: page.nextCursor,
+          isLoadingMore: false,
+        ),
+      );
+    } catch (e) {
+      // Keeping the cursor would offer a button that fails again on every press.
+      state = AsyncValue.data(
+        current.copyWith(isLoadingMore: false, nextCursor: null),
+      );
+    }
+  }
 }
 
 @riverpod
-Future<List<TProductCard>> recentlyViewedProducts(Ref ref) {
-  return ref.watch(catalogRepositoryProvider).getRecentlyViewed();
+Future<List<RecentListing>> recentlyViewedProducts(Ref ref) {
+  return ref.watch(catalogRepositoryProvider).recentlyViewed();
 }

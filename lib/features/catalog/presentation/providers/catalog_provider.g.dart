@@ -46,7 +46,7 @@ final class CategoriesProvider
   }
 }
 
-String _$categoriesHash() => r'e9c5882884e3db37316a586913f11731f5a266d0';
+String _$categoriesHash() => r'31469ca72056a492cb943427ab921b7eaf6fea87';
 
 @ProviderFor(CatalogProducts)
 const catalogProductsProvider = CatalogProductsFamily._();
@@ -89,7 +89,7 @@ final class CatalogProductsProvider
   }
 }
 
-String _$catalogProductsHash() => r'cf37ba8b803688fe2610d2b0804bbd2eb4448db9';
+String _$catalogProductsHash() => r'c2fa5026c2606e7ed6630be41bd0e8060dc0e354';
 
 final class CatalogProductsFamily extends $Family
     with
@@ -176,7 +176,7 @@ final class ActiveSearchFiltersProvider
 }
 
 String _$activeSearchFiltersHash() =>
-    r'eb41c8181e3b8beeefb8bbc03b1522a083c98ad0';
+    r'a2dbc8ef98e2adba6181174b92a30ef61a4823a9';
 
 abstract class _$ActiveSearchFilters extends $Notifier<CatalogSearchFilters> {
   CatalogSearchFilters build();
@@ -203,11 +203,11 @@ const productDetailProvider = ProductDetailFamily._();
 final class ProductDetailProvider
     extends
         $FunctionalProvider<
-          AsyncValue<TProductDetail>,
-          TProductDetail,
-          FutureOr<TProductDetail>
+          AsyncValue<ListingDetail>,
+          ListingDetail,
+          FutureOr<ListingDetail>
         >
-    with $FutureModifier<TProductDetail>, $FutureProvider<TProductDetail> {
+    with $FutureModifier<ListingDetail>, $FutureProvider<ListingDetail> {
   const ProductDetailProvider._({
     required ProductDetailFamily super.from,
     required String super.argument,
@@ -231,12 +231,12 @@ final class ProductDetailProvider
 
   @$internal
   @override
-  $FutureProviderElement<TProductDetail> $createElement(
+  $FutureProviderElement<ListingDetail> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<TProductDetail> create(Ref ref) {
+  FutureOr<ListingDetail> create(Ref ref) {
     final argument = this.argument as String;
     return productDetail(ref, id: argument);
   }
@@ -252,10 +252,10 @@ final class ProductDetailProvider
   }
 }
 
-String _$productDetailHash() => r'588a4819ae32b58b9b6f5c1a01f90d1eb9a36eb2';
+String _$productDetailHash() => r'c88476f89efd351d22756ef8de45dad8051135c7';
 
 final class ProductDetailFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<TProductDetail>, String> {
+    with $FunctionalFamilyOverride<FutureOr<ListingDetail>, String> {
   const ProductDetailFamily._()
     : super(
         retry: null,
@@ -272,55 +272,46 @@ final class ProductDetailFamily extends $Family
   String toString() => r'productDetailProvider';
 }
 
-@ProviderFor(productComments)
-const productCommentsProvider = ProductCommentsFamily._();
+/// Reviews are cursor-paginated, so "show more" carries the cursor the last page
+/// ended on — a page number would re-read rows a new review has already shifted.
 
-final class ProductCommentsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<ProductComment>>,
-          List<ProductComment>,
-          FutureOr<List<ProductComment>>
-        >
-    with
-        $FutureModifier<List<ProductComment>>,
-        $FutureProvider<List<ProductComment>> {
-  const ProductCommentsProvider._({
-    required ProductCommentsFamily super.from,
+@ProviderFor(ProductReviews)
+const productReviewsProvider = ProductReviewsFamily._();
+
+/// Reviews are cursor-paginated, so "show more" carries the cursor the last page
+/// ended on — a page number would re-read rows a new review has already shifted.
+final class ProductReviewsProvider
+    extends $AsyncNotifierProvider<ProductReviews, ProductReviewsState> {
+  /// Reviews are cursor-paginated, so "show more" carries the cursor the last page
+  /// ended on — a page number would re-read rows a new review has already shifted.
+  const ProductReviewsProvider._({
+    required ProductReviewsFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'productCommentsProvider',
+         name: r'productReviewsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$productCommentsHash();
+  String debugGetCreateSourceHash() => _$productReviewsHash();
 
   @override
   String toString() {
-    return r'productCommentsProvider'
+    return r'productReviewsProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $FutureProviderElement<List<ProductComment>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<ProductComment>> create(Ref ref) {
-    final argument = this.argument as String;
-    return productComments(ref, spuId: argument);
-  }
+  ProductReviews create() => ProductReviews();
 
   @override
   bool operator ==(Object other) {
-    return other is ProductCommentsProvider && other.argument == argument;
+    return other is ProductReviewsProvider && other.argument == argument;
   }
 
   @override
@@ -329,24 +320,63 @@ final class ProductCommentsProvider
   }
 }
 
-String _$productCommentsHash() => r'bf883f754b2b7fb42d3b6d13744eb1e088e4bbf6';
+String _$productReviewsHash() => r'9b36bf2046c5141da5c7e7dc62d8417b8fc6a355';
 
-final class ProductCommentsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<ProductComment>>, String> {
-  const ProductCommentsFamily._()
+/// Reviews are cursor-paginated, so "show more" carries the cursor the last page
+/// ended on — a page number would re-read rows a new review has already shifted.
+
+final class ProductReviewsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          ProductReviews,
+          AsyncValue<ProductReviewsState>,
+          ProductReviewsState,
+          FutureOr<ProductReviewsState>,
+          String
+        > {
+  const ProductReviewsFamily._()
     : super(
         retry: null,
-        name: r'productCommentsProvider',
+        name: r'productReviewsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  ProductCommentsProvider call({required String spuId}) =>
-      ProductCommentsProvider._(argument: spuId, from: this);
+  /// Reviews are cursor-paginated, so "show more" carries the cursor the last page
+  /// ended on — a page number would re-read rows a new review has already shifted.
+
+  ProductReviewsProvider call(String listingId) =>
+      ProductReviewsProvider._(argument: listingId, from: this);
 
   @override
-  String toString() => r'productCommentsProvider';
+  String toString() => r'productReviewsProvider';
+}
+
+/// Reviews are cursor-paginated, so "show more" carries the cursor the last page
+/// ended on — a page number would re-read rows a new review has already shifted.
+
+abstract class _$ProductReviews extends $AsyncNotifier<ProductReviewsState> {
+  late final _$args = ref.$arg as String;
+  String get listingId => _$args;
+
+  FutureOr<ProductReviewsState> build(String listingId);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(_$args);
+    final ref =
+        this.ref as $Ref<AsyncValue<ProductReviewsState>, ProductReviewsState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<ProductReviewsState>, ProductReviewsState>,
+              AsyncValue<ProductReviewsState>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
 }
 
 @ProviderFor(recentlyViewedProducts)
@@ -355,13 +385,13 @@ const recentlyViewedProductsProvider = RecentlyViewedProductsProvider._();
 final class RecentlyViewedProductsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<TProductCard>>,
-          List<TProductCard>,
-          FutureOr<List<TProductCard>>
+          AsyncValue<List<RecentListing>>,
+          List<RecentListing>,
+          FutureOr<List<RecentListing>>
         >
     with
-        $FutureModifier<List<TProductCard>>,
-        $FutureProvider<List<TProductCard>> {
+        $FutureModifier<List<RecentListing>>,
+        $FutureProvider<List<RecentListing>> {
   const RecentlyViewedProductsProvider._()
     : super(
         from: null,
@@ -378,15 +408,15 @@ final class RecentlyViewedProductsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<TProductCard>> $createElement(
+  $FutureProviderElement<List<RecentListing>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<TProductCard>> create(Ref ref) {
+  FutureOr<List<RecentListing>> create(Ref ref) {
     return recentlyViewedProducts(ref);
   }
 }
 
 String _$recentlyViewedProductsHash() =>
-    r'86d3d90043e0314c91593e46e6d85059d2bb7710';
+    r'68c7dc7488a27863e028794280585cd3046ddbdc';

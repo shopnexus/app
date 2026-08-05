@@ -1,174 +1,69 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../../shared/models/rating_model.dart';
-import '../../../../shared/models/resource_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/variant.dart';
 
 part 'catalog_model.freezed.dart';
-
 part 'catalog_model.g.dart';
 
-@freezed
-abstract class Category with _$Category {
-  const factory Category({
-    required String id,
-    required String name,
-    required String slug,
-    String? icon,
-    @JsonKey(name: 'parent_id') String? parentId,
-  }) = _Category;
-
-  factory Category.fromJson(Map<String, dynamic> json) =>
-      _$CategoryFromJson(json);
+/// The `sort` values `GET /listings` accepts. `newest` is also what a null sort
+/// means, so the UI keeps sending null for the default.
+abstract final class ListingSort {
+  static const newest = 'newest';
+  static const rating = 'rating';
+  static const priceAsc = 'price-asc';
+  static const priceDesc = 'price-desc';
+  static const bestSelling = 'best-selling';
+  static const relevance = 'relevance';
+  static const recommended = 'recommended';
+  static const distance = 'distance';
 }
 
+/// What the "vừa xem" carousel draws, cached in Hive. Not a wire type: a
+/// `ListingDetail` carries no card price, so the featured variant's price is
+/// resolved here instead of being stored as if the server had sent one.
 @freezed
-abstract class TProductCard with _$TProductCard {
-  const factory TProductCard({
+abstract class RecentListing with _$RecentListing {
+  const RecentListing._();
+
+  const factory RecentListing({
     required String id,
     required String name,
-    required String slug,
-    String? thumbnail,
     required int price,
-    @JsonKey(name: 'original_price') int? originalPrice,
-    @JsonKey(name: 'discount_rate') double? discountRate,
-    RatingModel? rating,
-    @JsonKey(name: 'sold_count') int? soldCount,
-    List<String>? tags,
-    @JsonKey(name: 'vendor_id') String? vendorId,
-    @JsonKey(name: 'vendor_name') String? vendorName,
-    @JsonKey(name: 'is_negotiable') @Default(false) bool isNegotiable,
-  }) = _TProductCard;
+    @JsonKey(name: 'cover_url') String? coverUrl,
+    @JsonKey(name: 'seller_name') String? sellerName,
+    @Default(0.0) double rating,
+    @Default(false) bool negotiable,
+  }) = _RecentListing;
 
-  factory TProductCard.fromJson(Map<String, dynamic> json) =>
-      _$TProductCardFromJson(TProductCard._preprocessJson(json));
+  factory RecentListing.fromJson(Map<String, dynamic> json) =>
+      _$RecentListingFromJson(json);
 
-  static Map<String, dynamic> _preprocessJson(Map<String, dynamic> json) {
-    // Trích xuất thumbnail từ resources nếu thumbnail null
-    String? thumb = json['thumbnail'] as String?;
-    if (thumb == null && json['resources'] != null) {
-      final resList = json['resources'] as List<dynamic>;
-      if (resList.isNotEmpty) {
-        final firstRes = resList.first as Map<String, dynamic>;
-        thumb = firstRes['url'] as String?;
-      }
+  factory RecentListing.fromDetail(ListingDetail detail) => RecentListing(
+    id: detail.id,
+    name: detail.name,
+    price: featuredPrice(detail),
+    coverUrl: detail.images.firstOrNull?.url,
+    sellerName: detail.seller.name,
+    rating: detail.rating,
+    negotiable: detail.priceMode == PriceMode.negotiable,
+  );
+}
+
+/// The one price a card can show for a listing whose variants may differ: the
+/// featured variant's, or the cheapest when none is featured — the same rule
+/// `Listing.price` follows on the feed.
+int featuredPrice(ListingDetail detail) {
+  for (final variant in detail.variants) {
+    if (variant.id == detail.featuredVariantId || variant.isFeatured) {
+      return variant.price;
     }
-
-    // Ánh xạ seller_id sang vendor_id nếu vendor_id null
-    String? vId = json['vendor_id'] as String? ?? json['seller_id'] as String?;
-
-    final modifiedJson = Map<String, dynamic>.from(json);
-    modifiedJson['thumbnail'] = thumb;
-    modifiedJson['vendor_id'] = vId;
-
-    return modifiedJson;
   }
+  if (detail.variants.isEmpty) return 0;
+  return detail.variants.map((v) => v.price).reduce((a, b) => a < b ? a : b);
 }
 
-@freezed
-abstract class ProductSpecification with _$ProductSpecification {
-  const factory ProductSpecification({
-    @JsonKey(name: 'name') required String key,
-    required String value,
-  }) = _ProductSpecification;
-
-  factory ProductSpecification.fromJson(Map<String, dynamic> json) =>
-      _$ProductSpecificationFromJson(json);
-}
-
-@freezed
-abstract class SkuAttribute with _$SkuAttribute {
-  const factory SkuAttribute({
-    @JsonKey(name: 'name') required String key,
-    required String value,
-  }) = _SkuAttribute;
-
-  factory SkuAttribute.fromJson(Map<String, dynamic> json) =>
-      _$SkuAttributeFromJson(json);
-}
-
-@freezed
-abstract class ProductSku with _$ProductSku {
-  const factory ProductSku({
-    required String id,
-    @JsonKey(name: 'spu_id') @Default('') String spuId,
-    @JsonKey(name: 'name') @Default('') String name,
-    required int price,
-    @JsonKey(name: 'original_price') int? originalPrice,
-    required int stock,
-    @JsonKey(name: 'resources') List<ResourceModel>? images,
-    List<SkuAttribute>? attributes,
-  }) = _ProductSku;
-
-  factory ProductSku.fromJson(Map<String, dynamic> json) =>
-      _$ProductSkuFromJson(json);
-}
-
-@freezed
-abstract class TProductDetail with _$TProductDetail {
-  const factory TProductDetail({
-    required String id,
-    required String name,
-    required String slug,
-    String? description,
-    @Default(0) int price,
-    @JsonKey(name: 'original_price') int? originalPrice,
-    RatingModel? rating,
-    @JsonKey(name: 'sold_count') int? soldCount,
-    @JsonKey(name: 'resources') List<ResourceModel>? images,
-    List<ProductSpecification>? specifications,
-    List<ProductSku>? skus,
-    @JsonKey(name: 'vendor_id') String? vendorId,
-    @JsonKey(name: 'vendor_name') String? vendorName,
-    @JsonKey(name: 'vendor_avatar') String? vendorAvatar,
-    @JsonKey(name: 'category_id') String? categoryId,
-    @JsonKey(name: 'is_negotiable') @Default(false) bool isNegotiable,
-    @JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,
-    @JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice,
-  }) = _TProductDetail;
-
-  factory TProductDetail.fromJson(Map<String, dynamic> json) =>
-      _$TProductDetailFromJson(TProductDetail._preprocessJson(json));
-
-  static Map<String, dynamic> _preprocessJson(Map<String, dynamic> json) {
-    // Ánh xạ seller_id sang vendor_id nếu vendor_id null
-    String? vId = json['vendor_id'] as String? ?? json['seller_id'] as String?;
-    final modifiedJson = Map<String, dynamic>.from(json);
-    modifiedJson['vendor_id'] = vId;
-    return modifiedJson;
-  }
-}
-
-@freezed
-abstract class CommentProfile with _$CommentProfile {
-  const factory CommentProfile({
-    required String id,
-    String? username,
-    String? name,
-    @JsonKey(name: 'avatar_url') String? avatarUrl,
-  }) = _CommentProfile;
-
-  factory CommentProfile.fromJson(Map<String, dynamic> json) =>
-      _$CommentProfileFromJson(json);
-}
-
-@freezed
-abstract class ProductComment with _$ProductComment {
-  const factory ProductComment({
-    required String id,
-    @JsonKey(name: 'ref_id') required String refId,
-    @JsonKey(name: 'ref_type') required String refType,
-    @JsonKey(name: 'account_id') String? accountId,
-    @JsonKey(name: 'order_id') String? orderId,
-    CommentProfile? profile,
-    String? body,
-    int? upvote,
-    int? downvote,
-    required double score,
-    @JsonKey(name: 'date_created') String? dateCreated,
-    @JsonKey(name: 'date_updated') String? dateUpdated,
-    @JsonKey(name: 'resources') List<ResourceModel>? attachments,
-    List<SkuAttribute>? attributes,
-  }) = _ProductComment;
-
-  factory ProductComment.fromJson(Map<String, dynamic> json) =>
-      _$ProductCommentFromJson(json);
-}
+/// Size and colour, in the order the seller entered them. `Variant.attributes` is
+/// an open `type: object`, so a value may be any JSON scalar.
+String variantLabel(Variant variant) =>
+    variant.attributes.values.map((v) => v.toString()).join(' • ');

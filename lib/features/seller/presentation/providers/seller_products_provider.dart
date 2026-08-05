@@ -1,20 +1,32 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/constants/app_config.dart';
-import '../../../catalog/data/models/catalog_model.dart';
-import '../../data/repositories/seller_repository.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
 part 'seller_products_provider.freezed.dart';
 
 part 'seller_products_provider.g.dart';
 
+/// One total per status, off each page's `meta.total_count`. The filter chips and
+/// the dashboard tiles are the same four numbers, so they are read once.
+@riverpod
+Future<Map<ListingStatus, int>> sellerListingCounts(Ref ref) =>
+    ref.watch(sellerRepositoryProvider).listingCounts();
+
+/// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
+/// detail reads at all.
+@riverpod
+Future<String?> listingTakedownReason(Ref ref, String listingId) =>
+    ref.watch(sellerRepositoryProvider).takedownReason(listingId);
+
 @freezed
 abstract class SellerProductsState with _$SellerProductsState {
   const factory SellerProductsState({
-    String?
-    selectedStatus, // null: Tất cả, 'active': Đang bán, 'inactive': Đã ẩn, 'violated': Vi phạm/Chờ duyệt
+    /// Null is every status, which is also the only listing a non-owner may see.
+    ListingStatus? status,
     @Default('') String searchQuery,
-    @Default([]) List<TProductDetail> spuList,
+    @Default([]) List<Listing> listings,
     @Default(true) bool isLoading,
     String? errorMessage,
   }) = _SellerProductsState;
@@ -24,77 +36,51 @@ abstract class SellerProductsState with _$SellerProductsState {
 class SellerProductsNotifier extends _$SellerProductsNotifier {
   @override
   SellerProductsState build() {
-    if (AppConfig.useMockData) {
-      final repository = ref.read(sellerRepositoryProvider);
-      return SellerProductsState(
-        isLoading: false,
-        spuList: repository.getSpuListSync(status: null),
-      );
-    }
-    Future.microtask(() => _loadProducts());
-    return const SellerProductsState(isLoading: true);
+    Future.microtask(_load);
+    return const SellerProductsState();
   }
 
-  Future<void> _loadProducts() async {
+  Future<void> _load() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final repository = ref.read(sellerRepositoryProvider);
-      final list = await repository.getSpuList(status: state.selectedStatus);
-      state = state.copyWith(isLoading: false, spuList: list);
-    } catch (_) {
-      state = state.copyWith(isLoading: false);
+      final listings = await ref
+          .read(sellerRepositoryProvider)
+          .listings(status: state.status);
+      state = state.copyWith(isLoading: false, listings: listings);
+    } catch (error) {
+      // Shown rather than swallowed: a 404 hidden by `catch (_)` is what made
+      // this screen look permanently empty instead of broken.
+      state = state.copyWith(isLoading: false, errorMessage: error.toString());
     }
   }
 
-  void setStatusFilter(String? status) {
-    state = state.copyWith(selectedStatus: status);
-    if (AppConfig.useMockData) {
-      final repository = ref.read(sellerRepositoryProvider);
-      state = state.copyWith(
-        isLoading: false,
-        spuList: repository.getSpuListSync(status: status),
-      );
-      return;
-    }
-    _loadProducts();
+  void setStatusFilter(ListingStatus? status) {
+    state = SellerProductsState(status: status, searchQuery: state.searchQuery);
+    _load();
   }
 
-  void setSearchQuery(String query) {
-    state = state.copyWith(searchQuery: query);
-  }
+  void setSearchQuery(String query) =>
+      state = state.copyWith(searchQuery: query);
 
   Future<void> refresh() async {
-    await _loadProducts();
+    ref.invalidate(sellerListingCountsProvider);
+    await _load();
   }
 
-  Future<void> deleteSkuVariant(String skuId) async {
-    try {
-      final repository = ref.read(sellerRepositoryProvider);
-      await repository.deleteSku(skuId);
-      await _loadProducts();
-    } catch (_) {}
+  /// Hiding takes the listing off the public feed; publishing sends it back
+  /// through moderation, so it returns as `pending` and not straight to `active`.
+  Future<void> toggleVisibility(Listing listing) async {
+    final repository = ref.read(sellerRepositoryProvider);
+    if (listing.status == ListingStatus.hidden) {
+      await repository.publishListing(listing.id);
+    } else {
+      await repository.hideListing(listing.id);
+    }
+    await refresh();
   }
 
-  void toggleProductVisibility(String productId) {
-    final updatedList = state.spuList.map((product) {
-      if (product.id == productId) {
-        final isCurrentlyHidden =
-            product.skus != null && product.skus!.every((s) => s.stock == 0);
-        final newStock = isCurrentlyHidden ? 45 : 0;
-        final updatedSkus =
-            product.skus?.map((s) => s.copyWith(stock: newStock)).toList() ??
-            [
-              ProductSku(
-                id: 'sku_${product.id}',
-                price: product.price,
-                stock: newStock,
-              ),
-            ];
-        return product.copyWith(skus: updatedSkus);
-      }
-      return product;
-    }).toList();
-
-    state = state.copyWith(spuList: updatedList);
+  Future<void> deleteListing(String id) async {
+    await ref.read(sellerRepositoryProvider).deleteListing(id);
+    await refresh();
   }
 }

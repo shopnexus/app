@@ -1,40 +1,36 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../data/models/seller_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_summary_day.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 
+/// Orders placed per day over the dashboard's window. Counts only: the summary
+/// carries money per currency, and one line mixing currencies would be a figure
+/// that means nothing.
 class SalesPerformanceChart extends StatelessWidget {
-  final List<SalesChartPoint> chartPoints;
-  final String? selectedPeriod;
-  final ValueChanged<String>? onPeriodChanged;
+  /// Only the days that had an order, as the contract sends them. A window with
+  /// no sale draws nothing rather than a made-up curve.
+  final List<OrderSummaryDay> days;
 
-  const SalesPerformanceChart({
-    super.key,
-    required this.chartPoints,
-    this.selectedPeriod,
-    this.onPeriodChanged,
-  });
+  const SalesPerformanceChart({super.key, required this.days});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final points = chartPoints.isEmpty
-        ? const [
-            SalesChartPoint(label: 'Oct', value: 42.0),
-            SalesChartPoint(label: 'Nov', value: 48.0),
-            SalesChartPoint(label: 'Dec', value: 52.0),
-          ]
-        : chartPoints;
-
-    final spots = points.asMap().entries.map((entry) {
-      return FlSpot(entry.key.toDouble(), entry.value.value);
-    }).toList();
+    final spots = [
+      for (final (index, day) in days.indexed)
+        FlSpot(index.toDouble(), day.placed.toDouble()),
+    ];
 
     double maxY = spots.fold(0.0, (max, spot) => spot.y > max ? spot.y : max);
-    if (maxY == 0) maxY = 100;
+    if (maxY == 0) maxY = 1;
     maxY = (maxY * 1.25).ceilToDouble();
+
+    final labelInterval = (days.length / 6)
+        .ceil()
+        .clamp(1, days.length)
+        .toDouble();
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -61,7 +57,7 @@ class SalesPerformanceChart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Sales Performance',
+                'Đơn đặt theo ngày',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -70,7 +66,7 @@ class SalesPerformanceChart extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                'Recent Performance',
+                'Chỉ những ngày có đơn',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: isDark
                       ? const Color(0xFF94A3B8)
@@ -80,49 +76,69 @@ class SalesPerformanceChart extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          SizedBox(
-            height: 180,
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  horizontalInterval: maxY / 3,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.05)
-                          : const Color(0xFFF1F5F9),
-                      strokeWidth: 1,
-                    );
-                  },
+          if (days.isEmpty)
+            SizedBox(
+              height: 180,
+              child: Center(
+                child: Text(
+                  'Chưa có đơn nào trong khoảng thời gian này',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                  ),
                 ),
-                titlesData: FlTitlesData(
-                  show: true,
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+              ),
+            )
+          else
+            SizedBox(
+              height: 180,
+              child: LineChart(
+                LineChartData(
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: maxY / 3,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : const Color(0xFFF1F5F9),
+                        strokeWidth: 1,
+                      );
+                    },
                   ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 44,
-                      interval: 1,
-                      getTitlesWidget: (value, meta) {
-                        final index = value.toInt();
-                        if (index >= 0 && index < points.length) {
+                  titlesData: FlTitlesData(
+                    show: true,
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 44,
+                        // A year's window is 366 buckets, so only every nth day is
+                        // labelled — one label per bucket is unreadable.
+                        interval: labelInterval,
+                        getTitlesWidget: (value, meta) {
+                          final index = value.toInt();
+                          if (index < 0 || index >= days.length) {
+                            return const SizedBox.shrink();
+                          }
+                          final day = days[index];
                           return Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  points[index].value.toInt().toString(),
+                                  day.placed.toString(),
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -133,7 +149,7 @@ class SalesPerformanceChart extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  points[index].label.toUpperCase(),
+                                  _dayMonth(day.date),
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,
@@ -145,56 +161,61 @@ class SalesPerformanceChart extends StatelessWidget {
                               ],
                             ),
                           );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                  ),
-                ),
-                borderData: FlBorderData(show: false),
-                minX: 0,
-                maxX: (points.length - 1).toDouble(),
-                minY: 0,
-                maxY: maxY,
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: spots,
-                    isCurved: true,
-                    curveSmoothness: 0.35,
-                    color: AppColors.primary,
-                    barWidth: 3,
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: true,
-                      getDotPainter: (spot, percent, barData, index) {
-                        return FlDotCirclePainter(
-                          radius: 5,
-                          color: AppColors.primary,
-                          strokeWidth: 2,
-                          strokeColor: isDark
-                              ? const Color(0xFF1E293B)
-                              : Colors.white,
-                        );
-                      },
-                    ),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primary.withValues(alpha: 0.25),
-                          AppColors.primary.withValues(alpha: 0.0),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                        },
                       ),
                     ),
                   ),
-                ],
+                  borderData: FlBorderData(show: false),
+                  minX: 0,
+                  maxX: (days.length - 1).toDouble(),
+                  minY: 0,
+                  maxY: maxY,
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: spots,
+                      isCurved: true,
+                      curveSmoothness: 0.35,
+                      color: AppColors.primary,
+                      barWidth: 3,
+                      isStrokeCapRound: true,
+                      dotData: FlDotData(
+                        show: true,
+                        getDotPainter: (spot, percent, barData, index) {
+                          return FlDotCirclePainter(
+                            radius: 5,
+                            color: AppColors.primary,
+                            strokeWidth: 2,
+                            strokeColor: isDark
+                                ? const Color(0xFF1E293B)
+                                : Colors.white,
+                          );
+                        },
+                      ),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.25),
+                            AppColors.primary.withValues(alpha: 0.0),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
+  }
+
+  /// `2026-08-05` as `05/08`. A bucket is a local date in the requested zone, so
+  /// it is split rather than parsed into an instant somebody could re-convert.
+  static String _dayMonth(String date) {
+    final parts = date.split('-');
+    return parts.length == 3 ? '${parts[2]}/${parts[1]}' : date;
   }
 }

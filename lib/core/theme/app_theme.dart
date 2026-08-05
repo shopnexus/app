@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 
 class AppTheme {
   /// Cấu hình Light Theme - Tối giản, font Manrope (Headlines) & Inter (Body)
@@ -34,7 +34,10 @@ class AppTheme {
         ),
         bodyLarge: GoogleFonts.inter(color: AppColors.textPrimary),
         bodyMedium: GoogleFonts.inter(color: AppColors.textSecondary),
-        labelMedium: GoogleFonts.inter(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+        labelMedium: GoogleFonts.inter(
+          color: AppColors.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
 
       // Nút nhấn (ElevatedButton) bo góc 8px (0.5rem) theo chuẩn Nexus
@@ -44,9 +47,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.inter(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -86,7 +87,10 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2.0), // Viền 2px khi focus
+          borderSide: const BorderSide(
+            color: AppColors.primary,
+            width: 2.0,
+          ), // Viền 2px khi focus
         ),
       ),
 
@@ -127,7 +131,10 @@ class AppTheme {
         ),
         bodyLarge: GoogleFonts.inter(color: AppColors.darkTextPrimary),
         bodyMedium: GoogleFonts.inter(color: AppColors.darkTextSecondary),
-        labelMedium: GoogleFonts.inter(color: AppColors.darkTextSecondary, fontWeight: FontWeight.w600),
+        labelMedium: GoogleFonts.inter(
+          color: AppColors.darkTextSecondary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -136,9 +143,7 @@ class AppTheme {
           foregroundColor: AppColors.darkBackground,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.inter(
             fontWeight: FontWeight.bold,
             fontSize: 16,

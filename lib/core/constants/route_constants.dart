@@ -6,7 +6,6 @@ class RouteConstants {
     '/checkout',
     '/account',
     '/seller',
-    '/dispute',
     '/chat',
   ];
 }

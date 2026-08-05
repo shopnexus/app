@@ -1,282 +1,581 @@
 import 'dart:async';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../data/providers/chat_providers.dart';
-import 'chat_state.dart';
+
+import 'package:shopnexus_flutter_app/core/realtime/realtime_client.dart';
+import 'package:shopnexus_flutter_app/core/realtime/realtime_event.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_state.dart';
 
 part 'chat_notifier.g.dart';
 
-/// Provider quản lý danh sách cuộc hội thoại chat
+/// The inbox.
+///
+/// Every change to it arrives on the account's one socket; nothing is polled and
+/// nothing is replayed, so a re-handshake means refetching over REST.
 @riverpod
 class ChatListNotifier extends _$ChatListNotifier {
   @override
-  FutureOr<ChatListState> build() async {
-    final repository = ref.watch(chatRepositoryProvider);
-    final conversations = await repository.getConversations();
-    return ChatListState(conversations: conversations);
+  Future<ChatListState> build() async {
+    _listen();
+    final page = await ref.read(chatRepositoryProvider).conversations();
+    return ChatListState(
+      conversations: page.items,
+      nextCursor: page.nextCursor,
+    );
   }
 
-  /// Tải lại danh sách cuộc hội thoại
+  void _listen() {
+    ref.listen<AsyncValue<RealtimeEvent>>(realtimeEventsProvider, (_, next) {
+      final event = next.value;
+      if (event != null) _apply(event);
+    });
+
+    // Delivery is at-most-once with no cursor, so a socket that came back has to
+    // be assumed to have missed something.
+    final subscription = ref
+        .watch(realtimeClientProvider)
+        .reconnected
+        .listen((_) => fetchConversations());
+    ref.onDispose(subscription.cancel);
+  }
+
+  void _apply(RealtimeEvent event) {
+    switch (event) {
+      case MessageCreatedEvent(:final message):
+        _applyMessage(message);
+      case MessageUpdatedEvent(:final message):
+        _applyMessage(message);
+      case MessageDeletedEvent(ref: final deleted):
+        // The dropped row may have been the one this list shows, and only the
+        // server knows what precedes it.
+        _reload(deleted.conversationId);
+      case ConversationReadEvent(:final mark):
+        _applyReadMark(mark);
+      case NotificationCreatedEvent():
+      case OfferUpdatedEvent():
+      case OrderPlacedEvent():
+      case OrderSettledEvent():
+        break;
+    }
+  }
+
+  void _applyMessage(Message message) {
+    final current = state.value;
+    if (current == null) return;
+
+    final index = current.conversations.indexWhere(
+      (conversation) => conversation.id == message.conversationId,
+    );
+    if (index < 0) {
+      // A thread this client has never seen — the whole row has to come from the
+      // server, counterparty and all.
+      _reload(message.conversationId);
+      return;
+    }
+
+    final existing = current.conversations[index];
+    final isTheirs = message.senderId == existing.counterparty.id;
+    final isNew =
+        existing.lastMessage == null || existing.lastMessage!.id != message.id;
+    _replace(
+      current,
+      index,
+      existing.patch(
+        lastMessage: message,
+        lastMessageAt: message.createdAt,
+        unread: isTheirs && isNew ? existing.unread + 1 : existing.unread,
+      ),
+    );
+  }
+
+  /// The read mark on the socket is always the *other* participant's, so it moves
+  /// `counterparty_read_at` and never this account's own badge.
+  void _applyReadMark(ConversationReadMark mark) {
+    final current = state.value;
+    if (current == null) return;
+    final index = current.conversations.indexWhere(
+      (conversation) => conversation.id == mark.conversationId,
+    );
+    if (index < 0) return;
+    _replace(
+      current,
+      index,
+      current.conversations[index].patch(counterpartyReadAt: mark.readAt),
+    );
+  }
+
+  void _replace(ChatListState current, int index, Conversation updated) {
+    final conversations = [...current.conversations]
+      ..[index] = updated
+      ..sort((a, b) => b.lastMessageAt.compareTo(a.lastMessageAt));
+    state = AsyncValue.data(current.copyWith(conversations: conversations));
+  }
+
+  Future<void> _reload(String conversationId) async {
+    try {
+      applyConversation(
+        await ref.read(chatRepositoryProvider).conversation(conversationId),
+      );
+    } catch (_) {
+      // A row that cannot be re-read leaves the list as it was; the next open of
+      // the inbox repairs it.
+    }
+  }
+
+  /// Folds a conversation the app has just read back from the server into the
+  /// list, inserting it when it is new.
+  void applyConversation(Conversation conversation) {
+    final current = state.value;
+    if (current == null) return;
+    final index = current.conversations.indexWhere(
+      (candidate) => candidate.id == conversation.id,
+    );
+    final conversations = [...current.conversations];
+    if (index < 0) {
+      conversations.add(conversation);
+    } else {
+      conversations[index] = conversation;
+    }
+    conversations.sort((a, b) => b.lastMessageAt.compareTo(a.lastMessageAt));
+    state = AsyncValue.data(current.copyWith(conversations: conversations));
+  }
+
   Future<void> fetchConversations() async {
-    state = const AsyncValue.loading();
+    final searchQuery = state.value?.searchQuery ?? '';
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(chatRepositoryProvider);
-      final conversations = await repository.getConversations();
-      final currentSearch = state.value?.searchQuery ?? '';
+      final page = await ref.read(chatRepositoryProvider).conversations();
       return ChatListState(
-        conversations: conversations,
-        searchQuery: currentSearch,
+        conversations: page.items,
+        searchQuery: searchQuery,
+        nextCursor: page.nextCursor,
       );
     });
   }
 
-  /// Tìm kiếm cuộc hội thoại
+  Future<void> loadMore() async {
+    final current = state.value;
+    final cursor = current?.nextCursor;
+    if (current == null || cursor == null || cursor.isEmpty) return;
+    try {
+      final page = await ref
+          .read(chatRepositoryProvider)
+          .conversations(cursor: cursor);
+      state = AsyncValue.data(
+        current.copyWith(
+          conversations: [...current.conversations, ...page.items],
+          nextCursor: page.nextCursor,
+        ),
+      );
+    } catch (_) {
+      // A failed page is one the user can ask for again by scrolling.
+    }
+  }
+
   void search(String query) {
-    final currentState = state.value;
-    if (currentState != null) {
-      state = AsyncValue.data(currentState.copyWith(searchQuery: query));
-    }
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncValue.data(current.copyWith(searchQuery: query));
   }
 
-  /// Đánh dấu cuộc hội thoại đã đọc
+  /// Marks the whole thread read; the route answers the updated row, so the badge
+  /// is repainted from the response rather than assumed.
   Future<void> markAsRead(String conversationId) async {
-    final repository = ref.read(chatRepositoryProvider);
-    await repository.markAsRead(conversationId);
-
-    final currentState = state.value;
-    if (currentState != null) {
-      final updatedList = currentState.conversations.map((conv) {
-        if (conv.id == conversationId) {
-          return conv.copyWith(unreadCount: 0);
-        }
-        return conv;
-      }).toList();
-      state = AsyncValue.data(
-        currentState.copyWith(conversations: updatedList),
+    try {
+      applyConversation(
+        await ref.read(chatRepositoryProvider).markRead(conversationId),
       );
-    }
-  }
-
-  /// Cập nhật tin nhắn mới nhất vào danh sách hội thoại
-  void updateLastMessage(String conversationId, ChatMessage message) {
-    final currentState = state.value;
-    if (currentState != null) {
-      final updatedList = currentState.conversations.map((conv) {
-        if (conv.id == conversationId) {
-          return conv.copyWith(
-            lastMessage: message.content,
-            lastMessageTime: message.createdAt,
-            updatedAt: message.createdAt,
-          );
-        }
-        return conv;
-      }).toList();
-      state = AsyncValue.data(
-        currentState.copyWith(conversations: updatedList),
-      );
+    } catch (_) {
+      // The badge is cosmetic and the next read of the inbox settles it.
     }
   }
 }
 
-/// Provider quản lý cửa sổ chi tiết chat và luồng tin nhắn real-time
+/// One open thread.
+///
+/// Messages, read receipts and the negotiations its cards point at all arrive on
+/// the same socket; what the app sends, it sends over REST.
 @riverpod
 class ChatDetailNotifier extends _$ChatDetailNotifier {
-  StreamSubscription<ChatMessage>? _realtimeSubscription;
-
   @override
-  FutureOr<ChatDetailState> build(String conversationId) async {
-    final repository = ref.watch(chatRepositoryProvider);
+  Future<ChatDetailState> build(String conversationId) async {
+    _listen();
+    return _load();
+  }
 
-    // Kết nối real-time WebSocket cho conversationId này
-    repository.connectRealtime(conversationId);
-
-    // Đăng ký lắng nghe luồng tin nhắn mới từ WebSocket
-    _realtimeSubscription = repository.getRealtimeStream().listen((message) {
-      if (message.conversationId == conversationId) {
-        _onRealtimeMessageReceived(message);
-      }
+  void _listen() {
+    ref.listen<AsyncValue<RealtimeEvent>>(realtimeEventsProvider, (_, next) {
+      final event = next.value;
+      if (event != null) _apply(event);
     });
 
-    // Đảm bảo đóng kết nối WebSocket và hủy subscription khi Provider bị dispose
-    ref.onDispose(() {
-      _realtimeSubscription?.cancel();
-      repository.disconnectRealtime();
-    });
+    final subscription = ref
+        .watch(realtimeClientProvider)
+        .reconnected
+        .listen((_) => refresh());
+    ref.onDispose(subscription.cancel);
+  }
 
-    final conversations = await repository.getConversations();
-    final conversation = conversations.firstWhere(
-      (c) => c.id == conversationId,
-      orElse: () => ChatConversation(
-        id: conversationId,
-        participantId: 'unknown',
-        participantName: 'Nexus User',
-      ),
-    );
+  Future<ChatDetailState> _load() async {
+    final repository = ref.read(chatRepositoryProvider);
+    final conversation = await repository.conversation(conversationId);
+    final page = await repository.messages(conversationId);
+    final messages = page.items.reversed
+        .map((message) => ChatMessage.inThread(message, conversation))
+        .toList();
 
-    final messages = await repository.getMessages(conversationId);
-
-    return ChatDetailState(
+    final loaded = ChatDetailState(
       conversationId: conversationId,
       conversation: conversation,
       messages: messages,
+      nextCursor: page.nextCursor,
+      offers: await _resolveOffers(messages, const {}),
     );
+
+    // Opening the thread is reading it.
+    unawaited(_markRead());
+    return loaded;
   }
 
-  /// Nhận tin nhắn mới từ luồng Real-time WebSocket
-  void _onRealtimeMessageReceived(ChatMessage message) {
-    final currentState = state.value;
-    if (currentState == null) return;
+  /// A card names an offer; the terms come from the offer itself. Only ids not
+  /// held yet are fetched, so a repaint costs nothing.
+  Future<Map<String, Offer>> _resolveOffers(
+    List<ChatMessage> messages,
+    Map<String, Offer> known,
+  ) async {
+    final wanted = messages
+        .map((message) => message.offerId)
+        .whereType<String>()
+        .where((id) => !known.containsKey(id))
+        .toSet();
+    if (wanted.isEmpty) return known;
 
-    // Tránh trùng lặp tin nhắn đã có trong danh sách
-    final exists = currentState.messages.any((m) => m.id == message.id);
-    if (exists) return;
-
-    final updatedMessages = [...currentState.messages, message];
-    state = AsyncValue.data(currentState.copyWith(messages: updatedMessages));
-
-    // Cập nhật last message ở ChatListNotifier
-    ref
-        .read(chatListProvider.notifier)
-        .updateLastMessage(currentState.conversationId ?? '', message);
-  }
-
-  /// Gửi tin nhắn văn bản
-  Future<bool> sendTextMessage(String content) async {
-    if (content.trim().isEmpty) return false;
-
-    final currentState = state.value;
-    if (currentState == null || currentState.conversationId == null) {
-      return false;
-    }
-
-    final conversationId = currentState.conversationId!;
     final repository = ref.read(chatRepositoryProvider);
+    final resolved = <String, Offer>{...known};
+    for (final id in wanted) {
+      try {
+        resolved[id] = await repository.offer(id);
+      } catch (_) {
+        // An offer the caller can no longer read leaves its card a placeholder
+        // rather than failing the whole thread.
+      }
+    }
+    return resolved;
+  }
 
-    // Cập nhật trạng thái đang gửi
+  void _apply(RealtimeEvent event) {
+    switch (event) {
+      case MessageCreatedEvent(:final message):
+        if (message.conversationId != conversationId) return;
+        _upsertMessage(message, isNew: true);
+      case MessageUpdatedEvent(:final message):
+        if (message.conversationId != conversationId) return;
+        _upsertMessage(message, isNew: false);
+      case MessageDeletedEvent(ref: final deleted):
+        if (deleted.conversationId != conversationId) return;
+        _dropMessage(deleted);
+      case ConversationReadEvent(:final mark):
+        if (mark.conversationId != conversationId) return;
+        _applyReadMark(mark);
+      case OfferUpdatedEvent(:final offer):
+        _applyOffer(offer);
+      case NotificationCreatedEvent():
+      case OrderPlacedEvent():
+      case OrderSettledEvent():
+        break;
+    }
+  }
+
+  void _upsertMessage(Message message, {required bool isNew}) {
+    final current = state.value;
+    final conversation = current?.conversation;
+    if (current == null || conversation == null) return;
+
+    final incoming = ChatMessage.inThread(message, conversation);
+    final index = current.messages.indexWhere(
+      (candidate) => candidate.id == message.id,
+    );
+    final messages = [...current.messages];
+    if (index >= 0) {
+      messages[index] = incoming;
+    } else {
+      messages
+        ..add(incoming)
+        ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    }
+    state = AsyncValue.data(current.copyWith(messages: messages));
+
+    if (isNew && !incoming.isMine) {
+      // The thread is on screen, so a message arriving in it has been read.
+      unawaited(_markRead());
+    }
+    if (incoming.offerId != null) unawaited(_resolvePendingOffers());
+  }
+
+  /// A deletion carries a ref, not an emptied entity: the body is gone, so the
+  /// message leaves the rendered thread instead of appearing as an edit.
+  void _dropMessage(DeletedMessageRef deleted) {
+    final current = state.value;
+    if (current == null) return;
     state = AsyncValue.data(
-      currentState.copyWith(isSending: true, draftText: ''),
+      current.copyWith(
+        messages: current.messages
+            .where((message) => message.id != deleted.id)
+            .toList(),
+      ),
+    );
+  }
+
+  /// The read mark is always the other participant's, which makes it the read
+  /// receipt for everything this account sent up to that instant.
+  void _applyReadMark(ConversationReadMark mark) {
+    final current = state.value;
+    final conversation = current?.conversation;
+    if (current == null || conversation == null) return;
+    final updated = conversation.patch(counterpartyReadAt: mark.readAt);
+    state = AsyncValue.data(
+      current.copyWith(
+        conversation: updated,
+        messages: current.messages
+            .map(
+              (message) => message.isPending
+                  ? message
+                  : ChatMessage.inThread(message.message, updated),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  /// One message per transition, carrying the whole offer: the card renders the
+  /// current state and never branches on how it got there.
+  void _applyOffer(Offer offer) {
+    final current = state.value;
+    if (current == null) return;
+    final relevant =
+        current.offers.containsKey(offer.id) ||
+        current.messages.any((message) => message.offerId == offer.id);
+    if (!relevant) return;
+    state = AsyncValue.data(
+      current.copyWith(offers: {...current.offers, offer.id: offer}),
+    );
+  }
+
+  Future<void> _resolvePendingOffers() async {
+    final current = state.value;
+    if (current == null) return;
+    final offers = await _resolveOffers(current.messages, current.offers);
+    final latest = state.value;
+    if (latest == null || offers.length == latest.offers.length) return;
+    state = AsyncValue.data(latest.copyWith(offers: offers));
+  }
+
+  Future<void> _markRead() async {
+    try {
+      final conversation = await ref
+          .read(chatRepositoryProvider)
+          .markRead(conversationId);
+      final current = state.value;
+      if (current != null) {
+        state = AsyncValue.data(current.copyWith(conversation: conversation));
+      }
+      ref.read(chatListProvider.notifier).applyConversation(conversation);
+    } catch (_) {
+      // The badge is cosmetic; the next open settles it.
+    }
+  }
+
+  /// What a re-handshake calls: nothing was replayed, so the thread is re-read.
+  Future<void> refresh() async {
+    state = await AsyncValue.guard(_load);
+  }
+
+  Future<void> loadOlder() async {
+    final current = state.value;
+    final conversation = current?.conversation;
+    final cursor = current?.nextCursor;
+    if (current == null ||
+        conversation == null ||
+        cursor == null ||
+        cursor.isEmpty) {
+      return;
+    }
+    try {
+      final page = await ref
+          .read(chatRepositoryProvider)
+          .messages(conversationId, cursor: cursor);
+      final older = page.items.reversed
+          .map((message) => ChatMessage.inThread(message, conversation))
+          .toList();
+      state = AsyncValue.data(
+        current.copyWith(
+          messages: [...older, ...current.messages],
+          nextCursor: page.nextCursor,
+          offers: await _resolveOffers(older, current.offers),
+        ),
+      );
+    } catch (_) {
+      // Scrolling up again asks for the same page.
+    }
+  }
+
+  Future<bool> sendTextMessage(String content) async {
+    final body = content.trim();
+    if (body.isEmpty) return false;
+    final current = state.value;
+    final conversation = current?.conversation;
+    if (current == null || conversation == null) return false;
+
+    final pending = ChatMessage.pending(
+      conversationId: conversationId,
+      body: body,
+    );
+    state = AsyncValue.data(
+      current.copyWith(
+        messages: [...current.messages, pending],
+        isSending: true,
+        errorMessage: null,
+      ),
     );
 
     try {
-      final sentMessage = await repository.sendMessage(
-        conversationId: conversationId,
-        content: content.trim(),
-        type: MessageType.text,
-      );
-
-      final updatedState = state.value;
-      if (updatedState != null) {
-        final exists = updatedState.messages.any((m) => m.id == sentMessage.id);
-        final updatedList = exists
-            ? updatedState.messages
-            : [...updatedState.messages, sentMessage];
-
-        state = AsyncValue.data(
-          updatedState.copyWith(messages: updatedList, isSending: false),
-        );
-
-        ref
-            .read(chatListProvider.notifier)
-            .updateLastMessage(conversationId, sentMessage);
-      }
+      final sent = await ref
+          .read(chatRepositoryProvider)
+          .send(conversationId: conversationId, body: body);
+      _replacePending(pending.id, ChatMessage.inThread(sent, conversation));
+      ref
+          .read(chatListProvider.notifier)
+          .applyConversation(
+            conversation.patch(
+              lastMessage: sent,
+              lastMessageAt: sent.createdAt,
+            ),
+          );
       return true;
     } catch (e) {
-      final updatedState = state.value;
-      if (updatedState != null) {
-        state = AsyncValue.data(
-          updatedState.copyWith(
-            isSending: false,
-            errorMessage: 'Gửi tin nhắn thất bại: ${e.toString()}',
-          ),
-        );
-      }
+      _dropPending(pending.id, ErrorHandler.getErrorMessage(e));
       return false;
     }
   }
 
-  /// Gửi lời đề nghị mua hàng (Offer Message)
-  Future<bool> sendOfferMessage({
-    required double offerPrice,
-    int quantity = 1,
-    String? note,
-    String? productId,
-    String? productTitle,
-    String? productImage,
-    double? productPrice,
-  }) async {
-    final currentState = state.value;
-    if (currentState == null || currentState.conversationId == null) {
+  void _replacePending(String pendingId, ChatMessage sent) {
+    final current = state.value;
+    if (current == null) return;
+    final messages =
+        current.messages
+            .where(
+              (message) => message.id != pendingId && message.id != sent.id,
+            )
+            .toList()
+          ..add(sent)
+          ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    state = AsyncValue.data(
+      current.copyWith(messages: messages, isSending: false),
+    );
+  }
+
+  void _dropPending(String pendingId, String errorMessage) {
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncValue.data(
+      current.copyWith(
+        messages: current.messages
+            .where((message) => message.id != pendingId)
+            .toList(),
+        isSending: false,
+        errorMessage: errorMessage,
+      ),
+    );
+  }
+
+  Future<bool> editMessage(ChatMessage message, String body) async {
+    try {
+      final edited = await ref
+          .read(chatRepositoryProvider)
+          .edit(
+            id: message.id,
+            createdAt: message.createdAt,
+            body: body.trim(),
+          );
+      _upsertMessage(edited, isNew: false);
+      return true;
+    } catch (e) {
+      _fail(e);
       return false;
     }
+  }
 
-    final conversationId = currentState.conversationId!;
-    final repository = ref.read(chatRepositoryProvider);
+  Future<bool> redactMessage(ChatMessage message) async {
+    try {
+      await ref
+          .read(chatRepositoryProvider)
+          .redact(id: message.id, createdAt: message.createdAt);
+      // The route keeps the row with an emptied body, so the thread is re-read
+      // rather than guessed at.
+      await refresh();
+      return true;
+    } catch (e) {
+      _fail(e);
+      return false;
+    }
+  }
 
-    state = AsyncValue.data(currentState.copyWith(isSending: true));
+  Future<bool> acceptOffer(String offerId) =>
+      _offerAction((repository) => repository.acceptOffer(offerId));
 
-    final metadata = ChatMessageMetadata(
-      productId: productId,
-      productTitle: productTitle,
-      productImage: productImage,
-      productPrice: productPrice,
-      offerPrice: offerPrice,
-      offerOriginalPrice: productPrice,
+  Future<bool> counterOffer(
+    String offerId, {
+    required int total,
+    required int quantity,
+    String? reason,
+  }) => _offerAction(
+    (repository) => repository.counterOffer(
+      offerId,
+      total: total,
       quantity: quantity,
-      offerNote: note,
-      offerStatus: OfferStatus.pending,
-    );
+      reason: reason,
+    ),
+  );
 
-    final content =
-        note ??
-        'I\'d like to offer \$${offerPrice.toStringAsFixed(2)}${quantity > 1 ? ' (Qty: $quantity)' : ''}';
-
+  /// Cancelling answers 204, so the new state of the negotiation is read back
+  /// rather than assumed — an expiry may have got there first.
+  Future<bool> cancelOffer(String offerId) async {
+    final repository = ref.read(chatRepositoryProvider);
     try {
-      final sentMessage = await repository.sendMessage(
-        conversationId: conversationId,
-        content: content,
-        type: MessageType.offer,
-        metadata: metadata,
-      );
-
-      final updatedState = state.value;
-      if (updatedState != null) {
-        final updatedList = [...updatedState.messages, sentMessage];
-        state = AsyncValue.data(
-          updatedState.copyWith(messages: updatedList, isSending: false),
-        );
-
-        ref
-            .read(chatListProvider.notifier)
-            .updateLastMessage(conversationId, sentMessage);
-      }
+      await repository.cancelOffer(offerId);
+      _applyOffer(await repository.offer(offerId));
       return true;
     } catch (e) {
-      final updatedState = state.value;
-      if (updatedState != null) {
-        state = AsyncValue.data(
-          updatedState.copyWith(
-            isSending: false,
-            errorMessage: 'Gửi lời đề nghị thất bại: ${e.toString()}',
-          ),
-        );
-      }
+      _fail(e);
       return false;
     }
   }
 
-  /// Phản hồi lời đề nghị (Chấp nhận, Thương lượng lại, Từ chối, Rút)
-  Future<void> respondToOffer(String messageId, OfferStatus status) async {
-    final currentState = state.value;
-    if (currentState == null) return;
+  Future<bool> _offerAction(
+    Future<Offer> Function(ChatRepository repository) action,
+  ) async {
+    try {
+      _applyOffer(await action(ref.read(chatRepositoryProvider)));
+      return true;
+    } catch (e) {
+      _fail(e);
+      return false;
+    }
+  }
 
-    final updatedMessages = currentState.messages.map((msg) {
-      if (msg.id == messageId && msg.type == MessageType.offer) {
-        final currentMeta = msg.metadata;
-        final updatedMeta = currentMeta?.copyWith(offerStatus: status);
-        return msg.copyWith(metadata: updatedMeta);
-      }
-      return msg;
-    }).toList();
+  void _fail(Object error) {
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncValue.data(
+      current.copyWith(errorMessage: ErrorHandler.getErrorMessage(error)),
+    );
+  }
 
-    state = AsyncValue.data(currentState.copyWith(messages: updatedMessages));
+  void clearError() {
+    final current = state.value;
+    if (current == null || current.errorMessage == null) return;
+    state = AsyncValue.data(current.copyWith(errorMessage: null));
   }
 }

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
-import '../../../catalog/data/models/catalog_model.dart';
-import '../providers/wishlist_provider.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/wishlist_provider.dart';
 
 class WishlistScreen extends ConsumerWidget {
   const WishlistScreen({super.key});
@@ -215,7 +215,7 @@ class WishlistScreen extends ConsumerWidget {
   Widget _buildRowProductCard(
     BuildContext context,
     WidgetRef ref,
-    TProductCard product,
+    Listing product,
   ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -227,6 +227,9 @@ class WishlistScreen extends ConsumerWidget {
     final imageBgColor = isDarkMode
         ? theme.colorScheme.surfaceContainerHighest
         : const Color(0xFFF4F4F1);
+    // Absent whenever the module could not presign one, which draws as a
+    // placeholder rather than a broken image.
+    final coverUrl = product.cover?.url;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -245,9 +248,9 @@ class WishlistScreen extends ConsumerWidget {
               width: 96,
               height: 96,
               color: imageBgColor,
-              child: product.thumbnail != null && product.thumbnail!.isNotEmpty
+              child: coverUrl != null && coverUrl.isNotEmpty
                   ? CachedNetworkImage(
-                      imageUrl: product.thumbnail!,
+                      imageUrl: coverUrl,
                       fit: BoxFit.cover,
                       errorWidget: (context, url, error) => Icon(
                         Icons.broken_image_outlined,
@@ -301,7 +304,7 @@ class WishlistScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Shop: @${product.vendorName ?? "shop"}',
+                  'Shop: @${product.seller.name}',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,

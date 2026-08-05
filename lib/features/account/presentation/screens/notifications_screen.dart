@@ -2,33 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../providers/notifications_provider.dart';
-import '../../data/models/account_model.dart' as model;
+import 'package:shopnexus_flutter_app/api/generated/model/notification.dart'
+    as wire;
+import 'package:shopnexus_flutter_app/api/generated/model/notification_category.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
 
-/// Mock Notification Item representation for UI testing & fallback
-class _MockNotification {
-  final int id;
-  final String title;
-  final String content;
-  final String dateCreated;
-  final String category; // 'message' | 'activity'
-  final String? imageUrl;
-  final IconData? iconData;
-  final String? targetRoute;
-  bool isRead;
+/// A row's own view of itself. `payload` is free-form structured content, so
+/// reading it is the widget's job and none of it pretends to be a declared field.
+extension on wire.Notification {
+  bool get isRead => readAt != null;
 
-  _MockNotification({
-    required this.id,
-    required this.title,
-    required this.content,
-    required this.dateCreated,
-    required this.category,
-    this.imageUrl,
-    this.iconData,
-    this.targetRoute,
-    this.isRead = false,
-  });
+  String? get body => (payload['content'] ?? payload['body'])?.toString();
+
+  String? get orderId => payload['order_id']?.toString();
+
+  String? get ticketId => payload['ticket_id']?.toString();
+
+  String? get redirectUrl => payload['redirect_url']?.toString();
 }
 
 class NotificationsScreen extends ConsumerStatefulWidget {
@@ -40,119 +31,45 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
-  int _selectedTabIndex = 0; // 0: Tin nhắn mới, 1: Hoạt động
+  /// Chat on one side, everything else on the other. The route can filter by
+  /// `category`, but the feed is one cursor walk, so the split is done here.
+  bool _showingChat = false;
 
-  // Initial Mock Data matching Stitch Ethos minimal e-commerce design
-  late List<_MockNotification> _mockItems;
+  Future<void> _markAllAsRead() =>
+      ref.read(notificationsControllerProvider.notifier).markRead();
 
-  @override
-  void initState() {
-    super.initState();
-    _initMockData();
+  /// The route takes a bound, never an id, so a tap marks this row and everything
+  /// older — which is what "read" means in a feed ordered by time.
+  Future<void> _markReadUpTo(wire.Notification item) => ref
+      .read(notificationsControllerProvider.notifier)
+      .markRead(upTo: item.createdAt);
+
+  Future<void> _loadMore() async {
+    try {
+      await ref.read(notificationsControllerProvider.notifier).loadMore();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Không tải thêm được: $error')));
+    }
   }
 
-  void _initMockData() {
-    _mockItems = [
-      _MockNotification(
-        id: 1,
-        title: 'Đơn hàng của bạn đã được giao!',
-        content:
-            'Đơn hàng #SN-98241 đã giao thành công. Vui lòng kiểm tra và xác nhận.',
-        dateCreated: '2 phút trước',
-        category: 'activity',
-        imageUrl:
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=150&q=80',
-        targetRoute: '/account/orders',
-        isRead: false,
-      ),
-      _MockNotification(
-        id: 2,
-        title: 'Bạn có tin nhắn mới từ Alex Shop',
-        content: 'Sản phẩm Áo thun nam Polo vẫn còn sẵn size L nhé bạn!',
-        dateCreated: '1 giờ trước',
-        category: 'message',
-        imageUrl:
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80',
-        targetRoute: '/chat',
-        isRead: false,
-      ),
-      _MockNotification(
-        id: 3,
-        title: 'Giảm giá 20% cho các sản phẩm yêu thích',
-        content: 'Áp dụng ưu đãi cho tất cả danh mục thời trang trong hôm nay.',
-        dateCreated: '3 giờ trước',
-        category: 'activity',
-        iconData: Icons.loyalty_rounded,
-        targetRoute: '/home',
-        isRead: true,
-      ),
-      _MockNotification(
-        id: 4,
-        title: 'Yêu cầu hoàn tiền đã được phê duyệt',
-        content: 'Hệ thống đã hoàn ₫299,000 vào Ví ShopNexus của bạn.',
-        dateCreated: '1 ngày trước',
-        category: 'activity',
-        iconData: Icons.account_balance_wallet_rounded,
-        targetRoute: '/account/orders',
-        isRead: true,
-      ),
-      _MockNotification(
-        id: 5,
-        title: 'ShopNexus Store vừa gửi cho bạn một tin nhắn',
-        content: 'Cảm ơn bạn đã mua sắm tại cửa hàng. Hãy để lại đánh giá nhé!',
-        dateCreated: '2 ngày trước',
-        category: 'message',
-        iconData: Icons.chat_bubble_outline_rounded,
-        targetRoute: '/chat',
-        isRead: true,
-      ),
-    ];
-  }
-
-  void _markAllAsRead() {
-    setState(() {
-      for (var item in _mockItems) {
-        item.isRead = true;
-      }
-    });
-    ref.read(notificationsControllerProvider.notifier).markAllAsRead();
-  }
-
-  void _markItemAsRead(int id) {
-    setState(() {
-      final item = _mockItems.firstWhere((element) => element.id == id);
-      item.isRead = true;
-    });
-    ref.read(notificationsControllerProvider.notifier).markAsRead([id]);
-  }
-
-  void _navigateToTarget(BuildContext context, model.Notification item) {
-    final redirectUrl = item.metadata?.redirectUrl;
-    final orderId = item.metadata?.orderId;
-    final refundId = item.metadata?.refundId;
+  void _navigateToTarget(BuildContext context, wire.Notification item) {
+    final redirectUrl = item.redirectUrl;
+    final orderId = item.orderId;
+    final ticketId = item.ticketId;
 
     if (redirectUrl != null && redirectUrl.isNotEmpty) {
       context.push(redirectUrl);
     } else if (orderId != null && orderId.isNotEmpty) {
       context.push('/account/order-detail/$orderId');
-    } else if (refundId != null && refundId.isNotEmpty) {
-      context.push('/dispute/$refundId');
-    } else {
-      final lowerTitle = item.title.toLowerCase();
-      if (lowerTitle.contains('tin nhắn') || lowerTitle.contains('chat')) {
-        context.push('/chat');
-      } else if (lowerTitle.contains('đơn hàng') ||
-          lowerTitle.contains('giao') ||
-          lowerTitle.contains('vận chuyển')) {
-        context.push('/account/orders');
-      } else if (lowerTitle.contains('giảm giá') ||
-          lowerTitle.contains('ưu đãi') ||
-          lowerTitle.contains('khuyến mãi')) {
-        context.push('/home');
-      } else if (lowerTitle.contains('ví') ||
-          lowerTitle.contains('hoàn tiền')) {
-        context.push('/account/orders');
-      }
+    } else if (ticketId != null && ticketId.isNotEmpty) {
+      context.push('/account/help-center/$ticketId');
+    } else if (item.category == NotificationCategory.chat) {
+      context.push('/chat');
+    } else if (item.category == NotificationCategory.order) {
+      context.push('/account/orders');
     }
   }
 
@@ -161,18 +78,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    final notificationsAsync = ref.watch(
-      notificationsProvider(page: 1, limit: 100),
-    );
-
-    // Filter mock list based on selected tab index
-    final filteredMockItems = _mockItems.where((item) {
-      if (_selectedTabIndex == 0) {
-        return item.category == 'message';
-      } else {
-        return item.category == 'activity';
-      }
-    }).toList();
+    final feedAsync = ref.watch(notificationsControllerProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -214,14 +120,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       ),
       body: Column(
         children: [
-          // Sticky Stitch Tab Bar
           Container(
             color: theme.colorScheme.surface,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                _buildTabButton(title: 'Tin nhắn mới', index: 0),
-                _buildTabButton(title: 'Hoạt động', index: 1),
+                _buildTabButton(title: 'Tin nhắn', chat: true),
+                _buildTabButton(title: 'Hoạt động', chat: false),
               ],
             ),
           ),
@@ -232,57 +137,34 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 ? AppColors.darkPrimary.withAlpha(30)
                 : const Color(0xFFE1E3E1),
           ),
-
-          // Main Content View
           Expanded(
             child: RefreshIndicator(
               color: theme.colorScheme.primary,
               onRefresh: () async {
-                ref.invalidate(notificationsProvider(page: 1, limit: 100));
-                setState(() {
-                  _initMockData();
-                });
+                ref.invalidate(notificationsControllerProvider);
+                await ref.read(notificationsControllerProvider.future);
               },
-              child: notificationsAsync.when(
-                data: (apiList) {
-                  if (apiList.isNotEmpty) {
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: apiList.length,
-                      itemBuilder: (context, index) {
-                        final item = apiList[index];
-                        return _buildApiNotificationCard(context, item);
-                      },
-                    );
-                  }
-
-                  if (filteredMockItems.isEmpty) {
-                    return const _EmptyNotifications();
-                  }
+              child: feedAsync.when(
+                data: (feed) {
+                  final items = feed.items
+                      .where(
+                        (item) =>
+                            (item.category == NotificationCategory.chat) ==
+                            _showingChat,
+                      )
+                      .toList();
+                  if (items.isEmpty) return const _EmptyNotifications();
 
                   return ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: filteredMockItems.length,
-                    itemBuilder: (context, index) {
-                      final item = filteredMockItems[index];
-                      return _buildMockNotificationCard(context, item);
-                    },
+                    itemCount: items.length + (feed.nextCursor == null ? 0 : 1),
+                    itemBuilder: (context, index) => index == items.length
+                        ? _buildLoadMore(feed.loadingMore)
+                        : _buildNotificationCard(context, items[index]),
                   );
                 },
                 loading: () => _buildShimmerList(),
-                error: (err, stack) {
-                  if (filteredMockItems.isEmpty) {
-                    return const _EmptyNotifications();
-                  }
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: filteredMockItems.length,
-                    itemBuilder: (context, index) {
-                      final item = filteredMockItems[index];
-                      return _buildMockNotificationCard(context, item);
-                    },
-                  );
-                },
+                error: (err, _) => _buildError(err),
               ),
             ),
           ),
@@ -291,17 +173,60 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  Widget _buildTabButton({required String title, required int index}) {
+  Widget _buildLoadMore(bool loading) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Center(
+      child: loading
+          ? const CircularProgressIndicator()
+          : TextButton(onPressed: _loadMore, child: const Text('Tải thêm')),
+    ),
+  );
+
+  Widget _buildError(Object error) {
     final theme = Theme.of(context);
-    final isSelected = _selectedTabIndex == index;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 44,
+              color: theme.colorScheme.error,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Không tải được thông báo',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Inter',
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '$error',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                fontFamily: 'Inter',
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabButton({required String title, required bool chat}) {
+    final theme = Theme.of(context);
+    final isSelected = _showingChat == chat;
 
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedTabIndex = index;
-          });
-        },
+        onTap: () => setState(() => _showingChat = chat),
         behavior: HitTestBehavior.opaque,
         child: Container(
           padding: const EdgeInsets.only(top: 14, bottom: 12),
@@ -332,10 +257,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  Widget _buildMockNotificationCard(
-    BuildContext context,
-    _MockNotification item,
-  ) {
+  Widget _buildNotificationCard(BuildContext context, wire.Notification item) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final isUnread = !item.isRead;
@@ -347,6 +269,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final borderColor = isDarkMode
         ? AppColors.darkPrimary.withAlpha(30)
         : const Color(0xFFE1E3E1).withValues(alpha: 0.5);
+    final body = item.body;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -356,120 +279,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            _markItemAsRead(item.id);
-            if (item.targetRoute != null && item.targetRoute!.isNotEmpty) {
-              context.push(item.targetRoute!);
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: isUnread
-                  ? Border.all(color: Colors.transparent)
-                  : Border.all(color: borderColor),
-            ),
-            child: Stack(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLeadingWidget(item.imageUrl, item.iconData),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 12),
-                            child: Text(
-                              item.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                height: 1.3,
-                                fontWeight: FontWeight.w600,
-                                color: theme.colorScheme.onSurface,
-                                fontFamily: 'Inter',
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.content,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            item.dateCreated,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontFamily: 'Inter',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                if (isUnread)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildApiNotificationCard(
-    BuildContext context,
-    model.Notification item,
-  ) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final isUnread = !item.isRead;
-
-    final unreadBg = isDarkMode
-        ? theme.colorScheme.surfaceContainerHighest
-        : const Color(0xFFF4F4F1);
-    final readBg = isDarkMode ? AppColors.darkSurface : Colors.transparent;
-    final borderColor = isDarkMode
-        ? AppColors.darkPrimary.withAlpha(30)
-        : const Color(0xFFE1E3E1).withValues(alpha: 0.5);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Material(
-        color: isUnread ? unreadBg : readBg,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            if (isUnread) {
-              ref.read(notificationsControllerProvider.notifier).markAsRead([
-                item.id,
-              ]);
-            }
+            if (isUnread) _markReadUpTo(item);
             _navigateToTarget(context, item);
           },
           child: Container(
@@ -485,7 +295,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildLeadingWidget(null, _getNotificationIcon(item.title)),
+                    _buildIconBadge(_categoryIcon(item.category)),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
@@ -506,20 +316,22 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.content,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontFamily: 'Inter',
+                          if (body != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              body,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontFamily: 'Inter',
+                              ),
                             ),
-                          ),
+                          ],
                           const SizedBox(height: 8),
                           Text(
-                            _formatDate(item.dateCreated),
+                            _formatDate(item.createdAt),
                             style: TextStyle(
                               fontSize: 12,
                               color: theme.colorScheme.onSurfaceVariant,
@@ -552,24 +364,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  Widget _buildLeadingWidget(String? imageUrl, IconData? iconData) {
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.network(
-          imageUrl,
-          width: 56,
-          height: 56,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              _buildIconBadge(iconData),
-        ),
-      );
-    }
-    return _buildIconBadge(iconData);
-  }
-
-  Widget _buildIconBadge(IconData? iconData) {
+  Widget _buildIconBadge(IconData iconData) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -584,34 +379,21 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       width: 56,
       height: 56,
       decoration: BoxDecoration(color: badgeBg, shape: BoxShape.circle),
-      child: Icon(
-        iconData ?? Icons.notifications_none_rounded,
-        color: iconColor,
-        size: 26,
-      ),
+      child: Icon(iconData, color: iconColor, size: 26),
     );
   }
 
-  IconData _getNotificationIcon(String title) {
-    final lowerTitle = title.toLowerCase();
-    if (lowerTitle.contains('hủy') || lowerTitle.contains('refund')) {
-      return Icons.cancel_outlined;
-    } else if (lowerTitle.contains('giao') ||
-        lowerTitle.contains('vận chuyển')) {
-      return Icons.local_shipping_outlined;
-    } else if (lowerTitle.contains('thanh toán') || lowerTitle.contains('ví')) {
-      return Icons.account_balance_wallet_outlined;
-    }
-    return Icons.notifications_none_rounded;
-  }
+  IconData _categoryIcon(NotificationCategory category) => switch (category) {
+    NotificationCategory.order => Icons.local_shipping_outlined,
+    NotificationCategory.promotion => Icons.loyalty_rounded,
+    NotificationCategory.chat => Icons.chat_bubble_outline_rounded,
+    NotificationCategory.social => Icons.people_outline_rounded,
+    NotificationCategory.system => Icons.notifications_none_rounded,
+  };
 
-  String _formatDate(String isoString) {
-    try {
-      final date = DateTime.parse(isoString);
-      return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}  ${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-    } catch (_) {
-      return isoString;
-    }
+  String _formatDate(DateTime instant) {
+    final date = instant.toLocal();
+    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}  ${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
   Widget _buildShimmerList() {

@@ -11,8 +11,7 @@ class DataResponse<T> {
   factory DataResponse.fromJson(
     Map<String, dynamic> json,
     T Function(Object? json) fromJsonT,
-  ) =>
-      _$DataResponseFromJson(json, fromJsonT);
+  ) => _$DataResponseFromJson(json, fromJsonT);
 
   Map<String, dynamic> toJson(Object? Function(T value) toJsonT) =>
       _$DataResponseToJson(this, toJsonT);

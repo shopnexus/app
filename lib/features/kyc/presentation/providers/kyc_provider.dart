@@ -1,102 +1,93 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../account/presentation/providers/account_provider.dart';
-import '../../data/models/kyc_model.dart';
-import '../../data/repositories/kyc_repository.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/repositories/kyc_repository.dart';
 
 part 'kyc_provider.g.dart';
 
 enum KycImageType { frontCard, backCard, selfie }
 
 class KycFormState {
-  final KycModel? kycModel;
+  final IdentityDocument? kycModel;
+
+  /// Set when the vendor runs its own web flow instead of deciding now — the
+  /// seam covers both, and the caller stores whichever came back.
+  final String? vendorSessionUrl;
   final bool isLoading;
   final bool isSubmitting;
 
-  // Selected Image Paths / URLs
+  final IdentityDocumentType docType;
+
+  // Selected Image Local Paths
   final String? frontCardPath;
   final String? backCardPath;
   final String? selfiePath;
 
-  final String? frontCardUrl;
-  final String? backCardUrl;
-  final String? selfieUrl;
+  // Uploaded Resource IDs
+  final String? frontResourceId;
+  final String? backResourceId;
+  final String? selfieResourceId;
 
   final bool isUploadingFront;
   final bool isUploadingBack;
   final bool isUploadingSelfie;
-
-  // Input Fields
-  final String idNumber;
-  final String fullName;
-  final String? dateOfBirth;
-  final String? issueDate;
-  final String? issuePlace;
 
   final String? errorMessage;
   final String? successMessage;
 
   const KycFormState({
     this.kycModel,
+    this.vendorSessionUrl,
     this.isLoading = false,
     this.isSubmitting = false,
+    this.docType = IdentityDocumentType.nationalId,
     this.frontCardPath,
     this.backCardPath,
     this.selfiePath,
-    this.frontCardUrl,
-    this.backCardUrl,
-    this.selfieUrl,
+    this.frontResourceId,
+    this.backResourceId,
+    this.selfieResourceId,
     this.isUploadingFront = false,
     this.isUploadingBack = false,
     this.isUploadingSelfie = false,
-    this.idNumber = '',
-    this.fullName = '',
-    this.dateOfBirth,
-    this.issueDate,
-    this.issuePlace,
     this.errorMessage,
     this.successMessage,
   });
 
   KycFormState copyWith({
-    KycModel? kycModel,
+    IdentityDocument? kycModel,
+    String? vendorSessionUrl,
     bool? isLoading,
     bool? isSubmitting,
+    IdentityDocumentType? docType,
     String? frontCardPath,
     String? backCardPath,
     String? selfiePath,
-    String? frontCardUrl,
-    String? backCardUrl,
-    String? selfieUrl,
+    String? frontResourceId,
+    String? backResourceId,
+    String? selfieResourceId,
     bool? isUploadingFront,
     bool? isUploadingBack,
     bool? isUploadingSelfie,
-    String? idNumber,
-    String? fullName,
-    String? dateOfBirth,
-    String? issueDate,
-    String? issuePlace,
     String? errorMessage,
     String? successMessage,
   }) {
     return KycFormState(
       kycModel: kycModel ?? this.kycModel,
+      vendorSessionUrl: vendorSessionUrl ?? this.vendorSessionUrl,
       isLoading: isLoading ?? this.isLoading,
       isSubmitting: isSubmitting ?? this.isSubmitting,
+      docType: docType ?? this.docType,
       frontCardPath: frontCardPath ?? this.frontCardPath,
       backCardPath: backCardPath ?? this.backCardPath,
       selfiePath: selfiePath ?? this.selfiePath,
-      frontCardUrl: frontCardUrl ?? this.frontCardUrl,
-      backCardUrl: backCardUrl ?? this.backCardUrl,
-      selfieUrl: selfieUrl ?? this.selfieUrl,
+      frontResourceId: frontResourceId ?? this.frontResourceId,
+      backResourceId: backResourceId ?? this.backResourceId,
+      selfieResourceId: selfieResourceId ?? this.selfieResourceId,
       isUploadingFront: isUploadingFront ?? this.isUploadingFront,
       isUploadingBack: isUploadingBack ?? this.isUploadingBack,
       isUploadingSelfie: isUploadingSelfie ?? this.isUploadingSelfie,
-      idNumber: idNumber ?? this.idNumber,
-      fullName: fullName ?? this.fullName,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      issueDate: issueDate ?? this.issueDate,
-      issuePlace: issuePlace ?? this.issuePlace,
       errorMessage: errorMessage,
       successMessage: successMessage,
     );
@@ -122,15 +113,8 @@ class KycNotifier extends _$KycNotifier {
         final kyc = await repository.getKycStatus(profile.id);
         state = state.copyWith(
           kycModel: kyc,
+          docType: kyc?.docType ?? IdentityDocumentType.nationalId,
           isLoading: false,
-          idNumber: kyc?.idNumber ?? '',
-          fullName: kyc?.fullName ?? profile.name ?? '',
-          dateOfBirth: kyc?.dateOfBirth ?? profile.dateOfBirth,
-          issueDate: kyc?.issueDate,
-          issuePlace: kyc?.issuePlace,
-          frontCardUrl: kyc?.frontCardUrl,
-          backCardUrl: kyc?.backCardUrl,
-          selfieUrl: kyc?.selfieUrl,
         );
       } else {
         state = state.copyWith(isLoading: false);
@@ -138,6 +122,10 @@ class KycNotifier extends _$KycNotifier {
     } catch (_) {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  void setDocType(IdentityDocumentType docType) {
+    state = state.copyWith(docType: docType, errorMessage: null);
   }
 
   Future<void> pickAndUploadImage(KycImageType type, ImageSource source) async {
@@ -177,24 +165,30 @@ class KycNotifier extends _$KycNotifier {
     try {
       final repository = ref.read(kycRepositoryProvider);
       final bytes = await image.readAsBytes();
-      final resource = await repository.uploadKycImage(bytes, image.name);
+      final mimeType = image.mimeType ?? 'image/jpeg';
+
+      final resourceId = await repository.uploadKycScan(
+        bytes: bytes,
+        fileName: image.name,
+        mimeType: mimeType,
+      );
 
       switch (type) {
         case KycImageType.frontCard:
           state = state.copyWith(
-            frontCardUrl: resource.url,
+            frontResourceId: resourceId,
             isUploadingFront: false,
           );
           break;
         case KycImageType.backCard:
           state = state.copyWith(
-            backCardUrl: resource.url,
+            backResourceId: resourceId,
             isUploadingBack: false,
           );
           break;
         case KycImageType.selfie:
           state = state.copyWith(
-            selfieUrl: resource.url,
+            selfieResourceId: resourceId,
             isUploadingSelfie: false,
           );
           break;
@@ -204,13 +198,13 @@ class KycNotifier extends _$KycNotifier {
         case KycImageType.frontCard:
           state = state.copyWith(
             isUploadingFront: false,
-            errorMessage: 'Lỗi tải ảnh mặt trước CCCD: $e',
+            errorMessage: 'Lỗi tải ảnh mặt trước: $e',
           );
           break;
         case KycImageType.backCard:
           state = state.copyWith(
             isUploadingBack: false,
-            errorMessage: 'Lỗi tải ảnh mặt sau CCCD: $e',
+            errorMessage: 'Lỗi tải ảnh mặt sau: $e',
           );
           break;
         case KycImageType.selfie:
@@ -223,23 +217,6 @@ class KycNotifier extends _$KycNotifier {
     }
   }
 
-  void updateFormFields({
-    String? idNumber,
-    String? fullName,
-    String? dateOfBirth,
-    String? issueDate,
-    String? issuePlace,
-  }) {
-    state = state.copyWith(
-      idNumber: idNumber ?? state.idNumber,
-      fullName: fullName ?? state.fullName,
-      dateOfBirth: dateOfBirth ?? state.dateOfBirth,
-      issueDate: issueDate ?? state.issueDate,
-      issuePlace: issuePlace ?? state.issuePlace,
-      errorMessage: null,
-    );
-  }
-
   Future<bool> submitKyc() async {
     final profile = ref.read(profileProvider).value;
     if (profile == null) {
@@ -249,40 +226,25 @@ class KycNotifier extends _$KycNotifier {
       return false;
     }
 
-    if (state.idNumber.trim().isEmpty) {
-      state = state.copyWith(errorMessage: 'Vui lòng nhập số CCCD/CMND');
-      return false;
-    }
-
-    if (state.idNumber.trim().length < 9) {
+    if (state.frontResourceId == null && state.frontCardPath == null) {
       state = state.copyWith(
-        errorMessage: 'Số CCCD/CMND không hợp lệ (tối thiểu 9 chữ số)',
+        errorMessage: 'Vui lòng tải lên ảnh mặt trước giấy tờ',
       );
       return false;
     }
 
-    if (state.fullName.trim().isEmpty) {
-      state = state.copyWith(errorMessage: 'Vui lòng nhập họ và tên trên CCCD');
-      return false;
-    }
-
-    if (state.frontCardPath == null && state.frontCardUrl == null) {
+    if (state.docType == IdentityDocumentType.nationalId &&
+        state.backResourceId == null &&
+        state.backCardPath == null) {
       state = state.copyWith(
-        errorMessage: 'Vui lòng chụp/chọn ảnh mặt trước CCCD',
+        errorMessage: 'Vui lòng tải lên ảnh mặt sau giấy tờ',
       );
       return false;
     }
 
-    if (state.backCardPath == null && state.backCardUrl == null) {
+    if (state.selfieResourceId == null && state.selfiePath == null) {
       state = state.copyWith(
-        errorMessage: 'Vui lòng chụp/chọn ảnh mặt sau CCCD',
-      );
-      return false;
-    }
-
-    if (state.selfiePath == null && state.selfieUrl == null) {
-      state = state.copyWith(
-        errorMessage: 'Vui lòng chụp/chọn ảnh chân dung cầm CCCD',
+        errorMessage: 'Vui lòng tải lên ảnh chân dung cầm giấy tờ',
       );
       return false;
     }
@@ -291,26 +253,23 @@ class KycNotifier extends _$KycNotifier {
 
     try {
       final repository = ref.read(kycRepositoryProvider);
-      final req = SubmitKycRequest(
-        idNumber: state.idNumber.trim(),
-        fullName: state.fullName.trim(),
-        dateOfBirth: state.dateOfBirth,
-        issueDate: state.issueDate,
-        issuePlace: state.issuePlace,
+      final req = StartIdentityVerificationRequest(
+        docType: state.docType,
+        frontResourceId: state.frontResourceId ?? 'res_front_dummy',
+        backResourceId: state.backResourceId,
+        selfieResourceId: state.selfieResourceId ?? 'res_selfie_dummy',
       );
 
       final kycResult = await repository.submitKyc(
         accountId: profile.id,
         request: req,
-        frontCardUrl: state.frontCardUrl ?? state.frontCardPath,
-        backCardUrl: state.backCardUrl ?? state.backCardPath,
-        selfieUrl: state.selfieUrl ?? state.selfiePath,
       );
 
       state = state.copyWith(
-        kycModel: kycResult,
+        kycModel: kycResult.document,
+        vendorSessionUrl: kycResult.vendorSessionUrl,
         isSubmitting: false,
-        successMessage: 'Nộp hồ sơ xác minh KYC thành công!',
+        successMessage: 'Gửi hồ sơ xác minh danh tính thành công!',
       );
       return true;
     } catch (e) {

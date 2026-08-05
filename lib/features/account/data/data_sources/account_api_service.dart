@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/constants/api_endpoints.dart';
-import '../../../../core/network/dio_client.dart';
-import '../../../../shared/models/data_response.dart';
-import '../models/account_model.dart';
+import 'package:shopnexus_flutter_app/core/constants/api_endpoints.dart';
+import 'package:shopnexus_flutter_app/core/network/dio_client.dart';
+import 'package:shopnexus_flutter_app/shared/models/data_response.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 
 part 'account_api_service.g.dart';
 
@@ -13,117 +13,35 @@ abstract class AccountApiService {
   factory AccountApiService(Dio dio, {String baseUrl}) = _AccountApiService;
 
   // --- Profile Features ---
-  @GET(ApiEndpoints.profile)
-  Future<DataResponse<AccountProfile>> getProfile();
+  @GET(ApiEndpoints.me)
+  Future<DataResponse<Me>> getProfile();
 
-  @PATCH(ApiEndpoints.profile)
-  Future<DataResponse<AccountProfile>> updateProfile(
-    @Body() UpdateProfileRequest request,
-  );
+  /// The body is the generated `UpdateProfileRequest`'s own JSON, so it can only
+  /// ever carry contract keys — see `AccountRepository.updateProfile` for the one
+  /// field its codec cannot spell.
+  @PATCH(ApiEndpoints.meProfile)
+  Future<void> updateProfile(@Body() Map<String, dynamic> body);
 
-  @PATCH(ApiEndpoints.profileCountry)
-  Future<DataResponse<UpdateCountryResponse>> updateProfileCountry(
-    @Body() UpdateCountryRequest request,
-  );
+  @GET(ApiEndpoints.accountDetailTemplate)
+  Future<DataResponse<PublicAccount>> getAccountById(@Path('id') String id);
 
-  @GET(ApiEndpoints.getAccountById)
-  Future<DataResponse<AccountProfile>> getAccountById(
-    @Query('account_id') String accountId,
-  );
+  // Contacts are the generated `AccountApi`'s, reads included: its `Contact`
+  // types `address_type` as the enum the column actually holds.
 
-  // --- Contacts Features ---
-  @GET(ApiEndpoints.contacts)
-  Future<DataResponse<List<Contact>>> getContacts();
+  // --- Wishlist ---
+  // The list itself is catalog's `GET /listings?favorited=true`; `GET /favorites`
+  // is not a route at all (404). These two are, and they are what the heart does.
+  @PUT(ApiEndpoints.favoriteListingTemplate)
+  Future<void> addFavorite(@Path('listingID') String listingId);
 
-  @POST(ApiEndpoints.contacts)
-  Future<DataResponse<Contact>> createContact(
-    @Body() CreateContactRequest request,
-  );
+  @DELETE(ApiEndpoints.favoriteListingTemplate)
+  Future<void> removeFavorite(@Path('listingID') String listingId);
 
-  @PATCH(ApiEndpoints.contacts)
-  Future<DataResponse<Contact>> updateContact(
-    @Body() UpdateContactRequest request,
-  );
+  // The notification feed is the generated `AccountApi`'s: it is cursor-paged,
+  // and there is no per-row id to mark read by.
 
-  @DELETE(ApiEndpoints.contacts)
-  Future<DataResponse<MessageResponse>> deleteContact(
-    @Body() Map<String, dynamic> body,
-  );
-
-  @GET(ApiEndpoints.contactDetailTemplate)
-  Future<DataResponse<Contact>> getContactDetail(@Path('id') String contactId);
-
-  // --- Favorites / Wishlist Features ---
-  @GET(ApiEndpoints.favorites)
-  Future<DataResponse<List<AccountFavorite>>> getFavorites(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @POST(ApiEndpoints.favoriteSpuTemplate)
-  Future<DataResponse<AccountFavorite>> addFavorite(
-    @Path('spuId') String spuId,
-  );
-
-  @DELETE(ApiEndpoints.favoriteSpuTemplate)
-  Future<DataResponse<MessageResponse>> removeFavorite(
-    @Path('spuId') String spuId,
-  );
-
-  // --- Notifications Features ---
-  @GET(ApiEndpoints.notifications)
-  Future<DataResponse<List<Notification>>> getNotifications(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.notificationsUnreadCount)
-  Future<DataResponse<UnreadCountResponse>> getUnreadCount();
-
-  @POST(ApiEndpoints.notificationsRead)
-  Future<DataResponse<MessageResponse>> markAsRead(
-    @Body() ReadNotificationsRequest request,
-  );
-
-  @POST(ApiEndpoints.notificationsReadAll)
-  Future<DataResponse<MessageResponse>> markAllAsRead();
-
-  // --- Buyer Orders & Pending Items ---
-  @GET(ApiEndpoints.buyerPendingItems)
-  Future<DataResponse<List<BuyerOrderItem>>> getBuyerPendingItems(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @DELETE(ApiEndpoints.cancelBuyerPendingItemTemplate)
-  Future<void> cancelBuyerPendingItem(@Path('id') String id);
-
-  @GET(ApiEndpoints.buyerPendingOrders)
-  Future<DataResponse<List<BuyerOrder>>> getBuyerPendingOrders(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.buyerCompletedOrders)
-  Future<DataResponse<List<BuyerOrder>>> getBuyerCompletedOrders(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.buyerCancelledOrders)
-  Future<DataResponse<List<BuyerOrder>>> getBuyerCancelledOrders(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.buyerCancelledItems)
-  Future<DataResponse<List<BuyerOrderItem>>> getBuyerCancelledItems(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.buyerOrderDetailTemplate)
-  Future<DataResponse<BuyerOrder>> getBuyerOrderDetail(@Path('id') String id);
+  // Buyer orders and checkout lines are the generated `OrderApi`'s: `role` is
+  // required on `GET /orders` and `state` is what tells the four tabs apart.
 }
 
 @riverpod

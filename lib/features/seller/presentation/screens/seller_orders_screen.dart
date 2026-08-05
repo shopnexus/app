@@ -2,15 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
-import '../../data/models/seller_model.dart';
-import '../providers/seller_orders_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
 
+/// A seller's sales, read through `GET /orders?role=seller&state=…`. There is no
+/// confirm and no reject: the money creates the order, so the only thing a seller
+/// can refuse is a price. What is left is reading it, reporting where the parcel
+/// is, cancelling before it ships, and talking to the buyer.
 class SellerOrdersScreen extends ConsumerStatefulWidget {
-  final int initialTab;
+  final OrderState initialState;
 
-  const SellerOrdersScreen({super.key, this.initialTab = 0});
+  const SellerOrdersScreen({super.key, this.initialState = OrderState.open});
 
   @override
   ConsumerState<SellerOrdersScreen> createState() => _SellerOrdersScreenState();
@@ -20,9 +27,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialTab != 0) {
+    if (widget.initialState != OrderState.open) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(sellerOrdersProvider.notifier).setTab(widget.initialTab);
+        ref.read(sellerOrdersProvider.notifier).setState(widget.initialState);
       });
     }
   }
@@ -50,91 +57,34 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
             color: theme.colorScheme.primary,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search, color: theme.colorScheme.onSurface),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 4),
-        ],
       ),
       body: RefreshIndicator(
         color: theme.colorScheme.primary,
-        onRefresh: () async {
-          await notifier.refresh();
-        },
+        onRefresh: notifier.refresh,
         child: Column(
           children: [
-            // Status Tabs Filter Bar
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  _buildTabChip(
-                    context,
-                    label: 'Tất cả',
-                    count:
-                        state.pendingItems.length +
-                        state.confirmedOrders.length,
-                    isSelected: state.selectedTab == 0,
-                    onTap: () => notifier.setTab(0),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildTabChip(
-                    context,
-                    label: 'Đang xử lý',
-                    count:
-                        state.pendingItems.length +
-                        state.confirmedOrders
-                            .where((o) => o.status == 'processing')
-                            .length,
-                    isSelected: state.selectedTab == 1,
-                    onTap: () => notifier.setTab(1),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildTabChip(
-                    context,
-                    label: 'Đang giao',
-                    count: state.confirmedOrders
-                        .where((o) => o.status == 'shipping')
-                        .length,
-                    isSelected: state.selectedTab == 2,
-                    onTap: () => notifier.setTab(2),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildTabChip(
-                    context,
-                    label: 'Đã giao',
-                    count: state.confirmedOrders
-                        .where((o) => o.status == 'completed')
-                        .length,
-                    isSelected: state.selectedTab == 3,
-                    onTap: () => notifier.setTab(3),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildTabChip(
-                    context,
-                    label: 'Khiếu nại / Hủy',
-                    count: state.confirmedOrders
-                        .where(
-                          (o) =>
-                              o.status == 'disputing' ||
-                              o.status == 'cancelled',
-                        )
-                        .length,
-                    isSelected: state.selectedTab == 4,
-                    onTap: () => notifier.setTab(4),
-                  ),
+                  for (final entry in _tabs.entries)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: _buildTabChip(
+                        context,
+                        label: entry.value,
+                        isSelected: state.selected == entry.key,
+                        onTap: () => notifier.setState(entry.key),
+                      ),
+                    ),
                 ],
               ),
             ),
-
-            // Orders / Items List
             Expanded(
               child: state.isLoading
                   ? _buildShimmerList(context)
-                  : _buildOrdersList(context, state, notifier),
+                  : _buildList(context, state, notifier),
             ),
           ],
         ),
@@ -142,10 +92,105 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     );
   }
 
+  /// Exactly `OrderState`. A tab the contract has no filter for would be a tab
+  /// that is always empty, which is what the previous five were.
+  static const _tabs = {
+    OrderState.open: 'Đang xử lý',
+    OrderState.completed: 'Hoàn thành',
+    OrderState.cancelled: 'Đã hủy',
+  };
+
+  Widget _buildList(
+    BuildContext context,
+    SellerOrdersState state,
+    SellerOrdersNotifier notifier,
+  ) {
+    if (state.errorMessage != null) {
+      return _buildMessage(
+        context,
+        Icons.error_outline_rounded,
+        'Không thể tải đơn hàng',
+        state.errorMessage,
+      );
+    }
+    if (state.orders.isEmpty && state.unsettled.isEmpty) {
+      return _buildMessage(
+        context,
+        Icons.receipt_long_outlined,
+        'Chưa có đơn hàng nào trong mục này',
+        null,
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (state.unsettled.isNotEmpty) ...[
+          _buildUnsettledNotice(context, state.unsettled),
+          const SizedBox(height: 16),
+        ],
+        for (final view in state.orders)
+          _buildOrderCard(context, view, notifier, state.isActionLoading),
+      ],
+    );
+  }
+
+  /// Paid lines whose order the platform has not created yet. Nothing here is
+  /// waiting on the seller — it is a retry list, so it says so and offers nothing.
+  Widget _buildUnsettledNotice(
+    BuildContext context,
+    List<OrderLineView> lines,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF422006) : const Color(0xFFFEF3C7),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.hourglass_top,
+                size: 18,
+                color: Color(0xFFD97706),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${lines.length} sản phẩm đã thanh toán đang chờ hệ thống tạo đơn',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark
+                        ? const Color(0xFFFBBF24)
+                        : const Color(0xFF92400E),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Bạn không cần làm gì — đơn sẽ xuất hiện ngay khi hệ thống xử lý xong.',
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? const Color(0xFFFDE68A) : const Color(0xFF92400E),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTabChip(
     BuildContext context, {
     required String label,
-    int? count,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
@@ -165,63 +210,44 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
           color: isSelected ? theme.colorScheme.primary : unselectedBg,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Row(
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            if (count != null && count > 0) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.white : const Color(0xFFEF4444),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  count.toString(),
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: isSelected
-                        ? theme.colorScheme.primary
-                        : Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ],
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            color: isSelected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildPendingItemCard(
+  Widget _buildOrderCard(
     BuildContext context,
-    SellerPendingItem item,
+    OrderView view,
     SellerOrdersNotifier notifier,
     bool isActionLoading,
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final order = view.order;
 
     final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
     final cardBorderColor = isDark
         ? AppColors.darkPrimary.withAlpha(40)
         : const Color(0xFFF1F5F9);
-    final imageBgColor = isDark
-        ? theme.colorScheme.surfaceContainerHighest
-        : const Color(0xFFF1F5F9);
     final dividerColor = isDark
         ? AppColors.darkPrimary.withAlpha(30)
         : const Color(0xFFF1F5F9);
+
+    // Cancelling is refused once the parcel has left `pending`; after that a
+    // refund is the only way back, so the button is not offered.
+    final canCancel =
+        order.state == OrderState.open &&
+        (order.transport?.status ?? TransportStatus.pending) ==
+            TransportStatus.pending;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -230,336 +256,24 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
         color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: cardBorderColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: Buyer Info & Order ID & Badge
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 14,
-                    backgroundColor: theme.colorScheme.primary.withAlpha(40),
-                    child: Text(
-                      (item.buyerName ?? 'B')[0].toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    item.buyerName ?? 'Khách hàng',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFFD97706).withAlpha(40)
-                      : const Color(0xFFFEF3C7),
-                  borderRadius: BorderRadius.circular(6),
-                ),
+              Expanded(
                 child: Text(
-                  item.orderId != null ? '#${item.orderId}' : 'Chờ gom đơn',
+                  'Mã đơn: #${order.id}',
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: isDark
-                        ? const Color(0xFFFBBF24)
-                        : const Color(0xFF92400E),
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ),
-            ],
-          ),
-          Divider(height: 24, color: dividerColor),
-
-          // Item Product Row
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: imageBgColor,
-                  image: item.thumbnail != null
-                      ? DecorationImage(
-                          image: NetworkImage(item.thumbnail!),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: item.thumbnail == null
-                    ? Icon(
-                        Icons.shopping_bag_outlined,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      )
-                    : null,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.productName ?? 'Sản phẩm gom đơn',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    if (item.skuName != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        'Phân loại: ${item.skuName}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 6),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'x${item.quantity}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          MoneyUtils.format(item.price * item.quantity),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Total & Action Buttons
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: isActionLoading
-                      ? null
-                      : () async {
-                          await notifier.rejectPendingItem(item.id);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Đã từ chối đơn gom'),
-                              ),
-                            );
-                          }
-                        },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: theme.colorScheme.onSurface,
-                    side: BorderSide(color: theme.colorScheme.outline),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text('Từ chối'),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                flex: 2,
-                child: ElevatedButton(
-                  onPressed: isActionLoading
-                      ? null
-                      : () async {
-                          await notifier.confirmPendingItem(item.id);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Đã xác nhận đơn gom thành công!',
-                                ),
-                                backgroundColor: Color(0xFF10B981),
-                              ),
-                            );
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text('Xác nhận gom đơn'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- ORDERS LIST RENDERER (ALL TABS) ---
-  Widget _buildOrdersList(
-    BuildContext context,
-    SellerOrdersState state,
-    SellerOrdersNotifier notifier,
-  ) {
-    if (state.selectedTab == 0) {
-      // Tab 0: Tất cả
-      final hasPending = state.pendingItems.isNotEmpty;
-      final hasConfirmed = state.confirmedOrders.isNotEmpty;
-      if (!hasPending && !hasConfirmed) {
-        return _buildEmptyView(context, 'Chưa có đơn hàng nào');
-      }
-      return ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (hasPending)
-            for (final item in state.pendingItems)
-              _buildPendingItemCard(
-                context,
-                item,
-                notifier,
-                state.isActionLoading,
-              ),
-          if (hasConfirmed)
-            for (final order in state.confirmedOrders)
-              _buildConfirmedOrderCard(context, order),
-        ],
-      );
-    }
-
-    if (state.selectedTab == 1) {
-      // Tab 1: Đang xử lý (Gồm đơn chờ xác nhận & đơn đang xử lý)
-      final processingOrders = state.confirmedOrders
-          .where((o) => o.status == 'processing')
-          .toList();
-      final hasPending = state.pendingItems.isNotEmpty;
-      final hasProcessing = processingOrders.isNotEmpty;
-      if (!hasPending && !hasProcessing) {
-        return _buildEmptyView(context, 'Không có đơn hàng nào đang xử lý');
-      }
-      return ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (hasPending)
-            for (final item in state.pendingItems)
-              _buildPendingItemCard(
-                context,
-                item,
-                notifier,
-                state.isActionLoading,
-              ),
-          if (hasProcessing)
-            for (final order in processingOrders)
-              _buildConfirmedOrderCard(context, order),
-        ],
-      );
-    }
-
-    String? targetStatus;
-    switch (state.selectedTab) {
-      case 2:
-        targetStatus = 'shipping';
-        break;
-      case 3:
-        targetStatus = 'completed';
-        break;
-      case 4:
-        targetStatus = 'disputing';
-        break;
-    }
-
-    final filtered = state.confirmedOrders.where((order) {
-      if (targetStatus == 'disputing') {
-        return order.status == 'disputing' || order.status == 'cancelled';
-      }
-      return order.status == targetStatus;
-    }).toList();
-
-    if (filtered.isEmpty) {
-      return _buildEmptyView(context, 'Không có đơn hàng nào trong mục này');
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: filtered.length,
-      itemBuilder: (context, index) {
-        final order = filtered[index];
-        return _buildConfirmedOrderCard(context, order);
-      },
-    );
-  }
-
-  Widget _buildConfirmedOrderCard(BuildContext context, SellerOrder order) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
-    final cardBorderColor = isDark
-        ? AppColors.darkPrimary.withAlpha(40)
-        : const Color(0xFFF1F5F9);
-    final dividerColor = isDark
-        ? AppColors.darkPrimary.withAlpha(30)
-        : const Color(0xFFF1F5F9);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardBgColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: cardBorderColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Mã đơn: #${order.id}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -569,7 +283,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  order.status == 'shipping' ? 'Đang giao' : 'Đã xác nhận',
+                  view.statusLabel,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -583,18 +297,51 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Khách hàng: ${order.buyerName ?? "Minh Anh"}',
+            'Khách hàng: ${order.buyer.name}',
             style: TextStyle(
               fontSize: 13,
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          if (order.shippingAddress != null)
-            Text(
-              'Địa chỉ: ${order.shippingAddress}',
-              style: TextStyle(
-                fontSize: 12,
-                color: theme.colorScheme.onSurfaceVariant,
+          Text(
+            view.shippingAddress,
+            style: TextStyle(
+              fontSize: 12,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          Divider(height: 20, color: dividerColor),
+          for (final line in view.lines)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${line.displayName} ×${line.item.quantity}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: theme.colorScheme.onSurface,
+                        decoration: line.isCancelled
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    MoneyUtils.format(
+                      line.item.totalAmount,
+                      currency: line.item.currency,
+                    ),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
           Divider(height: 20, color: dividerColor),
@@ -602,11 +349,11 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Tổng thanh toán:',
+                'Tiền hàng:',
                 style: TextStyle(color: theme.colorScheme.onSurface),
               ),
               Text(
-                MoneyUtils.format(order.totalAmount),
+                MoneyUtils.format(view.goodsTotal, currency: order.currency),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -615,6 +362,29 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
               ),
             ],
           ),
+          if (order.transport != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Phí vận chuyển (người mua trả):',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                Text(
+                  MoneyUtils.format(
+                    order.transport!.fee,
+                    currency: order.currency,
+                  ),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -631,23 +401,138 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   child: const Text('Chat khách'),
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+              if (order.state == OrderState.open) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: isActionLoading
+                        ? null
+                        : () =>
+                              _showCheckpointSheet(context, order.id, notifier),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
+                    child: const Text('Cập nhật vận chuyển'),
                   ),
-                  child: const Text('In vận đơn'),
                 ),
-              ),
+              ],
             ],
           ),
+          if (canCancel) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: isActionLoading
+                    ? null
+                    : () => _confirmCancel(context, order.id, notifier),
+                child: const Text(
+                  'Hủy đơn',
+                  style: TextStyle(color: Color(0xFFEF4444)),
+                ),
+              ),
+            ),
+          ],
         ],
+      ),
+    );
+  }
+
+  /// `pending` is missing on purpose: it is where a shipment starts, not a
+  /// position a checkpoint may report.
+  static const _checkpointLabels = {
+    TransportCheckpoint.pickedUp: 'Đã lấy hàng',
+    TransportCheckpoint.inTransit: 'Đang giao',
+    TransportCheckpoint.delivered: 'Đã giao',
+    TransportCheckpoint.returned: 'Đã trả về',
+    TransportCheckpoint.failed: 'Giao thất bại',
+  };
+
+  Future<void> _showCheckpointSheet(
+    BuildContext context,
+    String orderId,
+    SellerOrdersNotifier notifier,
+  ) async {
+    final theme = Theme.of(context);
+    final picked = await showModalBottomSheet<TransportCheckpoint>(
+      context: context,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Text(
+              'Vị trí đơn hàng',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            for (final entry in _checkpointLabels.entries)
+              ListTile(
+                title: Text(entry.value),
+                onTap: () => Navigator.pop(sheetContext, entry.key),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (picked == null) return;
+
+    final ok = await notifier.reportCheckpoint(orderId, picked);
+    if (!context.mounted) return;
+    _report(context, ok, 'Đã cập nhật vận chuyển');
+  }
+
+  Future<void> _confirmCancel(
+    BuildContext context,
+    String orderId,
+    SellerOrdersNotifier notifier,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Hủy đơn hàng?'),
+        content: const Text(
+          'Tiền tạm giữ sẽ được hoàn lại cho người mua và hàng được trả về kho. '
+          'Không thể hủy sau khi đơn vị vận chuyển đã lấy hàng.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Không'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Hủy đơn'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final ok = await notifier.cancelOrder(orderId);
+    if (!context.mounted) return;
+    _report(context, ok, 'Đã hủy đơn hàng');
+  }
+
+  /// A failure is shown as one, not swallowed: the old buttons reported success
+  /// whatever the server said, because the route they called did not exist.
+  void _report(BuildContext context, bool ok, String success) {
+    final message = ok
+        ? success
+        : ref.read(sellerOrdersProvider).errorMessage ?? 'Không thực hiện được';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: ok ? const Color(0xFF10B981) : const Color(0xFFEF4444),
       ),
     );
   }
@@ -675,27 +560,43 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     );
   }
 
-  Widget _buildEmptyView(BuildContext context, String message) {
+  Widget _buildMessage(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String? detail,
+  ) {
     final theme = Theme.of(context);
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 48,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            message,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-              color: theme.colorScheme.onSurface,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 48, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
-          ),
-        ],
+            if (detail != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                detail,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

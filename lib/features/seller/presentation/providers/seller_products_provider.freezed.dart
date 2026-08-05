@@ -14,8 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SellerProductsState {
 
- String? get selectedStatus;// null: Tất cả, 'active': Đang bán, 'inactive': Đã ẩn, 'violated': Vi phạm/Chờ duyệt
- String get searchQuery; List<TProductDetail> get spuList; bool get isLoading; String? get errorMessage;
+/// Null is every status, which is also the only listing a non-owner may see.
+ ListingStatus? get status; String get searchQuery; List<Listing> get listings; bool get isLoading; String? get errorMessage;
 /// Create a copy of SellerProductsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $SellerProductsStateCopyWith<SellerProductsState> get copyWith => _$SellerProduc
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SellerProductsState&&(identical(other.selectedStatus, selectedStatus) || other.selectedStatus == selectedStatus)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&const DeepCollectionEquality().equals(other.spuList, spuList)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SellerProductsState&&(identical(other.status, status) || other.status == status)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&const DeepCollectionEquality().equals(other.listings, listings)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,selectedStatus,searchQuery,const DeepCollectionEquality().hash(spuList),isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,status,searchQuery,const DeepCollectionEquality().hash(listings),isLoading,errorMessage);
 
 @override
 String toString() {
-  return 'SellerProductsState(selectedStatus: $selectedStatus, searchQuery: $searchQuery, spuList: $spuList, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'SellerProductsState(status: $status, searchQuery: $searchQuery, listings: $listings, isLoading: $isLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $SellerProductsStateCopyWith<$Res>  {
   factory $SellerProductsStateCopyWith(SellerProductsState value, $Res Function(SellerProductsState) _then) = _$SellerProductsStateCopyWithImpl;
 @useResult
 $Res call({
- String? selectedStatus, String searchQuery, List<TProductDetail> spuList, bool isLoading, String? errorMessage
+ ListingStatus? status, String searchQuery, List<Listing> listings, bool isLoading, String? errorMessage
 });
 
 
@@ -63,12 +63,12 @@ class _$SellerProductsStateCopyWithImpl<$Res>
 
 /// Create a copy of SellerProductsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? selectedStatus = freezed,Object? searchQuery = null,Object? spuList = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = freezed,Object? searchQuery = null,Object? listings = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
-selectedStatus: freezed == selectedStatus ? _self.selectedStatus : selectedStatus // ignore: cast_nullable_to_non_nullable
-as String?,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,spuList: null == spuList ? _self.spuList : spuList // ignore: cast_nullable_to_non_nullable
-as List<TProductDetail>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as ListingStatus?,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,listings: null == listings ? _self.listings : listings // ignore: cast_nullable_to_non_nullable
+as List<Listing>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -155,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? selectedStatus,  String searchQuery,  List<TProductDetail> spuList,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ListingStatus? status,  String searchQuery,  List<Listing> listings,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SellerProductsState() when $default != null:
-return $default(_that.selectedStatus,_that.searchQuery,_that.spuList,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.status,_that.searchQuery,_that.listings,_that.isLoading,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -176,10 +176,10 @@ return $default(_that.selectedStatus,_that.searchQuery,_that.spuList,_that.isLoa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? selectedStatus,  String searchQuery,  List<TProductDetail> spuList,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ListingStatus? status,  String searchQuery,  List<Listing> listings,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _SellerProductsState():
-return $default(_that.selectedStatus,_that.searchQuery,_that.spuList,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.status,_that.searchQuery,_that.listings,_that.isLoading,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +196,10 @@ return $default(_that.selectedStatus,_that.searchQuery,_that.spuList,_that.isLoa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? selectedStatus,  String searchQuery,  List<TProductDetail> spuList,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ListingStatus? status,  String searchQuery,  List<Listing> listings,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _SellerProductsState() when $default != null:
-return $default(_that.selectedStatus,_that.searchQuery,_that.spuList,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.status,_that.searchQuery,_that.listings,_that.isLoading,_that.errorMessage);case _:
   return null;
 
 }
@@ -211,17 +211,17 @@ return $default(_that.selectedStatus,_that.searchQuery,_that.spuList,_that.isLoa
 
 
 class _SellerProductsState implements SellerProductsState {
-  const _SellerProductsState({this.selectedStatus, this.searchQuery = '', final  List<TProductDetail> spuList = const [], this.isLoading = true, this.errorMessage}): _spuList = spuList;
+  const _SellerProductsState({this.status, this.searchQuery = '', final  List<Listing> listings = const [], this.isLoading = true, this.errorMessage}): _listings = listings;
   
 
-@override final  String? selectedStatus;
-// null: Tất cả, 'active': Đang bán, 'inactive': Đã ẩn, 'violated': Vi phạm/Chờ duyệt
+/// Null is every status, which is also the only listing a non-owner may see.
+@override final  ListingStatus? status;
 @override@JsonKey() final  String searchQuery;
- final  List<TProductDetail> _spuList;
-@override@JsonKey() List<TProductDetail> get spuList {
-  if (_spuList is EqualUnmodifiableListView) return _spuList;
+ final  List<Listing> _listings;
+@override@JsonKey() List<Listing> get listings {
+  if (_listings is EqualUnmodifiableListView) return _listings;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_spuList);
+  return EqualUnmodifiableListView(_listings);
 }
 
 @override@JsonKey() final  bool isLoading;
@@ -237,16 +237,16 @@ _$SellerProductsStateCopyWith<_SellerProductsState> get copyWith => __$SellerPro
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SellerProductsState&&(identical(other.selectedStatus, selectedStatus) || other.selectedStatus == selectedStatus)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&const DeepCollectionEquality().equals(other._spuList, _spuList)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SellerProductsState&&(identical(other.status, status) || other.status == status)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&const DeepCollectionEquality().equals(other._listings, _listings)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,selectedStatus,searchQuery,const DeepCollectionEquality().hash(_spuList),isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,status,searchQuery,const DeepCollectionEquality().hash(_listings),isLoading,errorMessage);
 
 @override
 String toString() {
-  return 'SellerProductsState(selectedStatus: $selectedStatus, searchQuery: $searchQuery, spuList: $spuList, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'SellerProductsState(status: $status, searchQuery: $searchQuery, listings: $listings, isLoading: $isLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -257,7 +257,7 @@ abstract mixin class _$SellerProductsStateCopyWith<$Res> implements $SellerProdu
   factory _$SellerProductsStateCopyWith(_SellerProductsState value, $Res Function(_SellerProductsState) _then) = __$SellerProductsStateCopyWithImpl;
 @override @useResult
 $Res call({
- String? selectedStatus, String searchQuery, List<TProductDetail> spuList, bool isLoading, String? errorMessage
+ ListingStatus? status, String searchQuery, List<Listing> listings, bool isLoading, String? errorMessage
 });
 
 
@@ -274,12 +274,12 @@ class __$SellerProductsStateCopyWithImpl<$Res>
 
 /// Create a copy of SellerProductsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? selectedStatus = freezed,Object? searchQuery = null,Object? spuList = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = freezed,Object? searchQuery = null,Object? listings = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
   return _then(_SellerProductsState(
-selectedStatus: freezed == selectedStatus ? _self.selectedStatus : selectedStatus // ignore: cast_nullable_to_non_nullable
-as String?,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,spuList: null == spuList ? _self._spuList : spuList // ignore: cast_nullable_to_non_nullable
-as List<TProductDetail>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as ListingStatus?,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,listings: null == listings ? _self._listings : listings // ignore: cast_nullable_to_non_nullable
+as List<Listing>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
