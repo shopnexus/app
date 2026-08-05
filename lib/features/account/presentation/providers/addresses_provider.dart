@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 
 part 'addresses_provider.g.dart';

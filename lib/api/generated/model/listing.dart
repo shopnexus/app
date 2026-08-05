@@ -61,6 +61,10 @@ class Listing {
     required this.sold,
 
     required this.status,
+
+    this.tags,
+
+    this.takenDownAt,
   });
 
   @JsonKey(name: r'category_id', required: true, includeIfNull: false)
@@ -137,6 +141,14 @@ class Listing {
   @JsonKey(name: r'status', required: true, includeIfNull: false)
   final ListingStatus status;
 
+  /// The listing's own tags, on the card so chips render without a request per row. Empty when it has none.
+  @JsonKey(name: r'tags', required: false, includeIfNull: false)
+  final List<String>? tags;
+
+  /// When staff removed this listing — which is the only thing that tells a takedown apart from the seller hiding their own, since both read `hidden`. Null otherwise. The reason is on the detail read, because it is a sentence rather than a badge.
+  @JsonKey(name: r'taken_down_at', required: false, includeIfNull: false)
+  final DateTime? takenDownAt;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -159,7 +171,9 @@ class Listing {
           other.seller == seller &&
           other.slug == slug &&
           other.sold == sold &&
-          other.status == status;
+          other.status == status &&
+          other.tags == tags &&
+          other.takenDownAt == takenDownAt;
 
   @override
   int get hashCode =>
@@ -181,7 +195,9 @@ class Listing {
       seller.hashCode +
       slug.hashCode +
       sold.hashCode +
-      status.hashCode;
+      status.hashCode +
+      tags.hashCode +
+      (takenDownAt == null ? 0 : takenDownAt.hashCode);
 
   factory Listing.fromJson(Map<String, dynamic> json) =>
       _$ListingFromJson(json);

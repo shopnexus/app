@@ -76,6 +76,14 @@ Listing _$ListingFromJson(Map<String, dynamic> json) => $checkedCreate(
         'status',
         (v) => $enumDecode(_$ListingStatusEnumMap, v),
       ),
+      tags: $checkedConvert(
+        'tags',
+        (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
+      ),
+      takenDownAt: $checkedConvert(
+        'taken_down_at',
+        (v) => v == null ? null : DateTime.parse(v as String),
+      ),
     );
     return val;
   },
@@ -85,6 +93,7 @@ Listing _$ListingFromJson(Map<String, dynamic> json) => $checkedCreate(
     'deletedAt': 'deleted_at',
     'priceMode': 'price_mode',
     'reviewCount': 'review_count',
+    'takenDownAt': 'taken_down_at',
   },
 );
 
@@ -108,6 +117,8 @@ Map<String, dynamic> _$ListingToJson(Listing instance) => <String, dynamic>{
   'slug': instance.slug,
   'sold': instance.sold,
   'status': _$ListingStatusEnumMap[instance.status]!,
+  'tags': ?instance.tags,
+  'taken_down_at': ?instance.takenDownAt?.toIso8601String(),
 };
 
 const _$ListingConditionEnumMap = {

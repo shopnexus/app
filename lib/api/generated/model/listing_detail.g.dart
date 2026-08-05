@@ -109,6 +109,11 @@ ListingDetail _$ListingDetailFromJson(
         'tags',
         (v) => (v as List<dynamic>).map((e) => e as String).toList(),
       ),
+      takedownReason: $checkedConvert('takedown_reason', (v) => v as String?),
+      takenDownAt: $checkedConvert(
+        'taken_down_at',
+        (v) => v == null ? null : DateTime.parse(v as String),
+      ),
       variants: $checkedConvert(
         'variants',
         (v) => (v as List<dynamic>)
@@ -126,6 +131,8 @@ ListingDetail _$ListingDetailFromJson(
     'pendingEdit': 'pending_edit',
     'priceMode': 'price_mode',
     'reviewCount': 'review_count',
+    'takedownReason': 'takedown_reason',
+    'takenDownAt': 'taken_down_at',
   },
 );
 
@@ -154,6 +161,8 @@ Map<String, dynamic> _$ListingDetailToJson(ListingDetail instance) =>
       'specifications': instance.specifications,
       'status': _$ListingStatusEnumMap[instance.status]!,
       'tags': instance.tags,
+      'takedown_reason': ?instance.takedownReason,
+      'taken_down_at': ?instance.takenDownAt?.toIso8601String(),
       'variants': instance.variants.map((e) => e.toJson()).toList(),
     };
 

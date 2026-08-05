@@ -51,7 +51,7 @@ $Res call({
 });
 
 
-$ContactCopyWith<$Res>? get selectedContact;
+
 
 }
 /// @nodoc
@@ -81,19 +81,7 @@ as String?,agreeToTerms: null == agreeToTerms ? _self.agreeToTerms : agreeToTerm
 as bool,
   ));
 }
-/// Create a copy of CheckoutState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ContactCopyWith<$Res>? get selectedContact {
-    if (_self.selectedContact == null) {
-    return null;
-  }
 
-  return $ContactCopyWith<$Res>(_self.selectedContact!, (value) {
-    return _then(_self.copyWith(selectedContact: value));
-  });
-}
 }
 
 
@@ -295,7 +283,7 @@ $Res call({
 });
 
 
-@override $ContactCopyWith<$Res>? get selectedContact;
+
 
 }
 /// @nodoc
@@ -326,19 +314,7 @@ as bool,
   ));
 }
 
-/// Create a copy of CheckoutState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ContactCopyWith<$Res>? get selectedContact {
-    if (_self.selectedContact == null) {
-    return null;
-  }
 
-  return $ContactCopyWith<$Res>(_self.selectedContact!, (value) {
-    return _then(_self.copyWith(selectedContact: value));
-  });
-}
 }
 
 // dart format on

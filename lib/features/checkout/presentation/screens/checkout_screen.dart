@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
 import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
@@ -495,11 +495,12 @@ class CheckoutScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 32),
                       ] else ...[
-                        // Section 1: Home
+                        // The two `ContactAddressType` values, and no more:
+                        // the "Office"/"Other" sections could never fill.
                         if (state.homeContacts.isNotEmpty) ...[
                           _buildSectionHeader(
                             context,
-                            title: 'Home',
+                            title: 'Nhà riêng',
                             icon: Icons.home_rounded,
                           ),
                           ...state.homeContacts.map(
@@ -513,32 +514,13 @@ class CheckoutScreen extends ConsumerWidget {
                           const SizedBox(height: 12),
                         ],
 
-                        // Section 2: Office
-                        if (state.officeContacts.isNotEmpty) ...[
+                        if (state.workContacts.isNotEmpty) ...[
                           _buildSectionHeader(
                             context,
-                            title: 'Office',
+                            title: 'Cơ quan',
                             icon: Icons.work_rounded,
                           ),
-                          ...state.officeContacts.map(
-                            (contact) => _buildModalAddressCard(
-                              context,
-                              ref,
-                              contact,
-                              state.selectedContact,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-
-                        // Section 3: Other
-                        if (state.otherContacts.isNotEmpty) ...[
-                          _buildSectionHeader(
-                            context,
-                            title: 'Other',
-                            icon: Icons.location_on_rounded,
-                          ),
-                          ...state.otherContacts.map(
+                          ...state.workContacts.map(
                             (contact) => _buildModalAddressCard(
                               context,
                               ref,

@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact_address_type.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
 
@@ -223,7 +224,7 @@ class AddressesScreen extends ConsumerWidget {
 
     // The contract has two kinds, lowercase — the old 'Home'/'Office' comparison
     // matched neither, so every card drew the generic pin.
-    final isHome = contact.addressType == 'home';
+    final isHome = contact.addressType == ContactAddressType.home;
     final typeIcon = isHome ? Icons.home_rounded : Icons.work_rounded;
     final typeLabel = isHome ? 'Nhà riêng' : 'Công ty';
     final isDefault = contact.isDefaultDelivery;

@@ -109,25 +109,6 @@ class CatalogRepository {
     return response.data?.data ?? const [];
   }
 
-  /// Bridges the two call sites in `lib/features/seller` that still read the
-  /// hand-written card. Delete it with them.
-  Future<List<TProductCard>> getProductCards({
-    String? keyword,
-    String? categoryId,
-    String? vendorId,
-    int? page,
-    int? size,
-  }) async {
-    final items = await listings(
-      keyword: keyword,
-      categoryId: categoryId,
-      vendorId: vendorId,
-      page: page,
-      size: size,
-    );
-    return items.map(_asProductCard).toList();
-  }
-
   /// Also records the listing in the "vừa xem" carousel. A failure to cache is
   /// swallowed: a broken Hive box must not take the product page down with it.
   Future<ListingDetail> listingDetail(String id) async {
@@ -203,35 +184,6 @@ class CatalogRepository {
     }
   }
 }
-
-TProductCard _asProductCard(Listing listing) => TProductCard(
-  id: listing.id,
-  name: listing.name,
-  slug: listing.slug,
-  price: listing.price,
-  priceMode: listing.priceMode.value,
-  currency: listing.currency,
-  categoryId: listing.categoryId,
-  condition: listing.condition.value,
-  cover: listing.cover,
-  thumbnail: listing.cover?.url,
-  rating: listing.rating,
-  reviewCount: listing.reviewCount,
-  sold: listing.sold,
-  status: listing.status.value,
-  favorited: listing.favorited,
-  seller: ListingSeller(
-    id: listing.seller.id,
-    name: listing.seller.name,
-    avatar: listing.seller.avatar,
-  ),
-  vendorId: listing.seller.id,
-  vendorName: listing.seller.name,
-  location: listing.location,
-  createdAt: listing.createdAt.toIso8601String(),
-  deletedAt: listing.deletedAt?.toIso8601String(),
-  score: listing.score,
-);
 
 @riverpod
 CatalogRepository catalogRepository(Ref ref) {

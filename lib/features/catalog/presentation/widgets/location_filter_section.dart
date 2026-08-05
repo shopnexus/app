@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/area_picker_sheet.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/administrative_areas_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';

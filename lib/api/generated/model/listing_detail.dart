@@ -73,6 +73,10 @@ class ListingDetail {
 
     required this.tags,
 
+    this.takedownReason,
+
+    this.takenDownAt,
+
     required this.variants,
   });
 
@@ -160,6 +164,14 @@ class ListingDetail {
   @JsonKey(name: r'tags', required: true, includeIfNull: false)
   final List<String> tags;
 
+  /// What the moderator chose to tell the seller, and null when they chose not to (`notify_seller: false` on the takedown). The full reason is in the audit trail either way. Publishing again clears both fields, so they always describe why the listing is down *now* rather than why it once was.
+  @JsonKey(name: r'takedown_reason', required: false, includeIfNull: false)
+  final String? takedownReason;
+
+  /// When staff removed the listing. Null when it is live, and null when the seller hid it themselves — the two used to be indistinguishable, which left a seller unable to tell that their listing had been removed at all.
+  @JsonKey(name: r'taken_down_at', required: false, includeIfNull: false)
+  final DateTime? takenDownAt;
+
   @JsonKey(name: r'variants', required: true, includeIfNull: false)
   final List<Variant> variants;
 
@@ -190,6 +202,8 @@ class ListingDetail {
           other.specifications == specifications &&
           other.status == status &&
           other.tags == tags &&
+          other.takedownReason == takedownReason &&
+          other.takenDownAt == takenDownAt &&
           other.variants == variants;
 
   @override
@@ -217,6 +231,8 @@ class ListingDetail {
       specifications.hashCode +
       status.hashCode +
       tags.hashCode +
+      (takedownReason == null ? 0 : takedownReason.hashCode) +
+      (takenDownAt == null ? 0 : takenDownAt.hashCode) +
       variants.hashCode;
 
   factory ListingDetail.fromJson(Map<String, dynamic> json) =>

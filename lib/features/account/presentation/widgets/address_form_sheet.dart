@@ -5,7 +5,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/contact_address_type.d
 import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/area_picker_sheet.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
 
 class AddressFormSheet extends ConsumerStatefulWidget {
@@ -46,7 +46,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
     _detailController = TextEditingController(
       text: widget.contact?.addressDetail,
     );
-    _addressType = _typeOf(widget.contact?.addressType);
+    _addressType = widget.contact?.addressType ?? ContactAddressType.home;
     _latitude = widget.contact?.latitude;
     _longitude = widget.contact?.longitude;
 
@@ -64,11 +64,6 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
       );
     }
   }
-
-  static ContactAddressType _typeOf(String? stored) =>
-      stored == ContactAddressType.work.value
-      ? ContactAddressType.work
-      : ContactAddressType.home;
 
   @override
   void dispose() {

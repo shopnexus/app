@@ -25,11 +25,8 @@ abstract class AccountApiService {
   @GET(ApiEndpoints.accountDetailTemplate)
   Future<DataResponse<PublicAccount>> getAccountById(@Path('id') String id);
 
-  // --- Contacts Features ---
-  // The list only; every write is the generated client's, which has the tri-state
-  // clear flags this hand-written model never had.
-  @GET(ApiEndpoints.contacts)
-  Future<DataResponse<List<Contact>>> getContacts();
+  // Contacts are the generated `AccountApi`'s, reads included: its `Contact`
+  // types `address_type` as the enum the column actually holds.
 
   // --- Wishlist ---
   // The list itself is catalog's `GET /listings?favorited=true`; `GET /favorites`

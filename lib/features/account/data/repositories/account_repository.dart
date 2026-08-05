@@ -7,6 +7,7 @@ import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/mark_notifications_read_request.dart';
@@ -108,10 +109,8 @@ class AccountRepository {
   }
 
   // --- Contacts Features ---
-  Future<List<Contact>> getContacts() async {
-    final response = await _apiService.getContacts();
-    return response.data;
-  }
+  Future<List<Contact>> getContacts() async =>
+      (await _api.contactsGet()).data?.data ?? const [];
 
   Future<void> createContact(CreateContactRequest request) =>
       _api.contactsPost(createContactRequest: request);

@@ -12,7 +12,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes_reques
 import 'package:shopnexus_flutter_app/api/generated/model/start_payment_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact_address_type.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/repositories/checkout_repository.dart';
@@ -47,14 +48,13 @@ abstract class CheckoutState with _$CheckoutState {
     @Default(true) bool agreeToTerms,
   }) = _CheckoutState;
 
+  /// `ContactAddressType` has two values, so the old `office`/`other` buckets
+  /// were always empty — `work` is what the column actually holds.
   List<Contact> get homeContacts =>
-      contacts.where((c) => c.addressType.toLowerCase() == 'home').toList();
+      contacts.where((c) => c.addressType == ContactAddressType.home).toList();
 
-  List<Contact> get officeContacts =>
-      contacts.where((c) => c.addressType.toLowerCase() == 'office').toList();
-
-  List<Contact> get otherContacts =>
-      contacts.where((c) => c.addressType.toLowerCase() == 'other').toList();
+  List<Contact> get workContacts =>
+      contacts.where((c) => c.addressType == ContactAddressType.work).toList();
 
   List<ShippingQuote> get shippingOptions =>
       shippingQuotes?.options ?? const [];
