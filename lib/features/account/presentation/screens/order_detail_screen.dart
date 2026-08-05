@@ -7,7 +7,7 @@ import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/request_refund_sheet.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/buyer_order_view.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
 
 class OrderDetailScreen extends ConsumerWidget {

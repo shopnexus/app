@@ -9,53 +9,53 @@ part of 'seller_dashboard_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(SelectedDashboardPeriod)
-const selectedDashboardPeriodProvider = SelectedDashboardPeriodProvider._();
+@ProviderFor(DashboardWindowDays)
+const dashboardWindowDaysProvider = DashboardWindowDaysProvider._();
 
-final class SelectedDashboardPeriodProvider
-    extends $NotifierProvider<SelectedDashboardPeriod, String> {
-  const SelectedDashboardPeriodProvider._()
+final class DashboardWindowDaysProvider
+    extends $NotifierProvider<DashboardWindowDays, int> {
+  const DashboardWindowDaysProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'selectedDashboardPeriodProvider',
+        name: r'dashboardWindowDaysProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$selectedDashboardPeriodHash();
+  String debugGetCreateSourceHash() => _$dashboardWindowDaysHash();
 
   @$internal
   @override
-  SelectedDashboardPeriod create() => SelectedDashboardPeriod();
+  DashboardWindowDays create() => DashboardWindowDays();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
+  Override overrideWithValue(int value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
+      providerOverride: $SyncValueProvider<int>(value),
     );
   }
 }
 
-String _$selectedDashboardPeriodHash() =>
-    r'e41e7374a861f571387f57ad0747c09610af92a6';
+String _$dashboardWindowDaysHash() =>
+    r'18ff6d20df4f47339fd15b48318452be9fb6c5d0';
 
-abstract class _$SelectedDashboardPeriod extends $Notifier<String> {
-  String build();
+abstract class _$DashboardWindowDays extends $Notifier<int> {
+  int build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<String, String>;
+    final ref = this.ref as $Ref<int, int>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<String, String>,
-              String,
+              AnyNotifier<int, int>,
+              int,
               Object?,
               Object?
             >;
@@ -67,7 +67,7 @@ abstract class _$SelectedDashboardPeriod extends $Notifier<String> {
 const sellerDashboardProvider = SellerDashboardNotifierProvider._();
 
 final class SellerDashboardNotifierProvider
-    extends $AsyncNotifierProvider<SellerDashboardNotifier, SellerStats> {
+    extends $AsyncNotifierProvider<SellerDashboardNotifier, SellerDashboard> {
   const SellerDashboardNotifierProvider._()
     : super(
         from: null,
@@ -88,20 +88,21 @@ final class SellerDashboardNotifierProvider
 }
 
 String _$sellerDashboardNotifierHash() =>
-    r'cb84f511ca740601f44752b00635eb5b773a2c9d';
+    r'f0172195e9291a4b4a5879487998fbbc0332a8b1';
 
-abstract class _$SellerDashboardNotifier extends $AsyncNotifier<SellerStats> {
-  FutureOr<SellerStats> build();
+abstract class _$SellerDashboardNotifier
+    extends $AsyncNotifier<SellerDashboard> {
+  FutureOr<SellerDashboard> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<AsyncValue<SellerStats>, SellerStats>;
+    final ref = this.ref as $Ref<AsyncValue<SellerDashboard>, SellerDashboard>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SellerStats>, SellerStats>,
-              AsyncValue<SellerStats>,
+              AnyNotifier<AsyncValue<SellerDashboard>, SellerDashboard>,
+              AsyncValue<SellerDashboard>,
               Object?,
               Object?
             >;

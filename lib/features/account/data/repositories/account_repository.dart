@@ -19,7 +19,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request
 import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
 import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/buyer_order_view.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 
 part 'account_repository.g.dart';
 

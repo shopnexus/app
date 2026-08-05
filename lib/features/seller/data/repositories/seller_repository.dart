@@ -1,478 +1,253 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shopnexus_flutter_app/core/constants/app_config.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
-import 'package:shopnexus_flutter_app/features/seller/data/data_sources/seller_api_service.dart';
-import 'package:shopnexus_flutter_app/features/seller/data/models/seller_model.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/bank_account.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_bank_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_withdrawal_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_listing_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/wallet.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/wallet_transaction.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/withdrawal.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 
 part 'seller_repository.g.dart';
 
+/// `oneof=buyer seller`, and every one of these routes refuses a request without
+/// it — which is why the old seller screens, asking `order/seller/*`, were empty
+/// rather than wrong.
+const orderRoleSeller = 'seller';
+
+/// The seller side of the marketplace, read through the same contract the buyer
+/// side uses with `role=seller`. There is no seller-specific analytics service
+/// and no SPU/SKU tree: the four routes this feature used to call
+/// (`analytic/seller-dashboard`, `order/seller/pending`, `order/seller/confirmed`,
+/// `catalog/product-{spu,sku}`) are not served, and every screen that called one
+/// was permanently empty or permanently in its error state.
 class SellerRepository {
-  final SellerApiService _apiService;
+  const SellerRepository(this._orderApi, this._catalogApi, this._financeApi);
 
-  SellerRepository(this._apiService);
+  final OrderApi _orderApi;
+  final CatalogApi _catalogApi;
+  final FinanceApi _financeApi;
 
-  /// Synchronous mock getters for instant UI initialization during dev
-  List<TProductDetail> getSpuListSync({String? status}) {
-    return _filterMockSpuList(status);
-  }
+  // --- Dashboard ---
 
-  List<SellerPendingItem> getSellerPendingItemsSync() {
-    return _mockSellerPendingItems;
-  }
-
-  List<SellerOrder> getSellerConfirmedOrdersSync({String? status}) {
-    return _filterMockSellerOrders(status);
-  }
-
-  /// Fetch dashboard stats for seller
-  Future<SellerStats> getSellerDashboard({String? period}) async {
-    if (AppConfig.useMockData) {
-      return SellerStats(
-        pendingOrders: 5,
-        shippingOrders: 12,
-        completedOrders: 148,
-        disputingOrders: 1,
-        activeProducts: 24,
-        inactiveProducts: 3,
-        violatedProducts: 0,
-        chartData: const [
-          SalesChartPoint(label: 'Oct', value: 42.0, ordersCount: 42),
-          SalesChartPoint(label: 'Nov', value: 48.0, ordersCount: 48),
-          SalesChartPoint(label: 'Dec', value: 52.0, ordersCount: 52),
-        ],
-      );
-    }
-    final response = await _apiService.getSellerDashboard(period: period);
-    return response.data;
-  }
-
-  /// Get SPU product list
-  Future<List<TProductDetail>> getSpuList({
-    String? vendorId,
-    String? status,
-    int? page,
-    int? limit,
+  /// The counts, the money and the daily series over one window, all describing
+  /// the orders *placed* in it. [tz] must be the device's IANA zone: UTC buckets
+  /// put a Vietnamese seller's evening sales on the next day. Absent bounds mean
+  /// the last 30 days, and the window may span at most a year.
+  Future<OrderSummary> salesSummary({
+    required String tz,
+    DateTime? from,
+    DateTime? to,
   }) async {
-    if (AppConfig.useMockData) {
-      return _filterMockSpuList(status);
-    }
-    final response = await _apiService.getSpuList(
-      vendorId: vendorId,
+    final summary = (await _orderApi.ordersSummaryGet(
+      role: orderRoleSeller,
+      from: from,
+      to: to,
+      tz: tz,
+    )).data?.data;
+    if (summary == null) throw StateError('empty order summary');
+    return summary;
+  }
+
+  /// One `total_count` read per status, in parallel. Four questions rather than
+  /// one: counting a page client-side would cap the answer at the page size and
+  /// then report it as the total.
+  Future<Map<ListingStatus, int>> listingCounts() async {
+    final counts = await Future.wait([
+      for (final status in ListingStatus.values) _listingCount(status),
+    ]);
+    return Map.fromIterables(ListingStatus.values, counts);
+  }
+
+  Future<int> _listingCount(ListingStatus status) async {
+    final page = (await _catalogApi.listingsGet(
+      mine: true,
+      status: status,
+      limit: 1,
+    )).data;
+    return page?.meta.totalCount ?? 0;
+  }
+
+  // --- Sales ---
+
+  /// [state] is what tells the tabs apart. `open` covers everything in flight —
+  /// there is no `processing`/`shipping`/`disputing` state, and where the parcel
+  /// is comes off `order.transport`, not off the order's own status.
+  Future<List<OrderView>> orders({OrderState? state, int limit = 20}) async {
+    final page = (await _orderApi.ordersGet(
+      role: orderRoleSeller,
+      state: state,
+      limit: limit,
+    )).data;
+    final orders = page?.data ?? const <Order>[];
+    final listings = await _listingsById(
+      orders.expand((order) => order.items ?? const <OrderItem>[]),
+    );
+    return [
+      for (final order in orders)
+        OrderView(
+          order: order,
+          lines: _lines(order.items ?? const [], listings),
+        ),
+    ];
+  }
+
+  /// Paid lines the money has not produced an order for yet — a retry list, not
+  /// an inbox: nothing here is waiting on the seller, and there is no route that
+  /// would let them approve or refuse it.
+  Future<List<OrderLineView>> unsettledItems({int limit = 50}) async {
+    final page = (await _orderApi.itemsGet(
+      role: orderRoleSeller,
+      pending: true,
+      limit: limit,
+    )).data;
+    final items = page?.data ?? const <OrderItem>[];
+    return _lines(items, await _listingsById(items));
+  }
+
+  /// Either party may cancel while the parcel has not left `pending`; after that
+  /// the route answers 409 and a refund is the only way back.
+  Future<void> cancelOrder(String orderId) =>
+      _orderApi.ordersIdCancellationPost(id: orderId);
+
+  /// One carrier-reported position. Forward-only, so a late checkpoint loses to
+  /// one already recorded rather than moving the parcel backwards.
+  Future<void> reportCheckpoint(
+    String orderId,
+    TransportCheckpoint checkpoint,
+  ) => _orderApi.ordersIdTransportCheckpointsPost(
+    id: orderId,
+    transportCheckpointRequest: TransportCheckpointRequest(status: checkpoint),
+  );
+
+  // --- Listings ---
+
+  /// `mine=true` is also what makes [status] honoured: a seller may see their own
+  /// drafts and hidden listings, nobody else may.
+  Future<List<Listing>> listings({
+    ListingStatus? status,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final result = (await _catalogApi.listingsGet(
+      mine: true,
       status: status,
       page: page,
       limit: limit,
-    );
-    return response.data;
+    )).data;
+    return result?.data ?? const [];
   }
 
-  /// Create new SPU product
-  Future<TProductDetail> createSpu(ProductSpuRequest request) async {
-    final response = await _apiService.createSpu(request);
-    return response.data;
-  }
+  Future<void> updateListing(String id, UpdateListingRequest request) =>
+      _catalogApi.listingsIdPatch(id: id, updateListingRequest: request);
 
-  /// Get SPU detail by ID
-  Future<TProductDetail> getSpuDetail(String id) async {
-    if (AppConfig.useMockData) {
-      return _mockSpuList.firstWhere(
-        (p) => p.id == id,
-        orElse: () => _mockSpuList.first,
-      );
-    }
-    final response = await _apiService.getSpuDetail(id);
-    return response.data;
-  }
+  Future<void> deleteListing(String id) => _catalogApi.listingsIdDelete(id: id);
 
-  /// Update SPU product
-  Future<TProductDetail> updateSpu(String id, ProductSpuRequest request) async {
-    final response = await _apiService.updateSpu(id, request);
-    return response.data;
-  }
+  /// Hiding is deleting the publication, not deleting the listing: the rows and
+  /// the past sales stay, it simply stops being public.
+  Future<void> hideListing(String id) =>
+      _catalogApi.listingsIdPublicationDelete(id: id);
 
-  /// Get SKU variant list for an SPU
-  Future<List<ProductSku>> getSkuList({
-    String? spuId,
-    int? page,
-    int? limit,
+  /// Re-queues a hidden listing for moderation, so it comes back as `pending`
+  /// rather than straight to `active`.
+  Future<void> publishListing(String id) =>
+      _catalogApi.listingsIdPublicationPost(id: id);
+
+  Future<void> deleteVariant(String id) => _catalogApi.variantsIdDelete(id: id);
+
+  // --- Payouts ---
+  // Wallets, the ledger and withdrawals are finance's, not seller-specific — but
+  // the seller's earnings screen is their only reader in this app.
+
+  Future<List<Wallet>> wallets() async =>
+      (await _financeApi.walletsGet()).data?.data ?? const [];
+
+  /// The ledger of one currency's wallet, newest first. Cursor-paged: a `page`
+  /// would be ignored.
+  Future<List<WalletTransaction>> ledger(
+    String currency, {
+    String? cursor,
+    int limit = 20,
   }) async {
-    if (AppConfig.useMockData) {
-      return const [
-        ProductSku(
-          id: 'sku_1_1',
-          name: 'Nâu Dark Brown',
-          price: 850000,
-          stock: 45,
-        ),
-      ];
-    }
-    final response = await _apiService.getSkuList(
-      spuId: spuId,
-      page: page,
+    final page = (await _financeApi.walletsCurrencyTransactionsGet(
+      currency: currency,
+      cursor: cursor,
       limit: limit,
-    );
-    return response.data;
+    )).data;
+    return page?.data ?? const [];
   }
 
-  /// Create new SKU variant
-  Future<ProductSku> createSku(ProductSkuRequest request) async {
-    final response = await _apiService.createSku(request);
-    return response.data;
+  Future<List<Withdrawal>> withdrawals({int limit = 20}) async {
+    final page = (await _financeApi.withdrawalsGet(limit: limit)).data;
+    return page?.data ?? const [];
   }
 
-  /// Update SKU variant
-  Future<ProductSku> updateSku(String id, ProductSkuRequest request) async {
-    final response = await _apiService.updateSku(id, request);
-    return response.data;
-  }
-
-  /// Delete SKU variant
-  Future<bool> deleteSku(String id) async {
-    if (AppConfig.useMockData) {
-      return true;
-    }
-    final response = await _apiService.deleteSku(id);
-    return response.data.message.isNotEmpty;
-  }
-
-  /// Get pending seller items awaiting confirmation
-  Future<List<SellerPendingItem>> getSellerPendingItems({
-    int? page,
-    int? limit,
+  /// A withdrawal names the bank account it pays out to; there is no default the
+  /// server would pick, so a seller with none linked cannot withdraw at all.
+  Future<Withdrawal> requestWithdrawal({
+    required int amount,
+    required String currency,
+    required String bankAccountId,
   }) async {
-    if (AppConfig.useMockData) {
-      return _mockSellerPendingItems;
-    }
-    final response = await _apiService.getSellerPendingItems(
-      page: page,
-      limit: limit,
-    );
-    return response.data;
+    final withdrawal = (await _financeApi.withdrawalsPost(
+      createWithdrawalRequest: CreateWithdrawalRequest(
+        amount: amount,
+        currency: currency,
+        bankAccountId: bankAccountId,
+      ),
+    )).data?.data;
+    if (withdrawal == null) throw StateError('empty withdrawal');
+    return withdrawal;
   }
 
-  /// Confirm pending items for order consolidation
-  Future<SellerConfirmResponse> confirmPendingItems(
-    List<String> itemIds,
-  ) async {
-    if (AppConfig.useMockData) {
-      _mockSellerPendingItems.removeWhere((item) => itemIds.contains(item.id));
-      return const SellerConfirmResponse(
-        sessionId: 'session_mock_123',
-        amount: 20000,
-        paymentUrl: 'https://payment.shopnexus.com/confirm',
-      );
-    }
-    final response = await _apiService.confirmPendingItems(
-      ConfirmSellerPendingRequest(itemIds: itemIds),
-    );
-    return response.data;
-  }
+  Future<List<BankAccount>> bankAccounts() async =>
+      (await _financeApi.bankAccountsGet()).data?.data ?? const [];
 
-  /// Cancel confirmation session
-  Future<bool> cancelConfirmPendingSession(String sessionId) async {
-    if (AppConfig.useMockData) {
-      return true;
-    }
-    final response = await _apiService.cancelConfirmPendingSession(sessionId);
-    return response.data.message.isNotEmpty;
-  }
+  Future<void> addBankAccount(CreateBankAccountRequest request) =>
+      _financeApi.bankAccountsPost(createBankAccountRequest: request);
 
-  /// Get payment URL for confirmation fee
-  Future<SellerConfirmResponse> getConfirmPaymentUrl(String sessionId) async {
-    if (AppConfig.useMockData) {
-      return const SellerConfirmResponse(
-        sessionId: 'session_mock_123',
-        amount: 20000,
-        paymentUrl: 'https://payment.shopnexus.com/confirm',
-      );
-    }
-    final response = await _apiService.getConfirmPaymentUrl(sessionId);
-    return response.data;
-  }
+  Future<void> deleteBankAccount(String id) =>
+      _financeApi.bankAccountsIdDelete(id: id);
 
-  /// Reject pending item
-  Future<bool> rejectPendingItem(String itemId, {String? reason}) async {
-    if (AppConfig.useMockData) {
-      _mockSellerPendingItems.removeWhere((item) => item.id == itemId);
-      return true;
-    }
-    final response = await _apiService.rejectPendingItem(
-      RejectSellerPendingRequest(itemId: itemId, reason: reason),
-    );
-    return response.data.message.isNotEmpty;
-  }
-
-  /// Get confirmed seller orders
-  Future<List<SellerOrder>> getSellerConfirmedOrders({
-    String? status,
-    int? page,
-    int? limit,
-  }) async {
-    if (AppConfig.useMockData) {
-      return _filterMockSellerOrders(status);
-    }
-    final response = await _apiService.getSellerConfirmedOrders(
-      status: status,
-      page: page,
-      limit: limit,
-    );
-    return response.data;
-  }
-
-  /// Get seller order detail
-  Future<SellerOrder> getSellerOrderDetail(String id) async {
-    if (AppConfig.useMockData) {
-      return _mockSellerConfirmedOrders.firstWhere(
-        (o) => o.id == id,
-        orElse: () => _mockSellerConfirmedOrders.first,
-      );
-    }
-    final response = await _apiService.getSellerOrderDetail(id);
-    return response.data;
-  }
-
-  // --- Static Mock Data Helpers ---
-  static List<TProductDetail> _filterMockSpuList(String? status) {
-    if (status == null || status.isEmpty) return _mockSpuList;
-    if (status == 'active') {
-      return _mockSpuList
-          .where(
-            (p) =>
-                (p.soldCount ?? 0) > 0 &&
-                p.skus != null &&
-                p.skus!.any((s) => s.stock > 0),
-          )
-          .toList();
-    } else if (status == 'inactive') {
-      return _mockSpuList
-          .where((p) => p.skus != null && p.skus!.every((s) => s.stock == 0))
-          .toList();
-    } else if (status == 'violated') {
-      return _mockSpuList
-          .where(
-            (p) =>
-                p.id.contains('violated') || p.skus == null || p.skus!.isEmpty,
-          )
-          .toList();
-    }
-    return _mockSpuList;
-  }
-
-  static List<SellerOrder> _filterMockSellerOrders(String? status) {
-    if (status == null || status.isEmpty) return _mockSellerConfirmedOrders;
-    if (status == 'disputing') {
-      return _mockSellerConfirmedOrders
-          .where((o) => o.status == 'disputing' || o.status == 'cancelled')
-          .toList();
-    }
-    return _mockSellerConfirmedOrders.where((o) => o.status == status).toList();
-  }
-
-  static final List<TProductDetail> _mockSpuList = [
-    const TProductDetail(
-      id: 'spu_1',
-      name: 'Ví da bò sáp thủ công Classic',
-      slug: 'vi-da-bo-sap-thu-cong-classic',
-      description:
-          'Ví da thật 100% may thủ công tinh tế, bề mặt mài xước patina thời thượng.',
-      price: 850000,
-      originalPrice: 1200000,
-      soldCount: 120,
-      skus: [
-        ProductSku(
-          id: 'sku_1_1',
-          name: 'Nâu Dark Brown',
-          price: 850000,
-          stock: 45,
-        ),
-      ],
-    ),
-    const TProductDetail(
-      id: 'spu_2',
-      name: 'Bình giữ nhiệt Titan 750ml Matte Black',
-      slug: 'binh-giu-nhiet-titan-750ml',
-      description:
-          'Lõi inox 316 giữ nhiệt 24h, lớp phủ sơn tĩnh điện nhám cao cấp.',
-      price: 420000,
-      originalPrice: 550000,
-      soldCount: 89,
-      skus: [
-        ProductSku(
-          id: 'sku_2_1',
-          name: 'Đen Nhám 750ml',
-          price: 420000,
-          stock: 0,
-        ),
-      ],
-    ),
-    const TProductDetail(
-      id: 'spu_3',
-      name: 'Set Tinh dầu thiên nhiên Relax Organics',
-      slug: 'set-tinh-dau-thien-nhien-relax',
-      description:
-          'Chiết xuất 100% thảo mộc hữu cơ kèm khay gỗ sồi bài trí sang trọng.',
-      price: 350000,
-      originalPrice: 450000,
-      soldCount: 45,
-      skus: [
-        ProductSku(
-          id: 'sku_3_1',
-          name: 'Combo 3 chai 10ml',
-          price: 350000,
-          stock: 120,
-        ),
-      ],
-    ),
-    const TProductDetail(
-      id: 'spu_4',
-      name: 'Khay để bàn bằng gỗ sồi tự nhiên, thiết kế module',
-      slug: 'khay-de-ban-go-soi-tu-nhien',
-      description:
-          'Gỗ sồi nguyên khối gia công CNC sắc nét, sơn phủ PU mờ bảo vệ.',
-      price: 450000,
-      originalPrice: 600000,
-      soldCount: 64,
-      skus: [
-        ProductSku(
-          id: 'sku_4_1',
-          name: 'Gỗ sồi Natural',
-          price: 450000,
-          stock: 30,
-        ),
-      ],
-    ),
-    const TProductDetail(
-      id: 'spu_violated_1',
-      name: 'Áo sơ mi Linen cúc thô Vintage',
-      slug: 'ao-so-mi-linen-cuc-tho-vintage',
-      description:
-          'Chưa cung cấp chứng nhận xuất xứ vải hữu cơ theo quy định đăng bán.',
-      price: 350000,
-      originalPrice: 450000,
-      soldCount: 0,
-      skus: [
-        ProductSku(id: 'sku_v_1', name: 'Trắng M', price: 350000, stock: 10),
-      ],
-    ),
-    const TProductDetail(
-      id: 'spu_violated_2',
-      name: 'Tai nghe Bluetooth Pro ANC 2026 (Bản xách tay)',
-      slug: 'tai-nghe-bluetooth-pro-anc-2026',
-      description:
-          'Tiêu đề chứa từ khóa bản quyền cấm phân phối khi chưa có giấy ủy quyền.',
-      price: 1250000,
-      originalPrice: 1800000,
-      soldCount: 0,
-      skus: [
-        ProductSku(id: 'sku_v_2', name: 'Trắng', price: 1250000, stock: 5),
-      ],
-    ),
+  List<OrderLineView> _lines(
+    Iterable<OrderItem> items,
+    Map<String, Listing> listings,
+  ) => [
+    for (final item in items)
+      OrderLineView(item: item, listing: listings[item.listingId]),
   ];
 
-  static final List<SellerPendingItem> _mockSellerPendingItems = [
-    const SellerPendingItem(
-      id: 'pending_1',
-      orderId: 'DH8472',
-      buyerName: 'Minh Anh',
-      productName:
-          'Cốc gốm thủ công tráng men xanh ngọc bích, phong cách tối giản',
-      skuName: 'Xanh Ngọc Bích - 350ml',
-      quantity: 2,
-      price: 150000,
-      status: 'pending',
-    ),
-    const SellerPendingItem(
-      id: 'pending_2',
-      orderId: 'DH8475',
-      buyerName: 'Hoàng Nam',
-      productName: 'Ví da bò sáp thủ công Classic',
-      skuName: 'Nâu Dark Brown',
-      quantity: 1,
-      price: 850000,
-      status: 'pending',
-    ),
-  ];
-
-  static final List<SellerOrder> _mockSellerConfirmedOrders = [
-    const SellerOrder(
-      id: 'DH8474',
-      buyerName: 'Nguyễn Hoàng Nam',
-      totalAmount: 850000,
-      status: 'processing',
-      shippingAddress: '12 Đường 3/2, Q.10, TP.HCM',
-      items: [
-        SellerPendingItem(
-          id: 'pi_0',
-          productName: 'Ví da bò sáp thủ công Classic',
-          quantity: 1,
-          price: 850000,
-        ),
-      ],
-    ),
-    const SellerOrder(
-      id: 'DH8470',
-      buyerName: 'Thanh Tùng',
-      totalAmount: 450000,
-      status: 'shipping',
-      shippingAddress: '123 Nguyễn Huệ, Q.1, TP.HCM',
-      items: [
-        SellerPendingItem(
-          id: 'pi_1',
-          productName: 'Khay để bàn bằng gỗ sồi tự nhiên, thiết kế module',
-          quantity: 1,
-          price: 450000,
-        ),
-      ],
-    ),
-    const SellerOrder(
-      id: 'DH8468',
-      buyerName: 'Trần Thu Hà',
-      totalAmount: 850000,
-      status: 'completed',
-      shippingAddress: '45 Lê Duẩn, Q.1, TP.HCM',
-      items: [
-        SellerPendingItem(
-          id: 'pi_2',
-          productName: 'Ví da bò sáp thủ công Classic',
-          quantity: 1,
-          price: 850000,
-        ),
-      ],
-    ),
-    const SellerOrder(
-      id: 'DH8465',
-      buyerName: 'Phạm Đức Long',
-      totalAmount: 350000,
-      status: 'disputing',
-      shippingAddress: '78 Võ Văn Tần, Q.3, TP.HCM',
-      items: [
-        SellerPendingItem(
-          id: 'pi_3',
-          productName: 'Set Tinh dầu thiên nhiên Relax Organics',
-          quantity: 1,
-          price: 350000,
-        ),
-      ],
-    ),
-    const SellerOrder(
-      id: 'DH8460',
-      buyerName: 'Lê Quốc Bảo',
-      totalAmount: 520000,
-      status: 'cancelled',
-      shippingAddress: '99 Điện Biên Phủ, Q. Bình Thạnh, TP.HCM',
-      items: [
-        SellerPendingItem(
-          id: 'pi_4',
-          productName: 'Bình giữ nhiệt Titan 750ml Matte Black',
-          quantity: 1,
-          price: 420000,
-        ),
-      ],
-    ),
-  ];
+  /// One lookup for a whole page. An `ids` read answers even for a listing the
+  /// seller has since hidden or deleted, which is why the line denormalizes it.
+  Future<Map<String, Listing>> _listingsById(Iterable<OrderItem> items) async {
+    final ids = {for (final item in items) item.listingId}.toList();
+    if (ids.isEmpty) return const {};
+    final page = (await _catalogApi.listingsGet(
+      ids: ids,
+      limit: ids.length.clamp(1, 100),
+    )).data;
+    return {
+      for (final listing in page?.data ?? const <Listing>[])
+        listing.id: listing,
+    };
+  }
 }
 
 @riverpod
-SellerRepository sellerRepository(Ref ref) {
-  final apiService = ref.watch(sellerApiServiceProvider);
-  return SellerRepository(apiService);
-}
+SellerRepository sellerRepository(Ref ref) => SellerRepository(
+  ref.watch(orderApiProvider),
+  ref.watch(catalogApiProvider),
+  ref.watch(financeApiProvider),
+);

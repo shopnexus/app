@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
 
+/// The seller's own listings, read through `GET /listings?mine=true`. SPU/SKU is
+/// gone: a listing has variants, and `mine=true` is what makes a `status` filter
+/// legal at all — a seller may see their drafts, nobody else may.
 class SellerProductsScreen extends ConsumerStatefulWidget {
-  final String? initialStatus;
+  final ListingStatus? initialStatus;
 
   const SellerProductsScreen({super.key, this.initialStatus});
 
@@ -39,55 +43,28 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     super.dispose();
   }
 
+  /// `ListingStatus` and nothing else. `inactive` and `violated` were never
+  /// values of this column, so every chip that named one matched no listing.
+  static const _statusLabels = {
+    ListingStatus.active: 'Đang bán',
+    ListingStatus.pending: 'Chờ duyệt',
+    ListingStatus.hidden: 'Đã ẩn',
+    ListingStatus.draft: 'Nháp',
+  };
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final state = ref.watch(sellerProductsProvider);
     final notifier = ref.read(sellerProductsProvider.notifier);
+    final counts = ref.watch(sellerListingCountsProvider);
 
-    final activeCount = state.spuList
-        .where(
-          (p) =>
-              p.skus != null &&
-              p.skus!.any((s) => s.stock > 0) &&
-              !p.id.contains('violated'),
-        )
-        .length;
-    final inactiveCount = state.spuList
-        .where((p) => p.skus != null && p.skus!.every((s) => s.stock == 0))
-        .length;
-    final violatedCount = state.spuList
-        .where(
-          (p) => p.id.contains('violated') || p.skus == null || p.skus!.isEmpty,
-        )
-        .length;
-
-    final filteredList = state.spuList.where((product) {
-      if (state.selectedStatus == 'active') {
-        final isOut =
-            product.skus != null && product.skus!.every((s) => s.stock == 0);
-        final isViolated =
-            product.id.contains('violated') ||
-            product.skus == null ||
-            product.skus!.isEmpty;
-        if (isOut || isViolated) return false;
-      } else if (state.selectedStatus == 'inactive') {
-        final isOut =
-            product.skus != null && product.skus!.every((s) => s.stock == 0);
-        if (!isOut) return false;
-      } else if (state.selectedStatus == 'violated') {
-        final isViolated =
-            product.id.contains('violated') ||
-            product.skus == null ||
-            product.skus!.isEmpty;
-        if (!isViolated) return false;
-      }
-
-      if (state.searchQuery.isEmpty) return true;
-      return product.name.toLowerCase().contains(
-        state.searchQuery.toLowerCase(),
-      );
-    }).toList();
+    final query = state.searchQuery.toLowerCase();
+    final filtered = query.isEmpty
+        ? state.listings
+        : state.listings
+              .where((l) => l.name.toLowerCase().contains(query))
+              .toList();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -144,12 +121,9 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
       ),
       body: RefreshIndicator(
         color: theme.colorScheme.primary,
-        onRefresh: () async {
-          await notifier.refresh();
-        },
+        onRefresh: notifier.refresh,
         child: Column(
           children: [
-            // Filter Chips Horizontal List matching SellerOrdersScreen UI
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -158,51 +132,41 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                   _buildTabChip(
                     context,
                     label: 'Tất cả',
-                    count: state.spuList.length,
-                    isSelected: state.selectedStatus == null,
+                    // The sum of the four, not the page's length: a page count
+                    // would cap the chip at the page size and call it a total.
+                    count: counts.value?.values.fold(
+                      0,
+                      (total, n) => total! + n,
+                    ),
+                    isSelected: state.status == null,
                     onTap: () => notifier.setStatusFilter(null),
                   ),
                   const SizedBox(width: 8),
-                  _buildTabChip(
-                    context,
-                    label: 'Đang bán',
-                    count: activeCount,
-                    isSelected: state.selectedStatus == 'active',
-                    onTap: () => notifier.setStatusFilter('active'),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildTabChip(
-                    context,
-                    label: 'Đã ẩn',
-                    count: inactiveCount,
-                    isSelected: state.selectedStatus == 'inactive',
-                    onTap: () => notifier.setStatusFilter('inactive'),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildTabChip(
-                    context,
-                    label: 'Chờ duyệt / Vi phạm',
-                    count: violatedCount,
-                    isSelected: state.selectedStatus == 'violated',
-                    onTap: () => notifier.setStatusFilter('violated'),
-                  ),
+                  for (final entry in _statusLabels.entries) ...[
+                    _buildTabChip(
+                      context,
+                      label: entry.value,
+                      count: counts.value?[entry.key],
+                      isSelected: state.status == entry.key,
+                      onTap: () => notifier.setStatusFilter(entry.key),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                 ],
               ),
             ),
-
-            // Product List
             Expanded(
               child: state.isLoading
                   ? _buildShimmerList(context)
-                  : filteredList.isEmpty
+                  : state.errorMessage != null
+                  ? _buildErrorView(context, state.errorMessage!)
+                  : filtered.isEmpty
                   ? _buildEmptyView(context)
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),
-                      itemCount: filteredList.length,
-                      itemBuilder: (context, index) {
-                        final product = filteredList[index];
-                        return _buildProductCard(context, product, notifier);
-                      },
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) =>
+                          _buildProductCard(context, filtered[index], notifier),
                     ),
             ),
           ],
@@ -274,45 +238,34 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
 
   Widget _buildProductCard(
     BuildContext context,
-    TProductDetail product,
+    Listing listing,
     SellerProductsNotifier notifier,
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final isViolated =
-        product.id.contains('violated') ||
-        product.skus == null ||
-        product.skus!.isEmpty;
-
-    // Calculate total stock from SKUs
-    int totalStock = 0;
-    if (product.skus != null && product.skus!.isNotEmpty) {
-      totalStock = product.skus!.fold(0, (sum, sku) => sum + sku.stock);
-    } else if (!isViolated) {
-      totalStock = 45; // Default display stock
-    }
-
-    final isHidden = totalStock == 0;
-    final statusText = isViolated
-        ? 'Vi phạm'
-        : (isHidden ? 'Đã ẩn' : 'Đang bán');
-    final statusBgColor = isViolated
-        ? (isDark
-              ? const Color(0xFF991B1B).withAlpha(40)
-              : const Color(0xFFFEE2E2))
-        : (isHidden
-              ? (isDark
-                    ? theme.colorScheme.surfaceContainerHighest
-                    : const Color(0xFFE2E8F0))
-              : (isDark
-                    ? AppColors.darkPrimary.withAlpha(40)
-                    : const Color(0xFFA8ECE4)));
-    final statusTextColor = isViolated
-        ? (isDark ? const Color(0xFFF87171) : const Color(0xFF991B1B))
-        : (isHidden
-              ? theme.colorScheme.onSurfaceVariant
-              : (isDark ? AppColors.darkPrimary : const Color(0xFF00504B)));
+    final isHidden = listing.status == ListingStatus.hidden;
+    final statusText = _statusLabels[listing.status] ?? listing.status.value;
+    final statusBgColor = switch (listing.status) {
+      ListingStatus.active =>
+        isDark ? AppColors.darkPrimary.withAlpha(40) : const Color(0xFFA8ECE4),
+      ListingStatus.pending =>
+        isDark
+            ? const Color(0xFFD97706).withAlpha(40)
+            : const Color(0xFFFEF3C7),
+      ListingStatus.hidden || ListingStatus.draft =>
+        isDark
+            ? theme.colorScheme.surfaceContainerHighest
+            : const Color(0xFFE2E8F0),
+    };
+    final statusTextColor = switch (listing.status) {
+      ListingStatus.active =>
+        isDark ? AppColors.darkPrimary : const Color(0xFF00504B),
+      ListingStatus.pending =>
+        isDark ? const Color(0xFFFBBF24) : const Color(0xFF92400E),
+      ListingStatus.hidden ||
+      ListingStatus.draft => theme.colorScheme.onSurfaceVariant,
+    };
 
     final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
     final cardBorderColor = isDark
@@ -323,7 +276,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
         : const Color(0xFFF1F5F9);
     // A resource carries no `url` until its module can presign one, so "no
     // picture to show" is the same case as "no picture uploaded".
-    final coverUrl = product.images?.firstOrNull?.url;
+    final coverUrl = listing.cover?.url;
     final hasCover = coverUrl != null && coverUrl.isNotEmpty;
 
     return Container(
@@ -344,9 +297,8 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Thumbnail Image (Click to view detail)
           GestureDetector(
-            onTap: () => context.push('/home/product/${product.id}'),
+            onTap: () => context.push('/home/product/${listing.id}'),
             child: Container(
               width: 90,
               height: 90,
@@ -369,8 +321,6 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
             ),
           ),
           const SizedBox(width: 12),
-
-          // Product Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,13 +328,12 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Title (Click to view detail)
                     Expanded(
                       child: GestureDetector(
                         onTap: () =>
-                            context.push('/home/product/${product.id}'),
+                            context.push('/home/product/${listing.id}'),
                         child: Text(
-                          product.name,
+                          listing.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -417,112 +366,50 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                   ],
                 ),
                 const SizedBox(height: 6),
+                // Stock lives on the variants, which the card feed does not
+                // carry; `sold` is what a `Listing` states about itself.
                 Row(
                   children: [
                     Icon(
-                      Icons.inventory_2_outlined,
+                      Icons.local_mall_outlined,
                       size: 16,
-                      color: isHidden
-                          ? const Color(0xFFEF4444)
-                          : theme.colorScheme.onSurfaceVariant,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Tồn kho: $totalStock',
+                      'Đã bán: ${listing.sold}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isHidden
-                            ? const Color(0xFFEF4444)
-                            : theme.colorScheme.onSurfaceVariant,
-                        fontWeight: isHidden
-                            ? FontWeight.bold
-                            : FontWeight.normal,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
-                if (isViolated) ...[
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF451A1A)
-                          : const Color(0xFFFEF2F2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF7F1D1D)
-                            : const Color(0xFFFCA5A5),
-                      ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 15,
-                          color: Color(0xFFEF4444),
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: RichText(
-                            text: TextSpan(
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: isDark
-                                    ? const Color(0xFFFCA5A5)
-                                    : const Color(0xFF991B1B),
-                              ),
-                              children: [
-                                const TextSpan(
-                                  text: 'Lý do vi phạm: ',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text:
-                                      (product.description != null &&
-                                          product.description!.isNotEmpty)
-                                      ? product.description!
-                                      : 'Sản phẩm chứa thông tin/hình ảnh không phù hợp với tiêu chuẩn.',
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 10),
-
-                // Bottom Row: Price on Far Left, Switch & 3-Dots on Far Right
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Price on Far Left
                     Text(
-                      MoneyUtils.format(product.price),
+                      MoneyUtils.format(
+                        listing.price,
+                        currency: listing.currency,
+                      ),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
                         fontSize: 15,
                       ),
                     ),
-
-                    // Switch & 3-Dots on Right
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (!isViolated) ...[
+                        // A draft has never been published, so there is no
+                        // publication to take down and nothing to toggle.
+                        if (listing.status != ListingStatus.draft) ...[
                           GestureDetector(
                             onTap: () => _showToggleConfirmDialog(
                               context,
-                              product,
-                              isHidden,
+                              listing,
                               notifier,
                             ),
                             child: Container(
@@ -575,8 +462,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                                         onChanged: (_) =>
                                             _showToggleConfirmDialog(
                                               context,
-                                              product,
-                                              isHidden,
+                                              listing,
                                               notifier,
                                             ),
                                       ),
@@ -595,7 +481,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                           onPressed: () =>
-                              _showProductOptions(context, product, notifier),
+                              _showProductOptions(context, listing, notifier),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
@@ -613,7 +499,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
 
   void _showProductOptions(
     BuildContext context,
-    TProductDetail product,
+    Listing listing,
     SellerProductsNotifier notifier,
   ) {
     final theme = Theme.of(context);
@@ -625,7 +511,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -641,8 +527,8 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                   style: TextStyle(color: theme.colorScheme.onSurface),
                 ),
                 onTap: () {
-                  Navigator.pop(context);
-                  context.push('/home/product/${product.id}');
+                  Navigator.pop(sheetContext);
+                  context.push('/home/product/${listing.id}');
                 },
               ),
               // No "edit with AI" entry: the AI flow fills in a *new* listing and
@@ -659,11 +545,11 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                     color: isDark ? const Color(0xFFEF4444) : Colors.red,
                   ),
                 ),
-                onTap: () {
-                  Navigator.pop(context);
-                  if (product.skus != null && product.skus!.isNotEmpty) {
-                    notifier.deleteSkuVariant(product.skus!.first.id);
-                  }
+                onTap: () async {
+                  Navigator.pop(sheetContext);
+                  // The listing, not one of its variants: the old button deleted
+                  // `skus.first` through a route that answered 404 either way.
+                  await notifier.deleteListing(listing.id);
                 },
               ),
             ],
@@ -675,13 +561,13 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
 
   void _showToggleConfirmDialog(
     BuildContext context,
-    TProductDetail product,
-    bool isCurrentlyHidden,
+    Listing listing,
     SellerProductsNotifier notifier,
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final actionText = isCurrentlyHidden ? 'hiển thị' : 'ẩn';
+    final isHidden = listing.status == ListingStatus.hidden;
+    final actionText = isHidden ? 'hiển thị lại' : 'ẩn';
 
     showDialog(
       context: context,
@@ -691,24 +577,29 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
         title: Row(
           children: [
             Icon(
-              isCurrentlyHidden
+              isHidden
                   ? Icons.visibility_outlined
                   : Icons.visibility_off_outlined,
               color: theme.colorScheme.primary,
             ),
             const SizedBox(width: 8),
-            Text(
-              'Xác nhận $actionText sản phẩm',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
+            Expanded(
+              child: Text(
+                'Xác nhận $actionText',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
             ),
           ],
         ),
         content: Text(
-          'Bạn có chắc chắn muốn $actionText sản phẩm "${product.name}" không?',
+          isHidden
+              // Publishing re-queues moderation, so it comes back as `pending`.
+              ? 'Sản phẩm "${listing.name}" sẽ được gửi duyệt lại trước khi hiển thị công khai.'
+              : 'Sản phẩm "${listing.name}" sẽ không còn hiển thị với người mua.',
           style: TextStyle(
             fontSize: 14,
             color: theme.colorScheme.onSurfaceVariant,
@@ -723,19 +614,9 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(dialogContext);
-              notifier.toggleProductVisibility(product.id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    isCurrentlyHidden
-                        ? 'Đã chuyển sản phẩm sang trạng thái Đang bán'
-                        : 'Đã chuyển sản phẩm sang trạng thái Đã ẩn',
-                  ),
-                  backgroundColor: theme.colorScheme.primary,
-                ),
-              );
+              await notifier.toggleVisibility(listing);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.colorScheme.primary,
@@ -769,6 +650,43 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
             color: isDark ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(16),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorView(BuildContext context, String message) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 48,
+              color: Color(0xFFEF4444),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Không thể tải danh sách sản phẩm',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
         ),
       ),
     );

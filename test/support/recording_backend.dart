@@ -4,9 +4,11 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
 /// The account repository wired onto a Dio that records what it was asked to
 /// send. Most drift these tests guard against is a wrong *request* — an unknown
@@ -29,6 +31,12 @@ class RecordingBackend {
     AccountApi(dio),
     OrderApi(dio),
     CatalogApi(dio),
+  );
+
+  late final SellerRepository seller = SellerRepository(
+    OrderApi(dio),
+    CatalogApi(dio),
+    FinanceApi(dio),
   );
 
   RequestOptions get only {

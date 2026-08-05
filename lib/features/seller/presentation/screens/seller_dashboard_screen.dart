@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/widgets/sales_performance_chart.dart';
@@ -16,8 +18,9 @@ class SellerDashboardScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final statsAsync = ref.watch(sellerDashboardProvider);
+    final dashboardAsync = ref.watch(sellerDashboardProvider);
     final profileAsync = ref.watch(profileProvider);
+    final windowDays = ref.watch(dashboardWindowDaysProvider);
 
     return Scaffold(
       backgroundColor: isDark
@@ -85,70 +88,67 @@ class SellerDashboardScreen extends ConsumerWidget {
         onRefresh: () async {
           await ref.read(sellerDashboardProvider.notifier).refresh();
         },
-        child: statsAsync.when(
-          data: (stats) => SingleChildScrollView(
+        child: dashboardAsync.when(
+          data: (dashboard) => SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Sales Performance Chart ---
-                SalesPerformanceChart(chartPoints: stats.effectiveChartData),
+                _buildWindowPicker(context, ref, windowDays),
+                const SizedBox(height: 12),
+                SalesPerformanceChart(days: dashboard.summary.daily),
+                const SizedBox(height: 16),
+                _buildRevenueCard(context, dashboard),
                 const SizedBox(height: 24),
 
                 // --- Orders Section ---
                 _buildSectionHeader(
                   context,
-                  title: 'My Sales',
+                  title: 'Đơn bán',
                   onSeeAll: () {
                     context.push('/seller/orders');
                   },
                 ),
                 const SizedBox(height: 10),
+                // The contract's own three states. `processing`/`shipping`/
+                // `disputing` were never states of an order: where the parcel is
+                // comes off `order.transport`, and a dispute is a refund.
                 Column(
                   children: [
                     SellerMenuItemTile(
-                      title: 'Processing Orders',
+                      title: 'Đang xử lý',
                       icon: Icons.pending_actions,
                       iconColor: const Color(0xFFF59E0B),
                       iconBgColor: const Color(
                         0xFFF59E0B,
                       ).withValues(alpha: 0.12),
-                      count: stats.pendingOrders,
-                      onTap: () => context.push('/seller/orders?tab=1'),
+                      count: dashboard.summary.open,
+                      onTap: () => context.push('/seller/orders?state=open'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
-                      title: 'Shipping Orders',
-                      icon: Icons.local_shipping_outlined,
-                      iconColor: const Color(0xFF3B82F6),
-                      iconBgColor: const Color(
-                        0xFF3B82F6,
-                      ).withValues(alpha: 0.12),
-                      count: stats.shippingOrders,
-                      onTap: () => context.push('/seller/orders?tab=2'),
-                    ),
-                    const SizedBox(height: 8),
-                    SellerMenuItemTile(
-                      title: 'Completed Orders',
+                      title: 'Hoàn thành',
                       icon: Icons.check_circle_outline,
                       iconColor: const Color(0xFF10B981),
                       iconBgColor: const Color(
                         0xFF10B981,
                       ).withValues(alpha: 0.12),
-                      count: stats.completedOrders,
-                      onTap: () => context.push('/seller/orders?tab=3'),
+                      count: dashboard.summary.completed,
+                      onTap: () =>
+                          context.push('/seller/orders?state=completed'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
-                      title: 'Disputing Orders',
-                      icon: Icons.warning_amber_rounded,
+                      title: 'Đã hủy',
+                      icon: Icons.cancel_outlined,
                       iconColor: const Color(0xFFEF4444),
                       iconBgColor: const Color(
                         0xFFEF4444,
                       ).withValues(alpha: 0.12),
-                      count: stats.disputingOrders,
-                      onTap: () => context.push('/seller/orders?tab=4'),
+                      count: dashboard.summary.cancelled,
+                      onTap: () =>
+                          context.push('/seller/orders?state=cancelled'),
                     ),
                   ],
                 ),
@@ -157,7 +157,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                 // --- Products Section ---
                 _buildSectionHeader(
                   context,
-                  title: 'My Products',
+                  title: 'Sản phẩm của tôi',
                   onSeeAll: () {
                     context.push('/seller/products');
                   },
@@ -166,37 +166,49 @@ class SellerDashboardScreen extends ConsumerWidget {
                 Column(
                   children: [
                     SellerMenuItemTile(
-                      title: 'Active Products',
+                      title: 'Đang bán',
                       icon: Icons.inventory_2_outlined,
                       iconColor: AppColors.primary,
                       iconBgColor: AppColors.primary.withValues(alpha: 0.12),
-                      count: stats.activeProducts,
+                      count: dashboard.listingsWith(ListingStatus.active),
                       onTap: () =>
                           context.push('/seller/products?status=active'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
-                      title: 'Inactive Products',
-                      icon: Icons.inventory_outlined,
+                      title: 'Chờ duyệt',
+                      icon: Icons.hourglass_empty,
+                      iconColor: const Color(0xFFF59E0B),
+                      iconBgColor: const Color(
+                        0xFFF59E0B,
+                      ).withValues(alpha: 0.12),
+                      count: dashboard.listingsWith(ListingStatus.pending),
+                      onTap: () =>
+                          context.push('/seller/products?status=pending'),
+                    ),
+                    const SizedBox(height: 8),
+                    SellerMenuItemTile(
+                      title: 'Đã ẩn',
+                      icon: Icons.visibility_off_outlined,
                       iconColor: const Color(0xFF64748B),
                       iconBgColor: const Color(
                         0xFF64748B,
                       ).withValues(alpha: 0.12),
-                      count: stats.inactiveProducts,
+                      count: dashboard.listingsWith(ListingStatus.hidden),
                       onTap: () =>
-                          context.push('/seller/products?status=inactive'),
+                          context.push('/seller/products?status=hidden'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
-                      title: 'Violated Products',
-                      icon: Icons.report_problem_outlined,
-                      iconColor: const Color(0xFFEF4444),
+                      title: 'Nháp',
+                      icon: Icons.edit_note,
+                      iconColor: const Color(0xFF94A3B8),
                       iconBgColor: const Color(
-                        0xFFEF4444,
+                        0xFF94A3B8,
                       ).withValues(alpha: 0.12),
-                      count: stats.violatedProducts,
+                      count: dashboard.listingsWith(ListingStatus.draft),
                       onTap: () =>
-                          context.push('/seller/products?status=violated'),
+                          context.push('/seller/products?status=draft'),
                     ),
                   ],
                 ),
@@ -207,12 +219,12 @@ class SellerDashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // --- Inventory & Logistics Section ---
-                _buildSectionHeader(context, title: 'Inventory & Logistics'),
+                _buildSectionHeader(context, title: 'Kho & vận chuyển'),
                 const SizedBox(height: 10),
                 Column(
                   children: [
                     SellerMenuItemTile(
-                      title: 'Shipping Address',
+                      title: 'Địa chỉ lấy hàng',
                       icon: Icons.location_on_outlined,
                       iconColor: const Color(0xFF0EA5E9),
                       iconBgColor: const Color(
@@ -222,7 +234,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
-                      title: 'Withdrawal & Earnings',
+                      title: 'Thu nhập & rút tiền',
                       icon: Icons.payments_outlined,
                       iconColor: const Color(0xFF10B981),
                       iconBgColor: const Color(
@@ -240,6 +252,98 @@ class SellerDashboardScreen extends ConsumerWidget {
           error: (err, stack) =>
               _buildErrorWidget(context, err.toString(), ref),
         ),
+      ),
+    );
+  }
+
+  /// The window every number on this screen describes. It filters `created_at`,
+  /// so the counts, the totals and the chart are all one set of orders.
+  Widget _buildWindowPicker(BuildContext context, WidgetRef ref, int selected) {
+    const options = {
+      DashboardWindow.week: '7 ngày',
+      DashboardWindow.month: '30 ngày',
+      DashboardWindow.quarter: '90 ngày',
+      DashboardWindow.year: '1 năm',
+    };
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (final entry in options.entries)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ChoiceChip(
+                label: Text(entry.value),
+                selected: selected == entry.key,
+                onSelected: (_) => ref
+                    .read(dashboardWindowDaysProvider.notifier)
+                    .setDays(entry.key),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// One row per currency, never a sum: a shop may price in more than one, and
+  /// adding those together is a figure that means nothing.
+  Widget _buildRevenueCard(BuildContext context, SellerDashboard dashboard) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final totals = dashboard.summary.totals;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : const Color(0xFFF1F5F9),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Doanh thu hàng đã hoàn thành',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (totals.isEmpty)
+            Text(
+              'Chưa có đơn hoàn thành trong khoảng này',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+              ),
+            )
+          else
+            for (final total in totals)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  MoneyUtils.format(total.amount, currency: total.currency),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                ),
+              ),
+          const SizedBox(height: 4),
+          // The fee is the courier's money and never reaches the seller, so it is
+          // not in this figure — saying so beats a number nobody can reconcile.
+          Text(
+            'Chưa gồm phí vận chuyển và các dòng đã hủy',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -450,7 +554,7 @@ class SellerDashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Không thể tải dữ liệu Dashboard',
+              'Không thể tải số liệu bán hàng',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),

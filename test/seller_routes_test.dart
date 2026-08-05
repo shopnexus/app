@@ -1,0 +1,239 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
+
+import 'support/fixtures.dart';
+import 'support/recording_backend.dart';
+
+/// The seller feature called four routes this backend does not serve, and every
+/// screen behind them was permanently empty or permanently in its error state:
+///
+///  * `GET analytic/seller-dashboard` — never existed; product analytics is not
+///    in this backend at all. `GET /orders/summary` is what replaced it.
+///  * `GET order/seller/pending` and `GET order/seller/confirmed` — deleted with
+///    the seller-approval flow, because the money creates the order. A 404 was
+///    swallowed by `catch (_)`, so every tab was silently empty.
+///  * `catalog/product-spu` / `catalog/product-sku` — SPU/SKU is gone; a listing
+///    has variants.
+void main() {
+  Map<String, dynamic> Function(RequestOptions) pages({
+    Map<String, dynamic>? summary,
+    List<Map<String, dynamic>> orders = const [],
+    List<Map<String, dynamic>> items = const [],
+    List<Map<String, dynamic>> listings = const [],
+    int listingTotal = 0,
+  }) =>
+      (request) => switch (request.path) {
+        '/orders/summary' => {'data': summary ?? orderSummaryJson},
+        '/orders' => {
+          'data': orders,
+          'meta': const {'next_cursor': null},
+        },
+        '/items' => {
+          'data': items,
+          'meta': const {'next_cursor': null},
+        },
+        '/listings' => {
+          'data': listings,
+          'meta': {'page': 1, 'limit': 20, 'total_count': listingTotal},
+        },
+        _ => const {'data': <String, dynamic>{}},
+      };
+
+  group('the dashboard reads GET /orders/summary', () {
+    test('the whole payload round-trips', () {
+      final summary = OrderSummary.fromJson(orderSummaryJson);
+
+      expect(summary.open, 1);
+      expect(summary.completed, 0);
+      expect(summary.cancelled, 0);
+      expect(summary.from, DateTime.parse('2026-07-06T03:31:32.663583553Z'));
+      // Empty until a sale completes, so a dashboard must not read totals.first.
+      expect(summary.totals, isEmpty);
+      // A local date, not an instant: a bucket is a day in the requested zone.
+      expect(summary.daily.single.date, '2026-08-05');
+      expect(summary.daily.single.placed, 1);
+    });
+
+    test('totals are per currency, never summed', () {
+      // The contract's own shape — the seeded data has no completed sale to copy.
+      final summary = OrderSummary.fromJson({
+        ...orderSummaryJson,
+        'completed': 2,
+        'totals': [
+          {'currency': 'VND', 'amount': 1250000},
+          {'currency': 'USD', 'amount': 4200},
+        ],
+      });
+
+      expect(summary.totals.map((t) => t.currency), ['VND', 'USD']);
+      expect(summary.totals.map((t) => t.amount), [1250000, 4200]);
+    });
+
+    test('role and the device zone always go with it', () async {
+      final backend = RecordingBackend(pages());
+
+      await backend.seller.salesSummary(tz: 'Asia/Ho_Chi_Minh');
+
+      expect(backend.paths.single, 'orders/summary');
+      expect(backend.only.queryParameters['role'], 'seller');
+      // UTC buckets would put a Vietnamese seller's evening sales on the next day.
+      expect(backend.only.queryParameters['tz'], 'Asia/Ho_Chi_Minh');
+      // Absent bounds mean the last 30 days; sending nulls is not the same request.
+      expect(backend.only.queryParameters.containsKey('from'), isFalse);
+    });
+
+    test('a window is sent as the two bounds it is', () async {
+      final backend = RecordingBackend(pages());
+
+      await backend.seller.salesSummary(
+        tz: 'Asia/Ho_Chi_Minh',
+        from: DateTime.utc(2026, 7, 1),
+        to: DateTime.utc(2026, 8, 1),
+      );
+
+      expect(backend.only.queryParameters['from'], DateTime.utc(2026, 7, 1));
+      expect(backend.only.queryParameters['to'], DateTime.utc(2026, 8, 1));
+    });
+
+    test('the listing counts are one total_count read per status', () async {
+      final backend = RecordingBackend(pages(listingTotal: 200));
+
+      final counts = await backend.seller.listingCounts();
+
+      expect(backend.paths, everyElement('listings'));
+      expect(backend.calls.map((c) => c.queryParameters['status']), [
+        ListingStatus.draft,
+        ListingStatus.pending,
+        ListingStatus.active,
+        ListingStatus.hidden,
+      ]);
+      // Only with mine=true is a status filter honoured at all.
+      expect(
+        backend.calls.map((c) => c.queryParameters['mine']),
+        everyElement(true),
+      );
+      // The count comes off meta, not off the page: a page would cap it at limit.
+      expect(
+        backend.calls.map((c) => c.queryParameters['limit']),
+        everyElement(1),
+      );
+      expect(counts[ListingStatus.active], 200);
+    });
+  });
+
+  group('the sales tabs read GET /orders?role=seller', () {
+    test('every tab sends its own state, and always role=seller', () async {
+      final backend = RecordingBackend(pages());
+
+      await backend.seller.orders(state: OrderState.open);
+      await backend.seller.orders(state: OrderState.completed);
+      await backend.seller.orders(state: OrderState.cancelled);
+
+      // Not `order/seller/pending`/`order/seller/confirmed`, which are 404.
+      expect(backend.paths, everyElement('orders'));
+      expect(
+        backend.calls.map((c) => c.queryParameters['role']),
+        everyElement('seller'),
+      );
+      expect(backend.calls.map((c) => c.queryParameters['state']), [
+        OrderState.open,
+        OrderState.completed,
+        OrderState.cancelled,
+      ]);
+    });
+
+    test('a sale resolves its lines in one listings lookup', () async {
+      final backend = RecordingBackend(
+        pages(orders: [orderJson], listings: [listingJson]),
+      );
+
+      final views = await backend.seller.orders(state: OrderState.open);
+
+      final listingCall = backend.calls.firstWhere(
+        (c) => c.path == '/listings',
+      );
+      expect(listingCall.queryParameters['ids'], ['lst_a60p5qh3t6ry4']);
+      expect(views.single.lines.single.name, 'Kệ ống đựng đũa muỗng');
+      // The buyer is an object on the wire, so the card needs no second read.
+      expect(views.single.order.buyer.name, "Alice's Corner");
+      expect(views.single.goodsTotal, 98000);
+    });
+
+    test('the retry list is GET /items?role=seller&pending=true', () async {
+      final backend = RecordingBackend(pages(items: [orderItemJson]));
+
+      await backend.seller.unsettledItems();
+
+      final itemCall = backend.calls.firstWhere((c) => c.path == '/items');
+      expect(itemCall.queryParameters['role'], 'seller');
+      expect(itemCall.queryParameters['pending'], true);
+    });
+
+    test('a carrier checkpoint is a POST to the sub-resource', () async {
+      final backend = RecordingBackend((_) => {'data': transportJson});
+
+      await backend.seller.reportCheckpoint(
+        'ord_2ybcv39246zn7',
+        TransportCheckpoint.pickedUp,
+      );
+
+      expect(backend.only.method, 'POST');
+      expect(
+        backend.paths.single,
+        'orders/ord_2ybcv39246zn7/transport/checkpoints',
+      );
+      expect(backend.bodyOf(0), {'status': 'picked-up'});
+    });
+
+    test('cancelling is a POST, and there is nothing to confirm', () async {
+      final backend = RecordingBackend((_) => {'data': orderJson});
+
+      await backend.seller.cancelOrder('ord_2ybcv39246zn7');
+
+      expect(backend.only.method, 'POST');
+      expect(backend.paths.single, 'orders/ord_2ybcv39246zn7/cancellation');
+      // No body: there is nowhere to record a reason.
+      expect(backend.only.data, isNull);
+    });
+  });
+
+  group('the product list reads GET /listings?mine=true', () {
+    test('a status filter rides with mine=true', () async {
+      final backend = RecordingBackend(pages(listings: [listingJson]));
+
+      final listings = await backend.seller.listings(
+        status: ListingStatus.hidden,
+      );
+
+      // Not `catalog/product-spu`, which is 404 — and no `vendor_id` either.
+      expect(backend.paths.single, 'listings');
+      expect(backend.only.queryParameters['mine'], true);
+      expect(backend.only.queryParameters['status'], ListingStatus.hidden);
+      expect(listings.single.id, 'lst_a60p5qh3t6ry4');
+      expect(listings.single.status, ListingStatus.active);
+    });
+
+    test('hiding a listing deletes its publication, not the row', () async {
+      final backend = RecordingBackend((_) => {'data': listingDetailJson});
+
+      await backend.seller.hideListing('lst_a60p5qh3t6ry4');
+
+      expect(backend.only.method, 'DELETE');
+      expect(backend.paths.single, 'listings/lst_a60p5qh3t6ry4/publication');
+    });
+
+    test('deleting a variant is DELETE /variants/{id}', () async {
+      final backend = RecordingBackend((_) => {'data': listingDetailJson});
+
+      // The old button posted to `catalog/product-sku/{id}` and silently no-oped.
+      await backend.seller.deleteVariant('vrn_8vw1sy73ddpkc');
+
+      expect(backend.only.method, 'DELETE');
+      expect(backend.paths.single, 'variants/vrn_8vw1sy73ddpkc');
+    });
+  });
+}

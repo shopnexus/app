@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_provider.dart';
 
 class SellerProfileScreen extends ConsumerStatefulWidget {
@@ -235,7 +235,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
 
   Widget _buildTabContent(
     dynamic profile,
-    AsyncValue<List<TProductCard>> productsAsync,
+    AsyncValue<List<Listing>> productsAsync,
   ) {
     switch (_selectedTabIndex) {
       case 0: // About
@@ -354,10 +354,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                 ? 4
                 : (width >= 600 ? 3 : 2);
 
-            final columns = List.generate(
-              crossAxisCount,
-              (_) => <TProductCard>[],
-            );
+            final columns = List.generate(crossAxisCount, (_) => <Listing>[]);
             for (int i = 0; i < products.length; i++) {
               columns[i % crossAxisCount].add(products[i]);
             }
@@ -380,16 +377,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: SharedProductCard(
-                            // Replaced by `ProductCardView.fromListing` once the
-                            // catalog wave has this provider answering `Listing`.
-                            product: ProductCardView(
-                              name: product.name,
-                              price: product.price,
-                              coverUrl: product.effectiveThumbnail,
-                              sellerName: product.effectiveVendorName,
-                              rating: product.rating,
-                              negotiable: product.effectiveIsNegotiable,
-                            ),
+                            product: ProductCardView.fromListing(product),
                             aspectRatio: aspect,
                             showVendor: false,
                             onTap: () {

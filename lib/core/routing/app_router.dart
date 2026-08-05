@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/core/constants/route_constants.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/screens/splash_screen.dart';
@@ -136,7 +138,13 @@ GoRouter appRouter(Ref ref) {
                 path: 'products',
                 name: 'seller_products',
                 builder: (context, state) {
-                  final status = state.uri.queryParameters['status'];
+                  // The contract's own value, so a link nobody updated lands on
+                  // "all" instead of on a filter that matches nothing.
+                  final status = _enumByValue(
+                    ListingStatus.values,
+                    state.uri.queryParameters['status'],
+                    (s) => s.value,
+                  );
                   return SellerProductsScreen(initialStatus: status);
                 },
               ),
@@ -144,9 +152,14 @@ GoRouter appRouter(Ref ref) {
                 path: 'orders',
                 name: 'seller_orders',
                 builder: (context, state) {
-                  final tabStr = state.uri.queryParameters['tab'];
-                  final tabIndex = int.tryParse(tabStr ?? '0') ?? 0;
-                  return SellerOrdersScreen(initialTab: tabIndex);
+                  final orderState =
+                      _enumByValue(
+                        OrderState.values,
+                        state.uri.queryParameters['state'],
+                        (s) => s.value,
+                      ) ??
+                      OrderState.open;
+                  return SellerOrdersScreen(initialState: orderState);
                 },
               ),
               GoRoute(
@@ -297,4 +310,15 @@ GoRouter appRouter(Ref ref) {
       return null;
     },
   );
+}
+
+/// A query parameter matched against a generated enum's wire values. Answers null
+/// for anything else, so a stale deep link opens the unfiltered screen instead of
+/// a filter the contract has no value for.
+T? _enumByValue<T>(List<T> values, String? raw, String Function(T) valueOf) {
+  if (raw == null) return null;
+  for (final value in values) {
+    if (valueOf(value) == raw) return value;
+  }
+  return null;
 }

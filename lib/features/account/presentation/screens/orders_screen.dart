@@ -5,7 +5,7 @@ import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refun
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/buyer_order_view.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {

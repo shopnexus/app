@@ -14,8 +14,11 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SellerOrdersState {
 
- int get selectedTab;// 0: Tất cả, 1: Đang xử lý, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
- List<SellerPendingItem> get pendingItems; List<SellerOrder> get confirmedOrders; bool get isLoading; bool get isActionLoading; String? get errorMessage;
+/// The contract's own three states. There is no `processing`/`shipping`/
+/// `disputing`: where the parcel is comes off `order.transport`.
+ OrderState get selected; List<OrderView> get orders;/// Paid lines the money has not turned into an order yet. Only meaningful
+/// beside the open tab, and nothing here waits on the seller.
+ List<OrderLineView> get unsettled; bool get isLoading; bool get isActionLoading; String? get errorMessage;
 /// Create a copy of SellerOrdersState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +29,16 @@ $SellerOrdersStateCopyWith<SellerOrdersState> get copyWith => _$SellerOrdersStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SellerOrdersState&&(identical(other.selectedTab, selectedTab) || other.selectedTab == selectedTab)&&const DeepCollectionEquality().equals(other.pendingItems, pendingItems)&&const DeepCollectionEquality().equals(other.confirmedOrders, confirmedOrders)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isActionLoading, isActionLoading) || other.isActionLoading == isActionLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SellerOrdersState&&(identical(other.selected, selected) || other.selected == selected)&&const DeepCollectionEquality().equals(other.orders, orders)&&const DeepCollectionEquality().equals(other.unsettled, unsettled)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isActionLoading, isActionLoading) || other.isActionLoading == isActionLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,selectedTab,const DeepCollectionEquality().hash(pendingItems),const DeepCollectionEquality().hash(confirmedOrders),isLoading,isActionLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,selected,const DeepCollectionEquality().hash(orders),const DeepCollectionEquality().hash(unsettled),isLoading,isActionLoading,errorMessage);
 
 @override
 String toString() {
-  return 'SellerOrdersState(selectedTab: $selectedTab, pendingItems: $pendingItems, confirmedOrders: $confirmedOrders, isLoading: $isLoading, isActionLoading: $isActionLoading, errorMessage: $errorMessage)';
+  return 'SellerOrdersState(selected: $selected, orders: $orders, unsettled: $unsettled, isLoading: $isLoading, isActionLoading: $isActionLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -46,7 +49,7 @@ abstract mixin class $SellerOrdersStateCopyWith<$Res>  {
   factory $SellerOrdersStateCopyWith(SellerOrdersState value, $Res Function(SellerOrdersState) _then) = _$SellerOrdersStateCopyWithImpl;
 @useResult
 $Res call({
- int selectedTab, List<SellerPendingItem> pendingItems, List<SellerOrder> confirmedOrders, bool isLoading, bool isActionLoading, String? errorMessage
+ OrderState selected, List<OrderView> orders, List<OrderLineView> unsettled, bool isLoading, bool isActionLoading, String? errorMessage
 });
 
 
@@ -63,12 +66,12 @@ class _$SellerOrdersStateCopyWithImpl<$Res>
 
 /// Create a copy of SellerOrdersState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? selectedTab = null,Object? pendingItems = null,Object? confirmedOrders = null,Object? isLoading = null,Object? isActionLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? selected = null,Object? orders = null,Object? unsettled = null,Object? isLoading = null,Object? isActionLoading = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
-selectedTab: null == selectedTab ? _self.selectedTab : selectedTab // ignore: cast_nullable_to_non_nullable
-as int,pendingItems: null == pendingItems ? _self.pendingItems : pendingItems // ignore: cast_nullable_to_non_nullable
-as List<SellerPendingItem>,confirmedOrders: null == confirmedOrders ? _self.confirmedOrders : confirmedOrders // ignore: cast_nullable_to_non_nullable
-as List<SellerOrder>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+selected: null == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
+as OrderState,orders: null == orders ? _self.orders : orders // ignore: cast_nullable_to_non_nullable
+as List<OrderView>,unsettled: null == unsettled ? _self.unsettled : unsettled // ignore: cast_nullable_to_non_nullable
+as List<OrderLineView>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isActionLoading: null == isActionLoading ? _self.isActionLoading : isActionLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -156,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int selectedTab,  List<SellerPendingItem> pendingItems,  List<SellerOrder> confirmedOrders,  bool isLoading,  bool isActionLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OrderState selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SellerOrdersState() when $default != null:
-return $default(_that.selectedTab,_that.pendingItems,_that.confirmedOrders,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
+return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -177,10 +180,10 @@ return $default(_that.selectedTab,_that.pendingItems,_that.confirmedOrders,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int selectedTab,  List<SellerPendingItem> pendingItems,  List<SellerOrder> confirmedOrders,  bool isLoading,  bool isActionLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OrderState selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _SellerOrdersState():
-return $default(_that.selectedTab,_that.pendingItems,_that.confirmedOrders,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
+return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +200,10 @@ return $default(_that.selectedTab,_that.pendingItems,_that.confirmedOrders,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int selectedTab,  List<SellerPendingItem> pendingItems,  List<SellerOrder> confirmedOrders,  bool isLoading,  bool isActionLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OrderState selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _SellerOrdersState() when $default != null:
-return $default(_that.selectedTab,_that.pendingItems,_that.confirmedOrders,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
+return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
   return null;
 
 }
@@ -212,24 +215,28 @@ return $default(_that.selectedTab,_that.pendingItems,_that.confirmedOrders,_that
 
 
 class _SellerOrdersState implements SellerOrdersState {
-  const _SellerOrdersState({this.selectedTab = 0, final  List<SellerPendingItem> pendingItems = const [], final  List<SellerOrder> confirmedOrders = const [], this.isLoading = true, this.isActionLoading = false, this.errorMessage}): _pendingItems = pendingItems,_confirmedOrders = confirmedOrders;
+  const _SellerOrdersState({this.selected = OrderState.open, final  List<OrderView> orders = const [], final  List<OrderLineView> unsettled = const [], this.isLoading = true, this.isActionLoading = false, this.errorMessage}): _orders = orders,_unsettled = unsettled;
   
 
-@override@JsonKey() final  int selectedTab;
-// 0: Tất cả, 1: Đang xử lý, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
- final  List<SellerPendingItem> _pendingItems;
-// 0: Tất cả, 1: Đang xử lý, 2: Đang giao, 3: Đã giao, 4: Khiếu nại
-@override@JsonKey() List<SellerPendingItem> get pendingItems {
-  if (_pendingItems is EqualUnmodifiableListView) return _pendingItems;
+/// The contract's own three states. There is no `processing`/`shipping`/
+/// `disputing`: where the parcel is comes off `order.transport`.
+@override@JsonKey() final  OrderState selected;
+ final  List<OrderView> _orders;
+@override@JsonKey() List<OrderView> get orders {
+  if (_orders is EqualUnmodifiableListView) return _orders;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_pendingItems);
+  return EqualUnmodifiableListView(_orders);
 }
 
- final  List<SellerOrder> _confirmedOrders;
-@override@JsonKey() List<SellerOrder> get confirmedOrders {
-  if (_confirmedOrders is EqualUnmodifiableListView) return _confirmedOrders;
+/// Paid lines the money has not turned into an order yet. Only meaningful
+/// beside the open tab, and nothing here waits on the seller.
+ final  List<OrderLineView> _unsettled;
+/// Paid lines the money has not turned into an order yet. Only meaningful
+/// beside the open tab, and nothing here waits on the seller.
+@override@JsonKey() List<OrderLineView> get unsettled {
+  if (_unsettled is EqualUnmodifiableListView) return _unsettled;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_confirmedOrders);
+  return EqualUnmodifiableListView(_unsettled);
 }
 
 @override@JsonKey() final  bool isLoading;
@@ -246,16 +253,16 @@ _$SellerOrdersStateCopyWith<_SellerOrdersState> get copyWith => __$SellerOrdersS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SellerOrdersState&&(identical(other.selectedTab, selectedTab) || other.selectedTab == selectedTab)&&const DeepCollectionEquality().equals(other._pendingItems, _pendingItems)&&const DeepCollectionEquality().equals(other._confirmedOrders, _confirmedOrders)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isActionLoading, isActionLoading) || other.isActionLoading == isActionLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SellerOrdersState&&(identical(other.selected, selected) || other.selected == selected)&&const DeepCollectionEquality().equals(other._orders, _orders)&&const DeepCollectionEquality().equals(other._unsettled, _unsettled)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isActionLoading, isActionLoading) || other.isActionLoading == isActionLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,selectedTab,const DeepCollectionEquality().hash(_pendingItems),const DeepCollectionEquality().hash(_confirmedOrders),isLoading,isActionLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,selected,const DeepCollectionEquality().hash(_orders),const DeepCollectionEquality().hash(_unsettled),isLoading,isActionLoading,errorMessage);
 
 @override
 String toString() {
-  return 'SellerOrdersState(selectedTab: $selectedTab, pendingItems: $pendingItems, confirmedOrders: $confirmedOrders, isLoading: $isLoading, isActionLoading: $isActionLoading, errorMessage: $errorMessage)';
+  return 'SellerOrdersState(selected: $selected, orders: $orders, unsettled: $unsettled, isLoading: $isLoading, isActionLoading: $isActionLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -266,7 +273,7 @@ abstract mixin class _$SellerOrdersStateCopyWith<$Res> implements $SellerOrdersS
   factory _$SellerOrdersStateCopyWith(_SellerOrdersState value, $Res Function(_SellerOrdersState) _then) = __$SellerOrdersStateCopyWithImpl;
 @override @useResult
 $Res call({
- int selectedTab, List<SellerPendingItem> pendingItems, List<SellerOrder> confirmedOrders, bool isLoading, bool isActionLoading, String? errorMessage
+ OrderState selected, List<OrderView> orders, List<OrderLineView> unsettled, bool isLoading, bool isActionLoading, String? errorMessage
 });
 
 
@@ -283,12 +290,12 @@ class __$SellerOrdersStateCopyWithImpl<$Res>
 
 /// Create a copy of SellerOrdersState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? selectedTab = null,Object? pendingItems = null,Object? confirmedOrders = null,Object? isLoading = null,Object? isActionLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? selected = null,Object? orders = null,Object? unsettled = null,Object? isLoading = null,Object? isActionLoading = null,Object? errorMessage = freezed,}) {
   return _then(_SellerOrdersState(
-selectedTab: null == selectedTab ? _self.selectedTab : selectedTab // ignore: cast_nullable_to_non_nullable
-as int,pendingItems: null == pendingItems ? _self._pendingItems : pendingItems // ignore: cast_nullable_to_non_nullable
-as List<SellerPendingItem>,confirmedOrders: null == confirmedOrders ? _self._confirmedOrders : confirmedOrders // ignore: cast_nullable_to_non_nullable
-as List<SellerOrder>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+selected: null == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
+as OrderState,orders: null == orders ? _self._orders : orders // ignore: cast_nullable_to_non_nullable
+as List<OrderView>,unsettled: null == unsettled ? _self._unsettled : unsettled // ignore: cast_nullable_to_non_nullable
+as List<OrderLineView>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isActionLoading: null == isActionLoading ? _self.isActionLoading : isActionLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,

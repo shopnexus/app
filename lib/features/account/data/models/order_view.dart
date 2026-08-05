@@ -5,7 +5,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 
-part 'buyer_order_view.freezed.dart';
+part 'order_view.freezed.dart';
 
 /// A checkout line and the listing it points at. The line carries no name and no
 /// photo — it carries `listing_id`, which order history resolves through

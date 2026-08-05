@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/buyer_order_view.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 
 part 'buyer_orders_provider.g.dart';

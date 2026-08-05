@@ -1,124 +1,147 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/bank_account.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_bank_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/wallet.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/wallet_transaction.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/withdrawal.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
 part 'seller_earnings_provider.freezed.dart';
 
 part 'seller_earnings_provider.g.dart';
 
 @freezed
-abstract class SellerTransaction with _$SellerTransaction {
-  const factory SellerTransaction({
-    required String id,
-    required String title,
-    required String referenceId,
-    required double amount,
-    required String date,
-    required String time,
-    required String type, // 'credit' | 'withdrawal'
-    required String status, // 'settled' | 'initiated' | 'pending'
-    double? processingFee,
-  }) = _SellerTransaction;
-}
-
-@freezed
 abstract class SellerEarningsState with _$SellerEarningsState {
+  const SellerEarningsState._();
+
   const factory SellerEarningsState({
-    @Default(32450000.0) double availableBalance, // 32.450.000 VND
-    @Default('MBBank Checking') String bankName,
-    @Default('**** 1234') String bankAccountNumber,
-    @Default('NGUYEN VAN A') String bankAccountHolder,
-    @Default(4125000.0) double totalIn,
-    @Default(5000000.0) double totalOut,
-    @Default([]) List<SellerTransaction> transactions,
-    @Default('30d') String selectedPeriod, // '30d' | '1y'
-    @Default(false) bool isLoading,
+    /// Null until the platform has credited this account once — a wallet row is
+    /// created by the first movement, not by signing up.
+    Wallet? wallet,
+    @Default([]) List<WalletTransaction> ledger,
+    @Default([]) List<Withdrawal> withdrawals,
+    @Default([]) List<BankAccount> bankAccounts,
     @Default(false) bool isWithdrawing,
     String? errorMessage,
   }) = _SellerEarningsState;
+
+  int get availableBalance => wallet?.availableBalance ?? 0;
+
+  /// Escrow the buyer has paid but the payout window has not released. It is not
+  /// spendable, which is why it is shown apart from the balance.
+  int get heldBalance => wallet?.heldBalance ?? 0;
+
+  /// VND is the platform's only currency, so an account with no wallet row yet
+  /// still formats as VND.
+  String get currency => wallet?.currency ?? 'VND';
+
+  /// Where a withdrawal pays out. The server picks nothing, so without one the
+  /// screen has to ask for a bank account before it can offer to withdraw.
+  BankAccount? get payoutAccount {
+    for (final account in bankAccounts) {
+      if (account.isDefault) return account;
+    }
+    return bankAccounts.isEmpty ? null : bankAccounts.first;
+  }
+
+  int get totalIn => _sum((delta) => delta > 0);
+
+  int get totalOut => -_sum((delta) => delta < 0);
+
+  int _sum(bool Function(int) keep) => ledger.fold(
+    0,
+    (total, entry) =>
+        keep(entry.availableDelta) ? total + entry.availableDelta : total,
+  );
 }
 
 @riverpod
 class SellerEarningsNotifier extends _$SellerEarningsNotifier {
   @override
-  SellerEarningsState build() {
-    return const SellerEarningsState(
-      isLoading: false,
-      transactions: [
-        SellerTransaction(
-          id: 'tx_1',
-          title: 'Doanh thu đơn hàng #DH8472',
-          referenceId: 'ID: #RC-8923-LN',
-          amount: 1125000.0,
-          date: '24 Tháng 10',
-          time: '14:30',
-          type: 'credit',
-          status: 'settled',
-          processingFee: 15000.0,
-        ),
-        SellerTransaction(
-          id: 'tx_2',
-          title: 'Lệnh rút tiền về ngân hàng',
-          referenceId: 'Ref: ACH-449102',
-          amount: -5000000.0,
-          date: '23 Tháng 10',
-          time: '09:00',
-          type: 'withdrawal',
-          status: 'initiated',
-          processingFee: 0.0,
-        ),
-        SellerTransaction(
-          id: 'tx_3',
-          title: 'Doanh thu đơn hàng #DH8470',
-          referenceId: 'ID: #RC-4011-MX',
-          amount: 3000000.0,
-          date: '12 Tháng 10',
-          time: '10:00',
-          type: 'credit',
-          status: 'settled',
-          processingFee: 30000.0,
-        ),
-      ],
+  Future<SellerEarningsState> build() async {
+    final repository = ref.watch(sellerRepositoryProvider);
+    final (wallets, withdrawals, bankAccounts) = await (
+      repository.wallets(),
+      repository.withdrawals(),
+      repository.bankAccounts(),
+    ).wait;
+
+    // The ledger is per currency, so there is nothing to read until a wallet says
+    // which one this account holds.
+    final wallet = wallets.isEmpty ? null : wallets.first;
+    return SellerEarningsState(
+      wallet: wallet,
+      ledger: wallet == null
+          ? const []
+          : await repository.ledger(wallet.currency),
+      withdrawals: withdrawals,
+      bankAccounts: bankAccounts,
     );
   }
 
-  void setPeriod(String period) {
-    state = state.copyWith(selectedPeriod: period);
+  Future<void> refresh() async {
+    ref.invalidateSelf();
+    await future;
   }
 
-  Future<bool> withdraw(double amount) async {
-    if (amount <= 0 || amount > state.availableBalance) {
-      state = state.copyWith(errorMessage: 'Số tiền rút không hợp lệ');
+  /// Answers false with [SellerEarningsState.errorMessage] set — the amount may
+  /// exceed the balance, and there may be no bank account to pay out to.
+  Future<bool> withdraw(int amount) async {
+    final current = state.value;
+    if (current == null) return false;
+
+    final account = current.payoutAccount;
+    if (account == null) {
+      state = AsyncData(
+        current.copyWith(errorMessage: 'Chưa liên kết tài khoản ngân hàng'),
+      );
+      return false;
+    }
+    if (amount <= 0 || amount > current.availableBalance) {
+      state = AsyncData(
+        current.copyWith(errorMessage: 'Số tiền rút không hợp lệ'),
+      );
       return false;
     }
 
-    state = state.copyWith(isWithdrawing: true, errorMessage: null);
-
-    // Simulate API withdrawal request
-    await Future.delayed(const Duration(milliseconds: 1200));
-
-    final newBalance = state.availableBalance - amount;
-    final newTotalOut = state.totalOut + amount;
-    final newTransaction = SellerTransaction(
-      id: 'tx_${DateTime.now().millisecondsSinceEpoch}',
-      title: 'Lệnh rút tiền về ngân hàng',
-      referenceId:
-          'Ref: ACH-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
-      amount: -amount,
-      date: 'Hôm nay',
-      time:
-          '${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
-      type: 'withdrawal',
-      status: 'initiated',
-      processingFee: 0.0,
+    state = AsyncData(
+      current.copyWith(isWithdrawing: true, errorMessage: null),
     );
+    try {
+      await ref
+          .read(sellerRepositoryProvider)
+          .requestWithdrawal(
+            amount: amount,
+            currency: current.currency,
+            bankAccountId: account.id,
+          );
+      await refresh();
+      return true;
+    } catch (error) {
+      state = AsyncData(
+        current.copyWith(isWithdrawing: false, errorMessage: error.toString()),
+      );
+      return false;
+    }
+  }
 
-    state = state.copyWith(
-      isWithdrawing: false,
-      availableBalance: newBalance,
-      totalOut: newTotalOut,
-      transactions: [newTransaction, ...state.transactions],
-    );
+  Future<bool> addBankAccount(CreateBankAccountRequest request) async {
+    try {
+      await ref.read(sellerRepositoryProvider).addBankAccount(request);
+      await refresh();
+      return true;
+    } catch (error) {
+      final current = state.value;
+      if (current != null) {
+        state = AsyncData(current.copyWith(errorMessage: error.toString()));
+      }
+      return false;
+    }
+  }
 
-    return true;
+  Future<void> deleteBankAccount(String id) async {
+    await ref.read(sellerRepositoryProvider).deleteBankAccount(id);
+    await refresh();
   }
 }

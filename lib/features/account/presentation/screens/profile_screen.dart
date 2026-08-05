@@ -9,6 +9,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/profile_fields.dart';
@@ -107,7 +108,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final profileAsync = ref.watch(profileProvider);
-    final statsAsync = ref.watch(sellerDashboardProvider);
+    final dashboardAsync = ref.watch(sellerDashboardProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -357,8 +358,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
 
                       // --- 2. My Sales (Single Row options) ---
-                      statsAsync.when(
-                        data: (stats) => Column(
+                      dashboardAsync.when(
+                        data: (dashboard) => Column(
                           children: [
                             ListTile(
                               leading: Container(
@@ -405,40 +406,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                               child: Row(
                                 children: [
+                                  // OrderState's three values. `shipping` and
+                                  // `disputing` were never states of an order.
                                   _buildQuickActionButton(
                                     context,
                                     icon: Icons.pending_actions,
-                                    label: 'Processing',
-                                    count: stats.pendingOrders,
-                                    onTap: () =>
-                                        context.push('/seller/orders?tab=1'),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _buildQuickActionButton(
-                                    context,
-                                    icon: Icons.local_shipping_outlined,
-                                    label: 'Shipping',
-                                    count: stats.shippingOrders,
-                                    onTap: () =>
-                                        context.push('/seller/orders?tab=2'),
+                                    label: 'Đang xử lý',
+                                    count: dashboard.summary.open,
+                                    onTap: () => context.push(
+                                      '/seller/orders?state=open',
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   _buildQuickActionButton(
                                     context,
                                     icon: Icons.check_circle_outline,
-                                    label: 'Completed',
-                                    count: stats.completedOrders,
-                                    onTap: () =>
-                                        context.push('/seller/orders?tab=3'),
+                                    label: 'Hoàn thành',
+                                    count: dashboard.summary.completed,
+                                    onTap: () => context.push(
+                                      '/seller/orders?state=completed',
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   _buildQuickActionButton(
                                     context,
-                                    icon: Icons.warning_amber_rounded,
-                                    label: 'Disputing',
-                                    count: stats.disputingOrders,
-                                    onTap: () =>
-                                        context.push('/seller/orders?tab=4'),
+                                    icon: Icons.cancel_outlined,
+                                    label: 'Đã hủy',
+                                    count: dashboard.summary.cancelled,
+                                    onTap: () => context.push(
+                                      '/seller/orders?state=cancelled',
+                                    ),
                                   ),
                                 ],
                               ),
@@ -497,11 +494,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                               child: Row(
                                 children: [
+                                  // ListingStatus's own values: `inactive` and
+                                  // `violated` matched no listing at all.
                                   _buildQuickActionButton(
                                     context,
                                     icon: Icons.inventory_2_outlined,
-                                    label: 'Active',
-                                    count: stats.activeProducts,
+                                    label: 'Đang bán',
+                                    count: dashboard.listingsWith(
+                                      ListingStatus.active,
+                                    ),
                                     onTap: () => context.push(
                                       '/seller/products?status=active',
                                     ),
@@ -509,21 +510,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   const SizedBox(width: 8),
                                   _buildQuickActionButton(
                                     context,
-                                    icon: Icons.visibility_off_outlined,
-                                    label: 'Inactive',
-                                    count: stats.inactiveProducts,
+                                    icon: Icons.hourglass_empty,
+                                    label: 'Chờ duyệt',
+                                    count: dashboard.listingsWith(
+                                      ListingStatus.pending,
+                                    ),
                                     onTap: () => context.push(
-                                      '/seller/products?status=inactive',
+                                      '/seller/products?status=pending',
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   _buildQuickActionButton(
                                     context,
-                                    icon: Icons.report_problem_outlined,
-                                    label: 'Violated',
-                                    count: stats.violatedProducts,
+                                    icon: Icons.visibility_off_outlined,
+                                    label: 'Đã ẩn',
+                                    count: dashboard.listingsWith(
+                                      ListingStatus.hidden,
+                                    ),
                                     onTap: () => context.push(
-                                      '/seller/products?status=violated',
+                                      '/seller/products?status=hidden',
                                     ),
                                   ),
                                 ],
@@ -536,19 +541,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   : const Color(0xFFF1F5F9),
                               indent: 56,
                             ),
-
-                            // --- Rich AI Product Wizard Banner Card ---
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: _buildAiWizardBanner(context),
-                            ),
                           ],
                         ),
                         loading: () => const SizedBox.shrink(),
                         error: (_, _) => const SizedBox.shrink(),
+                      ),
+                      // Outside the `when`: posting a listing does not depend on
+                      // the sales figures, and this used to vanish with them.
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: _buildAiWizardBanner(context),
                       ),
                       Divider(
                         height: 1,

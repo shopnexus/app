@@ -58,9 +58,9 @@ abstract class Me with _$Me {
 
   String get country => profile?.country ?? 'VN';
 
-  /// TODO(cart): not a field of `GET /me` — a preferred currency is finance's, and
-  /// `lib/features/cart` is the only reader.
-  String get currency => 'VND';
+  /// An IANA zone, which is what a day-bucketed report has to be cut on. Dart
+  /// itself exposes only an abbreviation, so this is the app's only source for it.
+  String get timezone => profile?.timezone ?? 'Asia/Ho_Chi_Minh';
 }
 
 /// PublicAccount dùng khi xem thông tin tài khoản public của người khác
