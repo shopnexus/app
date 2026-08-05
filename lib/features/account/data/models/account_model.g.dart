@@ -170,69 +170,6 @@ Map<String, dynamic> _$AccountFavoriteToJson(_AccountFavorite instance) =>
       'date_created': instance.dateCreated,
     };
 
-_NotificationMetadata _$NotificationMetadataFromJson(
-  Map<String, dynamic> json,
-) => _NotificationMetadata(
-  orderId: json['order_id'] as String?,
-  ticketId: json['ticket_id'] as String?,
-  redirectUrl: json['redirect_url'] as String?,
-);
-
-Map<String, dynamic> _$NotificationMetadataToJson(
-  _NotificationMetadata instance,
-) => <String, dynamic>{
-  'order_id': instance.orderId,
-  'ticket_id': instance.ticketId,
-  'redirect_url': instance.redirectUrl,
-};
-
-_Notification _$NotificationFromJson(Map<String, dynamic> json) =>
-    _Notification(
-      title: json['title'] as String,
-      category: json['category'] as String,
-      createdAt: json['created_at'] as String,
-      payload: json['payload'] as Map<String, dynamic>?,
-      readAt: json['read_at'] as String?,
-      legacyId: (json['legacyId'] as num?)?.toInt(),
-      legacyContent: json['legacyContent'] as String?,
-    );
-
-Map<String, dynamic> _$NotificationToJson(_Notification instance) =>
-    <String, dynamic>{
-      'title': instance.title,
-      'category': instance.category,
-      'created_at': instance.createdAt,
-      'payload': instance.payload,
-      'read_at': instance.readAt,
-      'legacyId': instance.legacyId,
-      'legacyContent': instance.legacyContent,
-    };
-
-_UnreadCountResponse _$UnreadCountResponseFromJson(Map<String, dynamic> json) =>
-    _UnreadCountResponse(unread: (json['unread'] as num).toInt());
-
-Map<String, dynamic> _$UnreadCountResponseToJson(
-  _UnreadCountResponse instance,
-) => <String, dynamic>{'unread': instance.unread};
-
-_MarkNotificationsReadRequest _$MarkNotificationsReadRequestFromJson(
-  Map<String, dynamic> json,
-) => _MarkNotificationsReadRequest(before: json['before'] as String);
-
-Map<String, dynamic> _$MarkNotificationsReadRequestToJson(
-  _MarkNotificationsReadRequest instance,
-) => <String, dynamic>{'before': instance.before};
-
-_ReadNotificationsRequest _$ReadNotificationsRequestFromJson(
-  Map<String, dynamic> json,
-) => _ReadNotificationsRequest(
-  ids: (json['ids'] as List<dynamic>).map((e) => (e as num).toInt()).toList(),
-);
-
-Map<String, dynamic> _$ReadNotificationsRequestToJson(
-  _ReadNotificationsRequest instance,
-) => <String, dynamic>{'ids': instance.ids};
-
 _MessageResponse _$MessageResponseFromJson(Map<String, dynamic> json) =>
     _MessageResponse(message: json['message'] as String);
 

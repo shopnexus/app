@@ -9,85 +9,52 @@ part of 'notifications_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(notifications)
-const notificationsProvider = NotificationsFamily._();
+@ProviderFor(NotificationsController)
+const notificationsControllerProvider = NotificationsControllerProvider._();
 
-final class NotificationsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<Notification>>,
-          List<Notification>,
-          FutureOr<List<Notification>>
-        >
-    with
-        $FutureModifier<List<Notification>>,
-        $FutureProvider<List<Notification>> {
-  const NotificationsProvider._({
-    required NotificationsFamily super.from,
-    required ({int page, int limit}) super.argument,
-  }) : super(
-         retry: null,
-         name: r'notificationsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+final class NotificationsControllerProvider
+    extends $AsyncNotifierProvider<NotificationsController, NotificationFeed> {
+  const NotificationsControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'notificationsControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
-  String debugGetCreateSourceHash() => _$notificationsHash();
-
-  @override
-  String toString() {
-    return r'notificationsProvider'
-        ''
-        '$argument';
-  }
+  String debugGetCreateSourceHash() => _$notificationsControllerHash();
 
   @$internal
   @override
-  $FutureProviderElement<List<Notification>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<Notification>> create(Ref ref) {
-    final argument = this.argument as ({int page, int limit});
-    return notifications(ref, page: argument.page, limit: argument.limit);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is NotificationsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
+  NotificationsController create() => NotificationsController();
 }
 
-String _$notificationsHash() => r'da0e575e6201df276b5ac90419880edfed7c7a7b';
+String _$notificationsControllerHash() =>
+    r'fdc35c794476e5b260a1de8358c06f8ee8bb7c95';
 
-final class NotificationsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<List<Notification>>,
-          ({int page, int limit})
-        > {
-  const NotificationsFamily._()
-    : super(
-        retry: null,
-        name: r'notificationsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  NotificationsProvider call({int page = 1, int limit = 20}) =>
-      NotificationsProvider._(argument: (page: page, limit: limit), from: this);
-
+abstract class _$NotificationsController
+    extends $AsyncNotifier<NotificationFeed> {
+  FutureOr<NotificationFeed> build();
+  @$mustCallSuper
   @override
-  String toString() => r'notificationsProvider';
+  void runBuild() {
+    final created = build();
+    final ref =
+        this.ref as $Ref<AsyncValue<NotificationFeed>, NotificationFeed>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<NotificationFeed>, NotificationFeed>,
+              AsyncValue<NotificationFeed>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
 }
 
 @ProviderFor(unreadNotificationsCount)
@@ -122,50 +89,4 @@ final class UnreadNotificationsCountProvider
 }
 
 String _$unreadNotificationsCountHash() =>
-    r'9f1dd7c21b279062f7187d7eba14f0e2281fbe3c';
-
-@ProviderFor(NotificationsController)
-const notificationsControllerProvider = NotificationsControllerProvider._();
-
-final class NotificationsControllerProvider
-    extends $AsyncNotifierProvider<NotificationsController, void> {
-  const NotificationsControllerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'notificationsControllerProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$notificationsControllerHash();
-
-  @$internal
-  @override
-  NotificationsController create() => NotificationsController();
-}
-
-String _$notificationsControllerHash() =>
-    r'2b3cad3985184f1927734155e2e6d4b4ebd02826';
-
-abstract class _$NotificationsController extends $AsyncNotifier<void> {
-  FutureOr<void> build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    build();
-    final ref = this.ref as $Ref<AsyncValue<void>, void>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<void>, void>,
-              AsyncValue<void>,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, null);
-  }
-}
+    r'8acc408c967694430e248ed34c6647eb897e4d20';

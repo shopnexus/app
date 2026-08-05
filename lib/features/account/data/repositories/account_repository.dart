@@ -9,6 +9,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/mark_notifications_read_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/notification_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
@@ -144,23 +146,35 @@ class AccountRepository {
       _apiService.removeFavorite(listingId);
 
   // --- Notifications Features ---
-  Future<List<Notification>> getNotifications({int? page, int? limit}) async {
-    final response = await _apiService.getNotifications(page, limit);
-    return response.data;
+
+  /// Cursor-paged: `created_at` identifies a row together with the feed order,
+  /// and a `page` would simply be ignored.
+  Future<NotificationPage> notifications({String? cursor, int limit = 20}) async {
+    final page = (await _api.notificationsGet(
+      cursor: cursor,
+      limit: limit,
+    )).data;
+    if (page == null) throw StateError('empty notification page');
+    return page;
   }
 
   Future<int> getUnreadNotificationsCount() async {
-    final response = await _apiService.getUnreadCount();
-    return response.data.count;
+    final count = (await _api.notificationsUnreadCountGet()).data?.data;
+    return count?.unread ?? 0;
   }
 
-  Future<void> markNotificationsAsRead(List<int> ids) => _apiService.markAsRead(
-    MarkNotificationsReadRequest(before: DateTime.now().toIso8601String()),
-  );
-
-  Future<void> markAllNotificationsAsRead() => _apiService.markAsRead(
-    MarkNotificationsReadRequest(before: DateTime.now().toIso8601String()),
-  );
+  /// Marks everything created at or before [before] read; omitting it marks the
+  /// whole feed. The route has no per-row id, so a single row is marked by its
+  /// own timestamp — not by "now", which used to swallow the whole feed on one
+  /// tap. Answers the unread count that is left.
+  Future<int> markNotificationsRead({DateTime? before}) async {
+    final count = (await _api.notificationsReadPost(
+      markNotificationsReadRequest: MarkNotificationsReadRequest(
+        before: before,
+      ),
+    )).data?.data;
+    return count?.unread ?? 0;
+  }
 
   // --- Buyer Orders & Checkout Lines ---
 

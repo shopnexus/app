@@ -44,20 +44,8 @@ abstract class AccountApiService {
   @DELETE(ApiEndpoints.favoriteListingTemplate)
   Future<void> removeFavorite(@Path('listingID') String listingId);
 
-  // --- Notifications Features ---
-  @GET(ApiEndpoints.notifications)
-  Future<DataResponse<List<Notification>>> getNotifications(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.notificationsUnreadCount)
-  Future<DataResponse<UnreadCountResponse>> getUnreadCount();
-
-  @POST(ApiEndpoints.notificationsRead)
-  Future<DataResponse<UnreadCountResponse>> markAsRead(
-    @Body() MarkNotificationsReadRequest request,
-  );
+  // The notification feed is the generated `AccountApi`'s: it is cursor-paged,
+  // and there is no per-row id to mark read by.
 
   // Buyer orders and checkout lines are the generated `OrderApi`'s: `role` is
   // required on `GET /orders` and `state` is what tells the four tabs apart.
