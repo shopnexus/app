@@ -27,7 +27,12 @@ class MainLayout extends StatelessWidget {
         context.go('/search');
         break;
       case 2:
-        context.push('/seller/new-listing');
+        // The seller's home, not straight to "post a listing". This tab already
+        // *highlights* for any `/seller` route, but nothing navigated to the
+        // dashboard itself, so the screen holding the order and product
+        // management was reachable from nowhere. `go`, like every other tab:
+        // a tab is a destination, not something pushed on top of one.
+        context.go('/seller');
         break;
       case 3:
         context.go('/chat');

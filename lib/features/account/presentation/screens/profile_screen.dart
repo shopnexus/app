@@ -108,7 +108,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final profileAsync = ref.watch(profileProvider);
-    final dashboardAsync = ref.watch(sellerDashboardProvider);
+    // The value if there is one, not `when`: the seller rows below are navigation
+    // and have to be on screen whether or not the counts have arrived — or failed.
+    // In Riverpod 3 `.value` is already nullable, which is exactly this case.
+    final dashboard = ref.watch(sellerDashboardProvider).value;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -358,195 +361,193 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
 
                       // --- 2. My Sales (Single Row options) ---
-                      dashboardAsync.when(
-                        data: (dashboard) => Column(
-                          children: [
-                            ListTile(
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: isDarkMode
-                                      ? theme
-                                            .colorScheme
-                                            .surfaceContainerHighest
-                                      : const Color(0xFFEEEEEC),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.storefront_outlined,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                      // Navigation, not data. This block used to sit inside
+                      // `dashboardAsync.when(error: SizedBox.shrink())`, so a
+                      // failed summary read took the only way into the seller
+                      // area off the screen with no message — a seller with
+                      // orders was told nothing at all. The counts are the only
+                      // part that needs the read, and a null count just hides
+                      // its badge.
+                      Column(
+                        children: [
+                          ListTile(
+                            leading: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : const Color(0xFFEEEEEC),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              title: Text(
-                                'My Sales',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              trailing: Icon(
-                                Icons.chevron_right_rounded,
+                              child: Icon(
+                                Icons.storefront_outlined,
                                 color: theme.colorScheme.onSurfaceVariant,
-                                size: 22,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 2,
-                              ),
-                              onTap: () => context.push('/seller/orders'),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 16,
-                                right: 16,
-                                bottom: 12,
-                              ),
-                              child: Row(
-                                children: [
-                                  // OrderState's three values. `shipping` and
-                                  // `disputing` were never states of an order.
-                                  _buildQuickActionButton(
-                                    context,
-                                    icon: Icons.pending_actions,
-                                    label: 'Đang xử lý',
-                                    count: dashboard.summary.open,
-                                    onTap: () => context.push(
-                                      '/seller/orders?state=open',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _buildQuickActionButton(
-                                    context,
-                                    icon: Icons.check_circle_outline,
-                                    label: 'Hoàn thành',
-                                    count: dashboard.summary.completed,
-                                    onTap: () => context.push(
-                                      '/seller/orders?state=completed',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _buildQuickActionButton(
-                                    context,
-                                    icon: Icons.cancel_outlined,
-                                    label: 'Đã hủy',
-                                    count: dashboard.summary.cancelled,
-                                    onTap: () => context.push(
-                                      '/seller/orders?state=cancelled',
-                                    ),
-                                  ),
-                                ],
                               ),
                             ),
-                            Divider(
-                              height: 1,
-                              color: isDarkMode
-                                  ? AppColors.darkPrimary.withAlpha(20)
-                                  : const Color(0xFFF1F5F9),
-                              indent: 56,
+                            title: Text(
+                              'My Sales',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: theme.colorScheme.onSurface,
+                              ),
                             ),
+                            trailing: Icon(
+                              Icons.chevron_right_rounded,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              size: 22,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 2,
+                            ),
+                            onTap: () => context.push('/seller/orders'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              bottom: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                // OrderState's three values. `shipping` and
+                                // `disputing` were never states of an order.
+                                _buildQuickActionButton(
+                                  context,
+                                  icon: Icons.pending_actions,
+                                  label: 'Đang xử lý',
+                                  count: dashboard?.summary.open,
+                                  onTap: () =>
+                                      context.push('/seller/orders?state=open'),
+                                ),
+                                const SizedBox(width: 8),
+                                _buildQuickActionButton(
+                                  context,
+                                  icon: Icons.check_circle_outline,
+                                  label: 'Hoàn thành',
+                                  count: dashboard?.summary.completed,
+                                  onTap: () => context.push(
+                                    '/seller/orders?state=completed',
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                _buildQuickActionButton(
+                                  context,
+                                  icon: Icons.cancel_outlined,
+                                  label: 'Đã hủy',
+                                  count: dashboard?.summary.cancelled,
+                                  onTap: () => context.push(
+                                    '/seller/orders?state=cancelled',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(
+                            height: 1,
+                            color: isDarkMode
+                                ? AppColors.darkPrimary.withAlpha(20)
+                                : const Color(0xFFF1F5F9),
+                            indent: 56,
+                          ),
 
-                            // --- 3. My Products (Single Row options) ---
-                            ListTile(
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: isDarkMode
-                                      ? theme
-                                            .colorScheme
-                                            .surfaceContainerHighest
-                                      : const Color(0xFFEEEEEC),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.inventory_2_outlined,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                          // --- 3. My Products (Single Row options) ---
+                          ListTile(
+                            leading: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : const Color(0xFFEEEEEC),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              title: Text(
-                                'My Products',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              trailing: Icon(
-                                Icons.chevron_right_rounded,
+                              child: Icon(
+                                Icons.inventory_2_outlined,
                                 color: theme.colorScheme.onSurfaceVariant,
-                                size: 22,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 2,
-                              ),
-                              onTap: () => context.push('/seller/products'),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 16,
-                                right: 16,
-                                bottom: 12,
-                              ),
-                              child: Row(
-                                children: [
-                                  // ListingStatus's own values: `inactive` and
-                                  // `violated` matched no listing at all.
-                                  _buildQuickActionButton(
-                                    context,
-                                    icon: Icons.inventory_2_outlined,
-                                    label: 'Đang bán',
-                                    count: dashboard.listingsWith(
-                                      ListingStatus.active,
-                                    ),
-                                    onTap: () => context.push(
-                                      '/seller/products?status=active',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _buildQuickActionButton(
-                                    context,
-                                    icon: Icons.hourglass_empty,
-                                    label: 'Chờ duyệt',
-                                    count: dashboard.listingsWith(
-                                      ListingStatus.pending,
-                                    ),
-                                    onTap: () => context.push(
-                                      '/seller/products?status=pending',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _buildQuickActionButton(
-                                    context,
-                                    icon: Icons.visibility_off_outlined,
-                                    label: 'Đã ẩn',
-                                    count: dashboard.listingsWith(
-                                      ListingStatus.hidden,
-                                    ),
-                                    onTap: () => context.push(
-                                      '/seller/products?status=hidden',
-                                    ),
-                                  ),
-                                ],
                               ),
                             ),
-                            Divider(
-                              height: 1,
-                              color: isDarkMode
-                                  ? AppColors.darkPrimary.withAlpha(20)
-                                  : const Color(0xFFF1F5F9),
-                              indent: 56,
+                            title: Text(
+                              'My Products',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: theme.colorScheme.onSurface,
+                              ),
                             ),
-                          ],
-                        ),
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, _) => const SizedBox.shrink(),
+                            trailing: Icon(
+                              Icons.chevron_right_rounded,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              size: 22,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 2,
+                            ),
+                            onTap: () => context.push('/seller/products'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              bottom: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                // ListingStatus's own values: `inactive` and
+                                // `violated` matched no listing at all.
+                                _buildQuickActionButton(
+                                  context,
+                                  icon: Icons.inventory_2_outlined,
+                                  label: 'Đang bán',
+                                  count: dashboard?.listingsWith(
+                                    ListingStatus.active,
+                                  ),
+                                  onTap: () => context.push(
+                                    '/seller/products?status=active',
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                _buildQuickActionButton(
+                                  context,
+                                  icon: Icons.hourglass_empty,
+                                  label: 'Chờ duyệt',
+                                  count: dashboard?.listingsWith(
+                                    ListingStatus.pending,
+                                  ),
+                                  onTap: () => context.push(
+                                    '/seller/products?status=pending',
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                _buildQuickActionButton(
+                                  context,
+                                  icon: Icons.visibility_off_outlined,
+                                  label: 'Đã ẩn',
+                                  count: dashboard?.listingsWith(
+                                    ListingStatus.hidden,
+                                  ),
+                                  onTap: () => context.push(
+                                    '/seller/products?status=hidden',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(
+                            height: 1,
+                            color: isDarkMode
+                                ? AppColors.darkPrimary.withAlpha(20)
+                                : const Color(0xFFF1F5F9),
+                            indent: 56,
+                          ),
+                        ],
                       ),
-                      // Outside the `when`: posting a listing does not depend on
+                      // Posting a listing does not depend on
                       // the sales figures, and this used to vanish with them.
                       Padding(
                         padding: const EdgeInsets.symmetric(
