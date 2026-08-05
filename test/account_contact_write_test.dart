@@ -22,7 +22,7 @@ void main() {
         UpdateContactRequest(fullName: 'Alice Nguyen'),
       );
 
-      expect(backend.only.path, 'contacts/$id');
+      expect(backend.paths.single, 'contacts/$id');
       expect(backend.only.method, 'PATCH');
       expect(backend.bodyOf(0), {'full_name': 'Alice Nguyen'});
     });
@@ -40,17 +40,20 @@ void main() {
       expect(backend.bodyOf(0), {'clear_address_detail': true});
     });
 
-    test('a default is a flag on the contact, not a field on the profile', () async {
-      final backend = RecordingBackend((_) => const {'data': contactJson});
+    test(
+      'a default is a flag on the contact, not a field on the profile',
+      () async {
+        final backend = RecordingBackend((_) => const {'data': contactJson});
 
-      await backend.repository.updateContact(
-        id,
-        UpdateContactRequest(isDefaultDelivery: true),
-      );
+        await backend.repository.updateContact(
+          id,
+          UpdateContactRequest(isDefaultDelivery: true),
+        );
 
-      expect(backend.only.path, 'contacts/$id');
-      expect(backend.bodyOf(0), {'is_default_delivery': true});
-    });
+        expect(backend.paths.single, 'contacts/$id');
+        expect(backend.bodyOf(0), {'is_default_delivery': true});
+      },
+    );
   });
 
   group('POST /contacts', () {
@@ -71,7 +74,7 @@ void main() {
         ),
       );
 
-      expect(backend.only.path, 'contacts');
+      expect(backend.paths.single, 'contacts');
       expect(backend.only.method, 'POST');
       final body = backend.bodyOf(0);
       expect(body['address_type'], 'work');

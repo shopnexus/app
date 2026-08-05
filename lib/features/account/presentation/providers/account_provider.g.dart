@@ -13,13 +13,8 @@ part of 'account_provider.dart';
 const profileProvider = ProfileProvider._();
 
 final class ProfileProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<AccountProfile>,
-          AccountProfile,
-          FutureOr<AccountProfile>
-        >
-    with $FutureModifier<AccountProfile>, $FutureProvider<AccountProfile> {
+    extends $FunctionalProvider<AsyncValue<Me>, Me, FutureOr<Me>>
+    with $FutureModifier<Me>, $FutureProvider<Me> {
   const ProfileProvider._()
     : super(
         from: null,
@@ -36,17 +31,16 @@ final class ProfileProvider
 
   @$internal
   @override
-  $FutureProviderElement<AccountProfile> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  $FutureProviderElement<Me> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
 
   @override
-  FutureOr<AccountProfile> create(Ref ref) {
+  FutureOr<Me> create(Ref ref) {
     return profile(ref);
   }
 }
 
-String _$profileHash() => r'6dff79fce6bbff2c7916a56488b501c1f87375c0';
+String _$profileHash() => r'5f4ca96096caad1c75abb32ca4013f387cb76fbb';
 
 @ProviderFor(publicProfile)
 const publicProfileProvider = PublicProfileFamily._();

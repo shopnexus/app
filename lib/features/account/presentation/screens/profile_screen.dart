@@ -25,7 +25,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isUploadingAvatar = false;
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> _pickAndUploadAvatar(AccountProfile profile) async {
+  Future<void> _pickAndUploadAvatar(Me profile) async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
@@ -78,7 +78,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  void _showEditProfileBottomSheet(AccountProfile profile) {
+  void _showEditProfileBottomSheet(Me profile) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
@@ -1064,7 +1064,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
 // ======================== EDIT PROFILE SHEET WIDGET ========================
 class _EditProfileFormSheet extends ConsumerStatefulWidget {
-  final AccountProfile profile;
+  final Me profile;
 
   const _EditProfileFormSheet({required this.profile});
 

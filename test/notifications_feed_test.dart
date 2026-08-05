@@ -60,9 +60,7 @@ void main() {
 
       expect(backend.paths.single, 'notifications/read');
       expect(backend.only.method, 'POST');
-      expect(backend.bodyOf(0), {
-        'before': '2026-08-05T02:47:38.213999Z',
-      });
+      expect(backend.bodyOf(0), {'before': '2026-08-05T02:47:38.213999Z'});
       expect(unread, 3);
     });
 

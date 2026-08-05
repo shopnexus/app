@@ -6,28 +6,6 @@ part of 'account_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_Resource _$ResourceFromJson(Map<String, dynamic> json) => _Resource(
-  id: json['id'] as String,
-  mime: json['mime'] as String,
-  objectKey: json['object_key'] as String,
-  provider: json['provider'] as String,
-  size: (json['size'] as num).toInt(),
-  checksum: json['checksum'] as String?,
-  url: json['url'] as String?,
-  urlExpiresAt: json['url_expires_at'] as String?,
-);
-
-Map<String, dynamic> _$ResourceToJson(_Resource instance) => <String, dynamic>{
-  'id': instance.id,
-  'mime': instance.mime,
-  'object_key': instance.objectKey,
-  'provider': instance.provider,
-  'size': instance.size,
-  'checksum': instance.checksum,
-  'url': instance.url,
-  'url_expires_at': instance.urlExpiresAt,
-};
-
 _Profile _$ProfileFromJson(Map<String, dynamic> json) => _Profile(
   name: json['name'] as String,
   country: json['country'] as String,
@@ -39,7 +17,7 @@ _Profile _$ProfileFromJson(Map<String, dynamic> json) => _Profile(
       : Resource.fromJson(json['avatar'] as Map<String, dynamic>),
   dateOfBirth: json['date_of_birth'] as String?,
   description: json['description'] as String?,
-  gender: json['gender'],
+  gender: json['gender'] as String?,
 );
 
 Map<String, dynamic> _$ProfileToJson(_Profile instance) => <String, dynamic>{
@@ -111,7 +89,7 @@ Map<String, dynamic> _$PublicAccountToJson(_PublicAccount instance) =>
 _Contact _$ContactFromJson(Map<String, dynamic> json) => _Contact(
   id: json['id'] as String,
   fullName: json['full_name'] as String,
-  phone: _parsePhone(json['phone']),
+  phone: json['phone'] as String,
   phoneVerified: json['phone_verified'] as bool,
   address: json['address'] as String,
   addressDetail: json['address_detail'] as String?,

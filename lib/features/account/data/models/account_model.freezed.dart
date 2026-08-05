@@ -13,293 +13,9 @@ part of 'account_model.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$Resource {
-
- String get id; String get mime;@JsonKey(name: 'object_key') String get objectKey; String get provider; int get size; String? get checksum; String? get url;@JsonKey(name: 'url_expires_at') String? get urlExpiresAt;
-/// Create a copy of Resource
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$ResourceCopyWith<Resource> get copyWith => _$ResourceCopyWithImpl<Resource>(this as Resource, _$identity);
-
-  /// Serializes this Resource to a JSON map.
-  Map<String, dynamic> toJson();
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Resource&&(identical(other.id, id) || other.id == id)&&(identical(other.mime, mime) || other.mime == mime)&&(identical(other.objectKey, objectKey) || other.objectKey == objectKey)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.size, size) || other.size == size)&&(identical(other.checksum, checksum) || other.checksum == checksum)&&(identical(other.url, url) || other.url == url)&&(identical(other.urlExpiresAt, urlExpiresAt) || other.urlExpiresAt == urlExpiresAt));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,id,mime,objectKey,provider,size,checksum,url,urlExpiresAt);
-
-@override
-String toString() {
-  return 'Resource(id: $id, mime: $mime, objectKey: $objectKey, provider: $provider, size: $size, checksum: $checksum, url: $url, urlExpiresAt: $urlExpiresAt)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $ResourceCopyWith<$Res>  {
-  factory $ResourceCopyWith(Resource value, $Res Function(Resource) _then) = _$ResourceCopyWithImpl;
-@useResult
-$Res call({
- String id, String mime,@JsonKey(name: 'object_key') String objectKey, String provider, int size, String? checksum, String? url,@JsonKey(name: 'url_expires_at') String? urlExpiresAt
-});
-
-
-
-
-}
-/// @nodoc
-class _$ResourceCopyWithImpl<$Res>
-    implements $ResourceCopyWith<$Res> {
-  _$ResourceCopyWithImpl(this._self, this._then);
-
-  final Resource _self;
-  final $Res Function(Resource) _then;
-
-/// Create a copy of Resource
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? mime = null,Object? objectKey = null,Object? provider = null,Object? size = null,Object? checksum = freezed,Object? url = freezed,Object? urlExpiresAt = freezed,}) {
-  return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,mime: null == mime ? _self.mime : mime // ignore: cast_nullable_to_non_nullable
-as String,objectKey: null == objectKey ? _self.objectKey : objectKey // ignore: cast_nullable_to_non_nullable
-as String,provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
-as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
-as int,checksum: freezed == checksum ? _self.checksum : checksum // ignore: cast_nullable_to_non_nullable
-as String?,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
-as String?,urlExpiresAt: freezed == urlExpiresAt ? _self.urlExpiresAt : urlExpiresAt // ignore: cast_nullable_to_non_nullable
-as String?,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [Resource].
-extension ResourcePatterns on Resource {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Resource value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _Resource() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Resource value)  $default,){
-final _that = this;
-switch (_that) {
-case _Resource():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Resource value)?  $default,){
-final _that = this;
-switch (_that) {
-case _Resource() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String mime, @JsonKey(name: 'object_key')  String objectKey,  String provider,  int size,  String? checksum,  String? url, @JsonKey(name: 'url_expires_at')  String? urlExpiresAt)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _Resource() when $default != null:
-return $default(_that.id,_that.mime,_that.objectKey,_that.provider,_that.size,_that.checksum,_that.url,_that.urlExpiresAt);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String mime, @JsonKey(name: 'object_key')  String objectKey,  String provider,  int size,  String? checksum,  String? url, @JsonKey(name: 'url_expires_at')  String? urlExpiresAt)  $default,) {final _that = this;
-switch (_that) {
-case _Resource():
-return $default(_that.id,_that.mime,_that.objectKey,_that.provider,_that.size,_that.checksum,_that.url,_that.urlExpiresAt);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String mime, @JsonKey(name: 'object_key')  String objectKey,  String provider,  int size,  String? checksum,  String? url, @JsonKey(name: 'url_expires_at')  String? urlExpiresAt)?  $default,) {final _that = this;
-switch (_that) {
-case _Resource() when $default != null:
-return $default(_that.id,_that.mime,_that.objectKey,_that.provider,_that.size,_that.checksum,_that.url,_that.urlExpiresAt);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-@JsonSerializable()
-
-class _Resource implements Resource {
-  const _Resource({required this.id, required this.mime, @JsonKey(name: 'object_key') required this.objectKey, required this.provider, required this.size, this.checksum, this.url, @JsonKey(name: 'url_expires_at') this.urlExpiresAt});
-  factory _Resource.fromJson(Map<String, dynamic> json) => _$ResourceFromJson(json);
-
-@override final  String id;
-@override final  String mime;
-@override@JsonKey(name: 'object_key') final  String objectKey;
-@override final  String provider;
-@override final  int size;
-@override final  String? checksum;
-@override final  String? url;
-@override@JsonKey(name: 'url_expires_at') final  String? urlExpiresAt;
-
-/// Create a copy of Resource
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$ResourceCopyWith<_Resource> get copyWith => __$ResourceCopyWithImpl<_Resource>(this, _$identity);
-
-@override
-Map<String, dynamic> toJson() {
-  return _$ResourceToJson(this, );
-}
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Resource&&(identical(other.id, id) || other.id == id)&&(identical(other.mime, mime) || other.mime == mime)&&(identical(other.objectKey, objectKey) || other.objectKey == objectKey)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.size, size) || other.size == size)&&(identical(other.checksum, checksum) || other.checksum == checksum)&&(identical(other.url, url) || other.url == url)&&(identical(other.urlExpiresAt, urlExpiresAt) || other.urlExpiresAt == urlExpiresAt));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,id,mime,objectKey,provider,size,checksum,url,urlExpiresAt);
-
-@override
-String toString() {
-  return 'Resource(id: $id, mime: $mime, objectKey: $objectKey, provider: $provider, size: $size, checksum: $checksum, url: $url, urlExpiresAt: $urlExpiresAt)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$ResourceCopyWith<$Res> implements $ResourceCopyWith<$Res> {
-  factory _$ResourceCopyWith(_Resource value, $Res Function(_Resource) _then) = __$ResourceCopyWithImpl;
-@override @useResult
-$Res call({
- String id, String mime,@JsonKey(name: 'object_key') String objectKey, String provider, int size, String? checksum, String? url,@JsonKey(name: 'url_expires_at') String? urlExpiresAt
-});
-
-
-
-
-}
-/// @nodoc
-class __$ResourceCopyWithImpl<$Res>
-    implements _$ResourceCopyWith<$Res> {
-  __$ResourceCopyWithImpl(this._self, this._then);
-
-  final _Resource _self;
-  final $Res Function(_Resource) _then;
-
-/// Create a copy of Resource
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? mime = null,Object? objectKey = null,Object? provider = null,Object? size = null,Object? checksum = freezed,Object? url = freezed,Object? urlExpiresAt = freezed,}) {
-  return _then(_Resource(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,mime: null == mime ? _self.mime : mime // ignore: cast_nullable_to_non_nullable
-as String,objectKey: null == objectKey ? _self.objectKey : objectKey // ignore: cast_nullable_to_non_nullable
-as String,provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
-as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
-as int,checksum: freezed == checksum ? _self.checksum : checksum // ignore: cast_nullable_to_non_nullable
-as String?,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
-as String?,urlExpiresAt: freezed == urlExpiresAt ? _self.urlExpiresAt : urlExpiresAt // ignore: cast_nullable_to_non_nullable
-as String?,
-  ));
-}
-
-
-}
-
-
-/// @nodoc
 mixin _$Profile {
 
- String get name; String get country; String get locale; String get timezone;@JsonKey(name: 'created_at') String get createdAt; Resource? get avatar;@JsonKey(name: 'date_of_birth') String? get dateOfBirth; String? get description; dynamic get gender;
+ String get name; String get country; String get locale; String get timezone;@JsonKey(name: 'created_at') String get createdAt; Resource? get avatar;@JsonKey(name: 'date_of_birth') String? get dateOfBirth; String? get description; String? get gender;
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -312,12 +28,12 @@ $ProfileCopyWith<Profile> get copyWith => _$ProfileCopyWithImpl<Profile>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Profile&&(identical(other.name, name) || other.name == name)&&(identical(other.country, country) || other.country == country)&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.gender, gender));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Profile&&(identical(other.name, name) || other.name == name)&&(identical(other.country, country) || other.country == country)&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.description, description) || other.description == description)&&(identical(other.gender, gender) || other.gender == gender));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,country,locale,timezone,createdAt,avatar,dateOfBirth,description,const DeepCollectionEquality().hash(gender));
+int get hashCode => Object.hash(runtimeType,name,country,locale,timezone,createdAt,avatar,dateOfBirth,description,gender);
 
 @override
 String toString() {
@@ -332,11 +48,11 @@ abstract mixin class $ProfileCopyWith<$Res>  {
   factory $ProfileCopyWith(Profile value, $Res Function(Profile) _then) = _$ProfileCopyWithImpl;
 @useResult
 $Res call({
- String name, String country, String locale, String timezone,@JsonKey(name: 'created_at') String createdAt, Resource? avatar,@JsonKey(name: 'date_of_birth') String? dateOfBirth, String? description, dynamic gender
+ String name, String country, String locale, String timezone,@JsonKey(name: 'created_at') String createdAt, Resource? avatar,@JsonKey(name: 'date_of_birth') String? dateOfBirth, String? description, String? gender
 });
 
 
-$ResourceCopyWith<$Res>? get avatar;
+
 
 }
 /// @nodoc
@@ -360,22 +76,10 @@ as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_null
 as Resource?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as dynamic,
+as String?,
   ));
 }
-/// Create a copy of Profile
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceCopyWith<$Res>? get avatar {
-    if (_self.avatar == null) {
-    return null;
-  }
 
-  return $ResourceCopyWith<$Res>(_self.avatar!, (value) {
-    return _then(_self.copyWith(avatar: value));
-  });
-}
 }
 
 
@@ -457,7 +161,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String country,  String locale,  String timezone, @JsonKey(name: 'created_at')  String createdAt,  Resource? avatar, @JsonKey(name: 'date_of_birth')  String? dateOfBirth,  String? description,  dynamic gender)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String country,  String locale,  String timezone, @JsonKey(name: 'created_at')  String createdAt,  Resource? avatar, @JsonKey(name: 'date_of_birth')  String? dateOfBirth,  String? description,  String? gender)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
 return $default(_that.name,_that.country,_that.locale,_that.timezone,_that.createdAt,_that.avatar,_that.dateOfBirth,_that.description,_that.gender);case _:
@@ -478,7 +182,7 @@ return $default(_that.name,_that.country,_that.locale,_that.timezone,_that.creat
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String country,  String locale,  String timezone, @JsonKey(name: 'created_at')  String createdAt,  Resource? avatar, @JsonKey(name: 'date_of_birth')  String? dateOfBirth,  String? description,  dynamic gender)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String country,  String locale,  String timezone, @JsonKey(name: 'created_at')  String createdAt,  Resource? avatar, @JsonKey(name: 'date_of_birth')  String? dateOfBirth,  String? description,  String? gender)  $default,) {final _that = this;
 switch (_that) {
 case _Profile():
 return $default(_that.name,_that.country,_that.locale,_that.timezone,_that.createdAt,_that.avatar,_that.dateOfBirth,_that.description,_that.gender);case _:
@@ -498,7 +202,7 @@ return $default(_that.name,_that.country,_that.locale,_that.timezone,_that.creat
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String country,  String locale,  String timezone, @JsonKey(name: 'created_at')  String createdAt,  Resource? avatar, @JsonKey(name: 'date_of_birth')  String? dateOfBirth,  String? description,  dynamic gender)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String country,  String locale,  String timezone, @JsonKey(name: 'created_at')  String createdAt,  Resource? avatar, @JsonKey(name: 'date_of_birth')  String? dateOfBirth,  String? description,  String? gender)?  $default,) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
 return $default(_that.name,_that.country,_that.locale,_that.timezone,_that.createdAt,_that.avatar,_that.dateOfBirth,_that.description,_that.gender);case _:
@@ -524,7 +228,7 @@ class _Profile implements Profile {
 @override final  Resource? avatar;
 @override@JsonKey(name: 'date_of_birth') final  String? dateOfBirth;
 @override final  String? description;
-@override final  dynamic gender;
+@override final  String? gender;
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
@@ -539,12 +243,12 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Profile&&(identical(other.name, name) || other.name == name)&&(identical(other.country, country) || other.country == country)&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.gender, gender));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Profile&&(identical(other.name, name) || other.name == name)&&(identical(other.country, country) || other.country == country)&&(identical(other.locale, locale) || other.locale == locale)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.description, description) || other.description == description)&&(identical(other.gender, gender) || other.gender == gender));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,country,locale,timezone,createdAt,avatar,dateOfBirth,description,const DeepCollectionEquality().hash(gender));
+int get hashCode => Object.hash(runtimeType,name,country,locale,timezone,createdAt,avatar,dateOfBirth,description,gender);
 
 @override
 String toString() {
@@ -559,11 +263,11 @@ abstract mixin class _$ProfileCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   factory _$ProfileCopyWith(_Profile value, $Res Function(_Profile) _then) = __$ProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String name, String country, String locale, String timezone,@JsonKey(name: 'created_at') String createdAt, Resource? avatar,@JsonKey(name: 'date_of_birth') String? dateOfBirth, String? description, dynamic gender
+ String name, String country, String locale, String timezone,@JsonKey(name: 'created_at') String createdAt, Resource? avatar,@JsonKey(name: 'date_of_birth') String? dateOfBirth, String? description, String? gender
 });
 
 
-@override $ResourceCopyWith<$Res>? get avatar;
+
 
 }
 /// @nodoc
@@ -587,23 +291,11 @@ as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_null
 as Resource?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as dynamic,
+as String?,
   ));
 }
 
-/// Create a copy of Profile
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceCopyWith<$Res>? get avatar {
-    if (_self.avatar == null) {
-    return null;
-  }
 
-  return $ResourceCopyWith<$Res>(_self.avatar!, (value) {
-    return _then(_self.copyWith(avatar: value));
-  });
-}
 }
 
 
@@ -964,7 +656,7 @@ $Res call({
 });
 
 
-$ResourceCopyWith<$Res>? get avatar;
+
 
 }
 /// @nodoc
@@ -989,19 +681,7 @@ as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nul
 as Resource?,
   ));
 }
-/// Create a copy of PublicAccount
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceCopyWith<$Res>? get avatar {
-    if (_self.avatar == null) {
-    return null;
-  }
 
-  return $ResourceCopyWith<$Res>(_self.avatar!, (value) {
-    return _then(_self.copyWith(avatar: value));
-  });
-}
 }
 
 
@@ -1187,7 +867,7 @@ $Res call({
 });
 
 
-@override $ResourceCopyWith<$Res>? get avatar;
+
 
 }
 /// @nodoc
@@ -1213,26 +893,14 @@ as Resource?,
   ));
 }
 
-/// Create a copy of PublicAccount
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceCopyWith<$Res>? get avatar {
-    if (_self.avatar == null) {
-    return null;
-  }
 
-  return $ResourceCopyWith<$Res>(_self.avatar!, (value) {
-    return _then(_self.copyWith(avatar: value));
-  });
-}
 }
 
 
 /// @nodoc
 mixin _$Contact {
 
- String get id;@JsonKey(name: 'full_name') String get fullName;@JsonKey(fromJson: _parsePhone) String get phone;@JsonKey(name: 'phone_verified') bool get phoneVerified; String get address;@JsonKey(name: 'address_detail') String? get addressDetail;@JsonKey(name: 'address_type') String get addressType;// 'home' | 'work'
+ String get id;@JsonKey(name: 'full_name') String get fullName; String get phone;@JsonKey(name: 'phone_verified') bool get phoneVerified; String get address;@JsonKey(name: 'address_detail') String? get addressDetail;@JsonKey(name: 'address_type') String get addressType;// 'home' | 'work'
  String get country;@JsonKey(name: 'province_code') String get provinceCode;@JsonKey(name: 'province_name') String get provinceName;@JsonKey(name: 'district_code') String? get districtCode;@JsonKey(name: 'district_name') String? get districtName;@JsonKey(name: 'ward_code') String get wardCode;@JsonKey(name: 'ward_name') String get wardName;@JsonKey(name: 'postal_code') String? get postalCode;@JsonKey(name: 'is_default_delivery') bool get isDefaultDelivery;@JsonKey(name: 'is_default_pickup') bool get isDefaultPickup; double? get latitude; double? get longitude;@JsonKey(name: 'created_at') String get createdAt;
 /// Create a copy of Contact
 /// with the given fields replaced by the non-null parameter values.
@@ -1266,7 +934,7 @@ abstract mixin class $ContactCopyWith<$Res>  {
   factory $ContactCopyWith(Contact value, $Res Function(Contact) _then) = _$ContactCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'full_name') String fullName,@JsonKey(fromJson: _parsePhone) String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, String country,@JsonKey(name: 'province_code') String provinceCode,@JsonKey(name: 'province_name') String provinceName,@JsonKey(name: 'district_code') String? districtCode,@JsonKey(name: 'district_name') String? districtName,@JsonKey(name: 'ward_code') String wardCode,@JsonKey(name: 'ward_name') String wardName,@JsonKey(name: 'postal_code') String? postalCode,@JsonKey(name: 'is_default_delivery') bool isDefaultDelivery,@JsonKey(name: 'is_default_pickup') bool isDefaultPickup, double? latitude, double? longitude,@JsonKey(name: 'created_at') String createdAt
+ String id,@JsonKey(name: 'full_name') String fullName, String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, String country,@JsonKey(name: 'province_code') String provinceCode,@JsonKey(name: 'province_name') String provinceName,@JsonKey(name: 'district_code') String? districtCode,@JsonKey(name: 'district_name') String? districtName,@JsonKey(name: 'ward_code') String wardCode,@JsonKey(name: 'ward_name') String wardName,@JsonKey(name: 'postal_code') String? postalCode,@JsonKey(name: 'is_default_delivery') bool isDefaultDelivery,@JsonKey(name: 'is_default_pickup') bool isDefaultPickup, double? latitude, double? longitude,@JsonKey(name: 'created_at') String createdAt
 });
 
 
@@ -1390,7 +1058,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName, @JsonKey(fromJson: _parsePhone)  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool isDefaultPickup,  double? latitude,  double? longitude, @JsonKey(name: 'created_at')  String createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool isDefaultPickup,  double? latitude,  double? longitude, @JsonKey(name: 'created_at')  String createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Contact() when $default != null:
 return $default(_that.id,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.country,_that.provinceCode,_that.provinceName,_that.districtCode,_that.districtName,_that.wardCode,_that.wardName,_that.postalCode,_that.isDefaultDelivery,_that.isDefaultPickup,_that.latitude,_that.longitude,_that.createdAt);case _:
@@ -1411,7 +1079,7 @@ return $default(_that.id,_that.fullName,_that.phone,_that.phoneVerified,_that.ad
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName, @JsonKey(fromJson: _parsePhone)  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool isDefaultPickup,  double? latitude,  double? longitude, @JsonKey(name: 'created_at')  String createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool isDefaultPickup,  double? latitude,  double? longitude, @JsonKey(name: 'created_at')  String createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _Contact():
 return $default(_that.id,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.country,_that.provinceCode,_that.provinceName,_that.districtCode,_that.districtName,_that.wardCode,_that.wardName,_that.postalCode,_that.isDefaultDelivery,_that.isDefaultPickup,_that.latitude,_that.longitude,_that.createdAt);case _:
@@ -1431,7 +1099,7 @@ return $default(_that.id,_that.fullName,_that.phone,_that.phoneVerified,_that.ad
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'full_name')  String fullName, @JsonKey(fromJson: _parsePhone)  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool isDefaultPickup,  double? latitude,  double? longitude, @JsonKey(name: 'created_at')  String createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(name: 'phone_verified')  bool phoneVerified,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool isDefaultPickup,  double? latitude,  double? longitude, @JsonKey(name: 'created_at')  String createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Contact() when $default != null:
 return $default(_that.id,_that.fullName,_that.phone,_that.phoneVerified,_that.address,_that.addressDetail,_that.addressType,_that.country,_that.provinceCode,_that.provinceName,_that.districtCode,_that.districtName,_that.wardCode,_that.wardName,_that.postalCode,_that.isDefaultDelivery,_that.isDefaultPickup,_that.latitude,_that.longitude,_that.createdAt);case _:
@@ -1446,12 +1114,12 @@ return $default(_that.id,_that.fullName,_that.phone,_that.phoneVerified,_that.ad
 @JsonSerializable()
 
 class _Contact implements Contact {
-  const _Contact({required this.id, @JsonKey(name: 'full_name') required this.fullName, @JsonKey(fromJson: _parsePhone) required this.phone, @JsonKey(name: 'phone_verified') required this.phoneVerified, required this.address, @JsonKey(name: 'address_detail') this.addressDetail, @JsonKey(name: 'address_type') required this.addressType, required this.country, @JsonKey(name: 'province_code') required this.provinceCode, @JsonKey(name: 'province_name') required this.provinceName, @JsonKey(name: 'district_code') this.districtCode, @JsonKey(name: 'district_name') this.districtName, @JsonKey(name: 'ward_code') required this.wardCode, @JsonKey(name: 'ward_name') required this.wardName, @JsonKey(name: 'postal_code') this.postalCode, @JsonKey(name: 'is_default_delivery') required this.isDefaultDelivery, @JsonKey(name: 'is_default_pickup') required this.isDefaultPickup, this.latitude, this.longitude, @JsonKey(name: 'created_at') required this.createdAt});
+  const _Contact({required this.id, @JsonKey(name: 'full_name') required this.fullName, required this.phone, @JsonKey(name: 'phone_verified') required this.phoneVerified, required this.address, @JsonKey(name: 'address_detail') this.addressDetail, @JsonKey(name: 'address_type') required this.addressType, required this.country, @JsonKey(name: 'province_code') required this.provinceCode, @JsonKey(name: 'province_name') required this.provinceName, @JsonKey(name: 'district_code') this.districtCode, @JsonKey(name: 'district_name') this.districtName, @JsonKey(name: 'ward_code') required this.wardCode, @JsonKey(name: 'ward_name') required this.wardName, @JsonKey(name: 'postal_code') this.postalCode, @JsonKey(name: 'is_default_delivery') required this.isDefaultDelivery, @JsonKey(name: 'is_default_pickup') required this.isDefaultPickup, this.latitude, this.longitude, @JsonKey(name: 'created_at') required this.createdAt});
   factory _Contact.fromJson(Map<String, dynamic> json) => _$ContactFromJson(json);
 
 @override final  String id;
 @override@JsonKey(name: 'full_name') final  String fullName;
-@override@JsonKey(fromJson: _parsePhone) final  String phone;
+@override final  String phone;
 @override@JsonKey(name: 'phone_verified') final  bool phoneVerified;
 @override final  String address;
 @override@JsonKey(name: 'address_detail') final  String? addressDetail;
@@ -1504,7 +1172,7 @@ abstract mixin class _$ContactCopyWith<$Res> implements $ContactCopyWith<$Res> {
   factory _$ContactCopyWith(_Contact value, $Res Function(_Contact) _then) = __$ContactCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'full_name') String fullName,@JsonKey(fromJson: _parsePhone) String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, String country,@JsonKey(name: 'province_code') String provinceCode,@JsonKey(name: 'province_name') String provinceName,@JsonKey(name: 'district_code') String? districtCode,@JsonKey(name: 'district_name') String? districtName,@JsonKey(name: 'ward_code') String wardCode,@JsonKey(name: 'ward_name') String wardName,@JsonKey(name: 'postal_code') String? postalCode,@JsonKey(name: 'is_default_delivery') bool isDefaultDelivery,@JsonKey(name: 'is_default_pickup') bool isDefaultPickup, double? latitude, double? longitude,@JsonKey(name: 'created_at') String createdAt
+ String id,@JsonKey(name: 'full_name') String fullName, String phone,@JsonKey(name: 'phone_verified') bool phoneVerified, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, String country,@JsonKey(name: 'province_code') String provinceCode,@JsonKey(name: 'province_name') String provinceName,@JsonKey(name: 'district_code') String? districtCode,@JsonKey(name: 'district_name') String? districtName,@JsonKey(name: 'ward_code') String wardCode,@JsonKey(name: 'ward_name') String wardName,@JsonKey(name: 'postal_code') String? postalCode,@JsonKey(name: 'is_default_delivery') bool isDefaultDelivery,@JsonKey(name: 'is_default_pickup') bool isDefaultPickup, double? latitude, double? longitude,@JsonKey(name: 'created_at') String createdAt
 });
 
 

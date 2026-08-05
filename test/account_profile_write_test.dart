@@ -32,10 +32,13 @@ void main() {
       final backend = RecordingBackend();
 
       await backend.repository.updateProfile(
-        UpdateProfileRequest(name: 'Alice Nguyen', gender: ProfileGender.female),
+        UpdateProfileRequest(
+          name: 'Alice Nguyen',
+          gender: ProfileGender.female,
+        ),
       );
 
-      expect(backend.only.path, 'me/profile');
+      expect(backend.paths.single, 'me/profile');
       expect(backend.only.method, 'PATCH');
       final body = backend.bodyOf(0);
       expect(body.keys, everyElement(isIn(contractKeys)));
@@ -52,15 +55,18 @@ void main() {
       expect(backend.bodyOf(0)['gender'], 'male');
     });
 
-    test('a birth date goes as a plain day, which is what the route takes', () async {
-      final backend = RecordingBackend();
+    test(
+      'a birth date goes as a plain day, which is what the route takes',
+      () async {
+        final backend = RecordingBackend();
 
-      await backend.repository.updateProfile(
-        UpdateProfileRequest(dateOfBirth: DateTime.utc(1995, 4, 2)),
-      );
+        await backend.repository.updateProfile(
+          UpdateProfileRequest(dateOfBirth: DateTime.utc(1995, 4, 2)),
+        );
 
-      expect(backend.bodyOf(0)['date_of_birth'], '1995-04-02');
-    });
+        expect(backend.bodyOf(0)['date_of_birth'], '1995-04-02');
+      },
+    );
 
     test('the avatar is avatar_resource_id', () async {
       final backend = RecordingBackend();
@@ -91,13 +97,10 @@ void main() {
       final backend = RecordingBackend((_) => const {'data': meJson});
 
       await backend.repository.updateAccount(
-        UpdateAccountRequest(
-          username: 'alice_shop',
-          phone: '+84900000001',
-        ),
+        UpdateAccountRequest(username: 'alice_shop', phone: '+84900000001'),
       );
 
-      expect(backend.only.path, 'me');
+      expect(backend.paths.single, 'me');
       expect(backend.only.method, 'PATCH');
       expect(backend.bodyOf(0), {
         'username': 'alice_shop',

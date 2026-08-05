@@ -20,7 +20,7 @@ class AccountCenterScreen extends ConsumerStatefulWidget {
 }
 
 class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
-  void _showEditProfileBottomSheet(AccountProfile profile) {
+  void _showEditProfileBottomSheet(Me profile) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
@@ -176,7 +176,7 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
                       _buildInfoTile(
                         icon: Icons.calendar_today_rounded,
                         label: 'Ngày tham gia',
-                        value: _formatDate(profile.dateCreated),
+                        value: _formatDate(profile.createdAt),
                       ),
                     ],
                   ),
@@ -435,7 +435,7 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
 }
 
 class _EditAccountCenterFormSheet extends ConsumerStatefulWidget {
-  final AccountProfile profile;
+  final Me profile;
 
   const _EditAccountCenterFormSheet({required this.profile});
 
@@ -594,7 +594,10 @@ class __EditAccountCenterFormSheetState
               ),
               items: [
                 for (final gender in ProfileGender.values)
-                  DropdownMenuItem(value: gender, child: Text(genderLabel(gender))),
+                  DropdownMenuItem(
+                    value: gender,
+                    child: Text(genderLabel(gender)),
+                  ),
               ],
               onChanged: (val) {
                 if (val != null) {

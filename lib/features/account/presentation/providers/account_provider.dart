@@ -7,7 +7,7 @@ import 'package:shopnexus_flutter_app/features/account/data/repositories/account
 part 'account_provider.g.dart';
 
 @riverpod
-Future<AccountProfile> profile(Ref ref) async {
+Future<Me> profile(Ref ref) async {
   final repository = ref.watch(accountRepositoryProvider);
   return repository.getProfile();
 }

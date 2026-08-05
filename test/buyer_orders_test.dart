@@ -17,15 +17,22 @@ void main() {
     List<Map<String, dynamic>> orders = const [],
     List<Map<String, dynamic>> items = const [],
     List<Map<String, dynamic>> listings = const [],
-  }) => (request) => switch (request.path) {
-    '/orders' => {'data': orders, 'meta': const {'next_cursor': null}},
-    '/items' => {'data': items, 'meta': const {'next_cursor': null}},
-    '/listings' => {
-      'data': listings,
-      'meta': const {'page': 1, 'limit': 20, 'total_count': 1},
-    },
-    _ => {'data': orders.isEmpty ? null : orders.first},
-  };
+  }) =>
+      (request) => switch (request.path) {
+        '/orders' => {
+          'data': orders,
+          'meta': const {'next_cursor': null},
+        },
+        '/items' => {
+          'data': items,
+          'meta': const {'next_cursor': null},
+        },
+        '/listings' => {
+          'data': listings,
+          'meta': const {'page': 1, 'limit': 20, 'total_count': 1},
+        },
+        _ => {'data': orders.isEmpty ? null : orders.first},
+      };
 
   group('an order parses as the contract sends it', () {
     test('the whole payload round-trips', () {
@@ -114,30 +121,34 @@ void main() {
   });
 
   group('GET /items', () {
-    test('the two item tabs differ by pending, and page is not a param', () async {
-      final backend = RecordingBackend(pages(items: [orderItemJson]));
+    test(
+      'the two item tabs differ by pending, and page is not a param',
+      () async {
+        final backend = RecordingBackend(pages(items: [orderItemJson]));
 
-      await backend.repository.buyerItems(pending: true);
-      await backend.repository.buyerItems(pending: false);
+        await backend.repository.buyerItems(pending: true);
+        await backend.repository.buyerItems(pending: false);
 
-      final itemCalls = backend.calls.where((c) => c.path == '/items');
-      expect(itemCalls.map((c) => c.queryParameters['role']), [
-        'buyer',
-        'buyer',
-      ]);
-      expect(itemCalls.map((c) => c.queryParameters['pending']), [true, false]);
-      expect(
-        itemCalls.map((c) => c.queryParameters.containsKey('page')),
-        everyElement(isFalse),
-      );
-    });
+        final itemCalls = backend.calls.where((c) => c.path == '/items');
+        expect(itemCalls.map((c) => c.queryParameters['role']), [
+          'buyer',
+          'buyer',
+        ]);
+        expect(itemCalls.map((c) => c.queryParameters['pending']), [
+          true,
+          false,
+        ]);
+        expect(
+          itemCalls.map((c) => c.queryParameters.containsKey('page')),
+          everyElement(isFalse),
+        );
+      },
+    );
   });
 
   group('cancelling a line', () {
     test('is a POST to the cancellation sub-resource', () async {
-      final backend = RecordingBackend(
-        (_) => {'data': orderItemJson},
-      );
+      final backend = RecordingBackend((_) => {'data': orderItemJson});
 
       await backend.repository.cancelItem('itm_fa1kdfqze7egn');
 

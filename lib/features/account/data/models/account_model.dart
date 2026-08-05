@@ -1,26 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 
 part 'account_model.freezed.dart';
 
 part 'account_model.g.dart';
-
-/// Resource model dùng chung cho Avatar, tài liệu, v.v. theo OpenAPI
-@freezed
-abstract class Resource with _$Resource {
-  const factory Resource({
-    required String id,
-    required String mime,
-    @JsonKey(name: 'object_key') required String objectKey,
-    required String provider,
-    required int size,
-    String? checksum,
-    String? url,
-    @JsonKey(name: 'url_expires_at') String? urlExpiresAt,
-  }) = _Resource;
-
-  factory Resource.fromJson(Map<String, dynamic> json) =>
-      _$ResourceFromJson(json);
-}
 
 /// Profile model chứa thông tin công khai của User/Seller
 @freezed
@@ -34,7 +17,7 @@ abstract class Profile with _$Profile {
     Resource? avatar,
     @JsonKey(name: 'date_of_birth') String? dateOfBirth,
     String? description,
-    dynamic gender,
+    String? gender,
   }) = _Profile;
 
   factory Profile.fromJson(Map<String, dynamic> json) =>
@@ -63,8 +46,6 @@ abstract class Me with _$Me {
   factory Me.fromJson(Map<String, dynamic> json) => _$MeFromJson(json);
 
   // Derived from what the route actually sends.
-  String get dateCreated => createdAt;
-
   String get name => profile?.name ?? username ?? email ?? 'Người dùng';
 
   String? get avatarUrl => profile?.avatar?.url;
@@ -73,7 +54,7 @@ abstract class Me with _$Me {
 
   String? get description => profile?.description;
 
-  String? get gender => profile?.gender?.toString();
+  String? get gender => profile?.gender;
 
   String get country => profile?.country ?? 'VN';
 
@@ -81,10 +62,6 @@ abstract class Me with _$Me {
   /// `lib/features/cart` is the only reader.
   String get currency => 'VND';
 }
-
-/// Alias tương thích
-typedef AccountProfile = Me;
-typedef UserProfile = Me;
 
 /// PublicAccount dùng khi xem thông tin tài khoản public của người khác
 @freezed
@@ -107,11 +84,6 @@ abstract class PublicAccount with _$PublicAccount {
   String? get avatarUrl => avatar?.url;
 }
 
-String _parsePhone(dynamic value) {
-  if (value == null) return '';
-  return value.toString();
-}
-
 /// Read-only: every write goes through the generated `CreateContactRequest` /
 /// `UpdateContactRequest`. This one survives as a hand-written model because
 /// `lib/features/{catalog,checkout}` name it too, and moving them to the
@@ -121,7 +93,7 @@ abstract class Contact with _$Contact {
   const factory Contact({
     required String id,
     @JsonKey(name: 'full_name') required String fullName,
-    @JsonKey(fromJson: _parsePhone) required String phone,
+    required String phone,
     @JsonKey(name: 'phone_verified') required bool phoneVerified,
     required String address,
     @JsonKey(name: 'address_detail') String? addressDetail,

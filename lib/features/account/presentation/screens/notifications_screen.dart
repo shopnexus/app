@@ -13,8 +13,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/no
 extension on wire.Notification {
   bool get isRead => readAt != null;
 
-  String? get body =>
-      (payload['content'] ?? payload['body'])?.toString();
+  String? get body => (payload['content'] ?? payload['body'])?.toString();
 
   String? get orderId => payload['order_id']?.toString();
 
@@ -50,9 +49,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       await ref.read(notificationsControllerProvider.notifier).loadMore();
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Không tải thêm được: $error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Không tải thêm được: $error')));
     }
   }
 
@@ -179,10 +178,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     child: Center(
       child: loading
           ? const CircularProgressIndicator()
-          : TextButton(
-              onPressed: _loadMore,
-              child: const Text('Tải thêm'),
-            ),
+          : TextButton(onPressed: _loadMore, child: const Text('Tải thêm')),
     ),
   );
 

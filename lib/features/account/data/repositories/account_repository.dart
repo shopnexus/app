@@ -149,7 +149,10 @@ class AccountRepository {
 
   /// Cursor-paged: `created_at` identifies a row together with the feed order,
   /// and a `page` would simply be ignored.
-  Future<NotificationPage> notifications({String? cursor, int limit = 20}) async {
+  Future<NotificationPage> notifications({
+    String? cursor,
+    int limit = 20,
+  }) async {
     final page = (await _api.notificationsGet(
       cursor: cursor,
       limit: limit,
@@ -180,7 +183,10 @@ class AccountRepository {
 
   /// `role` is required and `state` is what tells the tabs apart — without it
   /// every tab asked for the same list.
-  Future<List<OrderView>> buyerOrders({OrderState? state, int limit = 20}) async {
+  Future<List<OrderView>> buyerOrders({
+    OrderState? state,
+    int limit = 20,
+  }) async {
     final page = (await _orderApi.ordersGet(
       role: orderRoleBuyer,
       state: state,
@@ -221,10 +227,8 @@ class AccountRepository {
   Future<void> cancelItem(String itemId) =>
       _orderApi.itemsIdCancellationPost(id: itemId);
 
-  OrderView _view(Order order, Map<String, Listing> listings) => OrderView(
-    order: order,
-    lines: _lines(order.items ?? const [], listings),
-  );
+  OrderView _view(Order order, Map<String, Listing> listings) =>
+      OrderView(order: order, lines: _lines(order.items ?? const [], listings));
 
   List<OrderLineView> _lines(
     Iterable<OrderItem> items,
@@ -243,7 +247,10 @@ class AccountRepository {
       ids: ids,
       limit: ids.length.clamp(1, 100),
     )).data;
-    return {for (final listing in page?.data ?? const <Listing>[]) listing.id: listing};
+    return {
+      for (final listing in page?.data ?? const <Listing>[])
+        listing.id: listing,
+    };
   }
 }
 

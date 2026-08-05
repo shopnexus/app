@@ -213,7 +213,11 @@ class AddressesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContactCard(BuildContext context, WidgetRef ref, Contact contact) {
+  Widget _buildContactCard(
+    BuildContext context,
+    WidgetRef ref,
+    Contact contact,
+  ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
