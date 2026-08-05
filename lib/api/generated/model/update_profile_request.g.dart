@@ -28,10 +28,7 @@ UpdateProfileRequest _$UpdateProfileRequestFromJson(
       clearDescription: $checkedConvert('clear_description', (v) => v as bool?),
       clearGender: $checkedConvert('clear_gender', (v) => v as bool?),
       country: $checkedConvert('country', (v) => v as String?),
-      dateOfBirth: $checkedConvert(
-        'date_of_birth',
-        (v) => v == null ? null : DateTime.parse(v as String),
-      ),
+      dateOfBirth: $checkedConvert('date_of_birth', (v) => v as String?),
       description: $checkedConvert('description', (v) => v as String?),
       gender: $checkedConvert(
         'gender',
@@ -62,7 +59,7 @@ Map<String, dynamic> _$UpdateProfileRequestToJson(
   'clear_description': ?instance.clearDescription,
   'clear_gender': ?instance.clearGender,
   'country': ?instance.country,
-  'date_of_birth': ?instance.dateOfBirth?.toIso8601String(),
+  'date_of_birth': ?instance.dateOfBirth,
   'description': ?instance.description,
   'gender': ?_$ProfileGenderEnumMap[instance.gender],
   'locale': ?instance.locale,

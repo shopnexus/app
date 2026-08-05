@@ -36,6 +36,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_id_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_id_transport_get200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/orders_summary_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reject_refund_request.dart';
@@ -2166,6 +2167,96 @@ class OrderApi {
     }
 
     return Response<OrdersIdTransportGet200Response>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// The caller&#39;s own sales or purchases over a window
+  /// What a seller&#39;s dashboard leads with. The window filters &#x60;created_at&#x60;, so the counts, the totals and the daily series all describe **one** set of orders — the ones placed in it, as they stand now. Mixing \&quot;placed in the window\&quot; with \&quot;completed in the window\&quot; would produce three numbers the reader cannot reconcile.  &#x60;totals&#x60; counts the goods of completed orders only, and excludes a cancelled line and the delivery fee: the fee is the courier&#39;s money and never reaches the seller. It is a list per currency because a shop may price in more than one, and adding those together is a figure that means nothing — which is also why the daily series carries counts and no money.  Absent bounds mean the last 30 days ending now; &#x60;to&#x60; is exclusive and the window may span at most a year, so the series is at most 366 buckets.
+  ///
+  /// Parameters:
+  /// * [role]
+  /// * [from]
+  /// * [to] - Exclusive.
+  /// * [tz] - IANA zone the daily buckets are cut on. Defaults to UTC, which makes a Vietnamese seller's evening sales land on the next day.
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [OrdersSummaryGet200Response] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<OrdersSummaryGet200Response>> ordersSummaryGet({
+    required String role,
+    DateTime? from,
+    DateTime? to,
+    String? tz,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/orders/summary';
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      r'role': role,
+      if (from != null) r'from': from,
+      if (to != null) r'to': to,
+      if (tz != null) r'tz': tz,
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    OrdersSummaryGet200Response? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              OrdersSummaryGet200Response,
+              OrdersSummaryGet200Response
+            >(rawData, 'OrdersSummaryGet200Response', growable: true);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<OrdersSummaryGet200Response>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

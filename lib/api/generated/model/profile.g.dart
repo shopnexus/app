@@ -30,10 +30,7 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) => $checkedCreate(
         'created_at',
         (v) => DateTime.parse(v as String),
       ),
-      dateOfBirth: $checkedConvert(
-        'date_of_birth',
-        (v) => v == null ? null : DateTime.parse(v as String),
-      ),
+      dateOfBirth: $checkedConvert('date_of_birth', (v) => v as String?),
       description: $checkedConvert('description', (v) => v as String?),
       gender: $checkedConvert(
         'gender',
@@ -55,7 +52,7 @@ Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
   'avatar': ?instance.avatar?.toJson(),
   'country': instance.country,
   'created_at': instance.createdAt.toIso8601String(),
-  'date_of_birth': ?instance.dateOfBirth?.toIso8601String(),
+  'date_of_birth': ?instance.dateOfBirth,
   'description': ?instance.description,
   'gender': ?_$ProfileGenderEnumMap[instance.gender],
   'locale': instance.locale,

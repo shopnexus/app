@@ -82,17 +82,8 @@ class AccountRepository {
 
   /// The public half of the account: name, description, gender, birth date,
   /// avatar, locale. Identifiers are [updateAccount]'s.
-  Future<void> updateProfile(UpdateProfileRequest request) {
-    final body = request.toJson();
-    // `date_of_birth` is `format: date`, which the generator turns into a
-    // `DateTime` and json_serializable then writes as a full instant — the route
-    // answers 400 `rule: date`. The day is the whole fact, so trim it back.
-    final dateOfBirth = request.dateOfBirth;
-    if (dateOfBirth != null) {
-      body['date_of_birth'] = dateOfBirth.toIso8601String().split('T').first;
-    }
-    return _apiService.updateProfile(body);
-  }
+  Future<void> updateProfile(UpdateProfileRequest request) =>
+      _apiService.updateProfile(request.toJson());
 
   /// Email, phone and username. Changing the email clears `email_verified` and
   /// sends a fresh verification, and the last identifier cannot be removed.

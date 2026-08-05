@@ -1126,7 +1126,9 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
       UpdateProfileRequest(
         name: _nameController.text.trim(),
         gender: _gender,
-        dateOfBirth: _dob,
+        // The picker answers a local midnight; the day is the whole fact, so the
+        // wall-clock date is what goes on the wire.
+        dateOfBirth: _dob?.toIso8601String().split('T').first,
       ),
     );
 

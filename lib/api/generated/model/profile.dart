@@ -49,7 +49,7 @@ class Profile {
   final DateTime createdAt;
 
   @JsonKey(name: r'date_of_birth', required: false, includeIfNull: false)
-  final DateTime? dateOfBirth;
+  final String? dateOfBirth;
 
   @JsonKey(name: r'description', required: false, includeIfNull: false)
   final String? description;

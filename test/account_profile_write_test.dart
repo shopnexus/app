@@ -61,9 +61,11 @@ void main() {
         final backend = RecordingBackend();
 
         await backend.repository.updateProfile(
-          UpdateProfileRequest(dateOfBirth: DateTime.utc(1995, 4, 2)),
+          UpdateProfileRequest(dateOfBirth: '1995-04-02'),
         );
 
+        // `format: date` is mapped to String in tool/gen_api.sh: a DateTime field
+        // serialises as a full instant, which the route refuses with `rule: date`.
         expect(backend.bodyOf(0)['date_of_birth'], '1995-04-02');
       },
     );

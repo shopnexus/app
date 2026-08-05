@@ -23,13 +23,16 @@ trap 'rm -rf "$TMP"' EXIT
 # SemanticSeed is `oneOf: [TagSlug, CategoryID]` — two strings the backend tells
 # apart by shape. dart-dio emits a syntactically broken empty class for that, so
 # it is mapped to the type it already is.
+# `date` maps to String because dart-dio otherwise emits DateTime for a
+# `format: date` field, and json_serializable then writes a full instant, which
+# the server rejects: it wants YYYY-MM-DD, which Dart has no stdlib type for.
 npx --yes @openapitools/openapi-generator-cli generate \
   -i "$SPEC" \
   -g dart-dio \
   -o "$TMP/pkg" \
   --additional-properties=serializationLibrary=json_serializable,pubName=shopnexus_api \
   --schema-mappings SemanticSeed=String \
-  --type-mappings SemanticSeed=String
+  --type-mappings SemanticSeed=String,date=String
 
 # The generator emits a standalone package. The app hosts the code directly
 # instead, so there is one pubspec, one build_runner and one dio — a nested

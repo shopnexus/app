@@ -103,6 +103,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/me_profile_patch200_re
 import 'package:shopnexus_flutter_app/api/generated/model/message.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/message_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/moderation_note_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/money_by_currency.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/notification.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/notification_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/notification_preference.dart';
@@ -122,10 +123,13 @@ import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_ref.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_summary_day.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_id_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_id_transport_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_order_id_feedback_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_order_id_feedback_post201_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/orders_summary_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/page_meta.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/password_reset_confirm_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/password_reset_request.dart';
@@ -576,6 +580,9 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'ModerationNoteRequest':
       return ModerationNoteRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;
+    case 'MoneyByCurrency':
+      return MoneyByCurrency.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'Notification':
       return Notification.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'NotificationCategory':
@@ -632,6 +639,11 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'OrderRef':
       return OrderRef.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'OrderState':
+    case 'OrderSummary':
+      return OrderSummary.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OrderSummaryDay':
+      return OrderSummaryDay.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'OrdersIdGet200Response':
       return OrdersIdGet200Response.fromJson(value as Map<String, dynamic>)
           as ReturnType;
@@ -649,6 +661,9 @@ ReturnType deserialize<ReturnType, BaseType>(
       return OrdersOrderIDFeedbackPost201Response.fromJson(
             value as Map<String, dynamic>,
           )
+          as ReturnType;
+    case 'OrdersSummaryGet200Response':
+      return OrdersSummaryGet200Response.fromJson(value as Map<String, dynamic>)
           as ReturnType;
     case 'PageMeta':
       return PageMeta.fromJson(value as Map<String, dynamic>) as ReturnType;
