@@ -249,55 +249,6 @@ abstract class ReadNotificationsRequest with _$ReadNotificationsRequest {
 }
 
 @freezed
-abstract class BuyerOrderItem with _$BuyerOrderItem {
-  const factory BuyerOrderItem({
-    required int id,
-    @JsonKey(name: 'order_id') String? orderId,
-    @JsonKey(name: 'sku_id') required String skuId,
-    @JsonKey(name: 'spu_id') required String spuId,
-    @JsonKey(name: 'sku_name') required String skuName,
-    required int quantity,
-    @JsonKey(name: 'subtotal_amount') required int subtotalAmount,
-    @JsonKey(name: 'total_amount') required int totalAmount,
-    @JsonKey(name: 'payment_session_id') int? paymentSessionId,
-    required String slug,
-    @JsonKey(name: 'image_url') String? imageUrl,
-  }) = _BuyerOrderItem;
-
-  factory BuyerOrderItem.fromJson(Map<String, dynamic> json) =>
-      _$BuyerOrderItemFromJson(json);
-}
-
-@freezed
-abstract class BuyerOrderTransport with _$BuyerOrderTransport {
-  const factory BuyerOrderTransport({
-    required int id,
-    required String option,
-    String? status,
-  }) = _BuyerOrderTransport;
-
-  factory BuyerOrderTransport.fromJson(Map<String, dynamic> json) =>
-      _$BuyerOrderTransportFromJson(json);
-}
-
-@freezed
-abstract class BuyerOrder with _$BuyerOrder {
-  const factory BuyerOrder({
-    required String id,
-    @JsonKey(name: 'buyer_id') required String buyerId,
-    @JsonKey(name: 'seller_id') required String sellerId,
-    required String address,
-    @JsonKey(name: 'date_created') required String dateCreated,
-    @JsonKey(name: 'total_amount') required int totalAmount,
-    required List<BuyerOrderItem> items,
-    BuyerOrderTransport? transport,
-  }) = _BuyerOrder;
-
-  factory BuyerOrder.fromJson(Map<String, dynamic> json) =>
-      _$BuyerOrderFromJson(json);
-}
-
-@freezed
 abstract class MessageResponse with _$MessageResponse {
   const factory MessageResponse({required String message}) = _MessageResponse;
 

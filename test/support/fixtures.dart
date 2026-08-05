@@ -1,5 +1,5 @@
-/// Payloads copied verbatim from a dev backend (`alice_shop`), so a parse test
-/// fails when the contract moves rather than when somebody's guess about it does.
+// Payloads copied verbatim from a dev backend (`alice_shop`), so a parse test
+// fails when the contract moves rather than when somebody's guess about it does.
 
 const meJson = <String, dynamic>{
   'id': 'acc_88sxn2txxspd4',

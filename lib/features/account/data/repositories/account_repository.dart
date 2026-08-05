@@ -3,22 +3,36 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
     as generated;
+import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_account_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
 import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/buyer_order_view.dart';
 
 part 'account_repository.g.dart';
 
 class AccountRepository {
   final AccountApiService _apiService;
   final generated.AccountApi _api;
+  final OrderApi _orderApi;
+  final CatalogApi _catalogApi;
 
-  AccountRepository(this._apiService, this._api);
+  AccountRepository(
+    this._apiService,
+    this._api,
+    this._orderApi,
+    this._catalogApi,
+  );
 
   /// Reserve a slot, PUT the bytes to the signed URL, confirm — the bytes never
   /// pass through this API, and until the confirmation lands the resource
@@ -148,58 +162,84 @@ class AccountRepository {
     MarkNotificationsReadRequest(before: DateTime.now().toIso8601String()),
   );
 
-  // --- Buyer Orders & Pending Items ---
-  Future<List<BuyerOrderItem>> getBuyerPendingItems({
-    int? page,
-    int? limit,
-  }) async {
-    final response = await _apiService.getBuyerPendingItems(page, limit);
-    return response.data;
+  // --- Buyer Orders & Checkout Lines ---
+
+  /// `role` is required and `state` is what tells the tabs apart — without it
+  /// every tab asked for the same list.
+  Future<List<OrderView>> buyerOrders({OrderState? state, int limit = 20}) async {
+    final page = (await _orderApi.ordersGet(
+      role: orderRoleBuyer,
+      state: state,
+      limit: limit,
+    )).data;
+    final orders = page?.data ?? const <Order>[];
+    final listings = await _listingsById(
+      orders.expand((order) => order.items ?? const <OrderItem>[]),
+    );
+    return [for (final order in orders) _view(order, listings)];
   }
 
-  Future<void> cancelBuyerPendingItem(String id) =>
-      _apiService.cancelBuyerPendingItem(id);
-
-  Future<List<BuyerOrder>> getBuyerPendingOrders({
-    int? page,
-    int? limit,
-  }) async {
-    final response = await _apiService.getBuyerPendingOrders(page, limit);
-    return response.data;
+  Future<OrderView> buyerOrder(String id) async {
+    final order = (await _orderApi.ordersIdGet(id: id)).data?.data;
+    if (order == null) throw StateError('empty order');
+    return _view(order, await _listingsById(order.items ?? const []));
   }
 
-  Future<List<BuyerOrder>> getBuyerCompletedOrders({
-    int? page,
-    int? limit,
+  /// [pending] is the contract's own filter: lines the money has not produced an
+  /// order for. Everything else is one list, so "cancelled" is a read of
+  /// `cancelled_at` rather than a filter the route does not have.
+  Future<List<OrderLineView>> buyerItems({
+    required bool pending,
+    int limit = 50,
   }) async {
-    final response = await _apiService.getBuyerCompletedOrders(page, limit);
-    return response.data;
+    final page = (await _orderApi.itemsGet(
+      role: orderRoleBuyer,
+      pending: pending,
+      limit: limit,
+    )).data;
+    final items = page?.data ?? const <OrderItem>[];
+    return _lines(items, await _listingsById(items));
   }
 
-  Future<List<BuyerOrder>> getBuyerCancelledOrders({
-    int? page,
-    int? limit,
-  }) async {
-    final response = await _apiService.getBuyerCancelledOrders(page, limit);
-    return response.data;
-  }
+  /// A POST: cancelling is a state transition on a sub-resource, and the old
+  /// DELETE was simply not a route (405). A paid line is refused with 409 —
+  /// a refund is how a paid sale is undone.
+  Future<void> cancelItem(String itemId) =>
+      _orderApi.itemsIdCancellationPost(id: itemId);
 
-  Future<List<BuyerOrderItem>> getBuyerCancelledItems({
-    int? page,
-    int? limit,
-  }) async {
-    final response = await _apiService.getBuyerCancelledItems(page, limit);
-    return response.data;
-  }
+  OrderView _view(Order order, Map<String, Listing> listings) => OrderView(
+    order: order,
+    lines: _lines(order.items ?? const [], listings),
+  );
 
-  Future<BuyerOrder> getBuyerOrderDetail(String id) async {
-    final response = await _apiService.getBuyerOrderDetail(id);
-    return response.data;
+  List<OrderLineView> _lines(
+    Iterable<OrderItem> items,
+    Map<String, Listing> listings,
+  ) => [
+    for (final item in items)
+      OrderLineView(item: item, listing: listings[item.listingId]),
+  ];
+
+  /// One lookup for a whole page. An `ids` read answers even for a listing the
+  /// seller has hidden or deleted, which is the reason the line denormalizes it.
+  Future<Map<String, Listing>> _listingsById(Iterable<OrderItem> items) async {
+    final ids = {for (final item in items) item.listingId}.toList();
+    if (ids.isEmpty) return const {};
+    final page = (await _catalogApi.listingsGet(
+      ids: ids,
+      limit: ids.length.clamp(1, 100),
+    )).data;
+    return {for (final listing in page?.data ?? const <Listing>[]) listing.id: listing};
   }
 }
+
+/// `oneof=buyer seller`, and the route refuses a request without it.
+const orderRoleBuyer = 'buyer';
 
 @riverpod
 AccountRepository accountRepository(Ref ref) => AccountRepository(
   ref.watch(accountApiServiceProvider),
   ref.watch(accountApiProvider),
+  ref.watch(orderApiProvider),
+  ref.watch(catalogApiProvider),
 );

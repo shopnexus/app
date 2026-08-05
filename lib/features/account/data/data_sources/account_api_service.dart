@@ -59,42 +59,8 @@ abstract class AccountApiService {
     @Body() MarkNotificationsReadRequest request,
   );
 
-  // --- Buyer Orders & Pending Items ---
-  @GET(ApiEndpoints.buyerPendingItems)
-  Future<DataResponse<List<BuyerOrderItem>>> getBuyerPendingItems(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @DELETE(ApiEndpoints.cancelBuyerPendingItemTemplate)
-  Future<void> cancelBuyerPendingItem(@Path('id') String id);
-
-  @GET(ApiEndpoints.buyerPendingOrders)
-  Future<DataResponse<List<BuyerOrder>>> getBuyerPendingOrders(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.buyerCompletedOrders)
-  Future<DataResponse<List<BuyerOrder>>> getBuyerCompletedOrders(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.buyerCancelledOrders)
-  Future<DataResponse<List<BuyerOrder>>> getBuyerCancelledOrders(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.buyerCancelledItems)
-  Future<DataResponse<List<BuyerOrderItem>>> getBuyerCancelledItems(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
-  @GET(ApiEndpoints.buyerOrderDetailTemplate)
-  Future<DataResponse<BuyerOrder>> getBuyerOrderDetail(@Path('id') String id);
+  // Buyer orders and checkout lines are the generated `OrderApi`'s: `role` is
+  // required on `GET /orders` and `state` is what tells the four tabs apart.
 }
 
 @riverpod

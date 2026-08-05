@@ -7,7 +7,7 @@ import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/request_refund_sheet.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/buyer_order_view.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
@@ -67,30 +67,30 @@ class OrderDetailScreen extends ConsumerWidget {
         color: theme.colorScheme.primary,
         onRefresh: () => ref.refresh(buyerOrderDetailProvider(orderId).future),
         child: orderDetailAsync.when(
-          data: (order) => SingleChildScrollView(
+          data: (view) => SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Status & ID Card
-                _buildStatusCard(context, order),
+                _buildStatusCard(context, view),
                 const SizedBox(height: 16),
 
                 // 2. Shipping Address Card
-                _buildAddressCard(context, order),
+                _buildAddressCard(context, view),
                 const SizedBox(height: 16),
 
                 // 3. Items Card
-                _buildItemsCard(context, order),
+                _buildItemsCard(context, view),
                 const SizedBox(height: 16),
 
                 // 4. Payment Breakdowns Card
-                _buildPaymentCard(context, order),
+                _buildPaymentCard(context, view),
                 const SizedBox(height: 16),
 
                 // 5. Shipping info details
-                _buildShippingDetailsCard(context, order),
+                _buildShippingDetailsCard(context, view),
                 const SizedBox(height: 32),
               ],
             ),
@@ -162,7 +162,8 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusCard(BuildContext context, BuyerOrder order) {
+  Widget _buildStatusCard(BuildContext context, OrderView view) {
+    final order = view.order;
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -197,7 +198,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 ),
               ),
               Text(
-                order.transport?.status ?? 'Chuẩn bị hàng',
+                view.statusLabel,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -219,7 +220,7 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Ngày đặt hàng: ${_formatDate(order.dateCreated)}',
+            'Ngày đặt hàng: ${_formatDate(order.createdAt)}',
             style: TextStyle(
               fontSize: 12,
               color: theme.colorScheme.onSurfaceVariant,
@@ -231,7 +232,7 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAddressCard(BuildContext context, BuyerOrder order) {
+  Widget _buildAddressCard(BuildContext context, OrderView view) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -275,7 +276,7 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
           Divider(height: 24, color: dividerColor),
           Text(
-            order.address,
+            view.shippingAddress,
             style: TextStyle(
               fontSize: 13,
               height: 1.5,
@@ -288,7 +289,7 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildItemsCard(BuildContext context, BuyerOrder order) {
+  Widget _buildItemsCard(BuildContext context, OrderView view) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -327,11 +328,11 @@ class OrderDetailScreen extends ConsumerWidget {
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: order.items.length,
+            itemCount: view.lines.length,
             separatorBuilder: (context, index) =>
                 Divider(height: 24, color: dividerColor),
             itemBuilder: (context, index) {
-              final item = order.items[index];
+              final line = view.lines[index];
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -341,8 +342,8 @@ class OrderDetailScreen extends ConsumerWidget {
                       width: 64,
                       height: 64,
                       color: imageBgColor,
-                      child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                          ? Image.network(item.imageUrl!, fit: BoxFit.cover)
+                      child: line.imageUrl != null && line.imageUrl!.isNotEmpty
+                          ? Image.network(line.imageUrl!, fit: BoxFit.cover)
                           : Icon(
                               Icons.image_rounded,
                               color: theme.colorScheme.onSurfaceVariant,
@@ -355,7 +356,7 @@ class OrderDetailScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.skuName,
+                          line.displayName,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -370,7 +371,7 @@ class OrderDetailScreen extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Đơn giá: ${MoneyUtils.format(item.subtotalAmount)}  x${item.quantity}',
+                              'x${line.item.quantity}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: theme.colorScheme.onSurfaceVariant,
@@ -378,7 +379,10 @@ class OrderDetailScreen extends ConsumerWidget {
                               ),
                             ),
                             Text(
-                              MoneyUtils.format(item.totalAmount),
+                              MoneyUtils.format(
+                                line.item.totalAmount,
+                                currency: line.item.currency,
+                              ),
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
@@ -400,15 +404,15 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPaymentCard(BuildContext context, BuyerOrder order) {
+  Widget _buildPaymentCard(BuildContext context, OrderView view) {
+    final order = view.order;
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    final subtotal = order.items.fold<int>(
-      0,
-      (sum, item) => sum + item.totalAmount,
-    );
-    final shippingCost = order.totalAmount - subtotal;
+    // The carriage is the transport's own `fee`, which is what the buyer was
+    // quoted at checkout — not the gap between two other numbers.
+    final goods = view.goodsTotal;
+    final shippingCost = order.transport?.fee ?? order.total - goods;
 
     final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
     final cardBorderColor = isDarkMode
@@ -439,18 +443,25 @@ class OrderDetailScreen extends ConsumerWidget {
             ),
           ),
           Divider(height: 24, color: dividerColor),
-          _buildPaymentRow(context, 'Tiền hàng', MoneyUtils.format(subtotal)),
+          _buildPaymentRow(
+            context,
+            'Tiền hàng',
+            MoneyUtils.format(goods, currency: order.currency),
+          ),
           const SizedBox(height: 12),
           _buildPaymentRow(
             context,
             'Phí vận chuyển',
-            MoneyUtils.format(shippingCost > 0 ? shippingCost : 0),
+            MoneyUtils.format(
+              shippingCost > 0 ? shippingCost : 0,
+              currency: order.currency,
+            ),
           ),
           Divider(height: 24, color: dividerColor),
           _buildPaymentRow(
             context,
             'Tổng thanh toán',
-            MoneyUtils.format(order.totalAmount),
+            MoneyUtils.format(order.total, currency: order.currency),
             isBold: true,
             fontSize: 16,
             valueColor: theme.colorScheme.primary,
@@ -497,7 +508,8 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShippingDetailsCard(BuildContext context, BuyerOrder order) {
+  Widget _buildShippingDetailsCard(BuildContext context, OrderView view) {
+    final order = view.order;
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -533,26 +545,18 @@ class OrderDetailScreen extends ConsumerWidget {
           _buildPaymentRow(
             context,
             'Phương thức',
-            order.transport?.option ?? 'Giao hàng tiêu chuẩn (Standard)',
+            order.transport?.option ?? 'Chưa đặt vận chuyển',
           ),
           const SizedBox(height: 12),
-          _buildPaymentRow(
-            context,
-            'Trạng thái vận chuyển',
-            order.transport?.status ?? 'Chuẩn bị hàng',
-          ),
+          _buildPaymentRow(context, 'Trạng thái vận chuyển', view.statusLabel),
         ],
       ),
     );
   }
 
-  String _formatDate(String isoString) {
-    try {
-      final date = DateTime.parse(isoString);
-      return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}  ${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-    } catch (_) {
-      return isoString;
-    }
+  String _formatDate(DateTime instant) {
+    final date = instant.toLocal();
+    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}  ${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
   Widget _buildShimmerDetail(BuildContext context) {
