@@ -15,8 +15,12 @@ sealed class AuthState with _$AuthState {
 
   const factory AuthState.loading() = _Loading;
 
-  const factory AuthState.authenticated({required AuthResponse authResponse}) =
-      _Authenticated;
+  /// The two tokens and nothing else: that is all a signed-in session is, and
+  /// the account itself is `profileProvider`'s to hold and refresh.
+  const factory AuthState.authenticated({
+    required String accessToken,
+    required String refreshToken,
+  }) = _Authenticated;
 
   const factory AuthState.unauthenticated() = _Unauthenticated;
 
@@ -36,10 +40,8 @@ class AuthNotifier extends _$AuthNotifier {
         refreshToken != null &&
         refreshToken.toString().isNotEmpty) {
       return AuthState.authenticated(
-        authResponse: AuthResponse(
-          accessToken: token.toString(),
-          refreshToken: refreshToken.toString(),
-        ),
+        accessToken: token.toString(),
+        refreshToken: refreshToken.toString(),
       );
     }
     return const AuthState.unauthenticated();
@@ -53,7 +55,10 @@ class AuthNotifier extends _$AuthNotifier {
       final response = await repository.login(
         LoginRequest(identifier: identifier, password: password),
       );
-      state = AuthState.authenticated(authResponse: response);
+      state = AuthState.authenticated(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      );
     } catch (e) {
       state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
     }
@@ -79,7 +84,10 @@ class AuthNotifier extends _$AuthNotifier {
           timezone: timezone,
         ),
       );
-      state = AuthState.authenticated(authResponse: response);
+      state = AuthState.authenticated(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      );
     } catch (e) {
       state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
     }
@@ -111,7 +119,10 @@ class AuthNotifier extends _$AuthNotifier {
           phone: phone,
         ),
       );
-      state = AuthState.authenticated(authResponse: response);
+      state = AuthState.authenticated(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      );
     } catch (e) {
       state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
     }
@@ -149,7 +160,13 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   /// Cập nhật lại token mới sau khi refresh thành công
-  void updateToken(AuthResponse response) {
-    state = AuthState.authenticated(authResponse: response);
+  void updateToken({
+    required String accessToken,
+    required String refreshToken,
+  }) {
+    state = AuthState.authenticated(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    );
   }
 }

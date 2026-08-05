@@ -41,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // Lắng nghe AuthState để tự động chuyển hướng sang trang chủ hoặc trang đích
     ref.listen<AuthState>(authProvider, (previous, next) {
       next.maybeWhen(
-        authenticated: (_) {
+        authenticated: (_, _) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Đăng nhập thành công!'),

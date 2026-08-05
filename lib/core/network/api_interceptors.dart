@@ -4,7 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../storage/hive_storage.dart';
 import '../routing/app_router.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../features/auth/data/models/auth_model.dart';
 import '../constants/api_endpoints.dart';
 import '../constants/route_constants.dart';
 
@@ -75,10 +74,8 @@ class AuthInterceptor extends Interceptor {
                   _ref
                       .read(authProvider.notifier)
                       .updateToken(
-                        AuthResponse(
-                          accessToken: newAccessToken,
-                          refreshToken: newRefreshToken,
-                        ),
+                        accessToken: newAccessToken,
+                        refreshToken: newRefreshToken,
                       );
 
                   _isRefreshing = false;

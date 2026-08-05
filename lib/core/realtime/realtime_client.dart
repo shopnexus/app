@@ -165,7 +165,7 @@ RealtimeClient realtimeClient(Ref ref) {
 
   ref.listen<AuthState>(authProvider, (previous, next) {
     next.maybeWhen(
-      authenticated: (_) => client.connect(),
+      authenticated: (_, _) => client.connect(),
       // `loading` is a sign-in in flight, not a session that ended.
       loading: () {},
       initial: () {},

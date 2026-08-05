@@ -1,114 +1,70 @@
+import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../api/api_providers.dart';
+import '../../../../api/generated/api/account_api.dart';
+import '../../../../api/generated/model/login_post200_response.dart';
 import '../../../../core/storage/hive_storage.dart';
-import '../data_sources/auth_api_service.dart';
 import '../models/auth_model.dart';
 
 part 'auth_repository.g.dart';
 
 class AuthRepository {
-  final AuthApiService _apiService;
+  const AuthRepository(this._api, this._hiveService);
+
+  final AccountApi _api;
   final HiveService _hiveService;
 
-  AuthRepository(this._apiService, this._hiveService);
+  Future<AuthResult> login(LoginRequest request) =>
+      _store(_api.loginPost(loginRequest: request));
 
-  /// Đăng nhập: Gửi request -> Lưu token vào authBox -> Trả về AuthResponse
-  Future<AuthResponse> login(LoginRequest request) async {
-    try {
-      final response = await _apiService.login(request);
-      final authData = response.data;
-      
-      // Lưu token vào Hive
-      final box = _hiveService.authBox;
-      await box.put('token', authData.accessToken);
-      await box.put('refresh_token', authData.refreshToken);
-      
-      return authData;
-    } catch (e) {
-      rethrow;
-    }
-  }
+  Future<AuthResult> loginOAuth(OAuthLoginRequest request) =>
+      _store(_api.loginOauthPost(oAuthLoginRequest: request));
 
-  /// Đăng nhập bằng OAuth (Google, Apple,...)
-  Future<AuthResponse> loginOAuth(OAuthLoginRequest request) async {
-    try {
-      final response = await _apiService.loginOAuth(request);
-      final authData = response.data;
+  Future<AuthResult> register(RegisterRequest request) =>
+      _store(_api.registerPost(registerRequest: request));
 
-      final box = _hiveService.authBox;
-      await box.put('token', authData.accessToken);
-      await box.put('refresh_token', authData.refreshToken);
+  Future<void> forgotPassword(PasswordResetRequest request) =>
+      _api.passwordResetRequestsPost(passwordResetRequest: request);
 
-      return authData;
-    } catch (e) {
-      rethrow;
-    }
-  }
+  Future<void> confirmPasswordReset(PasswordResetConfirmRequest request) =>
+      _api.passwordResetsPost(passwordResetConfirmRequest: request);
 
-  /// Đăng ký: Gửi request -> Lưu token vào authBox -> Trả về AuthResponse
-  Future<AuthResponse> register(RegisterRequest request) async {
-    try {
-      final response = await _apiService.register(request);
-      final authData = response.data;
+  Future<void> changePassword(ChangePasswordRequest request) =>
+      _api.passwordPut(changePasswordRequest: request);
 
-      // Lưu token vào Hive
-      final box = _hiveService.authBox;
-      await box.put('token', authData.accessToken);
-      await box.put('refresh_token', authData.refreshToken);
+  Future<void> requestEmailVerification() =>
+      _api.emailVerificationRequestsPost();
 
-      return authData;
-    } catch (e) {
-      rethrow;
-    }
-  }
+  Future<void> confirmEmailVerification(EmailVerificationRequest request) =>
+      _api.emailVerificationsPost(emailVerificationRequest: request);
 
-  /// Khôi phục mật khẩu (Gửi yêu cầu reset)
-  Future<void> forgotPassword(PasswordResetRequest request) async {
-    try {
-      await _apiService.forgotPassword(request);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// Xác nhận khôi phục mật khẩu với token mới
-  Future<void> confirmPasswordReset(PasswordResetConfirmRequest request) async {
-    try {
-      await _apiService.confirmPasswordReset(request);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// Đổi mật khẩu cho người dùng đang đăng nhập
-  Future<void> changePassword(ChangePasswordRequest request) async {
-    try {
-      await _apiService.changePassword(request);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// Đăng xuất: Gọi API logout -> Xóa token và dọn sạch session trong authBox
+  /// Revoking the session server-side is best-effort: the local session has to
+  /// go either way, or a failed call leaves the user signed in to a session the
+  /// backend may already have killed.
   Future<void> logout({String? deviceId}) async {
     try {
-      try {
-        await _apiService.logout(LogoutRequest(deviceId: deviceId));
-      } catch (_) {
-        // Ignored if offline or server error, proceed with local logout
-      }
-      final box = _hiveService.authBox;
-      await box.delete('token');
-      await box.delete('refresh_token');
-      await box.clear();
-    } catch (e) {
-      rethrow;
+      await _api.logoutPost(logoutRequest: LogoutRequest(deviceId: deviceId));
+    } catch (_) {
+      // Offline or a server error; proceed with the local logout.
     }
+    await _hiveService.authBox.clear();
+  }
+
+  /// The tokens land in Hive here rather than in the notifier, because the
+  /// request interceptor reads them from there on every request.
+  Future<AuthResult> _store(Future<Response<LoginPost200Response>> call) async {
+    final result = (await call).data?.data;
+    if (result == null) throw StateError('empty auth response');
+    final box = _hiveService.authBox;
+    await box.put('token', result.accessToken);
+    await box.put('refresh_token', result.refreshToken);
+    return result;
   }
 }
 
 @riverpod
-AuthRepository authRepository(Ref ref) {
-  final apiService = ref.watch(authApiServiceProvider);
-  final hiveService = ref.watch(hiveServiceProvider);
-  return AuthRepository(apiService, hiveService);
-}
+AuthRepository authRepository(Ref ref) => AuthRepository(
+  ref.watch(accountApiProvider),
+  ref.watch(hiveServiceProvider),
+);

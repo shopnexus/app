@@ -73,7 +73,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     ref.listen<AuthState>(authProvider, (previous, next) {
       next.maybeWhen(
-        authenticated: (_) {
+        authenticated: (_, _) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Đăng ký tài khoản thành công!'),
