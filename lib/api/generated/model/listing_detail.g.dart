@@ -33,7 +33,6 @@ ListingDetail _$ListingDetailFromJson(
         'sold',
         'specifications',
         'status',
-        'tags',
         'variants',
       ],
     );
@@ -107,7 +106,9 @@ ListingDetail _$ListingDetailFromJson(
       ),
       tags: $checkedConvert(
         'tags',
-        (v) => (v as List<dynamic>).map((e) => e as String).toList(),
+        (v) => v == null
+            ? const <String>[]
+            : (v as List<dynamic>).map((e) => e as String).toList(),
       ),
       takedownReason: $checkedConvert('takedown_reason', (v) => v as String?),
       takenDownAt: $checkedConvert(

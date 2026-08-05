@@ -112,12 +112,20 @@ class CatalogRepository {
   /// Also records the listing in the "vừa xem" carousel. A failure to cache is
   /// swallowed: a broken Hive box must not take the product page down with it.
   Future<ListingDetail> listingDetail(String id) async {
-    final response = await _api.listingsIdGet(id: id);
-    final detail = response.data?.data;
-    if (detail == null) throw StateError('empty listing detail response');
+    try {
+      final response = await _api.listingsIdGet(id: id);
+      final detail = response.data?.data;
+      if (detail == null) throw StateError('empty listing detail response');
 
-    await _addToRecentlyViewed(RecentListing.fromDetail(detail));
-    return detail;
+      await _addToRecentlyViewed(RecentListing.fromDetail(detail));
+      return detail;
+    } catch (e, stack) {
+      // ignore: avoid_print
+      print('❌ [CatalogRepository] listingDetail ERROR for $id: $e');
+      // ignore: avoid_print
+      print(stack);
+      rethrow;
+    }
   }
 
   Future<List<Category>> categories() async {

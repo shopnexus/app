@@ -32,13 +32,13 @@ class ProductCardView {
   });
 
   factory ProductCardView.fromListing(Listing listing) => ProductCardView(
-    name: listing.name,
-    price: listing.price,
-    coverUrl: listing.cover?.url,
-    sellerName: listing.seller.name,
-    rating: listing.rating,
-    negotiable: listing.priceMode == PriceMode.negotiable,
-  );
+        name: listing.name,
+        price: listing.price,
+        coverUrl: listing.cover?.url,
+        sellerName: listing.seller.name,
+        rating: listing.rating,
+        negotiable: listing.priceMode == PriceMode.negotiable,
+      );
 }
 
 class SharedProductCard extends StatelessWidget {
@@ -73,12 +73,10 @@ class SharedProductCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDarkMode ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(16.0),
-          // Cấu hình bo góc 16px (1rem) từ Nexus Card
           border: Border.all(
             color: isDarkMode
                 ? AppColors.darkPrimary.withAlpha(40)
                 : const Color(0xFFE2E8F0),
-            // Viền nhạt từ Stitch (surface-variant)
             width: 1.0,
           ),
           boxShadow: [
@@ -92,6 +90,7 @@ class SharedProductCard extends StatelessWidget {
           ],
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Container ảnh sản phẩm
@@ -108,9 +107,7 @@ class SharedProductCard extends StatelessWidget {
                         color: isDarkMode
                             ? theme.colorScheme.surfaceContainerHighest
                             : const Color(0xFFF1F5F9),
-                        // Nền xám nhạt normalize ảnh
-                        child:
-                            product.coverUrl != null &&
+                        child: product.coverUrl != null &&
                                 product.coverUrl!.isNotEmpty
                             ? CachedNetworkImage(
                                 imageUrl: product.coverUrl!,
@@ -145,7 +142,6 @@ class SharedProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Nút thả tim yêu thích (Favorite Button)
                   if (showFavoriteButton)
                     Positioned(
                       top: 8.0,
@@ -180,11 +176,14 @@ class SharedProductCard extends StatelessWidget {
             ),
             // Thông tin chi tiết sản phẩm
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 6.0,
+              ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Hàng Tiêu đề & Giá + Chip Phân loại (Thương lượng / Mua ngay)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -270,27 +269,20 @@ class SharedProductCard extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  // No struck-through original price: a listing has one price,
-                  // and `original_price` was a field the server never sent.
                   if (showVendor) ...[
-                    const SizedBox(height: 10.0),
-                    // Đường kẻ phân cách mờ nhẹ
+                    const SizedBox(height: 6.0),
                     Container(
                       height: 1.0,
                       color: isDarkMode
                           ? AppColors.darkPrimary.withAlpha(25)
                           : const Color(0xFFF1F5F9),
                     ),
-                    const SizedBox(height: 8.0),
-
-                    // Thông tin nhà bán hàng
+                    const SizedBox(height: 6.0),
                     Row(
                       children: [
-                        // Avatar tròn của Vendor
                         Container(
-                          width: 20.0,
-                          height: 20.0,
+                          width: 18.0,
+                          height: 18.0,
                           decoration: BoxDecoration(
                             color: isDarkMode
                                 ? theme.colorScheme.surfaceContainerHighest
@@ -300,13 +292,12 @@ class SharedProductCard extends StatelessWidget {
                           child: Center(
                             child: Icon(
                               Icons.person_rounded,
-                              size: 12,
+                              size: 11,
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
                         const SizedBox(width: 6.0),
-                        // Tên và Đánh giá sao của Vendor
                         Expanded(
                           child: Text(
                             '@${product.sellerName ?? "shop"} • ${product.rating.toStringAsFixed(1)} ★',

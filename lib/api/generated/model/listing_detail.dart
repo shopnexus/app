@@ -71,7 +71,7 @@ class ListingDetail {
 
     required this.status,
 
-    required this.tags,
+    this.tags = const [],
 
     this.takedownReason,
 
@@ -161,7 +161,7 @@ class ListingDetail {
   @JsonKey(name: r'status', required: true, includeIfNull: false)
   final ListingStatus status;
 
-  @JsonKey(name: r'tags', required: true, includeIfNull: false)
+  @JsonKey(name: r'tags', required: false, defaultValue: <String>[])
   final List<String> tags;
 
   /// What the moderator chose to tell the seller, and null when they chose not to (`notify_seller: false` on the takedown). The full reason is in the audit trail either way. Publishing again clears both fields, so they always describe why the listing is down *now* rather than why it once was.

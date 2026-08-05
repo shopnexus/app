@@ -49,6 +49,7 @@ void showSortOptionsSheet(
 
   showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
@@ -56,8 +57,9 @@ void showSortOptionsSheet(
     builder: (sheetContext) {
       final sheetTheme = Theme.of(sheetContext);
       return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -111,7 +113,8 @@ void showSortOptionsSheet(
               ),
           ],
         ),
-      );
-    },
+      ),
+    );
+  },
   );
 }
