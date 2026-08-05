@@ -54,21 +54,16 @@ abstract class RecentListing with _$RecentListing {
 }
 
 /// The one price a card can show for a listing whose variants may differ: the
-/// featured variant's, or the cheapest when none is featured.
+/// featured variant's, or the cheapest when none is featured — the same rule
+/// `Listing.price` follows on the feed.
 int featuredPrice(ListingDetail detail) {
-  final featured = featuredVariant(detail);
-  if (featured != null) return featured.price;
-  if (detail.variants.isEmpty) return 0;
-  return detail.variants.map((v) => v.price).reduce((a, b) => a < b ? a : b);
-}
-
-Variant? featuredVariant(ListingDetail detail) {
   for (final variant in detail.variants) {
     if (variant.id == detail.featuredVariantId || variant.isFeatured) {
-      return variant;
+      return variant.price;
     }
   }
-  return null;
+  if (detail.variants.isEmpty) return 0;
+  return detail.variants.map((v) => v.price).reduce((a, b) => a < b ? a : b);
 }
 
 /// Size and colour, in the order the seller entered them. `Variant.attributes` is
@@ -77,10 +72,11 @@ String variantLabel(Variant variant) =>
     variant.attributes.values.map((v) => v.toString()).join(' • ');
 
 // Everything below is the pre-generated-client shape, kept alive only because
-// `lib/features/seller` and `lib/features/cart` still parse and construct it.
-// Catalog itself reads the generated `Listing`/`ListingDetail`/`Variant`/`Review`.
-// It goes when those two features migrate — along with the legacy fields no
-// response has ever carried (`thumbnail`, `vendor_*`, `is_negotiable`, `skus`).
+// `lib/features/seller` still parses and constructs it. Catalog itself reads the
+// generated `Listing`/`ListingDetail`/`Variant`/`Review`. It goes when that
+// feature migrates — along with the legacy fields no response has ever carried
+// (`thumbnail`, `original_price`, `sold_count`, `vendor_*`, `is_negotiable`,
+// `skus`), which cannot be dropped while its literals still pass them.
 
 @freezed
 abstract class ListingSeller with _$ListingSeller {
