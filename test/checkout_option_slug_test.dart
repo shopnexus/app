@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/option.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/option_list.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
 
@@ -61,9 +63,64 @@ void main() {
     });
   });
 
-  group('the payment option is the one enabled rail', () {
-    test('it is the platform slug, not a gateway brand', () {
-      expect(CheckoutNotifier.paymentOption, 'platform-checkout');
+  // Captured from GET /options?category=payment on the dev backend, trimmed to two rows.
+  // The slug used to be a constant in the notifier, which is why this file exists: the row it
+  // named was retired and every checkout answered 422 with nothing on screen to say why.
+  final rails = OptionList.fromJson(
+    Map<String, dynamic>.from({
+      'options': [
+        {
+          'id': 'mock-success',
+          'name': 'Mock: pay now (succeeds)',
+          'description': 'Settles immediately, no redirect and no webhook.',
+        },
+        {
+          'id': 'mock-decline',
+          'name': 'Mock: pay now (declined)',
+          'description': 'Refused immediately.',
+        },
+      ],
+    }),
+  ).options.toList();
+
+  group('the payment rail comes from the registry, never from a constant', () {
+    test('nothing is chosen before the registry has answered', () {
+      expect(const CheckoutState().paymentOption, isNull);
+      expect(const CheckoutState().paymentOptions, isEmpty);
+    });
+
+    test('the first row is the default, so the common case is one tap', () {
+      final state = const CheckoutState().withPaymentOptions(rails);
+
+      expect(state.paymentOption, 'mock-success');
+      expect(state.paymentOptions, hasLength(2));
+    });
+
+    test('a chosen rail survives a reload that still offers it', () {
+      final state = const CheckoutState()
+          .withPaymentOptions(rails)
+          .copyWith(paymentOption: 'mock-decline')
+          .withPaymentOptions(rails);
+
+      expect(state.paymentOption, 'mock-decline');
+    });
+
+    test(
+      'a rail that is no longer offered falls back instead of being sent',
+      () {
+        final state = const CheckoutState()
+            .withPaymentOptions(rails)
+            .copyWith(paymentOption: 'platform-checkout')
+            .withPaymentOptions(rails);
+
+        expect(state.paymentOption, 'mock-success');
+      },
+    );
+
+    test('an empty registry chooses nothing, which the refusal reads', () {
+      final state = const CheckoutState().withPaymentOptions(const <Option>[]);
+
+      expect(state.paymentOption, isNull);
     });
   });
 }

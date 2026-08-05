@@ -110,7 +110,7 @@ class CheckoutScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // 3. Payment Method Section
-          _buildPaymentMethodCard(context, state),
+          _buildPaymentMethodCard(context, ref, state),
           const SizedBox(height: 16),
 
           // 4. Order Items Section
@@ -805,9 +805,8 @@ class CheckoutScreen extends ConsumerWidget {
             for (final option in state.shippingOptions)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: _buildDeliveryOptionTile(
+                child: _buildRegistryOptionTile(
                   context,
-                  ref,
                   title: option.name,
                   description: MoneyUtils.format(
                     option.fee,
@@ -815,6 +814,9 @@ class CheckoutScreen extends ConsumerWidget {
                   ),
                   value: option.option,
                   groupValue: state.transportOption,
+                  onTap: () => ref
+                      .read(checkoutProvider.notifier)
+                      .selectTransportOption(option.option),
                 ),
               ),
         ],
@@ -822,13 +824,16 @@ class CheckoutScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDeliveryOptionTile(
-    BuildContext context,
-    WidgetRef ref, {
+  /// One row of a registry the buyer picks from — a carrier or a payment rail. The tap is the
+  /// caller's, because the two registries are chosen through different methods and a widget that
+  /// hardcodes one of them cannot serve the other.
+  Widget _buildRegistryOptionTile(
+    BuildContext context, {
     required String title,
     required String description,
     required String value,
     required String? groupValue,
+    required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -847,8 +852,7 @@ class CheckoutScreen extends ConsumerWidget {
               : const Color(0xFFE2E3E0));
 
     return InkWell(
-      onTap: () =>
-          ref.read(checkoutProvider.notifier).selectTransportOption(value),
+      onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -901,7 +905,11 @@ class CheckoutScreen extends ConsumerWidget {
   // --- 3. PAYMENT METHOD CARD ---
   /// One rail, because the platform has one enabled. There is no route listing the
   /// registry, so offering a choice here could only invent slugs the server refuses.
-  Widget _buildPaymentMethodCard(BuildContext context, CheckoutState state) {
+  Widget _buildPaymentMethodCard(
+    BuildContext context,
+    WidgetRef ref,
+    CheckoutState state,
+  ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -947,50 +955,55 @@ class CheckoutScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDarkMode
-                  ? AppColors.darkPrimary.withAlpha(35)
-                  : const Color(0xFFE6F4EA),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: theme.colorScheme.primary, width: 1.5),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.lock_outline_rounded,
-                  size: 20,
-                  color: theme.colorScheme.primary,
+          // Whatever GET /options?category=payment named, and only that. The card used to show one
+          // hardcoded box: it claimed a rail the registry no longer had, so every checkout ended in
+          // a 422 the buyer could do nothing about, and there was nothing to pick anyway.
+          if (state.paymentOptions.isEmpty)
+            Text(
+              state.isLoading
+                  ? 'Đang tải phương thức thanh toán…'
+                  : 'Chưa có phương thức thanh toán khả dụng.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            )
+          else
+            for (final option in state.paymentOptions)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _buildRegistryOptionTile(
+                  context,
+                  title: option.name,
+                  description: option.description,
+                  value: option.id,
+                  groupValue: state.paymentOption,
+                  onTap: () => ref
+                      .read(checkoutProvider.notifier)
+                      .selectPaymentOption(option.id),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Thanh toán qua ShopNexus',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Tiền được giữ tại ShopNexus cho tới khi bạn nhận hàng',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 12,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+              ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(
+                Icons.lock_outline_rounded,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Tiền được giữ tại ShopNexus cho tới khi bạn nhận hàng',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
@@ -1437,7 +1450,7 @@ class CheckoutScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'We are syncing transaction status with the payment gateway. Please do not close the app.',
+              'Đang chờ cổng thanh toán xác nhận. Vui lòng không đóng ứng dụng.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Inter',
@@ -1445,6 +1458,32 @@ class CheckoutScreen extends ConsumerWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+            // A rail that redirects hands back a URL instead of an outcome, and the payer has to
+            // go there for anything to happen — waiting on a spinner alone would time out. Shown
+            // as selectable text rather than opened: this app has no url_launcher, and a link it
+            // cannot follow is worse than one the buyer can copy.
+            if (state.paymentTransaction?.checkoutUrl != null) ...[
+              const SizedBox(height: 20),
+              Text(
+                'Phương thức này cần hoàn tất trên trang của cổng thanh toán. Mở liên kết sau trên trình duyệt:',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SelectableText(
+                state.paymentTransaction!.checkoutUrl!,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
             const SizedBox(height: 24),
             TextButton(
               onPressed: () =>

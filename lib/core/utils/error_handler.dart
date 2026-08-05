@@ -16,17 +16,16 @@ class ErrorHandler {
             final statusCode = response.statusCode;
             final data = response.data;
             if (data is Map<String, dynamic>) {
-              // Thử lấy thông điệp lỗi cụ thể từ response của backend
-              if (data.containsKey('message') && data['message'] != null) {
-                return data['message'].toString();
+              // The envelope is `{"error": {"code", "message"}}` — one shape, every route. It
+              // used to be read as a flat string too, and `.toString()` on the map printed Dart
+              // syntax at the user: `{code: payment_option_unknown, message: ...}`.
+              final envelope = data['error'];
+              if (envelope is Map && envelope['message'] != null) {
+                return envelope['message'].toString();
               }
-              if (data.containsKey('error') && data['error'] != null) {
-                return data['error'].toString();
-              }
-              if (data.containsKey('errorMessage') &&
-                  data['errorMessage'] != null) {
-                return data['errorMessage'].toString();
-              }
+              // A body that is not this API's — a proxy's error page, say.
+              if (data['message'] != null) return data['message'].toString();
+              if (envelope != null) return envelope.toString();
             }
             if (statusCode == 400) {
               return 'Thông tin yêu cầu không hợp lệ. Vui lòng kiểm tra lại dữ liệu nhập.';

@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/checkout_line.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/checkout_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/checkout_result.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/option.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quote.dart';
@@ -40,6 +41,12 @@ abstract class CheckoutState with _$CheckoutState {
     /// The carrier slug the buyer is buying, always one `POST /shipping-quotes`
     /// answered — never a label. Null until a quote has been asked for.
     String? transportOption,
+
+    /// The rails this deployment can charge on, and the one the buyer picked. Read from
+    /// `GET /options?category=payment` rather than named here: a hardcoded slug is a
+    /// checkout that breaks the day an operator retires that rail.
+    @Default([]) List<Option> paymentOptions,
+    String? paymentOption,
     CheckoutResult? checkoutResult,
     Transaction? paymentTransaction,
     PaymentSession? paymentSession,
@@ -98,15 +105,23 @@ abstract class CheckoutState with _$CheckoutState {
           : (quotes.options.isEmpty ? null : quotes.options.first.option),
     );
   }
+
+  /// Same rule for the rails: keep the chosen one while it is still offered, otherwise take
+  /// the best-priority row the server named. An operator can retire a rail between the page
+  /// opening and the buyer pressing pay, and a slug nobody offers is a 422 at the till.
+  CheckoutState withPaymentOptions(List<Option> options) {
+    final offered = options.map((option) => option.id);
+    return copyWith(
+      paymentOptions: options,
+      paymentOption: offered.contains(paymentOption)
+          ? paymentOption
+          : (options.isEmpty ? null : options.first.id),
+    );
+  }
 }
 
 @riverpod
 class CheckoutNotifier extends _$CheckoutNotifier {
-  /// The one enabled payment rail. There is no route listing the registry, so the
-  /// slug is named here rather than guessed from a gateway brand — `stripe` is a
-  /// 422 `payment_option_unknown`.
-  static const paymentOption = 'platform-checkout';
-
   Timer? _pollingTimer;
 
   @override
@@ -123,7 +138,32 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
     await _resolveListings();
     await _loadAddresses();
+    await _loadPaymentOptions();
     await quoteShipping();
+  }
+
+  /// The rails, and a default so the common case is one tap. A registry that answers
+  /// nothing is a deployment that cannot take money — surfaced rather than swallowed,
+  /// because pressing "pay" would otherwise fail with nothing on screen to explain it.
+  Future<void> _loadPaymentOptions() async {
+    try {
+      final options = await ref
+          .read(checkoutRepositoryProvider)
+          .paymentOptions();
+      if (!ref.mounted) return;
+      state = state.withPaymentOptions(options);
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(errorMessage: ErrorHandler.getErrorMessage(e));
+    }
+  }
+
+  /// Which rail to charge. A slug the registry does not offer is ignored rather than stored,
+  /// so nothing can put one on the wire.
+  void selectPaymentOption(String id) {
+    if (state.paymentOptions.any((option) => option.id == id)) {
+      state = state.copyWith(paymentOption: id);
+    }
   }
 
   /// Fill in each line's listing, which is where its price, name and photo live.
@@ -302,7 +342,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
       final transaction = await checkoutRepo.startPayment(
         checkoutResult.paymentSessionId,
         StartPaymentRequest(
-          paymentOption: paymentOption,
+          paymentOption: state.paymentOption!,
           amount: checkoutResult.total,
         ),
       );
@@ -334,6 +374,9 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     }
     if (state.transportOption == null) {
       return 'Chưa có báo giá vận chuyển. Vui lòng thử lại.';
+    }
+    if (state.paymentOption == null) {
+      return 'Chưa có phương thức thanh toán khả dụng.';
     }
     if (state.lines.isEmpty) {
       return 'Không có sản phẩm nào để thanh toán';

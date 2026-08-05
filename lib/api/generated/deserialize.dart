@@ -12,6 +12,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/admin_categories_post2
 import 'package:shopnexus_flutter_app/api/generated/model/admin_identity_document.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/admin_identity_documents_id_verdict_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/admin_listings_id_approval_post200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/admin_options_get200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/admin_options_id_patch200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/admin_refunds_id_verdict_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/admin_tags_slug_put200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/admin_tax_info_account_id_verification_post200_response.dart';
@@ -116,6 +118,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offer_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offers_post201_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/open_ticket_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/option.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/option_list.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_address_snapshot.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_feedback.dart';
@@ -158,6 +162,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/review_reply.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review_vote_tally.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reviews_id_replies_post201_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reviews_id_vote_put200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/save_option_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/send_message_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quote.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes.dart';
@@ -285,6 +290,14 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'AdminListingsIdApprovalPost200Response':
       return AdminListingsIdApprovalPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminOptionsGet200Response':
+      return AdminOptionsGet200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AdminOptionsIdPatch200Response':
+      return AdminOptionsIdPatch200Response.fromJson(
             value as Map<String, dynamic>,
           )
           as ReturnType;
@@ -621,6 +634,11 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'OpenTicketRequest':
       return OpenTicketRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;
+    case 'Option':
+      return Option.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OptionCategoryName':
+    case 'OptionList':
+      return OptionList.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'Order':
       return Order.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'OrderAddressSnapshot':
@@ -750,6 +768,9 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'ReviewsIdVotePut200Response':
       return ReviewsIdVotePut200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'SaveOptionRequest':
+      return SaveOptionRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;
     case 'SendMessageRequest':
       return SendMessageRequest.fromJson(value as Map<String, dynamic>)

@@ -11,6 +11,7 @@ import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/admin_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/common_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
@@ -160,6 +161,12 @@ class ShopnexusApi {
   /// by doing that all interceptors will not be executed
   ChatApi getChatApi() {
     return ChatApi(dio);
+  }
+
+  /// Get CommonApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  CommonApi getCommonApi() {
+    return CommonApi(dio);
   }
 
   /// Get FinanceApi instance, base route and serializer can be overridden by a given but be careful,

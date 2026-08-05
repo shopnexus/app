@@ -4,6 +4,7 @@ import 'package:shopnexus_flutter_app/core/network/dio_client.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/common_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
@@ -25,6 +26,11 @@ CatalogApi catalogApi(Ref ref) => CatalogApi(ref.watch(dioProvider));
 
 @riverpod
 ChatApi chatApi(Ref ref) => ChatApi(ref.watch(dioProvider));
+
+/// The registry every module's pluggable choices are read through — the payment rails and
+/// the carriers. Its own group because the endpoint belongs to no single module.
+@riverpod
+CommonApi commonApi(Ref ref) => CommonApi(ref.watch(dioProvider));
 
 @riverpod
 FinanceApi financeApi(Ref ref) => FinanceApi(ref.watch(dioProvider));

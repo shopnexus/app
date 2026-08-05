@@ -151,6 +151,55 @@ final class ChatApiProvider
 
 String _$chatApiHash() => r'5cb98140944bbcbc38f3578bdb75410a652054e5';
 
+/// The registry every module's pluggable choices are read through — the payment rails and
+/// the carriers. Its own group because the endpoint belongs to no single module.
+
+@ProviderFor(commonApi)
+const commonApiProvider = CommonApiProvider._();
+
+/// The registry every module's pluggable choices are read through — the payment rails and
+/// the carriers. Its own group because the endpoint belongs to no single module.
+
+final class CommonApiProvider
+    extends $FunctionalProvider<CommonApi, CommonApi, CommonApi>
+    with $Provider<CommonApi> {
+  /// The registry every module's pluggable choices are read through — the payment rails and
+  /// the carriers. Its own group because the endpoint belongs to no single module.
+  const CommonApiProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'commonApiProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$commonApiHash();
+
+  @$internal
+  @override
+  $ProviderElement<CommonApi> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  CommonApi create(Ref ref) {
+    return commonApi(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CommonApi value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CommonApi>(value),
+    );
+  }
+}
+
+String _$commonApiHash() => r'8f21f95ff4166dee0d58a25f39550f1aaa5340b5';
+
 @ProviderFor(financeApi)
 const financeApiProvider = FinanceApiProvider._();
 

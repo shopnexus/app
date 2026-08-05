@@ -30,7 +30,7 @@ class StartPaymentRequest {
   @JsonKey(name: r'amount', required: false, includeIfNull: false)
   final int? amount;
 
-  /// A payment option slug from the common module.
+  /// A slug from `GET /options?category=payment`; one nobody enabled is refused with 422.
   @JsonKey(name: r'payment_option', required: true, includeIfNull: false)
   final String paymentOption;
 

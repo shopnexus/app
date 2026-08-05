@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/common_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/checkout_offer_request.dart';
@@ -9,6 +10,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/checkout_result.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_draft_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/draft_order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/option.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/option_category_name.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes_request.dart';
@@ -21,8 +24,14 @@ class CheckoutRepository {
   final OrderApi _orderApi;
   final FinanceApi _financeApi;
   final CatalogApi _catalogApi;
+  final CommonApi _commonApi;
 
-  CheckoutRepository(this._orderApi, this._financeApi, this._catalogApi);
+  CheckoutRepository(
+    this._orderApi,
+    this._financeApi,
+    this._catalogApi,
+    this._commonApi,
+  );
 
   /// Đọc thông tin listing của các dòng đang mua.
   ///
@@ -89,6 +98,17 @@ class CheckoutRepository {
     return _body(response.data?.data, 'checkout result');
   }
 
+  /// The rails this deployment can charge on, and the only place a valid
+  /// `payment_option` comes from. The slug used to be a constant here, which broke the
+  /// day the row it named was retired — and which rails a deployment offers is not
+  /// something a client can know.
+  Future<List<Option>> paymentOptions() async {
+    final response = await _commonApi.optionsGet(
+      category: OptionCategoryName.payment,
+    );
+    return _body(response.data?.data, 'payment options').options.toList();
+  }
+
   /// Khởi tạo thông tin thanh toán qua cổng thanh toán
   Future<Transaction> startPayment(
     String sessionId,
@@ -130,4 +150,5 @@ CheckoutRepository checkoutRepository(Ref ref) => CheckoutRepository(
   ref.watch(orderApiProvider),
   ref.watch(financeApiProvider),
   ref.watch(catalogApiProvider),
+  ref.watch(commonApiProvider),
 );
