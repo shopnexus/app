@@ -1,33 +1,29 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/add_cart_item_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/cart_item.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_cart_item_request.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
-import 'package:shopnexus_flutter_app/features/cart/data/data_sources/cart_api_service.dart';
-import 'package:shopnexus_flutter_app/features/cart/data/models/cart_model.dart';
 
 part 'cart_repository.g.dart';
 
 class CartRepository {
-  final CartApiService _apiService;
+  final OrderApi _orderApi;
   final HiveService _hiveService;
 
-  CartRepository(this._apiService, this._hiveService);
+  CartRepository(this._orderApi, this._hiveService);
 
   /// Lấy giỏ hàng từ remote server
   Future<List<CartItem>> getCart() async {
-    try {
-      final response = await _apiService.getCart();
-      return response;
-    } catch (e) {
-      rethrow;
-    }
+    final response = await _orderApi.cartItemsGet();
+    return response.data?.data ?? const [];
   }
 
   /// Thêm sản phẩm vào giỏ hàng
   Future<CartItem> addCartItem(AddCartItemRequest request) async {
-    try {
-      return await _apiService.addCartItem(request);
-    } catch (e) {
-      rethrow;
-    }
+    final response = await _orderApi.cartItemsPost(addCartItemRequest: request);
+    return _row(response.data?.data);
   }
 
   /// Cập nhật số lượng của 1 cart item row
@@ -35,33 +31,22 @@ class CartRepository {
     String id,
     UpdateCartItemRequest request,
   ) async {
-    try {
-      return await _apiService.updateCartItem(id, request);
-    } catch (e) {
-      rethrow;
-    }
+    final response = await _orderApi.cartItemsIdPatch(
+      id: id,
+      updateCartItemRequest: request,
+    );
+    return _row(response.data?.data);
   }
 
   /// Xóa 1 cart item row theo id
-  Future<void> deleteCartItem(String id) async {
-    try {
-      await _apiService.deleteCartItem(id);
-    } catch (e) {
-      rethrow;
-    }
-  }
+  Future<void> deleteCartItem(String id) => _orderApi.cartItemsIdDelete(id: id);
 
   /// Xóa sạch giỏ hàng
   Future<void> clearCart() async {
-    try {
-      final items = await getCart();
-      for (final item in items) {
-        await _apiService.deleteCartItem(item.id);
-      }
-      await cacheCart([]);
-    } catch (e) {
-      rethrow;
+    for (final item in await getCart()) {
+      await deleteCartItem(item.id);
     }
+    await cacheCart([]);
   }
 
   /// Cache giỏ hàng xuống Hive
@@ -88,11 +73,13 @@ class CartRepository {
       return [];
     }
   }
+
+  CartItem _row(CartItem? data) {
+    if (data == null) throw StateError('empty cart item');
+    return data;
+  }
 }
 
 @riverpod
-CartRepository cartRepository(Ref ref) {
-  final apiService = ref.watch(cartApiServiceProvider);
-  final hiveService = ref.watch(hiveServiceProvider);
-  return CartRepository(apiService, hiveService);
-}
+CartRepository cartRepository(Ref ref) =>
+    CartRepository(ref.watch(orderApiProvider), ref.watch(hiveServiceProvider));

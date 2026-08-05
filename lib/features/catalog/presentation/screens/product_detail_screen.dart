@@ -1897,7 +1897,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               listing: detail,
             ),
           ],
-          buyNow: true,
         );
 
     context.push('/checkout');

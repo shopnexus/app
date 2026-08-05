@@ -72,9 +72,7 @@ class CheckoutScreen extends ConsumerWidget {
 
   Widget _buildBody(BuildContext context, WidgetRef ref, CheckoutState state) {
     final theme = Theme.of(context);
-    if (state.isLoading &&
-        state.contacts.isEmpty &&
-        state.quoteResponse == null) {
+    if (state.isLoading && state.contacts.isEmpty) {
       return Center(
         child: CircularProgressIndicator(color: theme.colorScheme.primary),
       );
@@ -112,7 +110,7 @@ class CheckoutScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // 3. Payment Method Section
-          _buildPaymentMethodCard(context, ref, state),
+          _buildPaymentMethodCard(context, state),
           const SizedBox(height: 16),
 
           // 4. Order Items Section
@@ -797,7 +795,7 @@ class CheckoutScreen extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Delivery Speed',
+                'Đơn vị vận chuyển',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,
@@ -808,25 +806,35 @@ class CheckoutScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          _buildDeliveryOptionTile(
-            context,
-            ref,
-            title: 'Standard Delivery',
-            description: 'Estimated arrival: 3 - 5 business days',
-            value: 'Standard',
-            groupValue: state.shippingOption,
-            badge: 'Standard',
-          ),
-          const SizedBox(height: 8),
-          _buildDeliveryOptionTile(
-            context,
-            ref,
-            title: 'Express Delivery',
-            description: 'Estimated arrival: 1 - 2 business days',
-            value: 'Express',
-            groupValue: state.shippingOption,
-            badge: 'Fast',
-          ),
+          // Whatever POST /shipping-quotes named, and only that: the slug sent at
+          // checkout has to be one the carrier registry actually has enabled.
+          if (state.shippingOptions.isEmpty)
+            Text(
+              state.isLoading
+                  ? 'Đang lấy báo giá vận chuyển…'
+                  : 'Chưa có báo giá vận chuyển cho địa chỉ này.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            )
+          else
+            for (final option in state.shippingOptions)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _buildDeliveryOptionTile(
+                  context,
+                  ref,
+                  title: option.name,
+                  description: MoneyUtils.format(
+                    option.fee,
+                    currency: state.shippingQuotes!.currency,
+                  ),
+                  value: option.option,
+                  groupValue: state.transportOption,
+                ),
+              ),
         ],
       ),
     );
@@ -838,8 +846,7 @@ class CheckoutScreen extends ConsumerWidget {
     required String title,
     required String description,
     required String value,
-    required String groupValue,
-    required String badge,
+    required String? groupValue,
   }) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -857,15 +864,9 @@ class CheckoutScreen extends ConsumerWidget {
               ? AppColors.darkPrimary.withAlpha(30)
               : const Color(0xFFE2E3E0));
 
-    final badgeBg = isSelected
-        ? theme.colorScheme.primary.withAlpha(30)
-        : (isDarkMode
-              ? theme.colorScheme.surfaceContainerHighest
-              : const Color(0xFFE2E3E0));
-
     return InkWell(
       onTap: () =>
-          ref.read(checkoutProvider.notifier).selectShippingOption(value),
+          ref.read(checkoutProvider.notifier).selectTransportOption(value),
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -909,24 +910,6 @@ class CheckoutScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: badgeBg,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                badge,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: isSelected
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -934,14 +917,11 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   // --- 3. PAYMENT METHOD CARD ---
-  Widget _buildPaymentMethodCard(
-    BuildContext context,
-    WidgetRef ref,
-    CheckoutState state,
-  ) {
+  /// One rail, because the platform has one enabled. There is no route listing the
+  /// registry, so offering a choice here could only invent slugs the server refuses.
+  Widget _buildPaymentMethodCard(BuildContext context, CheckoutState state) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final notifier = ref.read(checkoutProvider.notifier);
 
     final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
     final cardBorderColor = isDarkMode
@@ -974,7 +954,7 @@ class CheckoutScreen extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Payment Method',
+                'Phương thức thanh toán',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,
@@ -985,163 +965,52 @@ class CheckoutScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Column(
-            children: [
-              _buildPaymentOptionRow(
-                context,
-                ref,
-                title: 'Thẻ tín dụng / Ghi nợ (Stripe)',
-                subtitle: 'Thanh toán trực tuyến an toàn qua cổng Stripe',
-                icon: Icons.credit_card_rounded,
-                value: 'Stripe',
-                groupValue: state.paymentOption,
-              ),
-              _buildPaymentOptionRow(
-                context,
-                ref,
-                title: 'Ví ShopNexus',
-                subtitle: 'Sử dụng số dư trong ví điện tử nội bộ',
-                icon: Icons.account_balance_wallet_outlined,
-                value: 'Wallet',
-                groupValue: state.paymentOption,
-              ),
-              _buildPaymentOptionRow(
-                context,
-                ref,
-                title: 'Thanh toán khi nhận hàng (COD)',
-                subtitle: 'Thanh toán bằng tiền mặt khi giao hàng',
-                icon: Icons.local_atm_rounded,
-                value: 'COD',
-                groupValue: state.paymentOption,
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          InkWell(
-            onTap: () => notifier.selectPaymentOption(
-              state.paymentOption,
-              useWallet: !state.useWallet,
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isDarkMode
+                  ? AppColors.darkPrimary.withAlpha(35)
+                  : const Color(0xFFE6F4EA),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: theme.colorScheme.primary, width: 1.5),
             ),
-            borderRadius: BorderRadius.circular(8),
             child: Row(
               children: [
-                Checkbox(
-                  value: state.useWallet,
-                  activeColor: theme.colorScheme.primary,
-                  onChanged: (val) => notifier.selectPaymentOption(
-                    state.paymentOption,
-                    useWallet: val,
-                  ),
+                Icon(
+                  Icons.lock_outline_rounded,
+                  size: 20,
+                  color: theme.colorScheme.primary,
                 ),
-                Text(
-                  'Ưu tiên khấu trừ từ số dư ví',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurface,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Thanh toán qua ShopNexus',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Tiền được giữ tại ShopNexus cho tới khi bạn nhận hàng',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentOptionRow(
-    BuildContext context,
-    WidgetRef ref, {
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required String value,
-    required String groupValue,
-  }) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final isSelected = value == groupValue;
-
-    final selectedBg = isDarkMode
-        ? AppColors.darkPrimary.withAlpha(35)
-        : const Color(0xFFE6F4EA);
-    final unselectedBg = isDarkMode
-        ? theme.colorScheme.surfaceContainerHighest
-        : const Color(0xFFF9F9F7);
-    final borderColor = isSelected
-        ? theme.colorScheme.primary
-        : (isDarkMode
-              ? AppColors.darkPrimary.withAlpha(30)
-              : const Color(0xFFE2E3E0));
-
-    return InkWell(
-      onTap: () =>
-          ref.read(checkoutProvider.notifier).selectPaymentOption(value),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? selectedBg : unselectedBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1.0),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurfaceVariant,
-              size: 20,
-            ),
-            const SizedBox(width: 12),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? theme.colorScheme.primary.withAlpha(20)
-                    : theme.colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 14,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 12,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1200,15 +1069,15 @@ class CheckoutScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ...state.resolvedItems.map(
-            (item) => Padding(
+          ...state.lines.map(
+            (line) => Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Row(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: CachedNetworkImage(
-                      imageUrl: item.resource?.url ?? '',
+                      imageUrl: line.imageUrl ?? '',
                       width: 48,
                       height: 48,
                       fit: BoxFit.cover,
@@ -1230,9 +1099,7 @@ class CheckoutScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          (item.sku?.name.isNotEmpty ?? false)
-                              ? item.sku!.name
-                              : 'Product Sku',
+                          line.name ?? 'Đang tải sản phẩm…',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -1243,7 +1110,7 @@ class CheckoutScreen extends ConsumerWidget {
                           ),
                         ),
                         Text(
-                          'Qty: ${item.quantity}',
+                          'SL: ${line.quantity}',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 12,
@@ -1255,8 +1122,8 @@ class CheckoutScreen extends ConsumerWidget {
                   ),
                   Text(
                     MoneyUtils.format(
-                      item.sku?.price ?? 0,
-                      currency: item.currency,
+                      line.lineTotal,
+                      currency: line.currency ?? state.currency,
                     ),
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -1279,22 +1146,19 @@ class CheckoutScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    final subtotal = state.calculatedSubtotal;
-    final shipping = state.totalShippingCost;
+    final subtotal = state.subtotal;
+    final shipping = state.shippingFee;
     final total = subtotal + shipping;
 
     final subtotalFormatted = MoneyUtils.format(
       subtotal,
-      currency: state.preferredCurrency,
+      currency: state.currency,
     );
     final shippingFormatted = MoneyUtils.format(
       shipping,
-      currency: state.preferredCurrency,
+      currency: state.currency,
     );
-    final totalFormatted = MoneyUtils.format(
-      total,
-      currency: state.preferredCurrency,
-    );
+    final totalFormatted = MoneyUtils.format(total, currency: state.currency);
 
     final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
     final cardBorderColor = isDarkMode
@@ -1413,13 +1277,10 @@ class CheckoutScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    final subtotal = state.calculatedSubtotal;
-    final shipping = state.totalShippingCost;
+    final subtotal = state.subtotal;
+    final shipping = state.shippingFee;
     final total = subtotal + shipping;
-    final totalFormatted = MoneyUtils.format(
-      total,
-      currency: state.preferredCurrency,
-    );
+    final totalFormatted = MoneyUtils.format(total, currency: state.currency);
 
     final ctaBorderColor = isDarkMode
         ? AppColors.darkPrimary.withAlpha(40)

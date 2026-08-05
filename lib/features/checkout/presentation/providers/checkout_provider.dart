@@ -1,13 +1,19 @@
 import 'dart:async';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/checkout_line.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/checkout_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/checkout_result.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shipping_quote.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/start_payment_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
-import 'package:shopnexus_flutter_app/features/cart/data/models/cart_model.dart';
-import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/repositories/checkout_repository.dart';
 
@@ -15,7 +21,9 @@ part 'checkout_provider.freezed.dart';
 
 part 'checkout_provider.g.dart';
 
-enum CheckoutStep { address, shipping, payment, processing, success, failed }
+/// The single-page form, then what the payment session is doing. There is no
+/// step per section: the buyer fills the page in any order.
+enum CheckoutStep { address, processing, success, failed }
 
 @freezed
 abstract class CheckoutState with _$CheckoutState {
@@ -25,23 +33,17 @@ abstract class CheckoutState with _$CheckoutState {
     @Default(CheckoutStep.address) CheckoutStep step,
     @Default([]) List<Contact> contacts,
     Contact? selectedContact,
-    @Default([]) List<CheckoutItem> items,
-    @Default([]) List<CartItem> resolvedItems,
-    @Default(false) bool buyNow,
-    @Default('Standard') String shippingOption,
-    QuoteTransportResponse? quoteResponse,
+    @Default([]) List<PurchaseLine> lines,
     ShippingQuotes? shippingQuotes,
-    @Default('Stripe') String paymentOption,
-    @Default(false) bool useWallet,
-    @Default([]) List<String> promotionCodes,
-    CheckoutResponse? checkoutResponse,
+
+    /// The carrier slug the buyer is buying, always one `POST /shipping-quotes`
+    /// answered — never a label. Null until a quote has been asked for.
+    String? transportOption,
     CheckoutResult? checkoutResult,
     Transaction? paymentTransaction,
     PaymentSession? paymentSession,
     @Default(false) bool isLoading,
     String? errorMessage,
-    @Default('USD') String preferredCurrency,
-    @Default({}) Map<String, double> rates,
     @Default(true) bool agreeToTerms,
   }) = _CheckoutState;
 
@@ -54,53 +56,57 @@ abstract class CheckoutState with _$CheckoutState {
   List<Contact> get otherContacts =>
       contacts.where((c) => c.addressType.toLowerCase() == 'other').toList();
 
-  int get totalShippingCost {
-    if (shippingQuotes != null && shippingQuotes!.options.isNotEmpty) {
-      final matched = shippingQuotes!.options.firstWhere(
-        (o) =>
-            o.option.toLowerCase() == shippingOption.toLowerCase() ||
-            o.name.toLowerCase() == shippingOption.toLowerCase(),
-        orElse: () => shippingQuotes!.options.first,
-      );
-      return matched.fee;
-    }
-    if (quoteResponse != null) {
-      return quoteResponse!.items.fold(0, (sum, item) => sum + item.cost);
+  List<ShippingQuote> get shippingOptions =>
+      shippingQuotes?.options ?? const [];
+
+  /// The quoted fee for the chosen carrier. No fallback to the first option: a fee
+  /// belonging to a slug other than the one being sent is a total nobody charges.
+  int get shippingFee {
+    for (final option in shippingOptions) {
+      if (option.option == transportOption) return option.fee;
     }
     return 0;
   }
 
-  int get calculatedSubtotal {
-    double totalUsd = 0.0;
-    for (final item in resolvedItems) {
-      final price = item.sku?.price ?? 0;
-      final currency = item.currency.toUpperCase();
-      final qty = item.quantity;
+  int get subtotal => lines.fold(0, (total, line) => total + line.lineTotal);
 
-      double priceUsd = price.toDouble();
-      if (currency == 'USD') {
-        priceUsd = price / 100.0;
-      } else {
-        final rate = rates[currency] ?? 1.0;
-        priceUsd = price / rate;
-      }
-      totalUsd += priceUsd * qty;
+  int get total => subtotal + shippingFee;
+
+  /// The listing states its own currency and `CheckoutRequest.currency` has to
+  /// match it, so it is read off the listing rather than off a user preference.
+  String get currency {
+    for (final line in lines) {
+      final stated = line.currency;
+      if (stated != null) return stated;
     }
+    return 'VND';
+  }
 
-    final prefCurrency = preferredCurrency.toUpperCase();
-    final prefRate = rates[prefCurrency] ?? 1.0;
-    final converted = totalUsd * prefRate;
+  /// A draft is opened for one listing and its checkout refuses a line from
+  /// another, spending the draft on the way — so a mixed selection is stopped here
+  /// rather than by burning one draft per attempt.
+  Set<String> get listingIds => lines.map((line) => line.listingId).toSet();
 
-    if (prefCurrency == 'USD') {
-      return (converted * 100.0).round();
-    } else {
-      return converted.round();
-    }
+  /// Store a fresh quote and settle on a carrier: keep the chosen slug when it is
+  /// still offered, otherwise take the first the server named.
+  CheckoutState withQuotes(ShippingQuotes quotes) {
+    final offered = quotes.options.map((option) => option.option);
+    return copyWith(
+      shippingQuotes: quotes,
+      transportOption: offered.contains(transportOption)
+          ? transportOption
+          : (quotes.options.isEmpty ? null : quotes.options.first.option),
+    );
   }
 }
 
 @riverpod
 class CheckoutNotifier extends _$CheckoutNotifier {
+  /// The one enabled payment rail. There is no route listing the registry, so the
+  /// slug is named here rather than guessed from a gateway brand — `stripe` is a
+  /// 422 `payment_option_unknown`.
+  static const paymentOption = 'platform-checkout';
+
   Timer? _pollingTimer;
 
   @override
@@ -111,23 +117,33 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     return const CheckoutState();
   }
 
-  /// Khởi tạo luồng thanh toán với các sản phẩm được chọn
-  Future<void> initialize({
-    required List<CheckoutItem> items,
-    required List<CartItem> resolvedItems,
-    required bool buyNow,
-  }) async {
-    final cartState = ref.read(cartProvider);
-    state = CheckoutState(
-      items: items,
-      resolvedItems: resolvedItems,
-      buyNow: buyNow,
-      preferredCurrency: cartState.preferredCurrency,
-      rates: cartState.rates,
-      isLoading: true,
-    );
+  /// Khởi tạo luồng thanh toán với các dòng sản phẩm được chọn
+  Future<void> initialize({required List<PurchaseLine> lines}) async {
+    state = CheckoutState(lines: lines, isLoading: true);
 
+    await _resolveListings();
     await _loadAddresses();
+    await quoteShipping();
+  }
+
+  /// Fill in each line's listing, which is where its price, name and photo live.
+  Future<void> _resolveListings() async {
+    try {
+      final resolved = await ref
+          .read(checkoutRepositoryProvider)
+          .listings(state.listingIds);
+
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        lines: [
+          for (final line in state.lines)
+            line.withListing(resolved[line.listingId]),
+        ],
+      );
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(errorMessage: ErrorHandler.getErrorMessage(e));
+    }
   }
 
   /// Tải danh sách địa chỉ nhận hàng của người dùng
@@ -179,15 +195,18 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
       if (!ref.mounted) return;
       state = state.copyWith(contacts: list, selectedContact: newSelected);
+      // The fee is quoted against the address, so an edited address is a requote.
+      await quoteShipping();
     } catch (e) {
       if (!ref.mounted) return;
       state = state.copyWith(errorMessage: ErrorHandler.getErrorMessage(e));
     }
   }
 
-  /// Chọn địa chỉ nhận hàng
-  void selectContact(Contact contact) {
+  /// Chọn địa chỉ nhận hàng và báo giá lại theo địa chỉ đó
+  Future<void> selectContact(Contact contact) async {
     state = state.copyWith(selectedContact: contact, errorMessage: null);
+    await quoteShipping();
   }
 
   /// Chuyển sang bước tiếp theo
@@ -195,39 +214,38 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     state = state.copyWith(step: step, errorMessage: null);
   }
 
-  /// Chọn phương thức vận chuyển và tự động lấy báo giá từ server
-  Future<void> selectShippingOption(String option) async {
-    if (!ref.mounted) return;
-    state = state.copyWith(
-      shippingOption: option,
-      isLoading: true,
-      errorMessage: null,
-    );
+  /// Chọn đơn vị vận chuyển trong số các lựa chọn server đã báo giá
+  void selectTransportOption(String option) {
+    state = state.copyWith(transportOption: option, errorMessage: null);
+  }
 
-    if (state.selectedContact == null) {
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Vui lòng chọn địa chỉ nhận hàng trước',
-      );
-      return;
-    }
+  /// Ask the carriers what delivery costs. Asking is what produces the slug the
+  /// checkout has to send, so it runs on open and on every address change rather
+  /// than only when the buyer touches the list.
+  Future<void> quoteShipping() async {
+    if (!ref.mounted) return;
+    state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final checkoutRepo = ref.read(checkoutRepositoryProvider);
-      final lines = state.resolvedItems.map((item) {
-        return CheckoutLine(variantId: item.variantId, quantity: item.quantity);
-      }).toList();
-
-      final quotes = await checkoutRepo.getShippingQuotes(
-        ShippingQuotesRequest(
-          contactId: state.selectedContact!.id,
-          lines: lines.isEmpty ? null : lines,
-        ),
-      );
+      final quotes = await ref
+          .read(checkoutRepositoryProvider)
+          .getShippingQuotes(
+            ShippingQuotesRequest(
+              // Omitted, the caller's default delivery address is used — which is what
+              // lets a listing page quote before any form is filled in.
+              contactId: state.selectedContact?.id,
+              lines: [
+                for (final line in state.lines)
+                  CheckoutLine(
+                    variantId: line.variantId,
+                    quantity: line.quantity,
+                  ),
+              ],
+            ),
+          );
 
       if (!ref.mounted) return;
-      state = state.copyWith(shippingQuotes: quotes, isLoading: false);
+      state = state.withQuotes(quotes).copyWith(isLoading: false);
     } catch (e) {
       if (!ref.mounted) return;
       state = state.copyWith(
@@ -235,15 +253,6 @@ class CheckoutNotifier extends _$CheckoutNotifier {
         errorMessage: ErrorHandler.getErrorMessage(e),
       );
     }
-  }
-
-  /// Chọn phương thức thanh toán
-  void selectPaymentOption(String option, {bool? useWallet}) {
-    state = state.copyWith(
-      paymentOption: option,
-      useWallet: useWallet ?? state.useWallet,
-      errorMessage: null,
-    );
   }
 
   /// Thay đổi trạng thái đồng ý điều khoản dịch vụ
@@ -256,18 +265,10 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
   /// Thực hiện đặt hàng và bắt đầu polling kết quả thanh toán
   Future<void> placeOrder() async {
-    if (!state.agreeToTerms) {
+    final refusal = _refusal();
+    if (refusal != null) {
       if (!ref.mounted) return;
-      state = state.copyWith(
-        errorMessage:
-            'Vui lòng đồng ý với Điều khoản dịch vụ & Chính sách mua hàng trước khi thanh toán!',
-      );
-      return;
-    }
-
-    if (state.selectedContact == null) {
-      if (!ref.mounted) return;
-      state = state.copyWith(errorMessage: 'Vui lòng chọn địa chỉ nhận hàng');
+      state = state.copyWith(errorMessage: refusal);
       return;
     }
 
@@ -276,60 +277,43 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
     try {
       final checkoutRepo = ref.read(checkoutRepositoryProvider);
-      final contactId = state.selectedContact!.id;
-      final listingId =
-          state.resolvedItems.firstOrNull?.listingId ??
-          state.resolvedItems.firstOrNull?.spuId ??
-          'spu_1';
 
-      // 1. Mở purchase session (DraftOrder) cho listing
-      final draft = await checkoutRepo.createDraft(
-        CreateDraftRequest(listingId: listingId),
-      );
+      // 1. Mở purchase session (DraftOrder) cho listing, freezing its prices.
+      final draft = await checkoutRepo.createDraft(state.listingIds.single);
 
-      // 2. Chuyển đổi các items sang CheckoutLine (variant_id & quantity)
-      final lines = state.resolvedItems.map((item) {
-        return CheckoutLine(variantId: item.variantId, quantity: item.quantity);
-      }).toList();
-
-      // 3. Thực hiện Checkout Draft Order
+      // 2. Checkout draft: the money is what creates the order, so this is the
+      //    sale. `currency` has to be the listing's own.
       final checkoutResult = await checkoutRepo.checkoutDraft(
         draft.id,
         CheckoutRequest(
-          contactId: contactId,
-          currency: state.preferredCurrency,
-          lines: lines,
-          transportOption: state.shippingOption,
+          contactId: state.selectedContact!.id,
+          currency: draft.currency,
+          lines: [
+            for (final line in state.lines)
+              CheckoutLine(variantId: line.variantId, quantity: line.quantity),
+          ],
+          transportOption: state.transportOption!,
         ),
       );
 
-      // 4. Khởi tạo thanh toán với POST /payment-sessions/{id}/payments để lấy checkout_url
-      Transaction? transaction;
-      try {
-        transaction = await checkoutRepo.startPayment(
-          checkoutResult.paymentSessionId,
-          StartPaymentRequest(
-            paymentOption: state.paymentOption.toLowerCase(),
-            amount: checkoutResult.total,
-            returnUrl: 'https://shopnexus.app/checkout/callback',
-          ),
-        );
-      } catch (_) {
-        // Bỏ qua lỗi startPayment nếu backend chưa bật rail thanh toán
-      }
+      // 3. Tender the session. A failure here leaves a session nobody paid, so it
+      //    is shown rather than swallowed — the buyer has an order to pay for and
+      //    no way to pay it.
+      final transaction = await checkoutRepo.startPayment(
+        checkoutResult.paymentSessionId,
+        StartPaymentRequest(
+          paymentOption: paymentOption,
+          amount: checkoutResult.total,
+        ),
+      );
 
       if (!ref.mounted) return;
       state = state.copyWith(
         checkoutResult: checkoutResult,
         paymentTransaction: transaction,
-        checkoutResponse: CheckoutResponse(
-          checkoutSessionId: checkoutResult.paymentSessionId,
-          paymentUrl: transaction?.checkoutUrl,
-        ),
         step: CheckoutStep.processing,
       );
 
-      // Bắt đầu polling kết quả dựa trên payment_session_id
       _startPolling(checkoutResult.paymentSessionId);
     } catch (e) {
       if (!ref.mounted) return;
@@ -338,6 +322,26 @@ class CheckoutNotifier extends _$CheckoutNotifier {
         errorMessage: ErrorHandler.getErrorMessage(e),
       );
     }
+  }
+
+  /// What stops this order, in the buyer's words, or null when nothing does.
+  String? _refusal() {
+    if (!state.agreeToTerms) {
+      return 'Vui lòng đồng ý với Điều khoản dịch vụ & Chính sách mua hàng trước khi thanh toán!';
+    }
+    if (state.selectedContact == null) {
+      return 'Vui lòng chọn địa chỉ nhận hàng';
+    }
+    if (state.transportOption == null) {
+      return 'Chưa có báo giá vận chuyển. Vui lòng thử lại.';
+    }
+    if (state.lines.isEmpty) {
+      return 'Không có sản phẩm nào để thanh toán';
+    }
+    if (state.listingIds.length > 1) {
+      return 'Mỗi đơn hàng chỉ thanh toán được sản phẩm của một tin đăng. Vui lòng tách đơn.';
+    }
+    return null;
   }
 
   /// Poll the payment session until it settles. The order appears when the

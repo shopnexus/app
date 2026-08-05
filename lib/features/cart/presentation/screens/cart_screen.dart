@@ -5,10 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
-import 'package:shopnexus_flutter_app/features/cart/data/models/cart_model.dart';
 import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
-import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
+import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -81,17 +80,9 @@ class CartScreen extends ConsumerWidget {
             onRefresh: () => ref.read(cartProvider.notifier).fetchCart(),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              itemCount: state.items.length,
-              itemBuilder: (context, index) {
-                final item = state.items[index];
-                return _buildCartItem(
-                  context,
-                  ref,
-                  item,
-                  state.preferredCurrency,
-                  state.rates,
-                );
-              },
+              itemCount: state.lines.length,
+              itemBuilder: (context, index) =>
+                  _buildCartItem(context, ref, state.lines[index]),
             ),
           ),
         ),
@@ -233,37 +224,19 @@ class CartScreen extends ConsumerWidget {
   Widget _buildCartItem(
     BuildContext context,
     WidgetRef ref,
-    CartItem item,
-    String preferredCurrency,
-    Map<String, double> rates,
+    PurchaseLine line,
   ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    // Tính giá quy đổi của item đơn lẻ
-    final itemPriceVal = (item.sku?.price ?? 0).toDouble();
-    double convertedPrice = itemPriceVal;
-    if (item.currency.toUpperCase() != preferredCurrency.toUpperCase()) {
-      double priceInUsd = itemPriceVal;
-      if (item.currency.toUpperCase() == 'USD') {
-        priceInUsd = itemPriceVal / 100.0;
-      } else {
-        final origRate = rates[item.currency.toUpperCase()] ?? 1.0;
-        priceInUsd = itemPriceVal / origRate;
-      }
-      final prefRate = rates[preferredCurrency.toUpperCase()] ?? 1.0;
-      double converted = priceInUsd * prefRate;
-      convertedPrice = preferredCurrency.toUpperCase() == 'USD'
-          ? converted * 100.0
-          : converted;
-    }
+    // Giá của phân loại mà dòng này trỏ tới, theo đúng tiền tệ tin đăng công bố.
+    final unitPrice = line.unitPrice;
+    final priceDisplay = unitPrice == null
+        ? '—'
+        : MoneyUtils.format(unitPrice, currency: line.currency ?? 'VND');
 
-    final priceDisplay = MoneyUtils.formatWithConversion(
-      item.sku?.price ?? 0,
-      originalCurrency: item.currency,
-      preferredCurrency: preferredCurrency,
-      exchangeRate: convertedPrice / (itemPriceVal == 0 ? 1.0 : itemPriceVal),
-    );
+    // Every line on this screen came from a cart row, so it has one.
+    final rowId = line.cartItemId!;
 
     final itemBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
     final itemBorderColor = isDarkMode
@@ -295,7 +268,7 @@ class CartScreen extends ConsumerWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: CachedNetworkImage(
-              imageUrl: item.resource?.url ?? '',
+              imageUrl: line.imageUrl ?? '',
               width: 90,
               height: 110,
               fit: BoxFit.cover,
@@ -334,9 +307,7 @@ class CartScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              (item.sku?.name.isNotEmpty ?? false)
-                                  ? item.sku!.name
-                                  : 'Product Sku',
+                              line.name ?? 'Đang tải sản phẩm…',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -350,7 +321,7 @@ class CartScreen extends ConsumerWidget {
                           GestureDetector(
                             onTap: () => ref
                                 .read(cartProvider.notifier)
-                                .removeItem(item.id),
+                                .removeItem(rowId),
                             child: Icon(
                               Icons.close_rounded,
                               size: 20,
@@ -359,14 +330,11 @@ class CartScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      if (item.sku?.attributes != null &&
-                          item.sku!.attributes!.isNotEmpty)
+                      if (line.attributesLabel != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            item.sku!.attributes!
-                                .map((attr) => '${attr.key}: ${attr.value}')
-                                .join(' | '),
+                            line.attributesLabel!,
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 12,
@@ -415,10 +383,10 @@ class CartScreen extends ConsumerWidget {
                               ),
                               onPressed: () => ref
                                   .read(cartProvider.notifier)
-                                  .updateQuantity(item.id, -1),
+                                  .updateQuantity(rowId, -1),
                             ),
                             Text(
-                              '${item.quantity}',
+                              '${line.quantity}',
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 13,
@@ -439,7 +407,7 @@ class CartScreen extends ConsumerWidget {
                               ),
                               onPressed: () => ref
                                   .read(cartProvider.notifier)
-                                  .updateQuantity(item.id, 1),
+                                  .updateQuantity(rowId, 1),
                             ),
                           ],
                         ),
@@ -464,8 +432,8 @@ class CartScreen extends ConsumerWidget {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     final subtotalFormatted = MoneyUtils.format(
-      state.calculatedTotal,
-      currency: state.preferredCurrency,
+      state.subtotal,
+      currency: state.currency,
     );
 
     final summaryBorderColor = isDarkMode
@@ -574,21 +542,11 @@ class CartScreen extends ConsumerWidget {
             height: 52,
             child: ElevatedButton(
               onPressed: () {
-                final checkoutItems = state.items.map((item) {
-                  return CheckoutItem(
-                    skuId: item.sku?.id ?? item.variantId,
-                    quantity: item.quantity,
-                    transportOption: 'Standard',
-                  );
-                }).toList();
-
+                // The listings are already resolved here, so checkout starts with
+                // prices on screen instead of a blank summary.
                 ref
                     .read(checkoutProvider.notifier)
-                    .initialize(
-                      items: checkoutItems,
-                      resolvedItems: state.items,
-                      buyNow: false,
-                    );
+                    .initialize(lines: state.lines);
 
                 context.push('/checkout');
               },

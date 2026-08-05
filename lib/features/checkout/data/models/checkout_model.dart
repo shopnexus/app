@@ -1,268 +1,84 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/variant.dart';
 
-part 'checkout_model.freezed.dart';
-part 'checkout_model.g.dart';
+/// One line of a purchase: the variant, how many, and the listing it belongs to.
+///
+/// A variant has no read of its own in the catalog, so the listing is the only
+/// place its price, attributes and photos are published — [listing] is filled in
+/// once that read lands, and until then the line has no price to show. Nothing
+/// here is a wire field: the cart route sends ids and a quantity only.
+class PurchaseLine {
+  const PurchaseLine({
+    required this.listingId,
+    required this.variantId,
+    required this.quantity,
+    this.cartItemId,
+    this.listing,
+  });
 
-@freezed
-abstract class CheckoutLine with _$CheckoutLine {
-  const factory CheckoutLine({
-    @JsonKey(name: 'variant_id') required String variantId,
-    required int quantity,
-  }) = _CheckoutLine;
+  final String listingId;
+  final String variantId;
+  final int quantity;
 
-  factory CheckoutLine.fromJson(Map<String, dynamic> json) =>
-      _$CheckoutLineFromJson(json);
-}
+  /// Null for a line bought straight from a listing page, which has no cart row.
+  final String? cartItemId;
 
-@freezed
-abstract class CheckoutRequest with _$CheckoutRequest {
-  const factory CheckoutRequest({
-    @JsonKey(name: 'contact_id') required String contactId,
-    required String currency,
-    required List<CheckoutLine> lines,
-    String? note,
-    @JsonKey(name: 'transport_option') required String transportOption,
-  }) = _CheckoutRequest;
+  final ListingDetail? listing;
 
-  factory CheckoutRequest.fromJson(Map<String, dynamic> json) =>
-      _$CheckoutRequestFromJson(json);
-}
+  PurchaseLine withListing(ListingDetail? resolved) => PurchaseLine(
+    listingId: listingId,
+    variantId: variantId,
+    quantity: quantity,
+    cartItemId: cartItemId,
+    listing: resolved,
+  );
 
-@freezed
-abstract class CheckoutOfferRequest with _$CheckoutOfferRequest {
-  const factory CheckoutOfferRequest({
-    @JsonKey(name: 'contact_id') required String contactId,
-    String? note,
-    @JsonKey(name: 'transport_option') required String transportOption,
-  }) = _CheckoutOfferRequest;
+  Variant? get variant {
+    final detail = listing;
+    if (detail == null) return null;
+    for (final candidate in detail.variants) {
+      if (candidate.id == variantId) return candidate;
+    }
+    return null;
+  }
 
-  factory CheckoutOfferRequest.fromJson(Map<String, dynamic> json) =>
-      _$CheckoutOfferRequestFromJson(json);
-}
+  int? get unitPrice => variant?.price;
 
-@freezed
-abstract class OrderItem with _$OrderItem {
-  const factory OrderItem({
-    required String id,
-    @JsonKey(name: 'order_id') String? orderId,
-    @JsonKey(name: 'seller_id') required String sellerId,
-    @JsonKey(name: 'listing_id') String? listingId,
-    @JsonKey(name: 'variant_id') required String variantId,
-    required int quantity,
-    @JsonKey(name: 'total_amount') required int totalAmount,
-    required String currency,
-    @JsonKey(name: 'transport_option') required String transportOption,
-    @JsonKey(name: 'payment_session_id') String? paymentSessionId,
-    String? note,
-    @JsonKey(name: 'cancelled_at') String? cancelledAt,
-    @JsonKey(name: 'created_at') required String createdAt,
-  }) = _OrderItem;
+  int get lineTotal => (unitPrice ?? 0) * quantity;
 
-  factory OrderItem.fromJson(Map<String, dynamic> json) =>
-      _$OrderItemFromJson(json);
-}
+  String? get name => listing?.name;
 
-@freezed
-abstract class CheckoutResult with _$CheckoutResult {
-  const factory CheckoutResult({
-    required String currency,
-    @JsonKey(name: 'goods_total') required int goodsTotal,
-    required List<OrderItem> items,
-    @JsonKey(name: 'payment_session_id') required String paymentSessionId,
-    @JsonKey(name: 'shipping_fee') required int shippingFee,
-    required int total,
-  }) = _CheckoutResult;
+  String? get currency => listing?.currency;
 
-  factory CheckoutResult.fromJson(Map<String, dynamic> json) =>
-      _$CheckoutResultFromJson(json);
-}
+  /// The variant's own photo when it has one, else the listing's first — the same
+  /// order the product page picks in.
+  String? get imageUrl {
+    final images = [...?variant?.images, ...?listing?.images];
+    for (final image in images) {
+      if (image.url != null) return image.url;
+    }
+    return null;
+  }
 
-@freezed
-abstract class CreateDraftRequest with _$CreateDraftRequest {
-  const factory CreateDraftRequest({
-    @JsonKey(name: 'listing_id') required String listingId,
-  }) = _CreateDraftRequest;
+  /// `Màu sắc: Xanh dương`, so a cart with two colours of one listing reads apart.
+  String? get attributesLabel {
+    final attributes = variant?.attributes;
+    if (attributes == null || attributes.isEmpty) return null;
+    return attributes.entries
+        .map((entry) => '${entry.key}: ${entry.value}')
+        .join(' | ');
+  }
 
-  factory CreateDraftRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateDraftRequestFromJson(json);
-}
+  @override
+  bool operator ==(Object other) =>
+      other is PurchaseLine &&
+      other.listingId == listingId &&
+      other.variantId == variantId &&
+      other.quantity == quantity &&
+      other.cartItemId == cartItemId &&
+      other.listing == listing;
 
-@freezed
-abstract class DraftOrderVariant with _$DraftOrderVariant {
-  const factory DraftOrderVariant({
-    @JsonKey(name: 'variant_id') required String variantId,
-    required int price,
-    Map<String, dynamic>? attributes,
-  }) = _DraftOrderVariant;
-
-  factory DraftOrderVariant.fromJson(Map<String, dynamic> json) =>
-      _$DraftOrderVariantFromJson(json);
-}
-
-@freezed
-abstract class DraftOrder with _$DraftOrder {
-  const factory DraftOrder({
-    required String id,
-    @JsonKey(name: 'listing_id') required String listingId,
-    @JsonKey(name: 'seller_id') required String sellerId,
-    required String name,
-    required String currency,
-    @JsonKey(name: 'price_mode') required String priceMode,
-    @JsonKey(name: 'valid_until') required String validUntil,
-    @JsonKey(name: 'created_at') required String createdAt,
-    @JsonKey(name: 'cancelled_at') String? cancelledAt,
-    required List<DraftOrderVariant> variants,
-  }) = _DraftOrder;
-
-  factory DraftOrder.fromJson(Map<String, dynamic> json) =>
-      _$DraftOrderFromJson(json);
-}
-
-@freezed
-abstract class StartPaymentRequest with _$StartPaymentRequest {
-  const factory StartPaymentRequest({
-    @JsonKey(name: 'payment_option') required String paymentOption,
-    int? amount,
-    @JsonKey(name: 'return_url') String? returnUrl,
-  }) = _StartPaymentRequest;
-
-  factory StartPaymentRequest.fromJson(Map<String, dynamic> json) =>
-      _$StartPaymentRequestFromJson(json);
-}
-
-@freezed
-abstract class Transaction with _$Transaction {
-  const factory Transaction({
-    required String id,
-    @JsonKey(name: 'session_id') required String sessionId,
-    @JsonKey(name: 'payment_option') required String paymentOption,
-    required int amount,
-    @JsonKey(name: 'checkout_url') String? checkoutUrl,
-    required String status,
-    String? error,
-    @JsonKey(name: 'created_at') required String createdAt,
-    @JsonKey(name: 'expired_at') String? expiredAt,
-    @JsonKey(name: 'settled_at') String? settledAt,
-  }) = _Transaction;
-
-  factory Transaction.fromJson(Map<String, dynamic> json) =>
-      _$TransactionFromJson(json);
-}
-
-@freezed
-abstract class ShippingOption with _$ShippingOption {
-  const factory ShippingOption({
-    @JsonKey(name: 'option') required String option,
-    @JsonKey(name: 'name') required String name,
-    @JsonKey(name: 'fee') required int fee,
-  }) = _ShippingOption;
-
-  factory ShippingOption.fromJson(Map<String, dynamic> json) =>
-      _$ShippingOptionFromJson(json);
-}
-
-@freezed
-abstract class ShippingQuotes with _$ShippingQuotes {
-  const factory ShippingQuotes({
-    required String currency,
-    required List<ShippingOption> options,
-  }) = _ShippingQuotes;
-
-  factory ShippingQuotes.fromJson(Map<String, dynamic> json) =>
-      _$ShippingQuotesFromJson(json);
-}
-
-@freezed
-abstract class ShippingQuotesRequest with _$ShippingQuotesRequest {
-  const factory ShippingQuotesRequest({
-    @JsonKey(name: 'contact_id') required String contactId,
-    @JsonKey(name: 'draft_id') String? draftId,
-    @JsonKey(name: 'offer_id') String? offerId,
-    List<CheckoutLine>? lines,
-  }) = _ShippingQuotesRequest;
-
-  factory ShippingQuotesRequest.fromJson(Map<String, dynamic> json) =>
-      _$ShippingQuotesRequestFromJson(json);
-}
-
-// --- Legacy & UI Helper Models ---
-
-@freezed
-abstract class QuoteTransportItem with _$QuoteTransportItem {
-  const factory QuoteTransportItem({
-    @JsonKey(name: 'sku_id') required String skuId,
-    required int quantity,
-    @JsonKey(name: 'transport_option') required String transportOption,
-  }) = _QuoteTransportItem;
-
-  factory QuoteTransportItem.fromJson(Map<String, dynamic> json) =>
-      _$QuoteTransportItemFromJson(json);
-}
-
-@freezed
-abstract class QuoteTransportRequest with _$QuoteTransportRequest {
-  const factory QuoteTransportRequest({
-    required String address,
-    required List<QuoteTransportItem> items,
-  }) = _QuoteTransportRequest;
-
-  factory QuoteTransportRequest.fromJson(Map<String, dynamic> json) =>
-      _$QuoteTransportRequestFromJson(json);
-}
-
-@freezed
-abstract class QuoteTransportResult with _$QuoteTransportResult {
-  const factory QuoteTransportResult({
-    @JsonKey(name: 'sku_id') required String skuId,
-    @JsonKey(name: 'transport_option') required String transportOption,
-    required int cost,
-    required String currency,
-  }) = _QuoteTransportResult;
-
-  factory QuoteTransportResult.fromJson(Map<String, dynamic> json) =>
-      _$QuoteTransportResultFromJson(json);
-}
-
-@freezed
-abstract class QuoteTransportResponse with _$QuoteTransportResponse {
-  const factory QuoteTransportResponse({
-    required List<QuoteTransportResult> items,
-  }) = _QuoteTransportResponse;
-
-  factory QuoteTransportResponse.fromJson(Map<String, dynamic> json) =>
-      _$QuoteTransportResponseFromJson(json);
-}
-
-@freezed
-abstract class CheckoutItem with _$CheckoutItem {
-  const factory CheckoutItem({
-    @JsonKey(name: 'sku_id') required String skuId,
-    required int quantity,
-    @JsonKey(name: 'transport_option') required String transportOption,
-    String? note,
-  }) = _CheckoutItem;
-
-  factory CheckoutItem.fromJson(Map<String, dynamic> json) =>
-      _$CheckoutItemFromJson(json);
-}
-
-@freezed
-abstract class CheckoutResponse with _$CheckoutResponse {
-  const factory CheckoutResponse({
-    @JsonKey(name: 'checkout_session_id') required String checkoutSessionId,
-    @JsonKey(name: 'payment_url') String? paymentUrl,
-  }) = _CheckoutResponse;
-
-  factory CheckoutResponse.fromJson(Map<String, dynamic> json) =>
-      _$CheckoutResponseFromJson(json);
-}
-
-@freezed
-abstract class PaymentUrlResponse with _$PaymentUrlResponse {
-  const factory PaymentUrlResponse({
-    @JsonKey(name: 'payment_url') required String paymentUrl,
-  }) = _PaymentUrlResponse;
-
-  factory PaymentUrlResponse.fromJson(Map<String, dynamic> json) =>
-      _$PaymentUrlResponseFromJson(json);
+  @override
+  int get hashCode =>
+      Object.hash(listingId, variantId, quantity, cartItemId, listing);
 }
