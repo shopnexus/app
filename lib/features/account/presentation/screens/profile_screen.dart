@@ -1,11 +1,10 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../shared/data_sources/common_api_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../data/repositories/account_repository.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/account_model.dart';
 import '../providers/account_provider.dart';
@@ -37,16 +36,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     });
 
     try {
-      final fileBytes = await image.readAsBytes();
-      final multipartFile = MultipartFile.fromBytes(
-        fileBytes,
+      final rsId = await ref.read(accountRepositoryProvider).uploadAvatar(
+        bytes: await image.readAsBytes(),
         filename: image.name,
+        mime: image.mimeType ?? 'image/jpeg',
       );
-
-      final commonApi = ref.read(commonApiServiceProvider);
-      final response = await commonApi.uploadFile(multipartFile);
-
-      final rsId = response.data.rsId;
 
       await ref
           .read(accountControllerProvider.notifier)

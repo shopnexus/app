@@ -1,4 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../api/api_providers.dart';
+import '../../../../api/generated/api/account_api.dart' as generated;
+import '../../../../api/generated/model/account_create_upload_request.dart';
 import '../../../../core/constants/app_config.dart';
 import '../data_sources/account_api_service.dart';
 import '../models/account_model.dart';
@@ -7,8 +11,46 @@ part 'account_repository.g.dart';
 
 class AccountRepository {
   final AccountApiService _apiService;
+  final generated.AccountApi _api;
 
-  AccountRepository(this._apiService);
+  AccountRepository(this._apiService, this._api);
+
+  /// Reserve a slot, PUT the bytes to the signed URL, confirm — the bytes never
+  /// pass through this API, and until the confirmation lands the resource
+  /// resolves to nothing, so a profile can never show an avatar that never
+  /// arrived. Returns the resource id for `UpdateProfileRequest.avatarRsId`.
+  Future<String> uploadAvatar({
+    required List<int> bytes,
+    required String filename,
+    required String mime,
+  }) async {
+    final reserved = (await _api.meUploadsPost(
+      accountCreateUploadRequest: AccountCreateUploadRequest(
+        filename: filename,
+        kind: AccountCreateUploadRequestKindEnum.avatar,
+        mime: mime,
+        size: bytes.length,
+      ),
+    )).data?.data;
+    if (reserved == null) throw StateError('empty upload slot');
+
+    // A bare Dio: the signed URL is the storage provider's origin and must not
+    // be sent this platform's bearer token.
+    await Dio().put<void>(
+      reserved.url,
+      data: Stream.fromIterable([bytes]),
+      options: Options(
+        headers: {
+          ...?reserved.headers,
+          Headers.contentLengthHeader: bytes.length,
+        },
+        contentType: mime,
+      ),
+    );
+
+    await _api.meUploadsIdConfirmationPost(id: reserved.resourceId);
+    return reserved.resourceId;
+  }
 
   // --- Profile Features ---
   Future<Me> getProfile() async {
@@ -521,7 +563,7 @@ class AccountRepository {
 }
 
 @riverpod
-AccountRepository accountRepository(Ref ref) {
-  final apiService = ref.watch(accountApiServiceProvider);
-  return AccountRepository(apiService);
-}
+AccountRepository accountRepository(Ref ref) => AccountRepository(
+  ref.watch(accountApiServiceProvider),
+  ref.watch(accountApiProvider),
+);
