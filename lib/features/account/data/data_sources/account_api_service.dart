@@ -31,13 +31,9 @@ abstract class AccountApiService {
   @GET(ApiEndpoints.contacts)
   Future<DataResponse<List<Contact>>> getContacts();
 
-  // --- Favorites / Wishlist Features (FE Mock/Legacy) ---
-  @GET(ApiEndpoints.favorites)
-  Future<DataResponse<List<AccountFavorite>>> getFavorites(
-    @Query('page') int? page,
-    @Query('limit') int? limit,
-  );
-
+  // --- Wishlist ---
+  // The list itself is catalog's `GET /listings?favorited=true`; `GET /favorites`
+  // is not a route at all (404). These two are, and they are what the heart does.
   @PUT(ApiEndpoints.favoriteListingTemplate)
   Future<void> addFavorite(@Path('listingID') String listingId);
 

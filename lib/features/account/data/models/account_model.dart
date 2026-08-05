@@ -119,19 +119,6 @@ abstract class Contact with _$Contact {
 }
 
 @freezed
-abstract class AccountFavorite with _$AccountFavorite {
-  const factory AccountFavorite({
-    required int id,
-    @JsonKey(name: 'account_id') required String accountId,
-    @JsonKey(name: 'spu_id') required String spuId,
-    @JsonKey(name: 'date_created') required String dateCreated,
-  }) = _AccountFavorite;
-
-  factory AccountFavorite.fromJson(Map<String, dynamic> json) =>
-      _$AccountFavoriteFromJson(json);
-}
-
-@freezed
 abstract class MessageResponse with _$MessageResponse {
   const factory MessageResponse({required String message}) = _MessageResponse;
 

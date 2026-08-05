@@ -133,12 +133,7 @@ class AccountRepository {
   Future<void> deleteContact(String contactId) =>
       _api.contactsIdDelete(id: contactId);
 
-  // --- Favorites / Wishlist Features ---
-  Future<List<AccountFavorite>> getFavorites({int? page, int? limit}) async {
-    final response = await _apiService.getFavorites(page, limit);
-    return response.data;
-  }
-
+  // --- Wishlist ---
   Future<void> addFavorite(String listingId) =>
       _apiService.addFavorite(listingId);
 

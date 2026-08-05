@@ -132,22 +132,6 @@ Map<String, dynamic> _$ContactToJson(_Contact instance) => <String, dynamic>{
   'created_at': instance.createdAt,
 };
 
-_AccountFavorite _$AccountFavoriteFromJson(Map<String, dynamic> json) =>
-    _AccountFavorite(
-      id: (json['id'] as num).toInt(),
-      accountId: json['account_id'] as String,
-      spuId: json['spu_id'] as String,
-      dateCreated: json['date_created'] as String,
-    );
-
-Map<String, dynamic> _$AccountFavoriteToJson(_AccountFavorite instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'account_id': instance.accountId,
-      'spu_id': instance.spuId,
-      'date_created': instance.dateCreated,
-    };
-
 _MessageResponse _$MessageResponseFromJson(Map<String, dynamic> json) =>
     _MessageResponse(message: json['message'] as String);
 
