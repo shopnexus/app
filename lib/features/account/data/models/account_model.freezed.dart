@@ -2677,7 +2677,10 @@ as String,
 mixin _$CreateContactRequest {
 
 @JsonKey(name: 'full_name') String get fullName; String get phone; String get address;@JsonKey(name: 'address_detail') String? get addressDetail;@JsonKey(name: 'address_type') String get addressType;// 'home' | 'work'
- String get country;@JsonKey(name: 'province_code') String get provinceCode;@JsonKey(name: 'province_name') String get provinceName;@JsonKey(name: 'district_code') String? get districtCode;@JsonKey(name: 'district_name') String? get districtName;@JsonKey(name: 'ward_code') String get wardCode;@JsonKey(name: 'ward_name') String get wardName;@JsonKey(name: 'postal_code') String? get postalCode;@JsonKey(name: 'is_default_delivery') bool? get isDefaultDelivery;@JsonKey(name: 'is_default_pickup') bool? get isDefaultPickup; double get latitude; double get longitude;
+ String get country;@JsonKey(name: 'province_code') String get provinceCode;@JsonKey(name: 'province_name') String get provinceName;@JsonKey(name: 'district_code') String? get districtCode;@JsonKey(name: 'district_name') String? get districtName;@JsonKey(name: 'ward_code') String get wardCode;@JsonKey(name: 'ward_name') String get wardName;@JsonKey(name: 'postal_code') String? get postalCode;@JsonKey(name: 'is_default_delivery') bool? get isDefaultDelivery;@JsonKey(name: 'is_default_pickup') bool? get isDefaultPickup;// Optional in the contract: geocoding may fail and the address still has to
+// be saveable. Sending 0,0 for "unknown" would put the seller in the
+// Atlantic and break every distance the buyer measures from it.
+ double? get latitude; double? get longitude;
 /// Create a copy of CreateContactRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2710,7 +2713,7 @@ abstract mixin class $CreateContactRequestCopyWith<$Res>  {
   factory $CreateContactRequestCopyWith(CreateContactRequest value, $Res Function(CreateContactRequest) _then) = _$CreateContactRequestCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'full_name') String fullName, String phone, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, String country,@JsonKey(name: 'province_code') String provinceCode,@JsonKey(name: 'province_name') String provinceName,@JsonKey(name: 'district_code') String? districtCode,@JsonKey(name: 'district_name') String? districtName,@JsonKey(name: 'ward_code') String wardCode,@JsonKey(name: 'ward_name') String wardName,@JsonKey(name: 'postal_code') String? postalCode,@JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,@JsonKey(name: 'is_default_pickup') bool? isDefaultPickup, double latitude, double longitude
+@JsonKey(name: 'full_name') String fullName, String phone, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, String country,@JsonKey(name: 'province_code') String provinceCode,@JsonKey(name: 'province_name') String provinceName,@JsonKey(name: 'district_code') String? districtCode,@JsonKey(name: 'district_name') String? districtName,@JsonKey(name: 'ward_code') String wardCode,@JsonKey(name: 'ward_name') String wardName,@JsonKey(name: 'postal_code') String? postalCode,@JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,@JsonKey(name: 'is_default_pickup') bool? isDefaultPickup, double? latitude, double? longitude
 });
 
 
@@ -2727,7 +2730,7 @@ class _$CreateContactRequestCopyWithImpl<$Res>
 
 /// Create a copy of CreateContactRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? phone = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? country = null,Object? provinceCode = null,Object? provinceName = null,Object? districtCode = freezed,Object? districtName = freezed,Object? wardCode = null,Object? wardName = null,Object? postalCode = freezed,Object? isDefaultDelivery = freezed,Object? isDefaultPickup = freezed,Object? latitude = null,Object? longitude = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? phone = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? country = null,Object? provinceCode = null,Object? provinceName = null,Object? districtCode = freezed,Object? districtName = freezed,Object? wardCode = null,Object? wardName = null,Object? postalCode = freezed,Object? isDefaultDelivery = freezed,Object? isDefaultPickup = freezed,Object? latitude = freezed,Object? longitude = freezed,}) {
   return _then(_self.copyWith(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
@@ -2744,9 +2747,9 @@ as String,wardName: null == wardName ? _self.wardName : wardName // ignore: cast
 as String,postalCode: freezed == postalCode ? _self.postalCode : postalCode // ignore: cast_nullable_to_non_nullable
 as String?,isDefaultDelivery: freezed == isDefaultDelivery ? _self.isDefaultDelivery : isDefaultDelivery // ignore: cast_nullable_to_non_nullable
 as bool?,isDefaultPickup: freezed == isDefaultPickup ? _self.isDefaultPickup : isDefaultPickup // ignore: cast_nullable_to_non_nullable
-as bool?,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
-as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double,
+as bool?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -2831,7 +2834,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'full_name')  String fullName,  String phone,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool? isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool? isDefaultPickup,  double latitude,  double longitude)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'full_name')  String fullName,  String phone,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool? isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool? isDefaultPickup,  double? latitude,  double? longitude)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreateContactRequest() when $default != null:
 return $default(_that.fullName,_that.phone,_that.address,_that.addressDetail,_that.addressType,_that.country,_that.provinceCode,_that.provinceName,_that.districtCode,_that.districtName,_that.wardCode,_that.wardName,_that.postalCode,_that.isDefaultDelivery,_that.isDefaultPickup,_that.latitude,_that.longitude);case _:
@@ -2852,7 +2855,7 @@ return $default(_that.fullName,_that.phone,_that.address,_that.addressDetail,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'full_name')  String fullName,  String phone,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool? isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool? isDefaultPickup,  double latitude,  double longitude)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'full_name')  String fullName,  String phone,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool? isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool? isDefaultPickup,  double? latitude,  double? longitude)  $default,) {final _that = this;
 switch (_that) {
 case _CreateContactRequest():
 return $default(_that.fullName,_that.phone,_that.address,_that.addressDetail,_that.addressType,_that.country,_that.provinceCode,_that.provinceName,_that.districtCode,_that.districtName,_that.wardCode,_that.wardName,_that.postalCode,_that.isDefaultDelivery,_that.isDefaultPickup,_that.latitude,_that.longitude);case _:
@@ -2872,7 +2875,7 @@ return $default(_that.fullName,_that.phone,_that.address,_that.addressDetail,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'full_name')  String fullName,  String phone,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool? isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool? isDefaultPickup,  double latitude,  double longitude)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'full_name')  String fullName,  String phone,  String address, @JsonKey(name: 'address_detail')  String? addressDetail, @JsonKey(name: 'address_type')  String addressType,  String country, @JsonKey(name: 'province_code')  String provinceCode, @JsonKey(name: 'province_name')  String provinceName, @JsonKey(name: 'district_code')  String? districtCode, @JsonKey(name: 'district_name')  String? districtName, @JsonKey(name: 'ward_code')  String wardCode, @JsonKey(name: 'ward_name')  String wardName, @JsonKey(name: 'postal_code')  String? postalCode, @JsonKey(name: 'is_default_delivery')  bool? isDefaultDelivery, @JsonKey(name: 'is_default_pickup')  bool? isDefaultPickup,  double? latitude,  double? longitude)?  $default,) {final _that = this;
 switch (_that) {
 case _CreateContactRequest() when $default != null:
 return $default(_that.fullName,_that.phone,_that.address,_that.addressDetail,_that.addressType,_that.country,_that.provinceCode,_that.provinceName,_that.districtCode,_that.districtName,_that.wardCode,_that.wardName,_that.postalCode,_that.isDefaultDelivery,_that.isDefaultPickup,_that.latitude,_that.longitude);case _:
@@ -2887,7 +2890,7 @@ return $default(_that.fullName,_that.phone,_that.address,_that.addressDetail,_th
 @JsonSerializable()
 
 class _CreateContactRequest implements CreateContactRequest {
-  const _CreateContactRequest({@JsonKey(name: 'full_name') required this.fullName, required this.phone, required this.address, @JsonKey(name: 'address_detail') this.addressDetail, @JsonKey(name: 'address_type') required this.addressType, required this.country, @JsonKey(name: 'province_code') required this.provinceCode, @JsonKey(name: 'province_name') required this.provinceName, @JsonKey(name: 'district_code') this.districtCode, @JsonKey(name: 'district_name') this.districtName, @JsonKey(name: 'ward_code') required this.wardCode, @JsonKey(name: 'ward_name') required this.wardName, @JsonKey(name: 'postal_code') this.postalCode, @JsonKey(name: 'is_default_delivery') this.isDefaultDelivery, @JsonKey(name: 'is_default_pickup') this.isDefaultPickup, required this.latitude, required this.longitude});
+  const _CreateContactRequest({@JsonKey(name: 'full_name') required this.fullName, required this.phone, required this.address, @JsonKey(name: 'address_detail') this.addressDetail, @JsonKey(name: 'address_type') required this.addressType, required this.country, @JsonKey(name: 'province_code') required this.provinceCode, @JsonKey(name: 'province_name') required this.provinceName, @JsonKey(name: 'district_code') this.districtCode, @JsonKey(name: 'district_name') this.districtName, @JsonKey(name: 'ward_code') required this.wardCode, @JsonKey(name: 'ward_name') required this.wardName, @JsonKey(name: 'postal_code') this.postalCode, @JsonKey(name: 'is_default_delivery') this.isDefaultDelivery, @JsonKey(name: 'is_default_pickup') this.isDefaultPickup, this.latitude, this.longitude});
   factory _CreateContactRequest.fromJson(Map<String, dynamic> json) => _$CreateContactRequestFromJson(json);
 
 @override@JsonKey(name: 'full_name') final  String fullName;
@@ -2906,8 +2909,11 @@ class _CreateContactRequest implements CreateContactRequest {
 @override@JsonKey(name: 'postal_code') final  String? postalCode;
 @override@JsonKey(name: 'is_default_delivery') final  bool? isDefaultDelivery;
 @override@JsonKey(name: 'is_default_pickup') final  bool? isDefaultPickup;
-@override final  double latitude;
-@override final  double longitude;
+// Optional in the contract: geocoding may fail and the address still has to
+// be saveable. Sending 0,0 for "unknown" would put the seller in the
+// Atlantic and break every distance the buyer measures from it.
+@override final  double? latitude;
+@override final  double? longitude;
 
 /// Create a copy of CreateContactRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -2942,7 +2948,7 @@ abstract mixin class _$CreateContactRequestCopyWith<$Res> implements $CreateCont
   factory _$CreateContactRequestCopyWith(_CreateContactRequest value, $Res Function(_CreateContactRequest) _then) = __$CreateContactRequestCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'full_name') String fullName, String phone, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, String country,@JsonKey(name: 'province_code') String provinceCode,@JsonKey(name: 'province_name') String provinceName,@JsonKey(name: 'district_code') String? districtCode,@JsonKey(name: 'district_name') String? districtName,@JsonKey(name: 'ward_code') String wardCode,@JsonKey(name: 'ward_name') String wardName,@JsonKey(name: 'postal_code') String? postalCode,@JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,@JsonKey(name: 'is_default_pickup') bool? isDefaultPickup, double latitude, double longitude
+@JsonKey(name: 'full_name') String fullName, String phone, String address,@JsonKey(name: 'address_detail') String? addressDetail,@JsonKey(name: 'address_type') String addressType, String country,@JsonKey(name: 'province_code') String provinceCode,@JsonKey(name: 'province_name') String provinceName,@JsonKey(name: 'district_code') String? districtCode,@JsonKey(name: 'district_name') String? districtName,@JsonKey(name: 'ward_code') String wardCode,@JsonKey(name: 'ward_name') String wardName,@JsonKey(name: 'postal_code') String? postalCode,@JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,@JsonKey(name: 'is_default_pickup') bool? isDefaultPickup, double? latitude, double? longitude
 });
 
 
@@ -2959,7 +2965,7 @@ class __$CreateContactRequestCopyWithImpl<$Res>
 
 /// Create a copy of CreateContactRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? phone = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? country = null,Object? provinceCode = null,Object? provinceName = null,Object? districtCode = freezed,Object? districtName = freezed,Object? wardCode = null,Object? wardName = null,Object? postalCode = freezed,Object? isDefaultDelivery = freezed,Object? isDefaultPickup = freezed,Object? latitude = null,Object? longitude = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? phone = null,Object? address = null,Object? addressDetail = freezed,Object? addressType = null,Object? country = null,Object? provinceCode = null,Object? provinceName = null,Object? districtCode = freezed,Object? districtName = freezed,Object? wardCode = null,Object? wardName = null,Object? postalCode = freezed,Object? isDefaultDelivery = freezed,Object? isDefaultPickup = freezed,Object? latitude = freezed,Object? longitude = freezed,}) {
   return _then(_CreateContactRequest(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
@@ -2976,9 +2982,9 @@ as String,wardName: null == wardName ? _self.wardName : wardName // ignore: cast
 as String,postalCode: freezed == postalCode ? _self.postalCode : postalCode // ignore: cast_nullable_to_non_nullable
 as String?,isDefaultDelivery: freezed == isDefaultDelivery ? _self.isDefaultDelivery : isDefaultDelivery // ignore: cast_nullable_to_non_nullable
 as bool?,isDefaultPickup: freezed == isDefaultPickup ? _self.isDefaultPickup : isDefaultPickup // ignore: cast_nullable_to_non_nullable
-as bool?,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
-as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double,
+as bool?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 

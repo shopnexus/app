@@ -1,38 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../api/generated/model/administrative_area.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/area_picker_sheet.dart';
 import '../../../account/data/models/account_model.dart';
 import '../../../account/presentation/providers/addresses_provider.dart';
+import '../../../account/presentation/providers/administrative_areas_provider.dart';
 import '../../data/models/catalog_model.dart';
 import '../providers/catalog_provider.dart';
-
-/// A province and its code. Codes are the ones the listing snapshot carries, so
-/// they have to be the administrative codes and not names.
-class _Province {
-  final String code;
-  final String name;
-
-  const _Province(this.code, this.name);
-}
-
-/// A stopgap: the API has no route that lists administrative areas, so the ones
-/// a buyer is most likely to browse are named here. A ward-level filter comes
-/// from the buyer's own saved addresses below, where the codes are real data.
-const List<_Province> _provinces = [
-  _Province('01', 'Hà Nội'),
-  _Province('79', 'TP. Hồ Chí Minh'),
-  _Province('31', 'Hải Phòng'),
-  _Province('48', 'Đà Nẵng'),
-  _Province('92', 'Cần Thơ'),
-  _Province('46', 'Huế'),
-  _Province('22', 'Quảng Ninh'),
-  _Province('24', 'Bắc Ninh'),
-  _Province('38', 'Thanh Hóa'),
-  _Province('40', 'Nghệ An'),
-  _Province('56', 'Khánh Hòa'),
-  _Province('68', 'Lâm Đồng'),
-  _Province('75', 'Đồng Nai'),
-];
 
 const List<double> _radiusChoices = [2, 5, 10, 25, 50];
 
@@ -53,59 +28,107 @@ class LocationFilterSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final contactsState = ref.watch(buyerContactsProvider);
+    final provinceCode = filters.provinceCode;
+    final provinceName = _nameOf(ref.watch(provincesProvider), provinceCode);
+    // Asked for only once a ward is picked: a province answers all of its wards
+    // at once, so this is a page-sized response and not a label lookup.
+    final wardName = (provinceCode == null || filters.wardCode == null)
+        ? null
+        : _nameOf(ref.watch(wardsProvider(provinceCode)), filters.wardCode);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _label(context, 'Khu vực'),
         const SizedBox(height: 8.0),
-        SizedBox(
-          height: 40.0,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              for (final province in _provinces)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: _choice(
+        Wrap(
+          spacing: 8.0,
+          runSpacing: 8.0,
+          children: [
+            _picker(
+              context,
+              label: provinceName ?? 'Tất cả tỉnh/thành',
+              icon: Icons.map_outlined,
+              selected: provinceCode != null,
+              onPressed: () async {
+                final picked = await showAreaPicker(
+                  context,
+                  title: 'Chọn tỉnh, thành phố',
+                  selectedCode: provinceCode,
+                );
+                // A different province invalidates the ward under it.
+                if (picked != null) {
+                  onChanged(
+                    _withArea(provinceCode: picked.code, label: picked.name),
+                  );
+                }
+              },
+            ),
+            if (provinceCode != null)
+              _picker(
+                context,
+                label: wardName ?? 'Tất cả phường/xã',
+                icon: Icons.location_on_outlined,
+                selected: filters.wardCode != null,
+                onPressed: () async {
+                  final picked = await showAreaPicker(
                     context,
-                    label: province.name,
-                    selected:
-                        filters.provinceCode == province.code &&
-                        filters.wardCode == null,
-                    onSelected: (selected) => onChanged(
+                    title: 'Chọn phường, xã',
+                    parent: provinceCode,
+                    selectedCode: filters.wardCode,
+                  );
+                  if (picked != null) {
+                    onChanged(
                       _withArea(
-                        provinceCode: selected ? province.code : null,
-                        label: selected ? province.name : null,
+                        provinceCode: provinceCode,
+                        wardCode: picked.code,
+                        label: '${picked.name}, ${provinceName ?? ''}',
                       ),
-                    ),
-                  ),
-                ),
-              // A saved address pins the ward, which is as narrow as this filter
-              // goes.
-              for (final contact in contactsState.value ?? const <Contact>[])
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: _choice(
-                    context,
-                    label: '${contact.wardName}, ${contact.provinceName}',
-                    icon: Icons.home_outlined,
-                    selected: filters.wardCode == contact.wardCode,
-                    onSelected: (selected) => onChanged(
-                      _withArea(
-                        provinceCode: selected ? contact.provinceCode : null,
-                        districtCode: selected ? contact.districtCode : null,
-                        wardCode: selected ? contact.wardCode : null,
-                        label: selected
-                            ? '${contact.wardName}, ${contact.provinceName}'
-                            : null,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+                    );
+                  }
+                },
+              ),
+            if (filters.hasArea)
+              _picker(
+                context,
+                label: 'Bỏ chọn khu vực',
+                icon: Icons.close_rounded,
+                selected: false,
+                onPressed: () => onChanged(_withArea()),
+              ),
+          ],
         ),
+        const SizedBox(height: 12.0),
+
+        // A saved address is one tap to the ward the buyer already lives in.
+        if ((contactsState.value ?? const <Contact>[]).isNotEmpty)
+          SizedBox(
+            height: 40.0,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                for (final contact in contactsState.value ?? const <Contact>[])
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: _choice(
+                      context,
+                      label: '${contact.wardName}, ${contact.provinceName}',
+                      icon: Icons.home_outlined,
+                      selected: filters.wardCode == contact.wardCode,
+                      onSelected: (selected) => onChanged(
+                        _withArea(
+                          provinceCode: selected ? contact.provinceCode : null,
+                          wardCode: selected ? contact.wardCode : null,
+                          label: selected
+                              ? '${contact.wardName}, ${contact.provinceName}'
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         const SizedBox(height: 20.0),
 
         _label(context, 'Gần tôi'),
@@ -235,18 +258,28 @@ class LocationFilterSection extends ConsumerWidget {
     );
   }
 
+  /// The whole area is replaced at once, never patched: a ward left standing
+  /// under a newly picked province is a filter for somewhere nobody chose.
   CatalogSearchFilters _withArea({
     String? provinceCode,
-    String? districtCode,
     String? wardCode,
     String? label,
   }) {
     return filters.copyWith(
       provinceCode: provinceCode,
-      districtCode: districtCode,
       wardCode: wardCode,
       areaLabel: label,
     );
+  }
+
+  /// The code is the filter; the name is only what the chip reads. So it is
+  /// looked up in the list that was served and never stored beside the code.
+  String? _nameOf(AsyncValue<List<AdministrativeArea>> areas, String? code) {
+    if (code == null) return null;
+    for (final area in areas.value ?? const <AdministrativeArea>[]) {
+      if (area.code == code) return area.name;
+    }
+    return null;
   }
 
   /// Dropping the position also drops what cannot be sent without one.
@@ -272,6 +305,42 @@ class LocationFilterSection extends ConsumerWidget {
         fontSize: 14,
         color: theme.colorScheme.onSurface,
       ),
+    );
+  }
+
+  /// Opens a level of the area vocabulary. A chip rather than a dropdown because
+  /// 63 provinces and up to 549 wards need a search field, not a menu.
+  Widget _picker(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required bool selected,
+    required VoidCallback onPressed,
+  }) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return ActionChip(
+      label: Text(label),
+      avatar: Icon(
+        icon,
+        size: 14,
+        color: selected
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.primary,
+      ),
+      labelStyle: TextStyle(
+        fontFamily: 'Inter',
+        color: selected
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onSurface,
+        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+      ),
+      backgroundColor: selected
+          ? theme.colorScheme.primary
+          : (isDarkMode ? AppColors.darkSurface : const Color(0xFFEEEEEB)),
+      side: BorderSide.none,
+      onPressed: onPressed,
     );
   }
 

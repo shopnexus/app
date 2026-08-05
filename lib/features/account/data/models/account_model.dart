@@ -246,8 +246,11 @@ abstract class CreateContactRequest with _$CreateContactRequest {
     @JsonKey(name: 'postal_code') String? postalCode,
     @JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,
     @JsonKey(name: 'is_default_pickup') bool? isDefaultPickup,
-    required double latitude,
-    required double longitude,
+    // Optional in the contract: geocoding may fail and the address still has to
+    // be saveable. Sending 0,0 for "unknown" would put the seller in the
+    // Atlantic and break every distance the buyer measures from it.
+    double? latitude,
+    double? longitude,
   }) = _CreateContactRequest;
 
   factory CreateContactRequest.fromJson(Map<String, dynamic> json) =>

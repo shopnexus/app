@@ -14,12 +14,19 @@ abstract class ChatListState with _$ChatListState {
 
   const ChatListState._();
 
+  /// A ticket's thread is read in the help centre, so it never appears here —
+  /// `ticket_id` on the row is what tells the two apart.
+  List<Conversation> get inboxConversations => conversations
+      .where((conversation) => !conversation.isTicketThread)
+      .toList();
+
   /// Filtering is local to what is already loaded — the inbox route has no search
   /// parameter, so this narrows the page on screen rather than querying.
   List<Conversation> get filteredConversations {
     final query = searchQuery.trim().toLowerCase();
-    if (query.isEmpty) return conversations;
-    return conversations.where((conversation) {
+    final inbox = inboxConversations;
+    if (query.isEmpty) return inbox;
+    return inbox.where((conversation) {
       final name = conversation.participantName.toLowerCase();
       final lastMessage = (conversation.lastMessageText ?? '').toLowerCase();
       return name.contains(query) || lastMessage.contains(query);

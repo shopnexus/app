@@ -66,7 +66,7 @@ final class NotificationsProvider
   }
 }
 
-String _$notificationsHash() => r'cf4f2950e455b36d7e30a0a14b83075fb7d47953';
+String _$notificationsHash() => r'da0e575e6201df276b5ac90419880edfed7c7a7b';
 
 final class NotificationsFamily extends $Family
     with
@@ -122,7 +122,7 @@ final class UnreadNotificationsCountProvider
 }
 
 String _$unreadNotificationsCountHash() =>
-    r'2ecceefdef70bb93af363c87a9f32e08923f1242';
+    r'9f1dd7c21b279062f7187d7eba14f0e2281fbe3c';
 
 @ProviderFor(NotificationsController)
 const notificationsControllerProvider = NotificationsControllerProvider._();

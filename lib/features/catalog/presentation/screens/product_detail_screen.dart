@@ -2128,7 +2128,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               Expanded(
                 child: chatListAsync.when(
                   data: (chatState) {
-                    final conversations = chatState.conversations;
+                    final conversations = chatState.inboxConversations;
                     if (conversations.isEmpty) {
                       return const Center(
                         child: Text(

@@ -94,11 +94,13 @@ class ChatMessage {
 
   bool get isSeen => delivery == MessageDelivery.seen;
 
-  /// Support threads are anonymous: on the requester's side a staff or backend
-  /// reply carries no sender, so there is no person to attribute it to and it
-  /// renders as the platform.
-  bool get isFromPlatform =>
-      message.senderId == null || message.type == MessageType.system;
+  /// The desk answers as the platform, and the contract says so on the row: a
+  /// requester's view of a support reply carries the flag instead of a sender.
+  bool get isFromSupport => message.fromSupport ?? false;
+
+  /// Produced by the backend — an offer accepted, an order shipped — so it
+  /// belongs to neither side and is not somebody's writing.
+  bool get isSystem => message.type == MessageType.system;
 
   /// A negotiation card is `{"offer_id": "ofr_…"}` and nothing else — the terms
   /// are read from the offer, so a counter-offer cannot leave an old price on
@@ -133,6 +135,10 @@ extension ConversationView on Conversation {
 
   int get unreadCount => unread;
 
+  /// A support ticket's thread. It is read from the help centre, so the inbox
+  /// leaves it out rather than showing the desk beside the sellers.
+  bool get isTicketThread => ticketId != null;
+
   /// The generated DTOs carry no `copyWith` — copy_with_extension_gen is
   /// deliberately not wired in — so the handful of fields a realtime event moves
   /// are rebuilt here instead of at every call site.
@@ -150,6 +156,7 @@ extension ConversationView on Conversation {
       lastMessage: lastMessage ?? this.lastMessage,
       lastMessageAt: lastMessageAt ?? this.lastMessageAt,
       readAt: readAt,
+      ticketId: ticketId,
       unread: unread ?? this.unread,
     );
   }

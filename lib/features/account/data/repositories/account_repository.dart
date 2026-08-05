@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../api/api_providers.dart';
 import '../../../../api/generated/api/account_api.dart' as generated;
 import '../../../../api/generated/model/account_create_upload_request.dart';
+import '../../../../api/generated/model/administrative_area.dart';
 import '../../../../core/constants/app_config.dart';
 import '../data_sources/account_api_service.dart';
 import '../models/account_model.dart';
@@ -122,6 +123,18 @@ class AccountRepository {
     }
     final response = await _apiService.getAccountById(accountId);
     return response.data;
+  }
+
+  // --- Administrative Areas ---
+
+  /// Two tiers: no [parent] answers the 63 provinces, a province code answers its
+  /// wards. A code stays the zero-padded string it arrived as all the way back to
+  /// the server — parsed as an int, `'01'` matches nothing.
+  Future<List<AdministrativeArea>> getAdministrativeAreas({
+    String? parent,
+  }) async {
+    final response = await _api.administrativeAreasGet(parent: parent);
+    return response.data?.data ?? const [];
   }
 
   // --- Contacts Features ---

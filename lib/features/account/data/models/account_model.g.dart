@@ -260,8 +260,8 @@ _CreateContactRequest _$CreateContactRequestFromJson(
   postalCode: json['postal_code'] as String?,
   isDefaultDelivery: json['is_default_delivery'] as bool?,
   isDefaultPickup: json['is_default_pickup'] as bool?,
-  latitude: (json['latitude'] as num).toDouble(),
-  longitude: (json['longitude'] as num).toDouble(),
+  latitude: (json['latitude'] as num?)?.toDouble(),
+  longitude: (json['longitude'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$CreateContactRequestToJson(

@@ -28,7 +28,6 @@ class CatalogRepository {
     int? priceMin,
     int? priceMax,
     String? provinceCode,
-    String? districtCode,
     String? wardCode,
     double? lat,
     double? lon,
@@ -71,7 +70,8 @@ class CatalogRepository {
       minPrice: priceMin,
       maxPrice: priceMax,
       provinceCode: provinceCode,
-      districtCode: districtCode,
+      // No district_code: Vietnam has two tiers, so the backend drops it and a
+      // listing's address snapshot has none to match.
       wardCode: wardCode,
       lat: nearContactId == null ? lat : null,
       lon: nearContactId == null ? lon : null,

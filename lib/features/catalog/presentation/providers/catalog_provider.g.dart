@@ -89,7 +89,7 @@ final class CatalogProductsProvider
   }
 }
 
-String _$catalogProductsHash() => r'6c388231f7b65fc6b8ff4121ea05a9f00ef110e7';
+String _$catalogProductsHash() => r'415c8774bc5d920665edd65edf7f3c60a5498726';
 
 final class CatalogProductsFamily extends $Family
     with
@@ -176,7 +176,7 @@ final class ActiveSearchFiltersProvider
 }
 
 String _$activeSearchFiltersHash() =>
-    r'7bdbf4e54ce8c84537ad75081801f61a2705d3b7';
+    r'a2dbc8ef98e2adba6181174b92a30ef61a4823a9';
 
 abstract class _$ActiveSearchFilters extends $Notifier<CatalogSearchFilters> {
   CatalogSearchFilters build();

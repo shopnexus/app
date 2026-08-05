@@ -33,13 +33,20 @@ class ChatMessageBubble extends StatelessWidget {
       return _Notice(text: 'Tin nhắn đã bị xóa', theme: theme);
     }
 
-    // Support answers as the desk, so a reply with no sender is the platform and
-    // not a person to be argued with afterwards.
-    if (message.isFromPlatform) {
+    // The desk answers as the platform, and `from_support` is what says so — the
+    // absent sender it used to be read from is also how a system row looks.
+    if (message.isFromSupport) {
+      return _Notice(
+        text: message.body,
+        theme: theme,
+        label: 'Hỗ trợ ShopNexus',
+      );
+    }
+
+    if (message.isSystem) {
       return _Notice(
         text: message.body.isEmpty ? 'Cập nhật từ hệ thống' : message.body,
         theme: theme,
-        label: 'Hỗ trợ ShopNexus',
       );
     }
 

@@ -21,8 +21,9 @@ abstract class CatalogSearchFilters with _$CatalogSearchFilters {
 
     // Where to look: the listing's own snapshot of the seller's pickup address.
     // Send the narrowest level meant — a ward is already inside its province.
+    // There is no district: Vietnam goes province to ward, so a listing's
+    // snapshot has no district code for one to be matched against.
     String? provinceCode,
-    String? districtCode,
     String? wardCode,
     // Codes carry no name, so the chip needs the label the user picked.
     String? areaLabel,
@@ -41,8 +42,7 @@ abstract class CatalogSearchFilters with _$CatalogSearchFilters {
 
   bool get hasPosition => nearContactId != null || (lat != null && lon != null);
 
-  bool get hasArea =>
-      provinceCode != null || districtCode != null || wardCode != null;
+  bool get hasArea => provinceCode != null || wardCode != null;
 }
 
 @freezed
@@ -74,7 +74,6 @@ class CatalogProducts extends _$CatalogProducts {
       tag: filters.tag,
       sort: filters.sort,
       provinceCode: filters.provinceCode,
-      districtCode: filters.districtCode,
       wardCode: filters.wardCode,
       nearContactId: filters.nearContactId,
       lat: filters.lat,
@@ -174,16 +173,10 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
   }
 
   /// The administrative area to look in. Pass the narrowest level meant — a ward
-  /// is already inside its province — and null to clear all three.
-  void setArea({
-    String? provinceCode,
-    String? districtCode,
-    String? wardCode,
-    String? label,
-  }) {
+  /// is already inside its province — and nothing to clear both.
+  void setArea({String? provinceCode, String? wardCode, String? label}) {
     state = state.copyWith(
       provinceCode: provinceCode,
-      districtCode: districtCode,
       wardCode: wardCode,
       areaLabel: label,
       page: 1,

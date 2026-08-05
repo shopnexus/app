@@ -16,7 +16,9 @@ mixin _$CatalogSearchFilters {
 
  String? get keyword; String? get categoryId; int? get priceMin; int? get priceMax; String? get tag; String? get sort;// Where to look: the listing's own snapshot of the seller's pickup address.
 // Send the narrowest level meant — a ward is already inside its province.
- String? get provinceCode; String? get districtCode; String? get wardCode;// Codes carry no name, so the chip needs the label the user picked.
+// There is no district: Vietnam goes province to ward, so a listing's
+// snapshot has no district code for one to be matched against.
+ String? get provinceCode; String? get wardCode;// Codes carry no name, so the chip needs the label the user picked.
  String? get areaLabel;// Where the buyer is. A saved contact is the usual answer; lat/lon is
 // supported all the way down to the request but no screen sets it, since
 // the app has no geolocation plugin.
@@ -31,16 +33,16 @@ $CatalogSearchFiltersCopyWith<CatalogSearchFilters> get copyWith => _$CatalogSea
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogSearchFilters&&(identical(other.keyword, keyword) || other.keyword == keyword)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.priceMin, priceMin) || other.priceMin == priceMin)&&(identical(other.priceMax, priceMax) || other.priceMax == priceMax)&&(identical(other.tag, tag) || other.tag == tag)&&(identical(other.sort, sort) || other.sort == sort)&&(identical(other.provinceCode, provinceCode) || other.provinceCode == provinceCode)&&(identical(other.districtCode, districtCode) || other.districtCode == districtCode)&&(identical(other.wardCode, wardCode) || other.wardCode == wardCode)&&(identical(other.areaLabel, areaLabel) || other.areaLabel == areaLabel)&&(identical(other.nearContactId, nearContactId) || other.nearContactId == nearContactId)&&(identical(other.nearLabel, nearLabel) || other.nearLabel == nearLabel)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&(identical(other.radiusKm, radiusKm) || other.radiusKm == radiusKm)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogSearchFilters&&(identical(other.keyword, keyword) || other.keyword == keyword)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.priceMin, priceMin) || other.priceMin == priceMin)&&(identical(other.priceMax, priceMax) || other.priceMax == priceMax)&&(identical(other.tag, tag) || other.tag == tag)&&(identical(other.sort, sort) || other.sort == sort)&&(identical(other.provinceCode, provinceCode) || other.provinceCode == provinceCode)&&(identical(other.wardCode, wardCode) || other.wardCode == wardCode)&&(identical(other.areaLabel, areaLabel) || other.areaLabel == areaLabel)&&(identical(other.nearContactId, nearContactId) || other.nearContactId == nearContactId)&&(identical(other.nearLabel, nearLabel) || other.nearLabel == nearLabel)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&(identical(other.radiusKm, radiusKm) || other.radiusKm == radiusKm)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,keyword,categoryId,priceMin,priceMax,tag,sort,provinceCode,districtCode,wardCode,areaLabel,nearContactId,nearLabel,lat,lon,radiusKm,page,size);
+int get hashCode => Object.hash(runtimeType,keyword,categoryId,priceMin,priceMax,tag,sort,provinceCode,wardCode,areaLabel,nearContactId,nearLabel,lat,lon,radiusKm,page,size);
 
 @override
 String toString() {
-  return 'CatalogSearchFilters(keyword: $keyword, categoryId: $categoryId, priceMin: $priceMin, priceMax: $priceMax, tag: $tag, sort: $sort, provinceCode: $provinceCode, districtCode: $districtCode, wardCode: $wardCode, areaLabel: $areaLabel, nearContactId: $nearContactId, nearLabel: $nearLabel, lat: $lat, lon: $lon, radiusKm: $radiusKm, page: $page, size: $size)';
+  return 'CatalogSearchFilters(keyword: $keyword, categoryId: $categoryId, priceMin: $priceMin, priceMax: $priceMax, tag: $tag, sort: $sort, provinceCode: $provinceCode, wardCode: $wardCode, areaLabel: $areaLabel, nearContactId: $nearContactId, nearLabel: $nearLabel, lat: $lat, lon: $lon, radiusKm: $radiusKm, page: $page, size: $size)';
 }
 
 
@@ -51,7 +53,7 @@ abstract mixin class $CatalogSearchFiltersCopyWith<$Res>  {
   factory $CatalogSearchFiltersCopyWith(CatalogSearchFilters value, $Res Function(CatalogSearchFilters) _then) = _$CatalogSearchFiltersCopyWithImpl;
 @useResult
 $Res call({
- String? keyword, String? categoryId, int? priceMin, int? priceMax, String? tag, String? sort, String? provinceCode, String? districtCode, String? wardCode, String? areaLabel, String? nearContactId, String? nearLabel, double? lat, double? lon, double? radiusKm, int page, int size
+ String? keyword, String? categoryId, int? priceMin, int? priceMax, String? tag, String? sort, String? provinceCode, String? wardCode, String? areaLabel, String? nearContactId, String? nearLabel, double? lat, double? lon, double? radiusKm, int page, int size
 });
 
 
@@ -68,7 +70,7 @@ class _$CatalogSearchFiltersCopyWithImpl<$Res>
 
 /// Create a copy of CatalogSearchFilters
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tag = freezed,Object? sort = freezed,Object? provinceCode = freezed,Object? districtCode = freezed,Object? wardCode = freezed,Object? areaLabel = freezed,Object? nearContactId = freezed,Object? nearLabel = freezed,Object? lat = freezed,Object? lon = freezed,Object? radiusKm = freezed,Object? page = null,Object? size = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tag = freezed,Object? sort = freezed,Object? provinceCode = freezed,Object? wardCode = freezed,Object? areaLabel = freezed,Object? nearContactId = freezed,Object? nearLabel = freezed,Object? lat = freezed,Object? lon = freezed,Object? radiusKm = freezed,Object? page = null,Object? size = null,}) {
   return _then(_self.copyWith(
 keyword: freezed == keyword ? _self.keyword : keyword // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
@@ -77,7 +79,6 @@ as int?,priceMax: freezed == priceMax ? _self.priceMax : priceMax // ignore: cas
 as int?,tag: freezed == tag ? _self.tag : tag // ignore: cast_nullable_to_non_nullable
 as String?,sort: freezed == sort ? _self.sort : sort // ignore: cast_nullable_to_non_nullable
 as String?,provinceCode: freezed == provinceCode ? _self.provinceCode : provinceCode // ignore: cast_nullable_to_non_nullable
-as String?,districtCode: freezed == districtCode ? _self.districtCode : districtCode // ignore: cast_nullable_to_non_nullable
 as String?,wardCode: freezed == wardCode ? _self.wardCode : wardCode // ignore: cast_nullable_to_non_nullable
 as String?,areaLabel: freezed == areaLabel ? _self.areaLabel : areaLabel // ignore: cast_nullable_to_non_nullable
 as String?,nearContactId: freezed == nearContactId ? _self.nearContactId : nearContactId // ignore: cast_nullable_to_non_nullable
@@ -172,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  String? tag,  String? sort,  String? provinceCode,  String? districtCode,  String? wardCode,  String? areaLabel,  String? nearContactId,  String? nearLabel,  double? lat,  double? lon,  double? radiusKm,  int page,  int size)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  String? tag,  String? sort,  String? provinceCode,  String? wardCode,  String? areaLabel,  String? nearContactId,  String? nearLabel,  double? lat,  double? lon,  double? radiusKm,  int page,  int size)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CatalogSearchFilters() when $default != null:
-return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tag,_that.sort,_that.provinceCode,_that.districtCode,_that.wardCode,_that.areaLabel,_that.nearContactId,_that.nearLabel,_that.lat,_that.lon,_that.radiusKm,_that.page,_that.size);case _:
+return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tag,_that.sort,_that.provinceCode,_that.wardCode,_that.areaLabel,_that.nearContactId,_that.nearLabel,_that.lat,_that.lon,_that.radiusKm,_that.page,_that.size);case _:
   return orElse();
 
 }
@@ -193,10 +194,10 @@ return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  String? tag,  String? sort,  String? provinceCode,  String? districtCode,  String? wardCode,  String? areaLabel,  String? nearContactId,  String? nearLabel,  double? lat,  double? lon,  double? radiusKm,  int page,  int size)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  String? tag,  String? sort,  String? provinceCode,  String? wardCode,  String? areaLabel,  String? nearContactId,  String? nearLabel,  double? lat,  double? lon,  double? radiusKm,  int page,  int size)  $default,) {final _that = this;
 switch (_that) {
 case _CatalogSearchFilters():
-return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tag,_that.sort,_that.provinceCode,_that.districtCode,_that.wardCode,_that.areaLabel,_that.nearContactId,_that.nearLabel,_that.lat,_that.lon,_that.radiusKm,_that.page,_that.size);case _:
+return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tag,_that.sort,_that.provinceCode,_that.wardCode,_that.areaLabel,_that.nearContactId,_that.nearLabel,_that.lat,_that.lon,_that.radiusKm,_that.page,_that.size);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -213,10 +214,10 @@ return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  String? tag,  String? sort,  String? provinceCode,  String? districtCode,  String? wardCode,  String? areaLabel,  String? nearContactId,  String? nearLabel,  double? lat,  double? lon,  double? radiusKm,  int page,  int size)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? keyword,  String? categoryId,  int? priceMin,  int? priceMax,  String? tag,  String? sort,  String? provinceCode,  String? wardCode,  String? areaLabel,  String? nearContactId,  String? nearLabel,  double? lat,  double? lon,  double? radiusKm,  int page,  int size)?  $default,) {final _that = this;
 switch (_that) {
 case _CatalogSearchFilters() when $default != null:
-return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tag,_that.sort,_that.provinceCode,_that.districtCode,_that.wardCode,_that.areaLabel,_that.nearContactId,_that.nearLabel,_that.lat,_that.lon,_that.radiusKm,_that.page,_that.size);case _:
+return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_that.tag,_that.sort,_that.provinceCode,_that.wardCode,_that.areaLabel,_that.nearContactId,_that.nearLabel,_that.lat,_that.lon,_that.radiusKm,_that.page,_that.size);case _:
   return null;
 
 }
@@ -228,7 +229,7 @@ return $default(_that.keyword,_that.categoryId,_that.priceMin,_that.priceMax,_th
 
 
 class _CatalogSearchFilters extends CatalogSearchFilters {
-  const _CatalogSearchFilters({this.keyword, this.categoryId, this.priceMin, this.priceMax, this.tag, this.sort, this.provinceCode, this.districtCode, this.wardCode, this.areaLabel, this.nearContactId, this.nearLabel, this.lat, this.lon, this.radiusKm, this.page = 1, this.size = 20}): super._();
+  const _CatalogSearchFilters({this.keyword, this.categoryId, this.priceMin, this.priceMax, this.tag, this.sort, this.provinceCode, this.wardCode, this.areaLabel, this.nearContactId, this.nearLabel, this.lat, this.lon, this.radiusKm, this.page = 1, this.size = 20}): super._();
   
 
 @override final  String? keyword;
@@ -239,8 +240,9 @@ class _CatalogSearchFilters extends CatalogSearchFilters {
 @override final  String? sort;
 // Where to look: the listing's own snapshot of the seller's pickup address.
 // Send the narrowest level meant — a ward is already inside its province.
+// There is no district: Vietnam goes province to ward, so a listing's
+// snapshot has no district code for one to be matched against.
 @override final  String? provinceCode;
-@override final  String? districtCode;
 @override final  String? wardCode;
 // Codes carry no name, so the chip needs the label the user picked.
 @override final  String? areaLabel;
@@ -265,16 +267,16 @@ _$CatalogSearchFiltersCopyWith<_CatalogSearchFilters> get copyWith => __$Catalog
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogSearchFilters&&(identical(other.keyword, keyword) || other.keyword == keyword)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.priceMin, priceMin) || other.priceMin == priceMin)&&(identical(other.priceMax, priceMax) || other.priceMax == priceMax)&&(identical(other.tag, tag) || other.tag == tag)&&(identical(other.sort, sort) || other.sort == sort)&&(identical(other.provinceCode, provinceCode) || other.provinceCode == provinceCode)&&(identical(other.districtCode, districtCode) || other.districtCode == districtCode)&&(identical(other.wardCode, wardCode) || other.wardCode == wardCode)&&(identical(other.areaLabel, areaLabel) || other.areaLabel == areaLabel)&&(identical(other.nearContactId, nearContactId) || other.nearContactId == nearContactId)&&(identical(other.nearLabel, nearLabel) || other.nearLabel == nearLabel)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&(identical(other.radiusKm, radiusKm) || other.radiusKm == radiusKm)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogSearchFilters&&(identical(other.keyword, keyword) || other.keyword == keyword)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.priceMin, priceMin) || other.priceMin == priceMin)&&(identical(other.priceMax, priceMax) || other.priceMax == priceMax)&&(identical(other.tag, tag) || other.tag == tag)&&(identical(other.sort, sort) || other.sort == sort)&&(identical(other.provinceCode, provinceCode) || other.provinceCode == provinceCode)&&(identical(other.wardCode, wardCode) || other.wardCode == wardCode)&&(identical(other.areaLabel, areaLabel) || other.areaLabel == areaLabel)&&(identical(other.nearContactId, nearContactId) || other.nearContactId == nearContactId)&&(identical(other.nearLabel, nearLabel) || other.nearLabel == nearLabel)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&(identical(other.radiusKm, radiusKm) || other.radiusKm == radiusKm)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,keyword,categoryId,priceMin,priceMax,tag,sort,provinceCode,districtCode,wardCode,areaLabel,nearContactId,nearLabel,lat,lon,radiusKm,page,size);
+int get hashCode => Object.hash(runtimeType,keyword,categoryId,priceMin,priceMax,tag,sort,provinceCode,wardCode,areaLabel,nearContactId,nearLabel,lat,lon,radiusKm,page,size);
 
 @override
 String toString() {
-  return 'CatalogSearchFilters(keyword: $keyword, categoryId: $categoryId, priceMin: $priceMin, priceMax: $priceMax, tag: $tag, sort: $sort, provinceCode: $provinceCode, districtCode: $districtCode, wardCode: $wardCode, areaLabel: $areaLabel, nearContactId: $nearContactId, nearLabel: $nearLabel, lat: $lat, lon: $lon, radiusKm: $radiusKm, page: $page, size: $size)';
+  return 'CatalogSearchFilters(keyword: $keyword, categoryId: $categoryId, priceMin: $priceMin, priceMax: $priceMax, tag: $tag, sort: $sort, provinceCode: $provinceCode, wardCode: $wardCode, areaLabel: $areaLabel, nearContactId: $nearContactId, nearLabel: $nearLabel, lat: $lat, lon: $lon, radiusKm: $radiusKm, page: $page, size: $size)';
 }
 
 
@@ -285,7 +287,7 @@ abstract mixin class _$CatalogSearchFiltersCopyWith<$Res> implements $CatalogSea
   factory _$CatalogSearchFiltersCopyWith(_CatalogSearchFilters value, $Res Function(_CatalogSearchFilters) _then) = __$CatalogSearchFiltersCopyWithImpl;
 @override @useResult
 $Res call({
- String? keyword, String? categoryId, int? priceMin, int? priceMax, String? tag, String? sort, String? provinceCode, String? districtCode, String? wardCode, String? areaLabel, String? nearContactId, String? nearLabel, double? lat, double? lon, double? radiusKm, int page, int size
+ String? keyword, String? categoryId, int? priceMin, int? priceMax, String? tag, String? sort, String? provinceCode, String? wardCode, String? areaLabel, String? nearContactId, String? nearLabel, double? lat, double? lon, double? radiusKm, int page, int size
 });
 
 
@@ -302,7 +304,7 @@ class __$CatalogSearchFiltersCopyWithImpl<$Res>
 
 /// Create a copy of CatalogSearchFilters
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tag = freezed,Object? sort = freezed,Object? provinceCode = freezed,Object? districtCode = freezed,Object? wardCode = freezed,Object? areaLabel = freezed,Object? nearContactId = freezed,Object? nearLabel = freezed,Object? lat = freezed,Object? lon = freezed,Object? radiusKm = freezed,Object? page = null,Object? size = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tag = freezed,Object? sort = freezed,Object? provinceCode = freezed,Object? wardCode = freezed,Object? areaLabel = freezed,Object? nearContactId = freezed,Object? nearLabel = freezed,Object? lat = freezed,Object? lon = freezed,Object? radiusKm = freezed,Object? page = null,Object? size = null,}) {
   return _then(_CatalogSearchFilters(
 keyword: freezed == keyword ? _self.keyword : keyword // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
@@ -311,7 +313,6 @@ as int?,priceMax: freezed == priceMax ? _self.priceMax : priceMax // ignore: cas
 as int?,tag: freezed == tag ? _self.tag : tag // ignore: cast_nullable_to_non_nullable
 as String?,sort: freezed == sort ? _self.sort : sort // ignore: cast_nullable_to_non_nullable
 as String?,provinceCode: freezed == provinceCode ? _self.provinceCode : provinceCode // ignore: cast_nullable_to_non_nullable
-as String?,districtCode: freezed == districtCode ? _self.districtCode : districtCode // ignore: cast_nullable_to_non_nullable
 as String?,wardCode: freezed == wardCode ? _self.wardCode : wardCode // ignore: cast_nullable_to_non_nullable
 as String?,areaLabel: freezed == areaLabel ? _self.areaLabel : areaLabel // ignore: cast_nullable_to_non_nullable
 as String?,nearContactId: freezed == nearContactId ? _self.nearContactId : nearContactId // ignore: cast_nullable_to_non_nullable

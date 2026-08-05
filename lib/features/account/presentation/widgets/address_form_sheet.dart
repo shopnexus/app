@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../api/generated/model/administrative_area.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/data_sources/common_api_service.dart';
 import '../../../../shared/models/geocode_model.dart';
+import '../../../../shared/widgets/area_picker_sheet.dart';
 import '../../data/models/account_model.dart';
 import '../providers/addresses_provider.dart';
 
@@ -22,9 +24,18 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
   late TextEditingController _addressController;
   late TextEditingController _detailController;
 
-  String _addressType = 'Home'; // 'Home' | 'Office' | 'Other'
+  String _addressType = 'home'; // the contract's enum: 'home' | 'work'
   double? _latitude;
   double? _longitude;
+
+  /// The picked area, code and display name together. A saved contact already
+  /// carries both, which is why an edit needs no lookup to show where it is.
+  AdministrativeArea? _province;
+  AdministrativeArea? _ward;
+
+  /// The pickers are not form fields, so their "required" is reported here rather
+  /// than by the validator.
+  String? _areaError;
 
   bool _isSearching = false;
   List<dynamic> _suggestions = [];
@@ -39,9 +50,23 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
     _detailController = TextEditingController(
       text: widget.contact?.addressDetail,
     );
-    _addressType = widget.contact?.addressType ?? 'Home';
+    _addressType = widget.contact?.addressType ?? 'home';
     _latitude = widget.contact?.latitude;
     _longitude = widget.contact?.longitude;
+
+    final contact = widget.contact;
+    if (contact != null) {
+      _province = AdministrativeArea(
+        code: contact.provinceCode,
+        name: contact.provinceName,
+        kind: AdministrativeAreaKindEnum.province,
+      );
+      _ward = AdministrativeArea(
+        code: contact.wardCode,
+        name: contact.wardName,
+        kind: AdministrativeAreaKindEnum.ward,
+      );
+    }
 
     _addressFocusNode.addListener(() {
       if (!_addressFocusNode.hasFocus) {
@@ -106,11 +131,22 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
   void _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // The codes are what a carrier is called with, so an address cannot be saved
+    // without them and neither is ever typed — both come from the picker.
+    final province = _province;
+    final ward = _ward;
+    if (province == null || ward == null) {
+      setState(() => _areaError = 'Vui lòng chọn tỉnh/thành và phường/xã');
+      return;
+    }
+
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final address = _addressController.text.trim();
     final detail = _detailController.text.trim();
 
+    // Nothing sends a district: Vietnam goes province to ward and the backend
+    // drops the pair, so a code invented here would be silently lost.
     if (widget.contact == null) {
       await ref
           .read(addressesControllerProvider.notifier)
@@ -120,14 +156,14 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
               phone: phone,
               address: address,
               addressDetail: detail.isNotEmpty ? detail : null,
-              addressType: _addressType.toLowerCase(),
+              addressType: _addressType,
               country: 'VN',
-              provinceCode: '79',
-              provinceName: 'TP. Hồ Chí Minh',
-              wardCode: '26734',
-              wardName: 'Phường Bến Nghé',
-              latitude: _latitude ?? 0.0,
-              longitude: _longitude ?? 0.0,
+              provinceCode: province.code,
+              provinceName: province.name,
+              wardCode: ward.code,
+              wardName: ward.name,
+              latitude: _latitude,
+              longitude: _longitude,
             ),
           );
     } else {
@@ -140,7 +176,11 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
               phone: phone,
               address: address,
               addressDetail: detail.isNotEmpty ? detail : null,
-              addressType: _addressType.toLowerCase(),
+              addressType: _addressType,
+              provinceCode: province.code,
+              provinceName: province.name,
+              wardCode: ward.code,
+              wardName: ward.name,
               latitude: _latitude,
               longitude: _longitude,
             ),
@@ -268,6 +308,62 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                     ? 'Please enter phone number'
                     : null,
               ),
+              const SizedBox(height: 16),
+
+              // Province and ward, from the backend's own list. The codes are
+              // what a carrier is routed by, so they are chosen and never typed.
+              _areaField(
+                label: 'Tỉnh/Thành phố',
+                value: _province?.name,
+                fillColor: inputFillColor,
+                onTap: () async {
+                  final picked = await showAreaPicker(
+                    context,
+                    title: 'Chọn tỉnh, thành phố',
+                    selectedCode: _province?.code,
+                  );
+                  if (picked == null) return;
+                  // The ward belonged to the old province, so it cannot stand.
+                  setState(() {
+                    _province = picked;
+                    _ward = null;
+                    _areaError = null;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              _areaField(
+                label: 'Phường/Xã',
+                value: _ward?.name,
+                fillColor: inputFillColor,
+                enabled: _province != null,
+                onTap: () async {
+                  final province = _province;
+                  if (province == null) return;
+                  final picked = await showAreaPicker(
+                    context,
+                    title: 'Chọn phường, xã',
+                    parent: province.code,
+                    selectedCode: _ward?.code,
+                  );
+                  if (picked == null) return;
+                  setState(() {
+                    _ward = picked;
+                    _areaError = null;
+                  });
+                },
+              ),
+              if (_areaError != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  _areaError!,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
 
               // Address Search Autocomplete Field
@@ -408,13 +504,13 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                 ),
               ),
               const SizedBox(height: 8),
+              // The contract has two kinds and no more, so there is no 'Other'
+              // chip to send a value the route answers 422 to.
               Row(
                 children: [
-                  _buildTypeChip('Home', 'Home'),
+                  _buildTypeChip('home', 'Nhà riêng'),
                   const SizedBox(width: 8),
-                  _buildTypeChip('Office', 'Office'),
-                  const SizedBox(width: 8),
-                  _buildTypeChip('Other', 'Other'),
+                  _buildTypeChip('work', 'Công ty'),
                 ],
               ),
 
@@ -444,6 +540,55 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Looks like the text fields around it but opens the area picker; a free-text
+  /// area would produce a name with no code behind it.
+  Widget _areaField({
+    required String label,
+    required String? value,
+    required Color fillColor,
+    required VoidCallback onTap,
+    bool enabled = true,
+  }) {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: enabled ? onTap : null,
+      borderRadius: BorderRadius.circular(12),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          filled: true,
+          fillColor: fillColor,
+          enabled: enabled,
+          suffixIcon: Icon(
+            Icons.expand_more_rounded,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        isEmpty: value == null,
+        child: Text(
+          value ?? '',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            color: enabled
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onSurfaceVariant,
           ),
         ),
       ),
