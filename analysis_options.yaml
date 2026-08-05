@@ -3,6 +3,11 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   errors:
     invalid_annotation_target: ignore
+    # An import is either a package: URI or it is a build failure: a relative one
+    # resolves to a second copy of the same library when the file is reached
+    # through package:, and the two types then compare unequal at runtime.
+    always_use_package_imports: error
 
 linter:
   rules:
+    always_use_package_imports: true

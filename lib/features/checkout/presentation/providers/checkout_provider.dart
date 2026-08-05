@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../api/generated/model/payment_session.dart';
-import '../../../../api/generated/model/payment_session_status.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../../account/data/models/account_model.dart';
-import '../../../account/data/repositories/account_repository.dart';
-import '../../../cart/data/models/cart_model.dart';
-import '../../../cart/presentation/providers/cart_provider.dart';
-import '../../data/models/checkout_model.dart';
-import '../../data/repositories/checkout_repository.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/payment_session_status.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/features/cart/data/models/cart_model.dart';
+import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
+import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
+import 'package:shopnexus_flutter_app/features/checkout/data/repositories/checkout_repository.dart';
 
 part 'checkout_provider.freezed.dart';
 

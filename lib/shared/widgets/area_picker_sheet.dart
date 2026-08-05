@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../api/generated/model/administrative_area.dart';
-import '../../features/account/presentation/providers/administrative_areas_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/administrative_areas_provider.dart';
 
 /// Picks one area from one level of the vocabulary: the provinces, or the wards
 /// of the province named by [parent]. Both the address form and the browse filter

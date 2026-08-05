@@ -6,13 +6,13 @@
 /// 400 nobody saw until a user hit it.
 library;
 
-export '../../../../api/generated/model/auth_result.dart';
-export '../../../../api/generated/model/change_password_request.dart';
-export '../../../../api/generated/model/email_verification_request.dart';
-export '../../../../api/generated/model/login_request.dart';
-export '../../../../api/generated/model/logout_request.dart';
-export '../../../../api/generated/model/o_auth_login_request.dart';
-export '../../../../api/generated/model/password_reset_confirm_request.dart';
-export '../../../../api/generated/model/password_reset_request.dart';
-export '../../../../api/generated/model/refresh_request.dart';
-export '../../../../api/generated/model/register_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/auth_result.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/change_password_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/email_verification_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/login_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/logout_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/o_auth_login_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/password_reset_confirm_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/password_reset_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/refresh_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/register_request.dart';

@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/generated/model/administrative_area.dart';
-import '../../data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 
 part 'administrative_areas_provider.g.dart';
 

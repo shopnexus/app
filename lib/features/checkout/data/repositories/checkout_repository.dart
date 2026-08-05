@@ -1,9 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/api/finance_api.dart';
-import '../../../../api/generated/model/payment_session.dart';
-import '../data_sources/checkout_api_service.dart';
-import '../models/checkout_model.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
+import 'package:shopnexus_flutter_app/features/checkout/data/data_sources/checkout_api_service.dart';
+import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
 
 part 'checkout_repository.g.dart';
 

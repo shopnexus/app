@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
-import '../../data/models/cart_model.dart';
-import '../providers/cart_provider.dart';
-import '../../../checkout/presentation/providers/checkout_provider.dart';
-import '../../../checkout/data/models/checkout_model.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/cart/data/models/cart_model.dart';
+import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
+import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
+import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});

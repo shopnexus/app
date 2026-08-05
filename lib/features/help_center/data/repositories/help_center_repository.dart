@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../models/help_ticket_model.dart';
+import 'package:shopnexus_flutter_app/features/help_center/data/models/help_ticket_model.dart';
 
 part 'help_center_repository.g.dart';
 

@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/api/account_api.dart' as generated;
-import '../../../../api/generated/model/account_create_upload_request.dart';
-import '../../../../api/generated/model/administrative_area.dart';
-import '../../../../core/constants/app_config.dart';
-import '../data_sources/account_api_service.dart';
-import '../models/account_model.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
+    as generated;
+import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/core/constants/app_config.dart';
+import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 
 part 'account_repository.g.dart';
 

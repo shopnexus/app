@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../../api/generated/model/listing_location.dart';
-import '../../../../shared/models/rating_model.dart';
-import '../../../../shared/models/resource_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_location.dart';
+import 'package:shopnexus_flutter_app/shared/models/rating_model.dart';
+import 'package:shopnexus_flutter_app/shared/models/resource_model.dart';
 
 part 'catalog_model.freezed.dart';
 part 'catalog_model.g.dart';

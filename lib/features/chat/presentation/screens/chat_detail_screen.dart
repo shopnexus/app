@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../api/generated/model/ticket_kind.dart';
-import '../../../ticket/presentation/widgets/raise_ticket_sheet.dart';
-import '../../data/models/chat_model.dart';
-import '../providers/chat_notifier.dart';
-import '../providers/chat_state.dart';
-import '../widgets/chat_message_bubble.dart';
-import '../widgets/chat_offer_card.dart';
-import '../widgets/counter_offer_dialog.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_state.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_message_bubble.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_offer_card.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/counter_offer_dialog.dart';
 
 /// One thread. Chat has one thread per pair of accounts, so there is no product
 /// context on a conversation and nothing to pick between: the header is the

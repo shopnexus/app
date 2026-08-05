@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../api/generated/model/ticket.dart';
-import '../../../../api/generated/model/ticket_kind.dart';
-import '../../../../api/generated/model/ticket_reason.dart';
-import '../../data/models/ticket_kind_info.dart';
-import '../../data/repositories/ticket_repository.dart';
-import '../providers/ticket_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/repositories/ticket_repository.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/providers/ticket_provider.dart';
 
 /// The one form that raises a ticket, whatever the kind. A report of a listing, a
 /// refund the buyer wants staff to decide and a feature request are the same

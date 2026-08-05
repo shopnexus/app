@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 part 'seller_model.freezed.dart';
 

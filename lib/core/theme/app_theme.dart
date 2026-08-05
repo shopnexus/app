@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 
 class AppTheme {
   /// Cấu hình Light Theme - Tối giản, font Manrope (Headlines) & Inter (Body)

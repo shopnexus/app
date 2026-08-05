@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../data/models/account_model.dart';
-import '../../data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 
 part 'account_provider.g.dart';
 

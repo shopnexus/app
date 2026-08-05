@@ -1,17 +1,17 @@
-import '../../../../api/generated/model/conversation.dart';
-import '../../../../api/generated/model/message.dart';
-import '../../../../api/generated/model/message_type.dart';
-import '../../../../api/generated/model/resource.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/conversation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/message.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/message_type.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 
-export '../../../../api/generated/model/account_summary.dart';
-export '../../../../api/generated/model/chat_unread_count.dart';
-export '../../../../api/generated/model/conversation.dart';
-export '../../../../api/generated/model/conversation_read_mark.dart';
-export '../../../../api/generated/model/deleted_message_ref.dart';
-export '../../../../api/generated/model/message.dart';
-export '../../../../api/generated/model/message_type.dart';
-export '../../../../api/generated/model/offer.dart';
-export '../../../../api/generated/model/offer_status.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/chat_unread_count.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/conversation.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/conversation_read_mark.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/deleted_message_ref.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/message.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/message_type.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/offer_status.dart';
 
 /// How far a message the caller sent has got.
 ///

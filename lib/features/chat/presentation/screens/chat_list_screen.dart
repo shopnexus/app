@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../providers/chat_notifier.dart';
-import '../widgets/chat_item_widget.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_item_widget.dart';
 
 class ChatListScreen extends ConsumerWidget {
   const ChatListScreen({super.key});

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 
 class KycCardPickerWidget extends StatelessWidget {
   final String title;

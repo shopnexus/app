@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../providers/notifications_provider.dart';
-import '../../data/models/account_model.dart' as model;
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart'
+    as model;
 
 /// Mock Notification Item representation for UI testing & fallback
 class _MockNotification {

@@ -5,11 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../api/api_providers.dart';
-import '../../api/generated/api/account_api.dart';
-import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../constants/api_endpoints.dart';
-import 'realtime_event.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:shopnexus_flutter_app/core/constants/api_endpoints.dart';
+import 'package:shopnexus_flutter_app/core/realtime/realtime_event.dart';
 
 part 'realtime_client.g.dart';
 

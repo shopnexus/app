@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../data/models/account_model.dart';
-import '../providers/account_provider.dart';
-import '../providers/addresses_provider.dart';
-import '../widgets/address_form_sheet.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
 
 class AddressesScreen extends ConsumerWidget {
   const AddressesScreen({super.key});

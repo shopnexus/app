@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../shared/widgets/shared_product_card.dart';
-import '../../data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 /// The feed card plus what only a geo browse knows: how far the goods are.
 /// `distance_km` arrives only when the browse sent a position, so no badge means

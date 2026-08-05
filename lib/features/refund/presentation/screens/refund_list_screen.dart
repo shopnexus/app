@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../api/generated/model/refund.dart';
-import '../../data/repositories/refund_repository.dart';
-import '../providers/refund_provider.dart';
-import '../widgets/refund_status_badge.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
+import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refund_status_badge.dart';
 
 /// The caller's refund cases, as buyer and as seller. `role` is required by the
 /// backend because a refund row only records the buyer — the seller side is

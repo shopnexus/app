@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../shared/widgets/shared_product_card.dart';
-import '../../../account/presentation/providers/account_provider.dart';
-import '../../../catalog/data/models/catalog_model.dart';
-import '../providers/seller_provider.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_provider.dart';
 
 class SellerProfileScreen extends ConsumerStatefulWidget {
   final String vendorId;

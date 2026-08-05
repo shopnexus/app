@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/constants/app_config.dart';
-import '../../../catalog/data/models/catalog_model.dart';
-import '../../data/repositories/seller_repository.dart';
+import 'package:shopnexus_flutter_app/core/constants/app_config.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
 part 'seller_products_provider.freezed.dart';
 

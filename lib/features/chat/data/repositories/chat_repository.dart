@@ -1,17 +1,17 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/api/chat_api.dart';
-import '../../../../api/generated/api/order_api.dart';
-import '../../../../api/generated/model/chat_unread_count.dart';
-import '../../../../api/generated/model/conversation.dart';
-import '../../../../api/generated/model/mark_conversation_read_request.dart';
-import '../../../../api/generated/model/message.dart';
-import '../../../../api/generated/model/offer.dart';
-import '../../../../api/generated/model/send_message_request.dart';
-import '../../../../api/generated/model/start_conversation_request.dart';
-import '../../../../api/generated/model/update_message_request.dart';
-import '../../../../api/generated/model/update_offer_request.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/chat_unread_count.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/conversation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/mark_conversation_read_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/message.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/send_message_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/start_conversation_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_message_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_offer_request.dart';
 
 part 'chat_repository.g.dart';
 

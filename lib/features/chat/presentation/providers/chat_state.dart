@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../data/models/chat_model.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 
 part 'chat_state.freezed.dart';
 

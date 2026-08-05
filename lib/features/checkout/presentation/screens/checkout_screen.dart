@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
-import '../../../account/data/models/account_model.dart';
-import '../../../account/presentation/providers/addresses_provider.dart';
-import '../../../account/presentation/widgets/address_form_sheet.dart';
-import '../../../cart/presentation/providers/cart_provider.dart';
-import '../providers/checkout_provider.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
+import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
+import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
 
 class CheckoutScreen extends ConsumerWidget {
   const CheckoutScreen({super.key});

@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/generated/model/refund.dart';
-import '../../data/repositories/refund_repository.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
+import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
 
 part 'refund_provider.g.dart';
 

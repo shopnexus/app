@@ -1,8 +1,8 @@
-import '../../../../api/generated/model/ticket_action.dart';
-import '../../../../api/generated/model/ticket_kind.dart';
-import '../../../../api/generated/model/ticket_reason.dart';
-import '../../../../api/generated/model/ticket_ref_type.dart';
-import '../../../../api/generated/model/ticket_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_action.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_ref_type.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
 
 /// What each kind needs and what it is called in Vietnamese. The backend refuses
 /// a `ref_id` on a kind that is about nothing and requires one on the kinds that

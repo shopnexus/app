@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../account/presentation/providers/account_provider.dart';
-import '../providers/seller_dashboard_provider.dart';
-import '../widgets/sales_performance_chart.dart';
-import '../widgets/seller_menu_item_tile.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/widgets/sales_performance_chart.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/widgets/seller_menu_item_tile.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
   const SellerDashboardScreen({super.key});

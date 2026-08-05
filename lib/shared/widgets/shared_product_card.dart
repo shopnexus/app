@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/utils/money_utils.dart';
-import '../../features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 class SharedProductCard extends StatelessWidget {
   final TProductCard product;

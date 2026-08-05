@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
-import '../../../refund/presentation/widgets/request_refund_sheet.dart';
-import '../../../ticket/presentation/widgets/raise_ticket_sheet.dart';
-import '../../../../api/generated/model/ticket_kind.dart';
-import '../../data/models/account_model.dart';
-import '../providers/buyer_orders_provider.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/request_refund_sheet.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;

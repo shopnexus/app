@@ -3,12 +3,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/generated/model/category.dart';
-import '../../../../api/generated/model/contact.dart';
-import '../../../../api/generated/model/create_listing_request.dart';
-import '../../../../api/generated/model/listing_suggestion.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../data/repositories/listing_composer_repository.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_listing_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/repositories/listing_composer_repository.dart';
 
 part 'listing_suggestion_provider.freezed.dart';
 

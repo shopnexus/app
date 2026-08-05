@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 
 /// What a `negotiable` listing asks before anything is charged: the asking price
 /// is takeable outright, and haggling is the second way to buy it — not a step

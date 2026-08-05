@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../../shared/models/resource_model.dart';
-import '../../../catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/shared/models/resource_model.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 part 'cart_model.freezed.dart';
 

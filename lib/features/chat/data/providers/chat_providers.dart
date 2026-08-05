@@ -5,5 +5,5 @@
 /// `realtimeEventsProvider` and filters, rather than opening a connection.
 library;
 
-export '../models/chat_model.dart';
-export '../repositories/chat_repository.dart';
+export 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
+export 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../api/generated/model/administrative_area.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../shared/widgets/area_picker_sheet.dart';
-import '../../../account/data/models/account_model.dart';
-import '../../../account/presentation/providers/addresses_provider.dart';
-import '../../../account/presentation/providers/administrative_areas_provider.dart';
-import '../../data/models/catalog_model.dart';
-import '../providers/catalog_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/area_picker_sheet.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/administrative_areas_provider.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 
 const List<double> _radiusChoices = [2, 5, 10, 25, 50];
 

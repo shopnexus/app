@@ -1,11 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/generated/model/ticket.dart';
-import '../../../../api/generated/model/ticket_kind.dart';
-import '../../../../api/generated/model/ticket_reason.dart';
-import '../../../../api/generated/model/ticket_status.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../data/repositories/ticket_repository.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/repositories/ticket_repository.dart';
 
 part 'ticket_provider.g.dart';
 

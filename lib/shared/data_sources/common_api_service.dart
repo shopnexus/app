@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../core/constants/api_endpoints.dart';
-import '../../core/network/dio_client.dart';
-import '../models/currency_model.dart';
-import '../models/data_response.dart';
-import '../models/geocode_model.dart';
+import 'package:shopnexus_flutter_app/core/constants/api_endpoints.dart';
+import 'package:shopnexus_flutter_app/core/network/dio_client.dart';
+import 'package:shopnexus_flutter_app/shared/models/currency_model.dart';
+import 'package:shopnexus_flutter_app/shared/models/data_response.dart';
+import 'package:shopnexus_flutter_app/shared/models/geocode_model.dart';
 
 part 'common_api_service.g.dart';
 

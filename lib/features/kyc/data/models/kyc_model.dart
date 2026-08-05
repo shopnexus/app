@@ -7,10 +7,10 @@
 /// row" made every reader handle absence twice.
 library;
 
-export '../../../../api/generated/model/account_create_upload_request.dart';
-export '../../../../api/generated/model/identity_document.dart';
-export '../../../../api/generated/model/identity_document_type.dart';
-export '../../../../api/generated/model/identity_status.dart';
-export '../../../../api/generated/model/identity_verification_ticket.dart';
-export '../../../../api/generated/model/start_identity_verification_request.dart';
-export '../../../../api/generated/model/upload_slot.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/identity_document.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/identity_document_type.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/identity_status.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/identity_verification_ticket.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/start_identity_verification_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/upload_slot.dart';

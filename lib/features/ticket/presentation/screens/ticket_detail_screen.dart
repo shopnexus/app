@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../api/generated/model/ticket.dart';
-import '../../data/models/ticket_kind_info.dart';
-import '../providers/ticket_provider.dart';
-import '../widgets/ticket_status_badge.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/providers/ticket_provider.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/ticket_status_badge.dart';
 
 /// What staff decided, and a door into the thread. Everything the requester and
 /// support actually said lives in the chat thread the ticket carries, so this

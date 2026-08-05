@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../data/models/seller_model.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/models/seller_model.dart';
 
 class SalesPerformanceChart extends StatelessWidget {
   final List<SalesChartPoint> chartPoints;

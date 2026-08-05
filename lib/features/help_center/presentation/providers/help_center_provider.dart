@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/generated/model/ticket.dart';
-import '../../../../api/generated/model/ticket_status.dart';
-import '../../../ticket/data/models/ticket_kind_info.dart';
-import '../../../ticket/data/repositories/ticket_repository.dart';
-import '../../data/models/help_ticket_model.dart';
-import '../../data/repositories/help_center_repository.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/repositories/ticket_repository.dart';
+import 'package:shopnexus_flutter_app/features/help_center/data/models/help_ticket_model.dart';
+import 'package:shopnexus_flutter_app/features/help_center/data/repositories/help_center_repository.dart';
 
 part 'help_center_provider.freezed.dart';
 

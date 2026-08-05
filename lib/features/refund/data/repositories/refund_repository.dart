@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/api/order_api.dart';
-import '../../../../api/generated/model/add_attachments_request.dart';
-import '../../../../api/generated/model/admin_refunds_id_verdict_post200_response.dart';
-import '../../../../api/generated/model/create_refund_request.dart';
-import '../../../../api/generated/model/refund.dart';
-import '../../../../api/generated/model/refund_status.dart';
-import '../../../../api/generated/model/reject_refund_request.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/add_attachments_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/admin_refunds_id_verdict_post200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_refund_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/reject_refund_request.dart';
 
 part 'refund_repository.g.dart';
 

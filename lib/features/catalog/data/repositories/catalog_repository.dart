@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/storage/hive_storage.dart';
-import '../data_sources/catalog_api_service.dart';
-import '../models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/data_sources/catalog_api_service.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 part 'catalog_repository.g.dart';
 

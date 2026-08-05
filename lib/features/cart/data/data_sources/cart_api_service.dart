@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/constants/api_endpoints.dart';
-import '../../../../core/network/dio_client.dart';
-import '../models/cart_model.dart';
+import 'package:shopnexus_flutter_app/core/constants/api_endpoints.dart';
+import 'package:shopnexus_flutter_app/core/network/dio_client.dart';
+import 'package:shopnexus_flutter_app/features/cart/data/models/cart_model.dart';
 
 part 'cart_api_service.g.dart';
 

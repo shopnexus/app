@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/api/account_api.dart';
-import '../../../../core/storage/hive_storage.dart';
-import '../models/kyc_model.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
+import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
 
 part 'kyc_repository.g.dart';
 

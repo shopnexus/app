@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/model/create_offer_request.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../../../core/utils/money_utils.dart';
-import '../../data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_offer_request.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 /// Opens a negotiation on a variant: `POST /offers`. Agreeing charges nothing —
 /// the buyer still checks out afterwards — so this sheet takes terms, not money.

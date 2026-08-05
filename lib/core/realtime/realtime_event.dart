@@ -1,9 +1,10 @@
-import '../../api/generated/model/conversation_read_mark.dart';
-import '../../api/generated/model/deleted_message_ref.dart';
-import '../../api/generated/model/message.dart';
-import '../../api/generated/model/notification.dart' as api;
-import '../../api/generated/model/offer.dart';
-import '../../api/generated/model/order_ref.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/conversation_read_mark.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/deleted_message_ref.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/message.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/notification.dart'
+    as api;
+import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_ref.dart';
 
 /// The event codes published in the backend's asyncapi document. Nothing else
 /// may spell them: a hand-written string that no longer matches is an event the

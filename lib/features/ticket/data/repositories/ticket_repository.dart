@@ -3,15 +3,15 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/api/chat_api.dart';
-import '../../../../api/generated/api/trust_api.dart';
-import '../../../../api/generated/model/create_upload_request.dart';
-import '../../../../api/generated/model/open_ticket_request.dart';
-import '../../../../api/generated/model/ticket.dart';
-import '../../../../api/generated/model/ticket_kind.dart';
-import '../../../../api/generated/model/ticket_reason.dart';
-import '../../../../api/generated/model/ticket_status.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/open_ticket_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
 
 part 'ticket_repository.g.dart';
 

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../api/generated/model/refund.dart';
-import '../../../../api/generated/model/refund_status.dart';
-import '../../../../api/generated/model/ticket_kind.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../../ticket/presentation/widgets/raise_ticket_sheet.dart';
-import '../providers/refund_provider.dart';
-import '../widgets/refund_status_badge.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refund_status_badge.dart';
 
 class RefundDetailScreen extends ConsumerWidget {
   const RefundDetailScreen({super.key, required this.refundId});

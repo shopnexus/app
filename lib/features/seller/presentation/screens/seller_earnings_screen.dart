@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/money_utils.dart';
-import '../providers/seller_earnings_provider.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_earnings_provider.dart';
 
 class SellerEarningsScreen extends ConsumerStatefulWidget {
   const SellerEarningsScreen({super.key});

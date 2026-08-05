@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../api/generated/model/ticket_status.dart';
-import '../../data/models/ticket_kind_info.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
 
 class TicketStatusBadge extends StatelessWidget {
   const TicketStatusBadge({super.key, required this.status});

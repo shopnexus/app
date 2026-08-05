@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../api/generated/model/ticket.dart';
-import '../../../../api/generated/model/ticket_status.dart';
-import '../../../ticket/data/models/ticket_kind_info.dart';
-import '../../../ticket/presentation/widgets/raise_ticket_sheet.dart';
-import '../providers/help_center_provider.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
+import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
+import 'package:shopnexus_flutter_app/features/help_center/presentation/providers/help_center_provider.dart';
 
 class HelpCenterScreen extends ConsumerStatefulWidget {
   const HelpCenterScreen({super.key});

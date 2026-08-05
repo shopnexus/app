@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../data/models/seller_model.dart';
-import '../../data/repositories/seller_repository.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/models/seller_model.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
 part 'seller_dashboard_provider.g.dart';
 

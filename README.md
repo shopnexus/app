@@ -62,6 +62,7 @@ When generating code or adding features to this repository, strictly adhere to t
     * Use **Hive** exclusively.
     * **Do cache:** Auth tokens, user preferences (theme/language), search history, and a lightweight list of the last 10 viewed products.
     * **Do NOT cache:** The entire product catalog.
+* **Imports:** Always `package:shopnexus_flutter_app/...`, never a relative path — `always_use_package_imports` is an **error** in `analysis_options.yaml`. Reached both ways, one file becomes two libraries whose types compare unequal, and the generated client is package-only anyway.
 * **Routing:** Always use `context.go()` or `context.push()` via **go_router**. Define all routes in `core/routing/app_router.dart`.
 * **Testing:** Focus purely on **Unit Testing** for critical business logic (e.g., Cart price calculations, API Model parsing). Do not generate UI/Widget tests unless explicitly requested.
 

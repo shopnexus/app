@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../account/presentation/providers/account_provider.dart';
-import '../../../../core/storage/hive_storage.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../data/models/auth_model.dart';
-import '../../data/repositories/auth_repository.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/auth/data/models/auth_model.dart';
+import 'package:shopnexus_flutter_app/features/auth/data/repositories/auth_repository.dart';
 
 part 'auth_provider.freezed.dart';
 part 'auth_provider.g.dart';

@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/constants/api_endpoints.dart';
-import '../../../../core/network/dio_client.dart';
-import '../../../../shared/models/data_response.dart';
-import '../models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/core/constants/api_endpoints.dart';
+import 'package:shopnexus_flutter_app/core/network/dio_client.dart';
+import 'package:shopnexus_flutter_app/shared/models/data_response.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 part 'catalog_api_service.g.dart';
 

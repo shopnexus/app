@@ -1,12 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../core/network/dio_client.dart';
-import 'generated/api/account_api.dart';
-import 'generated/api/catalog_api.dart';
-import 'generated/api/chat_api.dart';
-import 'generated/api/finance_api.dart';
-import 'generated/api/order_api.dart';
-import 'generated/api/trust_api.dart';
+import 'package:shopnexus_flutter_app/core/network/dio_client.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
 
 part 'api_providers.g.dart';
 

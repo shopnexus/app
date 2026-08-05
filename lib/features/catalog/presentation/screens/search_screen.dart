@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../data/models/catalog_model.dart';
-import '../providers/catalog_provider.dart';
-import '../widgets/location_filter_section.dart';
-import '../widgets/product_card.dart';
-import '../widgets/sort_options_sheet.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/sort_options_sheet.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});

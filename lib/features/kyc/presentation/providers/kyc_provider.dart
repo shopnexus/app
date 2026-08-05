@@ -1,8 +1,8 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../account/presentation/providers/account_provider.dart';
-import '../../data/models/kyc_model.dart';
-import '../../data/repositories/kyc_repository.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/repositories/kyc_repository.dart';
 
 part 'kyc_provider.g.dart';
 

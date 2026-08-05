@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/realtime/realtime_client.dart';
-import '../../../../core/realtime/realtime_event.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../data/models/chat_model.dart';
-import '../../data/repositories/chat_repository.dart';
-import 'chat_state.dart';
+import 'package:shopnexus_flutter_app/core/realtime/realtime_client.dart';
+import 'package:shopnexus_flutter_app/core/realtime/realtime_event.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_state.dart';
 
 part 'chat_notifier.g.dart';
 

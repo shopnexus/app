@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../data/models/catalog_model.dart';
-import '../../data/repositories/catalog_repository.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 
 part 'catalog_provider.freezed.dart';
 

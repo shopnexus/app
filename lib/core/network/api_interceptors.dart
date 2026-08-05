@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../storage/hive_storage.dart';
-import '../routing/app_router.dart';
-import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../constants/api_endpoints.dart';
-import '../constants/route_constants.dart';
+import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
+import 'package:shopnexus_flutter_app/core/routing/app_router.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:shopnexus_flutter_app/core/constants/api_endpoints.dart';
+import 'package:shopnexus_flutter_app/core/constants/route_constants.dart';
 
 /// Interceptor để tự động đính kèm Token từ Hive vào Header và tự động refresh token khi hết hạn
 class AuthInterceptor extends Interceptor {

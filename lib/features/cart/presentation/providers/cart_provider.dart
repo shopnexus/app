@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../../../shared/data_sources/common_api_service.dart';
-import '../../../account/data/repositories/account_repository.dart';
-import '../../data/models/cart_model.dart';
-import '../../data/repositories/cart_repository.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/shared/data_sources/common_api_service.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/features/cart/data/models/cart_model.dart';
+import 'package:shopnexus_flutter_app/features/cart/data/repositories/cart_repository.dart';
 
 part 'cart_provider.freezed.dart';
 part 'cart_provider.g.dart';

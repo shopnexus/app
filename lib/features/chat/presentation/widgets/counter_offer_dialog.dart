@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/money_utils.dart';
-import '../../data/models/chat_model.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 
 /// Revising the terms on the table. A negotiation is revised in place rather than
 /// by stacking rows, so this always answers against an existing offer — which is

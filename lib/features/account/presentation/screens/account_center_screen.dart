@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../kyc/data/models/kyc_model.dart';
-import '../../../kyc/presentation/providers/kyc_provider.dart';
-import '../../data/models/account_model.dart';
-import '../providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
+import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/kyc_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 
 class AccountCenterScreen extends ConsumerStatefulWidget {
   const AccountCenterScreen({super.key});

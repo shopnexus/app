@@ -1,8 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/conversation.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/message.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/message_type.dart';
+// The DTOs come through chat_model's re-export, which is what the app itself
+// imports — pulling them straight from the generated barrel is a second path to
+// the same library.
 import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_state.dart';
 

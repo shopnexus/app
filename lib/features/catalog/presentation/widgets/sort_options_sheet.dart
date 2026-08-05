@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../data/models/catalog_model.dart';
-import '../providers/catalog_provider.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 
 /// A null sort is the API's default, which is `newest` (or `relevance` once
 /// there is a query).

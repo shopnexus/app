@@ -6,16 +6,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../../api/generated/model/category.dart';
-import '../../../../api/generated/model/contact.dart';
-import '../../../../api/generated/model/create_listing_request.dart';
-import '../../../../api/generated/model/create_variant_request.dart';
-import '../../../../api/generated/model/listing_condition.dart';
-import '../../../../api/generated/model/listing_suggestion.dart';
-import '../../../../api/generated/model/price_mode.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../providers/listing_suggestion_provider.dart';
-import '../providers/seller_products_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_listing_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_variant_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/listing_suggestion_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
 
 /// "Photo in, listing out": the seller snaps the item, says a sentence about it,
 /// and gets a filled-in form to correct. The AI only fills the form in —

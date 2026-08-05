@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/api/account_api.dart';
-import '../../../../api/generated/model/login_post200_response.dart';
-import '../../../../core/storage/hive_storage.dart';
-import '../models/auth_model.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/login_post200_response.dart';
+import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
+import 'package:shopnexus_flutter_app/features/auth/data/models/auth_model.dart';
 
 part 'auth_repository.g.dart';
 

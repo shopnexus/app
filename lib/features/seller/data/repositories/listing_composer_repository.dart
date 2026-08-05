@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../api/api_providers.dart';
-import '../../../../api/generated/api/account_api.dart';
-import '../../../../api/generated/api/catalog_api.dart';
-import '../../../../api/generated/model/category.dart';
-import '../../../../api/generated/model/contact.dart';
-import '../../../../api/generated/model/create_listing_request.dart';
-import '../../../../api/generated/model/create_upload_request.dart';
-import '../../../../api/generated/model/listing_detail.dart';
-import '../../../../api/generated/model/listing_suggestion.dart';
-import '../../../../api/generated/model/publish_listing_request.dart';
-import '../../../../api/generated/model/suggest_listing_request.dart';
+import 'package:shopnexus_flutter_app/api/api_providers.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_listing_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/publish_listing_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/suggest_listing_request.dart';
 
 part 'listing_composer_repository.g.dart';
 

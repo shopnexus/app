@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../api/generated/model/refund.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../data/repositories/refund_repository.dart';
-import '../providers/refund_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
 
 /// A refund is for one entire order and carries no amount: what is owed is the
 /// order's checkout total, so this asks only for the reason.

@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../data/models/chat_model.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 
 class ChatMessageBubble extends StatelessWidget {
   const ChatMessageBubble({

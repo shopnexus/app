@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../data/models/kyc_model.dart';
-import '../providers/kyc_provider.dart';
-import '../widgets/kyc_card_picker_widget.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
+import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/kyc_provider.dart';
+import 'package:shopnexus_flutter_app/features/kyc/presentation/widgets/kyc_card_picker_widget.dart';
 
 class KycVerificationScreen extends ConsumerStatefulWidget {
   const KycVerificationScreen({super.key});

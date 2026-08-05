@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../api/generated/model/refund_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
 
 /// Every live status names the party the case is waiting on, and each of those
 /// carries a deadline that party can miss. The three terminals are what closed it.

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../api/generated/model/administrative_area.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../shared/data_sources/common_api_service.dart';
-import '../../../../shared/models/geocode_model.dart';
-import '../../../../shared/widgets/area_picker_sheet.dart';
-import '../../data/models/account_model.dart';
-import '../providers/addresses_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/shared/data_sources/common_api_service.dart';
+import 'package:shopnexus_flutter_app/shared/models/geocode_model.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/area_picker_sheet.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
 
 class AddressFormSheet extends ConsumerStatefulWidget {
   final Contact? contact;
