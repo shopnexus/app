@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
 
@@ -35,7 +35,6 @@ class AddressesScreen extends ConsumerWidget {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     final contactsAsync = ref.watch(buyerContactsProvider);
-    final profileAsync = ref.watch(profileProvider);
     final controllerState = ref.watch(addressesControllerProvider);
 
     ref.listen<AsyncValue<void>>(addressesControllerProvider, (previous, next) {
@@ -91,11 +90,9 @@ class AddressesScreen extends ConsumerWidget {
             color: theme.colorScheme.primary,
             onRefresh: () async {
               ref.invalidate(buyerContactsProvider);
-              ref.invalidate(profileProvider);
             },
             child: contactsAsync.when(
               data: (contacts) {
-                final defaultContactId = profileAsync.value?.defaultContactId;
                 if (contacts.isEmpty) {
                   return const _EmptyAddresses();
                 }
@@ -107,16 +104,8 @@ class AddressesScreen extends ConsumerWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: contacts.length,
-                      itemBuilder: (context, index) {
-                        final contact = contacts[index];
-                        final isDefault = contact.id == defaultContactId;
-                        return _buildContactCard(
-                          context,
-                          ref,
-                          contact,
-                          isDefault,
-                        );
-                      },
+                      itemBuilder: (context, index) =>
+                          _buildContactCard(context, ref, contacts[index]),
                     ),
                     const SizedBox(height: 16),
                     // Add New Address Button at the bottom
@@ -224,25 +213,16 @@ class AddressesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContactCard(
-    BuildContext context,
-    WidgetRef ref,
-    Contact contact,
-    bool isDefault,
-  ) {
+  Widget _buildContactCard(BuildContext context, WidgetRef ref, Contact contact) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    IconData typeIcon = Icons.location_on_rounded;
-    bool isFillIcon = false;
-
-    if (contact.addressType == 'Home') {
-      typeIcon = Icons.home_rounded;
-      isFillIcon = true;
-    } else if (contact.addressType == 'Office') {
-      typeIcon = Icons.work_rounded;
-      isFillIcon = false;
-    }
+    // The contract has two kinds, lowercase — the old 'Home'/'Office' comparison
+    // matched neither, so every card drew the generic pin.
+    final isHome = contact.addressType == 'home';
+    final typeIcon = isHome ? Icons.home_rounded : Icons.work_rounded;
+    final typeLabel = isHome ? 'Nhà riêng' : 'Công ty';
+    final isDefault = contact.isDefaultDelivery;
 
     final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
     final cardBorderColor = isDarkMode
@@ -313,14 +293,14 @@ class AddressesScreen extends ConsumerWidget {
                     children: [
                       Icon(
                         typeIcon,
-                        color: isFillIcon
+                        color: isHome
                             ? theme.colorScheme.primary
                             : theme.colorScheme.onSurfaceVariant,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        contact.addressType,
+                        typeLabel,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -402,16 +382,16 @@ class AddressesScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Set Default Button
+                      // Set Default Button — a default is a flag on the contact,
+                      // and delivery and pickup are separate defaults.
                       if (!isDefault)
                         InkWell(
                           onTap: () {
                             ref
-                                .read(accountControllerProvider.notifier)
-                                .updateProfile(
-                                  UpdateProfileRequest(
-                                    defaultContactId: contact.id,
-                                  ),
+                                .read(addressesControllerProvider.notifier)
+                                .updateContact(
+                                  contact.id,
+                                  UpdateContactRequest(isDefaultDelivery: true),
                                 );
                           },
                           borderRadius: BorderRadius.circular(6),

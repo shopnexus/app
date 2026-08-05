@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shopnexus_flutter_app/shared/data_sources/common_api_service.dart';
-import 'package:shopnexus_flutter_app/shared/models/geocode_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 
@@ -26,11 +26,14 @@ class AddressesController extends _$AddressesController {
     });
   }
 
-  Future<void> updateContact(UpdateContactRequest request) async {
+  Future<void> updateContact(
+    String contactId,
+    UpdateContactRequest request,
+  ) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final repository = ref.read(accountRepositoryProvider);
-      await repository.updateContact(request);
+      await repository.updateContact(contactId, request);
       ref.invalidate(buyerContactsProvider);
     });
   }
@@ -43,26 +46,4 @@ class AddressesController extends _$AddressesController {
       ref.invalidate(buyerContactsProvider);
     });
   }
-}
-
-// Geocoding Async Actions
-@riverpod
-Future<List<GeocodeSuggestion>> searchGeocode(Ref ref, String query) async {
-  if (query.isEmpty) return [];
-  final apiService = ref.watch(commonApiServiceProvider);
-  final response = await apiService.searchGeocode(query, 5);
-  return response.data;
-}
-
-@riverpod
-Future<String> reverseGeocode(
-  Ref ref,
-  double latitude,
-  double longitude,
-) async {
-  final apiService = ref.watch(commonApiServiceProvider);
-  final response = await apiService.reverseGeocode(
-    ReverseGeocodeRequest(latitude: latitude, longitude: longitude),
-  );
-  return response.data;
 }

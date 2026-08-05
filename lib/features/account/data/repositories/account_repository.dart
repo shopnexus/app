@@ -5,6 +5,10 @@ import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
     as generated;
 import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
 import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 
@@ -19,7 +23,8 @@ class AccountRepository {
   /// Reserve a slot, PUT the bytes to the signed URL, confirm — the bytes never
   /// pass through this API, and until the confirmation lands the resource
   /// resolves to nothing, so a profile can never show an avatar that never
-  /// arrived. Returns the resource id for `UpdateProfileRequest.avatarRsId`.
+  /// arrived. Returns the resource id for
+  /// `UpdateProfileRequest.avatarResourceId`.
   Future<String> uploadAvatar({
     required List<int> bytes,
     required String filename,
@@ -59,24 +64,24 @@ class AccountRepository {
     return response.data;
   }
 
-  Future<Me> updateProfile(UpdateProfileRequest request) async {
-    await _apiService.updateProfile(request);
-    final response = await _apiService.getProfile();
-    return response.data;
+  /// The public half of the account: name, description, gender, birth date,
+  /// avatar, locale. Identifiers are [updateAccount]'s.
+  Future<void> updateProfile(UpdateProfileRequest request) {
+    final body = request.toJson();
+    // `date_of_birth` is `format: date`, which the generator turns into a
+    // `DateTime` and json_serializable then writes as a full instant — the route
+    // answers 400 `rule: date`. The day is the whole fact, so trim it back.
+    final dateOfBirth = request.dateOfBirth;
+    if (dateOfBirth != null) {
+      body['date_of_birth'] = dateOfBirth.toIso8601String().split('T').first;
+    }
+    return _apiService.updateProfile(body);
   }
 
-  Future<UpdateCountryResponse> updateProfileCountry(String country) async {
-    final currentMe = await getProfile();
-    await _apiService.updateProfile(
-      UpdateProfileRequest(
-        country: country,
-        name: currentMe.profile?.name,
-        locale: currentMe.profile?.locale,
-        timezone: currentMe.profile?.timezone,
-      ),
-    );
-    return UpdateCountryResponse(country: country, inferredCurrency: 'VND');
-  }
+  /// Email, phone and username. Changing the email clears `email_verified` and
+  /// sends a fresh verification, and the last identifier cannot be removed.
+  Future<void> updateAccount(UpdateAccountRequest request) =>
+      _api.mePatch(updateAccountRequest: request);
 
   Future<PublicAccount> getAccountById(String accountId) async {
     final response = await _apiService.getAccountById(accountId);
@@ -101,26 +106,16 @@ class AccountRepository {
     return response.data;
   }
 
-  Future<Contact> createContact(CreateContactRequest request) async {
-    final response = await _apiService.createContact(request);
-    return response.data;
-  }
+  Future<void> createContact(CreateContactRequest request) =>
+      _api.contactsPost(createContactRequest: request);
 
-  Future<Contact> updateContact(UpdateContactRequest request) async {
-    final response = await _apiService.updateContact(
-      request.contactId ?? '',
-      request,
-    );
-    return response.data;
-  }
+  /// The id is the path — it was never a body field, which is why every edit used
+  /// to be refused outright.
+  Future<void> updateContact(String contactId, UpdateContactRequest request) =>
+      _api.contactsIdPatch(id: contactId, updateContactRequest: request);
 
   Future<void> deleteContact(String contactId) =>
-      _apiService.deleteContact(contactId);
-
-  Future<Contact> getContactDetail(String contactId) async {
-    final response = await _apiService.getContactDetail(contactId);
-    return response.data;
-  }
+      _api.contactsIdDelete(id: contactId);
 
   // --- Favorites / Wishlist Features ---
   Future<List<AccountFavorite>> getFavorites({int? page, int? limit}) async {

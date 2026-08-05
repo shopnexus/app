@@ -62,12 +62,8 @@ abstract class Me with _$Me {
 
   factory Me.fromJson(Map<String, dynamic> json) => _$MeFromJson(json);
 
-  // Helper getters tương thích với giao diện UI cũ
+  // Derived from what the route actually sends.
   String get dateCreated => createdAt;
-
-  String get dateUpdated => createdAt;
-
-  bool get phoneVerified => true;
 
   String get name => profile?.name ?? username ?? email ?? 'Người dùng';
 
@@ -81,11 +77,9 @@ abstract class Me with _$Me {
 
   String get country => profile?.country ?? 'VN';
 
+  /// TODO(cart): not a field of `GET /me` — a preferred currency is finance's, and
+  /// `lib/features/cart` is the only reader.
   String get currency => 'VND';
-
-  int get internalBalance => 0;
-
-  String? get defaultContactId => null;
 }
 
 /// Alias tương thích
@@ -113,86 +107,17 @@ abstract class PublicAccount with _$PublicAccount {
   String? get avatarUrl => avatar?.url;
 }
 
-@freezed
-abstract class UpdateProfileRequest with _$UpdateProfileRequest {
-  const factory UpdateProfileRequest({
-    String? name,
-    String? country,
-    String? locale,
-    String? timezone,
-    String? description,
-    String? gender, // 'male' | 'female' | 'other'
-    @JsonKey(name: 'date_of_birth') String? dateOfBirth,
-    @JsonKey(name: 'avatar_resource_id') String? avatarResourceId,
-    @JsonKey(name: 'avatar_rs_id') String? avatarRsId,
-    @JsonKey(name: 'clear_avatar_resource_id') bool? clearAvatarResourceId,
-    @JsonKey(name: 'clear_date_of_birth') bool? clearDateOfBirth,
-    @JsonKey(name: 'clear_description') bool? clearDescription,
-    @JsonKey(name: 'clear_gender') bool? clearGender,
-    // Fields tương thích
-    String? username,
-    String? phone,
-    String? email,
-    @JsonKey(name: 'default_contact_id') String? defaultContactId,
-  }) = _UpdateProfileRequest;
-
-  factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateProfileRequestFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
-}
-
-@freezed
-abstract class UpdateAccountRequest with _$UpdateAccountRequest {
-  const factory UpdateAccountRequest({
-    String? email,
-    String? phone,
-    String? username,
-    @JsonKey(name: 'clear_email') bool? clearEmail,
-    @JsonKey(name: 'clear_phone') bool? clearPhone,
-    @JsonKey(name: 'clear_username') bool? clearUsername,
-  }) = _UpdateAccountRequest;
-
-  factory UpdateAccountRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateAccountRequestFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
-}
-
-@freezed
-abstract class UpdateCountryRequest with _$UpdateCountryRequest {
-  const factory UpdateCountryRequest({required String country}) =
-      _UpdateCountryRequest;
-
-  factory UpdateCountryRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateCountryRequestFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
-}
-
-@freezed
-abstract class UpdateCountryResponse with _$UpdateCountryResponse {
-  const factory UpdateCountryResponse({
-    required String country,
-    @JsonKey(name: 'inferred_currency') required String inferredCurrency,
-  }) = _UpdateCountryResponse;
-
-  factory UpdateCountryResponse.fromJson(Map<String, dynamic> json) =>
-      _$UpdateCountryResponseFromJson(json);
-}
-
 String _parsePhone(dynamic value) {
   if (value == null) return '';
   return value.toString();
 }
 
+/// Read-only: every write goes through the generated `CreateContactRequest` /
+/// `UpdateContactRequest`. This one survives as a hand-written model because
+/// `lib/features/{catalog,checkout}` name it too, and moving them to the
+/// generated `Contact` — whose `address_type` is an enum — is theirs to do.
 @freezed
 abstract class Contact with _$Contact {
-  const Contact._();
-
   const factory Contact({
     required String id,
     @JsonKey(name: 'full_name') required String fullName,
@@ -219,76 +144,6 @@ abstract class Contact with _$Contact {
 
   factory Contact.fromJson(Map<String, dynamic> json) =>
       _$ContactFromJson(json);
-
-  String get accountId => '';
-
-  String get dateCreated => createdAt;
-
-  bool get isDefault => isDefaultDelivery;
-}
-
-@freezed
-abstract class CreateContactRequest with _$CreateContactRequest {
-  const factory CreateContactRequest({
-    @JsonKey(name: 'full_name') required String fullName,
-    required String phone,
-    required String address,
-    @JsonKey(name: 'address_detail') String? addressDetail,
-    @JsonKey(name: 'address_type')
-    required String addressType, // 'home' | 'work'
-    required String country,
-    @JsonKey(name: 'province_code') required String provinceCode,
-    @JsonKey(name: 'province_name') required String provinceName,
-    @JsonKey(name: 'district_code') String? districtCode,
-    @JsonKey(name: 'district_name') String? districtName,
-    @JsonKey(name: 'ward_code') required String wardCode,
-    @JsonKey(name: 'ward_name') required String wardName,
-    @JsonKey(name: 'postal_code') String? postalCode,
-    @JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,
-    @JsonKey(name: 'is_default_pickup') bool? isDefaultPickup,
-    // Optional in the contract: geocoding may fail and the address still has to
-    // be saveable. Sending 0,0 for "unknown" would put the seller in the
-    // Atlantic and break every distance the buyer measures from it.
-    double? latitude,
-    double? longitude,
-  }) = _CreateContactRequest;
-
-  factory CreateContactRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateContactRequestFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
-}
-
-@freezed
-abstract class UpdateContactRequest with _$UpdateContactRequest {
-  const factory UpdateContactRequest({
-    @JsonKey(name: 'contact_id') String? contactId, // Legacy
-    @JsonKey(name: 'full_name') String? fullName,
-    String? phone,
-    String? address,
-    @JsonKey(name: 'address_detail') String? addressDetail,
-    @JsonKey(name: 'address_type') String? addressType,
-    String? country,
-    @JsonKey(name: 'province_code') String? provinceCode,
-    @JsonKey(name: 'province_name') String? provinceName,
-    @JsonKey(name: 'district_code') String? districtCode,
-    @JsonKey(name: 'district_name') String? districtName,
-    @JsonKey(name: 'ward_code') String? wardCode,
-    @JsonKey(name: 'ward_name') String? wardName,
-    @JsonKey(name: 'postal_code') String? postalCode,
-    @JsonKey(name: 'is_default_delivery') bool? isDefaultDelivery,
-    @JsonKey(name: 'is_default_pickup') bool? isDefaultPickup,
-    @JsonKey(name: 'phone_verified') bool? phoneVerified,
-    double? latitude,
-    double? longitude,
-  }) = _UpdateContactRequest;
-
-  factory UpdateContactRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateContactRequestFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson();
 }
 
 @freezed

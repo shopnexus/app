@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area_list.dart';
-import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/contact_address_type.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/area_picker_sheet.dart';
 
 /// A code is a zero-padded string in the column and on the wire. Read as a number
@@ -61,7 +62,7 @@ void main() {
       fullName: 'Nguyễn An',
       phone: '+84901234567',
       address: '1 Lê Lợi',
-      addressType: 'home',
+      addressType: ContactAddressType.home,
       country: 'VN',
       provinceCode: province.code,
       provinceName: province.name,

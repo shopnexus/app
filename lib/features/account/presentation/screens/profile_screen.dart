@@ -3,11 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/profile_gender.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/profile_fields.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -46,7 +50,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       await ref
           .read(accountControllerProvider.notifier)
-          .updateProfile(UpdateProfileRequest(avatarRsId: rsId));
+          .updateProfile(UpdateProfileRequest(avatarResourceId: rsId));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1075,7 +1079,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
   late TextEditingController _phoneController;
   late TextEditingController _emailController;
 
-  String? _gender;
+  ProfileGender? _gender;
   DateTime? _dob;
 
   @override
@@ -1084,17 +1088,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
     _nameController = TextEditingController(text: widget.profile.name);
     _phoneController = TextEditingController(text: widget.profile.phone);
     _emailController = TextEditingController(text: widget.profile.email);
-
-    final profileGender = widget.profile.gender;
-    if (profileGender == 'Male' || profileGender == '0') {
-      _gender = 'Male';
-    } else if (profileGender == 'Female' || profileGender == '1') {
-      _gender = 'Female';
-    } else if (profileGender == 'Other' || profileGender == '2') {
-      _gender = 'Other';
-    } else {
-      _gender = profileGender;
-    }
+    _gender = genderOf(widget.profile.gender);
 
     if (widget.profile.dateOfBirth != null) {
       _dob = DateTime.tryParse(widget.profile.dateOfBirth!);
@@ -1123,30 +1117,55 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
     }
   }
 
-  void _submit() async {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final String? dobString = _dob != null
-        ? '${_dob!.year}-${_dob!.month.toString().padLeft(2, '0')}-${_dob!.day.toString().padLeft(2, '0')}'
-        : null;
+    final controller = ref.read(accountControllerProvider.notifier);
 
-    ref
-        .read(accountControllerProvider.notifier)
-        .updateProfile(
-          UpdateProfileRequest(
-            name: _nameController.text.trim(),
-            phone: _phoneController.text.trim().isNotEmpty
-                ? _phoneController.text.trim()
-                : null,
-            email: _emailController.text.trim().isNotEmpty
-                ? _emailController.text.trim()
-                : null,
-            gender: _gender,
-            dateOfBirth: dobString,
-          ),
-        );
+    await controller.updateProfile(
+      UpdateProfileRequest(
+        name: _nameController.text.trim(),
+        gender: _gender,
+        dateOfBirth: _dob,
+      ),
+    );
 
+    // A phone and an email are identifiers on `PATCH /me`, not profile fields,
+    // and only a real change may be sent: re-posting the same email would clear
+    // `email_verified` and mail out a fresh verification.
+    final identifiers = _identifierChanges();
+    if (identifiers != null && ref.read(accountControllerProvider).hasValue) {
+      await controller.updateAccount(identifiers);
+    }
+
+    if (!mounted) return;
+    final failure = ref.read(accountControllerProvider).error;
+    if (failure != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi cập nhật: $failure'),
+          backgroundColor: const Color(0xFFBA1A1A),
+        ),
+      );
+      return;
+    }
     Navigator.of(context).pop();
+  }
+
+  /// Null when neither identifier moved, so an unchanged form sends nothing.
+  UpdateAccountRequest? _identifierChanges() {
+    final phone = _phoneController.text.trim();
+    final email = _emailController.text.trim();
+    final phoneChanged = phone != (widget.profile.phone ?? '');
+    final emailChanged = email != (widget.profile.email ?? '');
+    if (!phoneChanged && !emailChanged) return null;
+
+    return UpdateAccountRequest(
+      phone: phoneChanged && phone.isNotEmpty ? phone : null,
+      clearPhone: phoneChanged && phone.isEmpty ? true : null,
+      email: emailChanged && email.isNotEmpty ? email : null,
+      clearEmail: emailChanged && email.isEmpty ? true : null,
+    );
   }
 
   @override
@@ -1297,7 +1316,7 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
               const SizedBox(height: 16),
 
               // Gender Selection Dropdown
-              DropdownButtonFormField<String>(
+              DropdownButtonFormField<ProfileGender>(
                 initialValue: _gender,
                 dropdownColor: isDarkMode
                     ? AppColors.darkSurface
@@ -1322,36 +1341,17 @@ class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
                   ),
                 ),
                 items: [
-                  DropdownMenuItem(
-                    value: 'Male',
-                    child: Text(
-                      'Nam',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: theme.colorScheme.onSurface,
+                  for (final gender in ProfileGender.values)
+                    DropdownMenuItem(
+                      value: gender,
+                      child: Text(
+                        genderLabel(gender),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Female',
-                    child: Text(
-                      'Nữ',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Other',
-                    child: Text(
-                      'Khác',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
                 ],
                 onChanged: (val) {
                   setState(() {

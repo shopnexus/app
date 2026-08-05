@@ -1,4 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 
@@ -30,11 +32,13 @@ class AccountController extends _$AccountController {
     });
   }
 
-  Future<void> updateProfileCountry(String country) async {
+  /// The identifiers are a second route, so a form that edits both saves twice —
+  /// and the profile half must not be lost to a rejected email.
+  Future<void> updateAccount(UpdateAccountRequest request) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final repository = ref.read(accountRepositoryProvider);
-      await repository.updateProfileCountry(country);
+      await repository.updateAccount(request);
       ref.invalidate(profileProvider);
     });
   }

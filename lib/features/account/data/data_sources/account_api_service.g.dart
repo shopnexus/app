@@ -52,15 +52,13 @@ class _AccountApiService implements AccountApiService {
   }
 
   @override
-  Future<DataResponse<Profile>> updateProfile(
-    UpdateProfileRequest request,
-  ) async {
+  Future<void> updateProfile(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<DataResponse<Profile>>(
+    _data.addAll(body);
+    final _options = _setStreamType<void>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -70,49 +68,7 @@ class _AccountApiService implements AccountApiService {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<Profile> _value;
-    try {
-      _value = DataResponse<Profile>.fromJson(
-        _result.data!,
-        (json) => Profile.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DataResponse<Me>> updateAccount(UpdateAccountRequest request) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<DataResponse<Me>>(
-      Options(method: 'PATCH', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'me',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<Me> _value;
-    try {
-      _value = DataResponse<Me>.fromJson(
-        _result.data!,
-        (json) => Me.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   @override
@@ -173,122 +129,6 @@ class _AccountApiService implements AccountApiService {
                   )
                   .toList()
             : List.empty(),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DataResponse<Contact>> createContact(
-    CreateContactRequest request,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<DataResponse<Contact>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'contacts',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<Contact> _value;
-    try {
-      _value = DataResponse<Contact>.fromJson(
-        _result.data!,
-        (json) => Contact.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DataResponse<Contact>> updateContact(
-    String contactId,
-    UpdateContactRequest request,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<DataResponse<Contact>>(
-      Options(method: 'PATCH', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'contacts/${contactId}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<Contact> _value;
-    try {
-      _value = DataResponse<Contact>.fromJson(
-        _result.data!,
-        (json) => Contact.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<void> deleteContact(String contactId) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<void>(
-      Options(method: 'DELETE', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'contacts/${contactId}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    await _dio.fetch<void>(_options);
-  }
-
-  @override
-  Future<DataResponse<Contact>> getContactDetail(String contactId) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DataResponse<Contact>>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'contacts/${contactId}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DataResponse<Contact> _value;
-    try {
-      _value = DataResponse<Contact>.fromJson(
-        _result.data!,
-        (json) => Contact.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);

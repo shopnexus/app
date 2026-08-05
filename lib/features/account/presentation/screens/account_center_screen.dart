@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/profile_gender.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
 import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/kyc_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/profile_fields.dart';
 
 class AccountCenterScreen extends ConsumerStatefulWidget {
   const AccountCenterScreen({super.key});
@@ -144,22 +148,23 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
                             : const Color(0xFFF59E0B),
                       ),
                       _buildDivider(),
+                      // No badge: this phone is an identifier to sign in and be
+                      // reached by, and it carries no verified flag — the one a
+                      // carrier calls is a contact's, and that is where
+                      // `phone_verified` lives.
                       _buildInfoTile(
                         icon: Icons.phone_outlined,
                         label: 'Số điện thoại',
                         value: profile.phone ?? 'Chưa cập nhật SĐT',
-                        badgeText: profile.phoneVerified
-                            ? 'Đã xác minh'
-                            : 'Chưa xác minh',
-                        badgeColor: profile.phoneVerified
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFFF59E0B),
                       ),
                       _buildDivider(),
                       _buildInfoTile(
                         icon: Icons.wc_rounded,
                         label: 'Giới tính',
-                        value: _formatGender(profile.gender),
+                        value: switch (genderOf(profile.gender)) {
+                          null => 'Chưa cập nhật',
+                          final gender => genderLabel(gender),
+                        },
                       ),
                       _buildDivider(),
                       _buildInfoTile(
@@ -419,13 +424,6 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
     );
   }
 
-  String _formatGender(String? g) {
-    if (g == null || g.isEmpty) return 'Chưa cập nhật';
-    if (g.toLowerCase() == 'male') return 'Nam';
-    if (g.toLowerCase() == 'female') return 'Nữ';
-    return 'Khác';
-  }
-
   String _formatDate(String isoStr) {
     try {
       final dt = DateTime.parse(isoStr);
@@ -451,8 +449,7 @@ class __EditAccountCenterFormSheetState
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
   late TextEditingController _usernameController;
-  String? _selectedGender;
-  String? _dateOfBirth;
+  ProfileGender? _selectedGender;
   bool _isSaving = false;
 
   @override
@@ -461,8 +458,7 @@ class __EditAccountCenterFormSheetState
     _nameController = TextEditingController(text: widget.profile.name);
     _phoneController = TextEditingController(text: widget.profile.phone);
     _usernameController = TextEditingController(text: widget.profile.username);
-    _selectedGender = widget.profile.gender ?? 'Male';
-    _dateOfBirth = widget.profile.dateOfBirth;
+    _selectedGender = genderOf(widget.profile.gender);
   }
 
   @override
@@ -479,15 +475,22 @@ class __EditAccountCenterFormSheetState
     });
 
     try {
-      final req = UpdateProfileRequest(
-        name: _nameController.text.trim(),
-        username: _usernameController.text.trim(),
-        phone: _phoneController.text.trim(),
-        gender: _selectedGender,
-        dateOfBirth: _dateOfBirth,
+      final controller = ref.read(accountControllerProvider.notifier);
+      await controller.updateProfile(
+        UpdateProfileRequest(
+          name: _nameController.text.trim(),
+          gender: _selectedGender,
+        ),
       );
 
-      await ref.read(accountControllerProvider.notifier).updateProfile(req);
+      // The username and the phone are identifiers, so they are a second route;
+      // an unchanged one is not resent, since re-posting an email would clear its
+      // verification.
+      final identifiers = _identifierChanges();
+      if (identifiers != null) await controller.updateAccount(identifiers);
+
+      final failure = ref.read(accountControllerProvider).error;
+      if (failure != null) throw failure;
 
       if (mounted) {
         Navigator.pop(context);
@@ -514,6 +517,22 @@ class __EditAccountCenterFormSheetState
         });
       }
     }
+  }
+
+  /// Null when neither identifier moved, so an unchanged form sends nothing.
+  UpdateAccountRequest? _identifierChanges() {
+    final username = _usernameController.text.trim();
+    final phone = _phoneController.text.trim();
+    final usernameChanged = username != (widget.profile.username ?? '');
+    final phoneChanged = phone != (widget.profile.phone ?? '');
+    if (!usernameChanged && !phoneChanged) return null;
+
+    return UpdateAccountRequest(
+      username: usernameChanged && username.isNotEmpty ? username : null,
+      clearUsername: usernameChanged && username.isEmpty ? true : null,
+      phone: phoneChanged && phone.isNotEmpty ? phone : null,
+      clearPhone: phoneChanged && phone.isEmpty ? true : null,
+    );
   }
 
   @override
@@ -567,16 +586,15 @@ class __EditAccountCenterFormSheetState
               ),
             ),
             const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<ProfileGender>(
               initialValue: _selectedGender,
               decoration: const InputDecoration(
                 labelText: 'Giới tính',
                 border: OutlineInputBorder(),
               ),
-              items: const [
-                DropdownMenuItem(value: 'Male', child: Text('Nam')),
-                DropdownMenuItem(value: 'Female', child: Text('Nữ')),
-                DropdownMenuItem(value: 'Other', child: Text('Khác')),
+              items: [
+                for (final gender in ProfileGender.values)
+                  DropdownMenuItem(value: gender, child: Text(genderLabel(gender))),
               ],
               onChanged: (val) {
                 if (val != null) {

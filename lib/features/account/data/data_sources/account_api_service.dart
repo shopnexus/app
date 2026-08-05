@@ -16,37 +16,20 @@ abstract class AccountApiService {
   @GET(ApiEndpoints.me)
   Future<DataResponse<Me>> getProfile();
 
+  /// The body is the generated `UpdateProfileRequest`'s own JSON, so it can only
+  /// ever carry contract keys — see `AccountRepository.updateProfile` for the one
+  /// field its codec cannot spell.
   @PATCH(ApiEndpoints.meProfile)
-  Future<DataResponse<Profile>> updateProfile(
-    @Body() UpdateProfileRequest request,
-  );
-
-  @PATCH(ApiEndpoints.me)
-  Future<DataResponse<Me>> updateAccount(@Body() UpdateAccountRequest request);
+  Future<void> updateProfile(@Body() Map<String, dynamic> body);
 
   @GET(ApiEndpoints.accountDetailTemplate)
   Future<DataResponse<PublicAccount>> getAccountById(@Path('id') String id);
 
   // --- Contacts Features ---
+  // The list only; every write is the generated client's, which has the tri-state
+  // clear flags this hand-written model never had.
   @GET(ApiEndpoints.contacts)
   Future<DataResponse<List<Contact>>> getContacts();
-
-  @POST(ApiEndpoints.contacts)
-  Future<DataResponse<Contact>> createContact(
-    @Body() CreateContactRequest request,
-  );
-
-  @PATCH(ApiEndpoints.contactDetailTemplate)
-  Future<DataResponse<Contact>> updateContact(
-    @Path('id') String contactId,
-    @Body() UpdateContactRequest request,
-  );
-
-  @DELETE(ApiEndpoints.contactDetailTemplate)
-  Future<void> deleteContact(@Path('id') String contactId);
-
-  @GET(ApiEndpoints.contactDetailTemplate)
-  Future<DataResponse<Contact>> getContactDetail(@Path('id') String contactId);
 
   // --- Favorites / Wishlist Features (FE Mock/Legacy) ---
   @GET(ApiEndpoints.favorites)
