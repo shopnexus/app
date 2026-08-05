@@ -222,9 +222,7 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
 
 @riverpod
 Future<ListingDetail> productDetail(Ref ref, {required String id}) async {
-  final detail = await ref.watch(catalogRepositoryProvider).listingDetail(id);
-  ref.invalidate(recentlyViewedProductsProvider);
-  return detail;
+  return ref.watch(catalogRepositoryProvider).listingDetail(id);
 }
 
 @freezed
