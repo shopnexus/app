@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
 
 /// `Resource.required` is `[id, provider, object_key, mime, size]`: `url` is a
@@ -51,11 +50,11 @@ void main() {
         final page = [
           card(presigned: true),
           card(presigned: false),
-        ].map(TProductCard.fromJson).toList();
+        ].map(Listing.fromJson).toList();
 
         expect(page, hasLength(2));
-        expect(page.first.effectiveThumbnail, 'https://cdn.example/cover.jpg');
-        expect(page.last.effectiveThumbnail, isNull);
+        expect(page.first.cover?.url, 'https://cdn.example/cover.jpg');
+        expect(page.last.cover?.url, isNull);
       },
     );
 
