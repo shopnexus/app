@@ -34,6 +34,8 @@ class Message {
 
     this.editedAt,
 
+    this.fromSupport,
+
     required this.id,
 
     required this.refs,
@@ -68,6 +70,10 @@ class Message {
   @JsonKey(name: r'edited_at', required: false, includeIfNull: false)
   final DateTime? editedAt;
 
+  /// True on a reply the support desk wrote, in the requester's own view of their ticket thread. Support answers as the platform, so the requester is told that much and no more; staff reading the same thread see the real sender and never this flag, because a colleague's name is what makes a thread reviewable.
+  @JsonKey(name: r'from_support', required: false, includeIfNull: false)
+  final bool? fromSupport;
+
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
@@ -75,7 +81,7 @@ class Message {
   @JsonKey(name: r'refs', required: true, includeIfNull: false)
   final Map<String, Object> refs;
 
-  /// Null on a system message.
+  /// Null on a system message, and null on a support reply seen by the requester — see `from_support`, which is how the two are told apart.
   @JsonKey(name: r'sender_id', required: false, includeIfNull: false)
   final String? senderId;
 
@@ -93,6 +99,7 @@ class Message {
           other.createdAt == createdAt &&
           other.deletedAt == deletedAt &&
           other.editedAt == editedAt &&
+          other.fromSupport == fromSupport &&
           other.id == id &&
           other.refs == refs &&
           other.senderId == senderId &&
@@ -107,6 +114,7 @@ class Message {
       createdAt.hashCode +
       (deletedAt == null ? 0 : deletedAt.hashCode) +
       (editedAt == null ? 0 : editedAt.hashCode) +
+      fromSupport.hashCode +
       id.hashCode +
       refs.hashCode +
       (senderId == null ? 0 : senderId.hashCode) +

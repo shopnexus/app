@@ -34,9 +34,12 @@ class Conversation {
 
     this.readAt,
 
+    this.ticketId,
+
     required this.unread,
   });
 
+  /// The other side. On a ticket thread that is the support desk for the requester and the requester for staff — a moderator answering a ticket is not a side of the row, so every viewer-relative field here is computed as the desk for them.
   @JsonKey(name: r'counterparty', required: true, includeIfNull: false)
   final AccountSummary counterparty;
 
@@ -61,6 +64,10 @@ class Conversation {
   @JsonKey(name: r'read_at', required: false, includeIfNull: false)
   final DateTime? readAt;
 
+  /// Set when this thread is a support ticket's, null on an ordinary one. A ticket is read in the support screen rather than the inbox, so a client tells them apart from the row.
+  @JsonKey(name: r'ticket_id', required: false, includeIfNull: false)
+  final String? ticketId;
+
   /// The counterparty's messages after the caller's read mark.
   // minimum: 0
   @JsonKey(name: r'unread', required: true, includeIfNull: false)
@@ -77,6 +84,7 @@ class Conversation {
           other.lastMessage == lastMessage &&
           other.lastMessageAt == lastMessageAt &&
           other.readAt == readAt &&
+          other.ticketId == ticketId &&
           other.unread == unread;
 
   @override
@@ -88,6 +96,7 @@ class Conversation {
       (lastMessage == null ? 0 : lastMessage.hashCode) +
       lastMessageAt.hashCode +
       (readAt == null ? 0 : readAt.hashCode) +
+      (ticketId == null ? 0 : ticketId.hashCode) +
       unread.hashCode;
 
   factory Conversation.fromJson(Map<String, dynamic> json) =>

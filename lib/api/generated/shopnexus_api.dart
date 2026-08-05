@@ -41,6 +41,8 @@ export 'package:shopnexus_flutter_app/api/generated/model/admin_tickets_id_claim
 export 'package:shopnexus_flutter_app/api/generated/model/admin_tickets_id_get200_response.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/admin_wallets_account_id_adjustments_post200_response.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/admin_withdrawals_id_approval_post200_response.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/administrative_area_list.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/auth_result.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/bank_account.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/bank_account_list.dart';
@@ -217,6 +219,7 @@ export 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/ticket_page.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/ticket_ref_type.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/ticket_resolution_action.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/transaction_list.dart';

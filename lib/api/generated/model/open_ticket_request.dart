@@ -44,7 +44,7 @@ class OpenTicketRequest {
   @JsonKey(name: r'kind', required: true, includeIfNull: false)
   final TicketKind kind;
 
-  /// Report kinds only.
+  /// Required for the five `report-*` kinds, refused for every other one — 422 either way. It depends on `kind`, so it cannot be listed in `required`.
   @JsonKey(name: r'reason', required: false, includeIfNull: false)
   final TicketReason? reason;
 

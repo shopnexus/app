@@ -76,6 +76,7 @@ const _$AccountRoleEnumMap = {
   AccountRole.user: 'user',
   AccountRole.moderator: 'moderator',
   AccountRole.admin: 'admin',
+  AccountRole.support: 'support',
 };
 
 const _$AccountStatusEnumMap = {

@@ -13,7 +13,7 @@ ResolveTicketRequest _$ResolveTicketRequestFromJson(
   final val = ResolveTicketRequest(
     actionTaken: $checkedConvert(
       'action_taken',
-      (v) => $enumDecode(_$TicketActionEnumMap, v),
+      (v) => $enumDecode(_$TicketResolutionActionEnumMap, v),
     ),
     note: $checkedConvert('note', (v) => v as String?),
   );
@@ -23,16 +23,14 @@ ResolveTicketRequest _$ResolveTicketRequestFromJson(
 Map<String, dynamic> _$ResolveTicketRequestToJson(
   ResolveTicketRequest instance,
 ) => <String, dynamic>{
-  'action_taken': _$TicketActionEnumMap[instance.actionTaken]!,
+  'action_taken': _$TicketResolutionActionEnumMap[instance.actionTaken]!,
   'note': ?instance.note,
 };
 
-const _$TicketActionEnumMap = {
-  TicketAction.none: 'none',
-  TicketAction.listingRemoved: 'listing-removed',
-  TicketAction.messageRemoved: 'message-removed',
-  TicketAction.accountSuspended: 'account-suspended',
-  TicketAction.warning: 'warning',
-  TicketAction.refundGranted: 'refund-granted',
-  TicketAction.refundRefused: 'refund-refused',
+const _$TicketResolutionActionEnumMap = {
+  TicketResolutionAction.none: 'none',
+  TicketResolutionAction.listingRemoved: 'listing-removed',
+  TicketResolutionAction.messageRemoved: 'message-removed',
+  TicketResolutionAction.accountSuspended: 'account-suspended',
+  TicketResolutionAction.warning: 'warning',
 };

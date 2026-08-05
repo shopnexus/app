@@ -49,6 +49,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
         'edited_at',
         (v) => v == null ? null : DateTime.parse(v as String),
       ),
+      fromSupport: $checkedConvert('from_support', (v) => v as bool?),
       id: $checkedConvert('id', (v) => v as String),
       refs: $checkedConvert(
         'refs',
@@ -68,6 +69,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
     'createdAt': 'created_at',
     'deletedAt': 'deleted_at',
     'editedAt': 'edited_at',
+    'fromSupport': 'from_support',
     'senderId': 'sender_id',
   },
 );
@@ -80,6 +82,7 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
   'created_at': instance.createdAt.toIso8601String(),
   'deleted_at': ?instance.deletedAt?.toIso8601String(),
   'edited_at': ?instance.editedAt?.toIso8601String(),
+  'from_support': ?instance.fromSupport,
   'id': instance.id,
   'refs': instance.refs,
   'sender_id': ?instance.senderId,

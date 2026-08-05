@@ -12,6 +12,7 @@ import 'package:dio/dio.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_summary_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/accounts_id_get200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area_list.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/change_password_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact_list.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contacts_post201_response.dart';
@@ -207,6 +208,83 @@ class AccountApi {
     }
 
     return Response<AccountsIdGet200Response>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// The administrative divisions an address is written in
+  /// Two tiers, one level per request: no &#x60;parent&#x60; answers the provinces, a province code answers its wards. Vietnam goes province to ward, so there is no district level to ask for — a contact&#39;s &#x60;district_code&#x60; stays null.  Unauthenticated, because an address form and the listing browse&#39;s area filter both need it before anybody has signed in. The list is served from the backend rather than from a public third-party API so that a seller&#39;s own address does not depend on somebody else&#39;s uptime, and so both clients spell a code the same way: it is the zero-padded string the columns store, and a client sends back exactly what it was given.
+  ///
+  /// Parameters:
+  /// * [parent] - A province code. Omit for the provinces themselves.
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [AdministrativeAreaList] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<AdministrativeAreaList>> administrativeAreasGet({
+    String? parent,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/administrative-areas';
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      if (parent != null) r'parent': parent,
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    AdministrativeAreaList? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<AdministrativeAreaList, AdministrativeAreaList>(
+              rawData,
+              'AdministrativeAreaList',
+              growable: true,
+            );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<AdministrativeAreaList>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

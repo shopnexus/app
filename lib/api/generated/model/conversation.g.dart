@@ -48,6 +48,7 @@ Conversation _$ConversationFromJson(Map<String, dynamic> json) =>
             'read_at',
             (v) => v == null ? null : DateTime.parse(v as String),
           ),
+          ticketId: $checkedConvert('ticket_id', (v) => v as String?),
           unread: $checkedConvert('unread', (v) => (v as num).toInt()),
         );
         return val;
@@ -58,6 +59,7 @@ Conversation _$ConversationFromJson(Map<String, dynamic> json) =>
         'lastMessage': 'last_message',
         'lastMessageAt': 'last_message_at',
         'readAt': 'read_at',
+        'ticketId': 'ticket_id',
       },
     );
 
@@ -70,5 +72,6 @@ Map<String, dynamic> _$ConversationToJson(Conversation instance) =>
       'last_message': ?instance.lastMessage?.toJson(),
       'last_message_at': instance.lastMessageAt.toIso8601String(),
       'read_at': ?instance.readAt?.toIso8601String(),
+      'ticket_id': ?instance.ticketId,
       'unread': instance.unread,
     };

@@ -21,6 +21,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/admin_tickets_id_claim
 import 'package:shopnexus_flutter_app/api/generated/model/admin_tickets_id_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/admin_wallets_account_id_adjustments_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/admin_withdrawals_id_approval_post200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/administrative_area_list.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/auth_result.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/bank_account.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/bank_account_list.dart';
@@ -319,6 +321,12 @@ ReturnType deserialize<ReturnType, BaseType>(
       return AdminWithdrawalsIdApprovalPost200Response.fromJson(
             value as Map<String, dynamic>,
           )
+          as ReturnType;
+    case 'AdministrativeArea':
+      return AdministrativeArea.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AdministrativeAreaList':
+      return AdministrativeAreaList.fromJson(value as Map<String, dynamic>)
           as ReturnType;
     case 'AuthResult':
       return AuthResult.fromJson(value as Map<String, dynamic>) as ReturnType;
@@ -795,6 +803,7 @@ ReturnType deserialize<ReturnType, BaseType>(
       return TicketPage.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'TicketReason':
     case 'TicketRefType':
+    case 'TicketResolutionAction':
     case 'TicketStatus':
     case 'Transaction':
       return Transaction.fromJson(value as Map<String, dynamic>) as ReturnType;

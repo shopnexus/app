@@ -2859,7 +2859,7 @@ class OrderApi {
   }
 
   /// Report a checkpoint on the leg carrying the goods back
-  /// The return leg exists only from the moment a refund is granted, and &#x60;delivered&#x60; is what moves the case to &#x60;returned&#x60; and opens the seller&#39;s appeal window. It is the only exit from &#x60;returning&#x60;.  Either party to the order may report it. The buyer posted the parcel and the seller received it, and requiring the seller alone would let one who simply never confirms strand the escrow with nobody on a clock — which is what having no writer at all did. A buyer who claims a delivery that did not happen is answered by the seller escalating, which is exactly what that window is for.
+  /// The return leg exists only from the moment a refund is granted, and &#x60;delivered&#x60; is what moves the case to &#x60;returned&#x60; and opens the seller&#39;s inspection window. It is the only exit from &#x60;returning&#x60;.  Either party to the order may report it. The buyer posted the parcel and the seller received it, and requiring the seller alone would let one who simply never confirms strand the escrow with nobody on a clock — which is what having no writer at all did. A buyer who claims a delivery that did not happen is answered by the seller escalating, which is exactly what that window is for.
   ///
   /// Parameters:
   /// * [id]
