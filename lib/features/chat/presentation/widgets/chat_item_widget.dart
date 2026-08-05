@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../../data/models/chat_model.dart';
 
 class ChatItemWidget extends StatelessWidget {
-  final ChatConversation conversation;
+  final Conversation conversation;
   final VoidCallback onTap;
 
   const ChatItemWidget({
@@ -68,23 +68,6 @@ class ChatItemWidget extends StatelessWidget {
                         )
                       : null,
                 ),
-                if (conversation.isOnline)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: theme.colorScheme.surface,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
               ],
             ),
             const SizedBox(width: 12),
@@ -127,7 +110,8 @@ class ChatItemWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          conversation.lastMessageText ?? 'Bắt đầu cuộc trò chuyện',
+                          conversation.lastMessageText ??
+                              'Bắt đầu cuộc trò chuyện',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: hasUnread
                                 ? theme.colorScheme.onSurface

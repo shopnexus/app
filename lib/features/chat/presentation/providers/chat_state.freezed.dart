@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatListState {
 
- List<ChatConversation> get conversations; String get searchQuery; bool get isLoading; String? get errorMessage;
+ List<Conversation> get conversations; String get searchQuery; String? get nextCursor;
 /// Create a copy of ChatListState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ChatListStateCopyWith<ChatListState> get copyWith => _$ChatListStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatListState&&const DeepCollectionEquality().equals(other.conversations, conversations)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatListState&&const DeepCollectionEquality().equals(other.conversations, conversations)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(conversations),searchQuery,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(conversations),searchQuery,nextCursor);
 
 @override
 String toString() {
-  return 'ChatListState(conversations: $conversations, searchQuery: $searchQuery, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'ChatListState(conversations: $conversations, searchQuery: $searchQuery, nextCursor: $nextCursor)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ChatListStateCopyWith<$Res>  {
   factory $ChatListStateCopyWith(ChatListState value, $Res Function(ChatListState) _then) = _$ChatListStateCopyWithImpl;
 @useResult
 $Res call({
- List<ChatConversation> conversations, String searchQuery, bool isLoading, String? errorMessage
+ List<Conversation> conversations, String searchQuery, String? nextCursor
 });
 
 
@@ -62,12 +62,11 @@ class _$ChatListStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatListState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? conversations = null,Object? searchQuery = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? conversations = null,Object? searchQuery = null,Object? nextCursor = freezed,}) {
   return _then(_self.copyWith(
 conversations: null == conversations ? _self.conversations : conversations // ignore: cast_nullable_to_non_nullable
-as List<ChatConversation>,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
-as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as List<Conversation>,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -153,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ChatConversation> conversations,  String searchQuery,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Conversation> conversations,  String searchQuery,  String? nextCursor)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatListState() when $default != null:
-return $default(_that.conversations,_that.searchQuery,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.conversations,_that.searchQuery,_that.nextCursor);case _:
   return orElse();
 
 }
@@ -174,10 +173,10 @@ return $default(_that.conversations,_that.searchQuery,_that.isLoading,_that.erro
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ChatConversation> conversations,  String searchQuery,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Conversation> conversations,  String searchQuery,  String? nextCursor)  $default,) {final _that = this;
 switch (_that) {
 case _ChatListState():
-return $default(_that.conversations,_that.searchQuery,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.conversations,_that.searchQuery,_that.nextCursor);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +193,10 @@ return $default(_that.conversations,_that.searchQuery,_that.isLoading,_that.erro
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ChatConversation> conversations,  String searchQuery,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Conversation> conversations,  String searchQuery,  String? nextCursor)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatListState() when $default != null:
-return $default(_that.conversations,_that.searchQuery,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.conversations,_that.searchQuery,_that.nextCursor);case _:
   return null;
 
 }
@@ -209,19 +208,18 @@ return $default(_that.conversations,_that.searchQuery,_that.isLoading,_that.erro
 
 
 class _ChatListState extends ChatListState {
-  const _ChatListState({final  List<ChatConversation> conversations = const [], this.searchQuery = '', this.isLoading = false, this.errorMessage}): _conversations = conversations,super._();
+  const _ChatListState({final  List<Conversation> conversations = const [], this.searchQuery = '', this.nextCursor}): _conversations = conversations,super._();
   
 
- final  List<ChatConversation> _conversations;
-@override@JsonKey() List<ChatConversation> get conversations {
+ final  List<Conversation> _conversations;
+@override@JsonKey() List<Conversation> get conversations {
   if (_conversations is EqualUnmodifiableListView) return _conversations;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_conversations);
 }
 
 @override@JsonKey() final  String searchQuery;
-@override@JsonKey() final  bool isLoading;
-@override final  String? errorMessage;
+@override final  String? nextCursor;
 
 /// Create a copy of ChatListState
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +231,16 @@ _$ChatListStateCopyWith<_ChatListState> get copyWith => __$ChatListStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatListState&&const DeepCollectionEquality().equals(other._conversations, _conversations)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatListState&&const DeepCollectionEquality().equals(other._conversations, _conversations)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_conversations),searchQuery,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_conversations),searchQuery,nextCursor);
 
 @override
 String toString() {
-  return 'ChatListState(conversations: $conversations, searchQuery: $searchQuery, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'ChatListState(conversations: $conversations, searchQuery: $searchQuery, nextCursor: $nextCursor)';
 }
 
 
@@ -253,7 +251,7 @@ abstract mixin class _$ChatListStateCopyWith<$Res> implements $ChatListStateCopy
   factory _$ChatListStateCopyWith(_ChatListState value, $Res Function(_ChatListState) _then) = __$ChatListStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<ChatConversation> conversations, String searchQuery, bool isLoading, String? errorMessage
+ List<Conversation> conversations, String searchQuery, String? nextCursor
 });
 
 
@@ -270,12 +268,11 @@ class __$ChatListStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatListState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? conversations = null,Object? searchQuery = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? conversations = null,Object? searchQuery = null,Object? nextCursor = freezed,}) {
   return _then(_ChatListState(
 conversations: null == conversations ? _self._conversations : conversations // ignore: cast_nullable_to_non_nullable
-as List<ChatConversation>,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
-as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as List<Conversation>,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -286,7 +283,11 @@ as String?,
 /// @nodoc
 mixin _$ChatDetailState {
 
- String? get conversationId; ChatConversation? get conversation; List<ChatMessage> get messages; bool get isLoading; bool get isSending; String get draftText; String? get errorMessage;
+ String get conversationId; Conversation? get conversation;/// Oldest first, which is the reading order; the route answers newest first.
+ List<ChatMessage> get messages;/// The negotiations the thread's cards point at, by offer id. A card carries
+/// only the id, so the terms are read from here and a counter-offer can never
+/// leave an old price on screen.
+ Map<String, Offer> get offers; String? get nextCursor; bool get isSending; String? get errorMessage;
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -297,16 +298,16 @@ $ChatDetailStateCopyWith<ChatDetailState> get copyWith => _$ChatDetailStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatDetailState&&(identical(other.conversationId, conversationId) || other.conversationId == conversationId)&&(identical(other.conversation, conversation) || other.conversation == conversation)&&const DeepCollectionEquality().equals(other.messages, messages)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.draftText, draftText) || other.draftText == draftText)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatDetailState&&(identical(other.conversationId, conversationId) || other.conversationId == conversationId)&&(identical(other.conversation, conversation) || other.conversation == conversation)&&const DeepCollectionEquality().equals(other.messages, messages)&&const DeepCollectionEquality().equals(other.offers, offers)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,conversationId,conversation,const DeepCollectionEquality().hash(messages),isLoading,isSending,draftText,errorMessage);
+int get hashCode => Object.hash(runtimeType,conversationId,conversation,const DeepCollectionEquality().hash(messages),const DeepCollectionEquality().hash(offers),nextCursor,isSending,errorMessage);
 
 @override
 String toString() {
-  return 'ChatDetailState(conversationId: $conversationId, conversation: $conversation, messages: $messages, isLoading: $isLoading, isSending: $isSending, draftText: $draftText, errorMessage: $errorMessage)';
+  return 'ChatDetailState(conversationId: $conversationId, conversation: $conversation, messages: $messages, offers: $offers, nextCursor: $nextCursor, isSending: $isSending, errorMessage: $errorMessage)';
 }
 
 
@@ -317,11 +318,11 @@ abstract mixin class $ChatDetailStateCopyWith<$Res>  {
   factory $ChatDetailStateCopyWith(ChatDetailState value, $Res Function(ChatDetailState) _then) = _$ChatDetailStateCopyWithImpl;
 @useResult
 $Res call({
- String? conversationId, ChatConversation? conversation, List<ChatMessage> messages, bool isLoading, bool isSending, String draftText, String? errorMessage
+ String conversationId, Conversation? conversation, List<ChatMessage> messages, Map<String, Offer> offers, String? nextCursor, bool isSending, String? errorMessage
 });
 
 
-$ChatConversationCopyWith<$Res>? get conversation;
+
 
 }
 /// @nodoc
@@ -334,31 +335,19 @@ class _$ChatDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? conversationId = freezed,Object? conversation = freezed,Object? messages = null,Object? isLoading = null,Object? isSending = null,Object? draftText = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? conversationId = null,Object? conversation = freezed,Object? messages = null,Object? offers = null,Object? nextCursor = freezed,Object? isSending = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
-conversationId: freezed == conversationId ? _self.conversationId : conversationId // ignore: cast_nullable_to_non_nullable
-as String?,conversation: freezed == conversation ? _self.conversation : conversation // ignore: cast_nullable_to_non_nullable
-as ChatConversation?,messages: null == messages ? _self.messages : messages // ignore: cast_nullable_to_non_nullable
-as List<ChatMessage>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
-as bool,isSending: null == isSending ? _self.isSending : isSending // ignore: cast_nullable_to_non_nullable
-as bool,draftText: null == draftText ? _self.draftText : draftText // ignore: cast_nullable_to_non_nullable
-as String,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+conversationId: null == conversationId ? _self.conversationId : conversationId // ignore: cast_nullable_to_non_nullable
+as String,conversation: freezed == conversation ? _self.conversation : conversation // ignore: cast_nullable_to_non_nullable
+as Conversation?,messages: null == messages ? _self.messages : messages // ignore: cast_nullable_to_non_nullable
+as List<ChatMessage>,offers: null == offers ? _self.offers : offers // ignore: cast_nullable_to_non_nullable
+as Map<String, Offer>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
+as String?,isSending: null == isSending ? _self.isSending : isSending // ignore: cast_nullable_to_non_nullable
+as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
-/// Create a copy of ChatDetailState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ChatConversationCopyWith<$Res>? get conversation {
-    if (_self.conversation == null) {
-    return null;
-  }
 
-  return $ChatConversationCopyWith<$Res>(_self.conversation!, (value) {
-    return _then(_self.copyWith(conversation: value));
-  });
-}
 }
 
 
@@ -440,10 +429,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? conversationId,  ChatConversation? conversation,  List<ChatMessage> messages,  bool isLoading,  bool isSending,  String draftText,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String conversationId,  Conversation? conversation,  List<ChatMessage> messages,  Map<String, Offer> offers,  String? nextCursor,  bool isSending,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatDetailState() when $default != null:
-return $default(_that.conversationId,_that.conversation,_that.messages,_that.isLoading,_that.isSending,_that.draftText,_that.errorMessage);case _:
+return $default(_that.conversationId,_that.conversation,_that.messages,_that.offers,_that.nextCursor,_that.isSending,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -461,10 +450,10 @@ return $default(_that.conversationId,_that.conversation,_that.messages,_that.isL
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? conversationId,  ChatConversation? conversation,  List<ChatMessage> messages,  bool isLoading,  bool isSending,  String draftText,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String conversationId,  Conversation? conversation,  List<ChatMessage> messages,  Map<String, Offer> offers,  String? nextCursor,  bool isSending,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _ChatDetailState():
-return $default(_that.conversationId,_that.conversation,_that.messages,_that.isLoading,_that.isSending,_that.draftText,_that.errorMessage);case _:
+return $default(_that.conversationId,_that.conversation,_that.messages,_that.offers,_that.nextCursor,_that.isSending,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -481,10 +470,10 @@ return $default(_that.conversationId,_that.conversation,_that.messages,_that.isL
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? conversationId,  ChatConversation? conversation,  List<ChatMessage> messages,  bool isLoading,  bool isSending,  String draftText,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String conversationId,  Conversation? conversation,  List<ChatMessage> messages,  Map<String, Offer> offers,  String? nextCursor,  bool isSending,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatDetailState() when $default != null:
-return $default(_that.conversationId,_that.conversation,_that.messages,_that.isLoading,_that.isSending,_that.draftText,_that.errorMessage);case _:
+return $default(_that.conversationId,_that.conversation,_that.messages,_that.offers,_that.nextCursor,_that.isSending,_that.errorMessage);case _:
   return null;
 
 }
@@ -495,22 +484,36 @@ return $default(_that.conversationId,_that.conversation,_that.messages,_that.isL
 /// @nodoc
 
 
-class _ChatDetailState implements ChatDetailState {
-  const _ChatDetailState({this.conversationId, this.conversation, final  List<ChatMessage> messages = const [], this.isLoading = false, this.isSending = false, this.draftText = '', this.errorMessage}): _messages = messages;
+class _ChatDetailState extends ChatDetailState {
+  const _ChatDetailState({required this.conversationId, this.conversation, final  List<ChatMessage> messages = const [], final  Map<String, Offer> offers = const {}, this.nextCursor, this.isSending = false, this.errorMessage}): _messages = messages,_offers = offers,super._();
   
 
-@override final  String? conversationId;
-@override final  ChatConversation? conversation;
+@override final  String conversationId;
+@override final  Conversation? conversation;
+/// Oldest first, which is the reading order; the route answers newest first.
  final  List<ChatMessage> _messages;
+/// Oldest first, which is the reading order; the route answers newest first.
 @override@JsonKey() List<ChatMessage> get messages {
   if (_messages is EqualUnmodifiableListView) return _messages;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_messages);
 }
 
-@override@JsonKey() final  bool isLoading;
+/// The negotiations the thread's cards point at, by offer id. A card carries
+/// only the id, so the terms are read from here and a counter-offer can never
+/// leave an old price on screen.
+ final  Map<String, Offer> _offers;
+/// The negotiations the thread's cards point at, by offer id. A card carries
+/// only the id, so the terms are read from here and a counter-offer can never
+/// leave an old price on screen.
+@override@JsonKey() Map<String, Offer> get offers {
+  if (_offers is EqualUnmodifiableMapView) return _offers;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_offers);
+}
+
+@override final  String? nextCursor;
 @override@JsonKey() final  bool isSending;
-@override@JsonKey() final  String draftText;
 @override final  String? errorMessage;
 
 /// Create a copy of ChatDetailState
@@ -523,16 +526,16 @@ _$ChatDetailStateCopyWith<_ChatDetailState> get copyWith => __$ChatDetailStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatDetailState&&(identical(other.conversationId, conversationId) || other.conversationId == conversationId)&&(identical(other.conversation, conversation) || other.conversation == conversation)&&const DeepCollectionEquality().equals(other._messages, _messages)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.draftText, draftText) || other.draftText == draftText)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatDetailState&&(identical(other.conversationId, conversationId) || other.conversationId == conversationId)&&(identical(other.conversation, conversation) || other.conversation == conversation)&&const DeepCollectionEquality().equals(other._messages, _messages)&&const DeepCollectionEquality().equals(other._offers, _offers)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,conversationId,conversation,const DeepCollectionEquality().hash(_messages),isLoading,isSending,draftText,errorMessage);
+int get hashCode => Object.hash(runtimeType,conversationId,conversation,const DeepCollectionEquality().hash(_messages),const DeepCollectionEquality().hash(_offers),nextCursor,isSending,errorMessage);
 
 @override
 String toString() {
-  return 'ChatDetailState(conversationId: $conversationId, conversation: $conversation, messages: $messages, isLoading: $isLoading, isSending: $isSending, draftText: $draftText, errorMessage: $errorMessage)';
+  return 'ChatDetailState(conversationId: $conversationId, conversation: $conversation, messages: $messages, offers: $offers, nextCursor: $nextCursor, isSending: $isSending, errorMessage: $errorMessage)';
 }
 
 
@@ -543,11 +546,11 @@ abstract mixin class _$ChatDetailStateCopyWith<$Res> implements $ChatDetailState
   factory _$ChatDetailStateCopyWith(_ChatDetailState value, $Res Function(_ChatDetailState) _then) = __$ChatDetailStateCopyWithImpl;
 @override @useResult
 $Res call({
- String? conversationId, ChatConversation? conversation, List<ChatMessage> messages, bool isLoading, bool isSending, String draftText, String? errorMessage
+ String conversationId, Conversation? conversation, List<ChatMessage> messages, Map<String, Offer> offers, String? nextCursor, bool isSending, String? errorMessage
 });
 
 
-@override $ChatConversationCopyWith<$Res>? get conversation;
+
 
 }
 /// @nodoc
@@ -560,32 +563,20 @@ class __$ChatDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? conversationId = freezed,Object? conversation = freezed,Object? messages = null,Object? isLoading = null,Object? isSending = null,Object? draftText = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? conversationId = null,Object? conversation = freezed,Object? messages = null,Object? offers = null,Object? nextCursor = freezed,Object? isSending = null,Object? errorMessage = freezed,}) {
   return _then(_ChatDetailState(
-conversationId: freezed == conversationId ? _self.conversationId : conversationId // ignore: cast_nullable_to_non_nullable
-as String?,conversation: freezed == conversation ? _self.conversation : conversation // ignore: cast_nullable_to_non_nullable
-as ChatConversation?,messages: null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
-as List<ChatMessage>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
-as bool,isSending: null == isSending ? _self.isSending : isSending // ignore: cast_nullable_to_non_nullable
-as bool,draftText: null == draftText ? _self.draftText : draftText // ignore: cast_nullable_to_non_nullable
-as String,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+conversationId: null == conversationId ? _self.conversationId : conversationId // ignore: cast_nullable_to_non_nullable
+as String,conversation: freezed == conversation ? _self.conversation : conversation // ignore: cast_nullable_to_non_nullable
+as Conversation?,messages: null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
+as List<ChatMessage>,offers: null == offers ? _self._offers : offers // ignore: cast_nullable_to_non_nullable
+as Map<String, Offer>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
+as String?,isSending: null == isSending ? _self.isSending : isSending // ignore: cast_nullable_to_non_nullable
+as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
 
-/// Create a copy of ChatDetailState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ChatConversationCopyWith<$Res>? get conversation {
-    if (_self.conversation == null) {
-    return null;
-  }
 
-  return $ChatConversationCopyWith<$Res>(_self.conversation!, (value) {
-    return _then(_self.copyWith(conversation: value));
-  });
-}
 }
 
 // dart format on
