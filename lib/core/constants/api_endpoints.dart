@@ -26,8 +26,6 @@ class ApiEndpoints {
   static const String meProfile = 'me/profile';
   static const String meUploads = 'me/uploads';
   static const String profile = 'me';
-  static const String accounts = 'accounts';
-  static const String getAccountById = 'accounts';
   static const String accountDetailTemplate = 'accounts/{id}';
 
   static String accountDetail(String id) => 'accounts/$id';
@@ -77,14 +75,8 @@ class ApiEndpoints {
   static const String productDetail = 'listings';
 
   static const String categories = 'categories';
-  static const String categoryDetailTemplate = 'categories/{id}';
-  static String categoryDetail(String id) => 'categories/$id';
 
   static const String tags = 'tags';
-  static const String tagDetailTemplate = 'tags/{name}';
-  static String tagDetail(String name) => 'tags/$name';
-
-  static const String vendorStats = 'me/reputation';
 
   // --- Comments & Reviews Features ---
   static const String listingReviewsTemplate = 'listings/{listingID}/reviews';
@@ -101,7 +93,6 @@ class ApiEndpoints {
   // Legacy aliases
   static const String comments = 'reviews';
   static const String reviewableOrders = 'orders';
-  static const String voteComment = 'reviews/vote';
 
   // --- Favorites/Wishlist Features ---
   static const String favorites = 'favorites';
@@ -138,28 +129,6 @@ class ApiEndpoints {
   static String paymentSessionDetail(String id) => 'payment-sessions/$id';
   static const String startPaymentTemplate = 'payment-sessions/{id}/payments';
   static String startPayment(String id) => 'payment-sessions/$id/payments';
-
-  // Legacy checkout aliases
-  static const String quoteTransport = 'order/buyer/quote-transport';
-  static const String checkout = 'order/buyer/checkout';
-
-  static const String cancelCheckoutTemplate =
-      'order/buyer/checkout/{sessionID}/cancel';
-
-  static String cancelCheckout(String sessionID) =>
-      'order/buyer/checkout/$sessionID/cancel';
-
-  static const String paymentUrlTemplate =
-      'order/buyer/checkout/{sessionID}/payment-url';
-
-  static String paymentUrl(String sessionID) =>
-      'order/buyer/checkout/$sessionID/payment-url';
-
-  static const String checkoutSummaryTemplate =
-      'order/buyer/checkout-summary/{txID}';
-
-  static String checkoutSummary(String txID) =>
-      'order/buyer/checkout-summary/$txID';
 
   // --- Orders & Items ---
   static const String orders = 'orders';
@@ -217,28 +186,15 @@ class ApiEndpoints {
   static const String listingSuggestions = 'listings/suggestions';
 
   // --- Inventory Features ---
-  static const String stock = 'inventory/stock';
-  static const String stockHistory = 'inventory/stock/history';
-  static const String stockImport = 'inventory/stock/import';
-  static const String serials = 'inventory/serial';
 
   // --- Promotion Features ---
-  static const String promotions = 'catalog/promotion';
-  static const String promotionDetailTemplate = 'catalog/promotion/{id}';
-  static String promotionDetail(String id) => 'catalog/promotion/$id';
 
   // --- Analytic Features ---
   static const String sellerDashboard = 'analytic/seller-dashboard';
-  static const String createInteraction = 'analytic/interaction';
-  static const String productPopularityTemplate = 'analytic/popularity/{spuId}';
-  static String productPopularity(String spuId) => 'analytic/popularity/$spuId';
-  static const String topProductPopularity = 'analytic/popularity/top';
 
   // --- Common Utilities & Geocoding ---
   static const String uploadFile = 'common/files';
-  static const String systemOptions = 'common/option';
   static const String exchangeRates = 'common/currencies/rates';
-  static const String sseStream = 'common/stream';
   static const String reverseGeocode = 'common/geocode/reverse';
   static const String forwardGeocode = 'common/geocode/forward';
   static const String searchGeocode = 'common/geocode/search';

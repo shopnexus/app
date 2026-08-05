@@ -186,7 +186,7 @@ class SharedProductCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: product.isNegotiable
+                              color: product.effectiveIsNegotiable
                                   ? theme.colorScheme.primary.withAlpha(25)
                                   : (isDarkMode
                                         ? theme
@@ -195,7 +195,7 @@ class SharedProductCard extends StatelessWidget {
                                         : const Color(0xFFF1F5F9)),
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
-                                color: product.isNegotiable
+                                color: product.effectiveIsNegotiable
                                     ? theme.colorScheme.primary.withAlpha(80)
                                     : Colors.transparent,
                                 width: 0.8,
@@ -205,24 +205,24 @@ class SharedProductCard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  product.isNegotiable
+                                  product.effectiveIsNegotiable
                                       ? Icons.handshake_outlined
                                       : Icons.flash_on_rounded,
                                   size: 10,
-                                  color: product.isNegotiable
+                                  color: product.effectiveIsNegotiable
                                       ? theme.colorScheme.primary
                                       : theme.colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(width: 3),
                                 Text(
-                                  product.isNegotiable
+                                  product.effectiveIsNegotiable
                                       ? 'Thương lượng'
                                       : 'Mua ngay',
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: product.isNegotiable
+                                    color: product.effectiveIsNegotiable
                                         ? theme.colorScheme.primary
                                         : theme.colorScheme.onSurfaceVariant,
                                   ),

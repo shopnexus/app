@@ -27,13 +27,8 @@ class CatalogProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // SharedProductCard reads the legacy `is_negotiable` flag; the API only ever
-    // says `price_mode`. Normalising here keeps the "Thương lượng" chip honest
-    // without reaching into shared code.
     final card = SharedProductCard(
-      product: product.effectiveIsNegotiable && !product.isNegotiable
-          ? product.copyWith(isNegotiable: true)
-          : product,
+      product: product,
       onTap: onTap,
       aspectRatio: aspectRatio,
       isFavorite: isFavorite,

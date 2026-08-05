@@ -1628,7 +1628,7 @@ class CheckoutScreen extends ConsumerWidget {
   ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final summary = state.checkoutSummary;
+    final session = state.paymentSession;
 
     return Center(
       child: Padding(
@@ -1660,7 +1660,7 @@ class CheckoutScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Transaction ID: #${summary?.session.id ?? ''}',
+              'Mã phiên thanh toán: ${session?.id ?? ''}',
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 13,
@@ -1668,7 +1668,7 @@ class CheckoutScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
-            if (summary != null)
+            if (session != null)
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -1695,8 +1695,8 @@ class CheckoutScreen extends ConsumerWidget {
                         ),
                         Text(
                           MoneyUtils.format(
-                            summary.session.totalAmount,
-                            currency: summary.session.currency,
+                            session.totalAmount,
+                            currency: session.currency,
                           ),
                           style: TextStyle(
                             fontFamily: 'Inter',

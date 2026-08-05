@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../api/generated/model/payment_session.dart';
+import '../../../../api/generated/model/payment_session_status.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../../../account/data/models/account_model.dart';
 import '../../../account/data/repositories/account_repository.dart';
@@ -35,7 +37,7 @@ abstract class CheckoutState with _$CheckoutState {
     CheckoutResponse? checkoutResponse,
     CheckoutResult? checkoutResult,
     Transaction? paymentTransaction,
-    CheckoutSummary? checkoutSummary,
+    PaymentSession? paymentSession,
     @Default(false) bool isLoading,
     String? errorMessage,
     @Default('USD') String preferredCurrency,
@@ -338,38 +340,43 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     }
   }
 
-  /// Bắt đầu cơ chế Polling cứ mỗi 2 giây
-  void _startPolling(String txID) {
+  /// Poll the payment session until it settles. The order appears when the
+  /// session completes — no seller confirms anything — so a settled session is
+  /// the whole answer, and `order.placed` on the socket is the same fact arriving
+  /// sooner.
+  void _startPolling(String paymentSessionId) {
     _pollingTimer?.cancel();
     _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       try {
-        final checkoutRepo = ref.read(checkoutRepositoryProvider);
-        final summary = await checkoutRepo.getCheckoutSummary(txID);
+        final session = await ref
+            .read(checkoutRepositoryProvider)
+            .paymentSession(paymentSessionId);
 
         if (!ref.mounted) {
           timer.cancel();
           return;
         }
 
-        final status = summary.session.status.toUpperCase();
-        if (status == 'SUCCESS') {
-          timer.cancel();
-          state = state.copyWith(
-            step: CheckoutStep.success,
-            checkoutSummary: summary,
-            isLoading: false,
-          );
-        } else if (status == 'FAILED') {
-          timer.cancel();
-          state = state.copyWith(
-            step: CheckoutStep.failed,
-            checkoutSummary: summary,
-            isLoading: false,
-            errorMessage: 'Thanh toán không thành công hoặc phiên bị hủy.',
-          );
-        } else {
-          // Trạng thái vẫn là PENDING, cập nhật dữ liệu tạm thời
-          state = state.copyWith(checkoutSummary: summary);
+        switch (session.status) {
+          case PaymentSessionStatus.success:
+            timer.cancel();
+            state = state.copyWith(
+              step: CheckoutStep.success,
+              paymentSession: session,
+              isLoading: false,
+            );
+          case PaymentSessionStatus.failed:
+          case PaymentSessionStatus.cancelled:
+            timer.cancel();
+            state = state.copyWith(
+              step: CheckoutStep.failed,
+              paymentSession: session,
+              isLoading: false,
+              errorMessage: 'Thanh toán không thành công hoặc phiên bị hủy.',
+            );
+          case PaymentSessionStatus.pending:
+          case PaymentSessionStatus.processing:
+            state = state.copyWith(paymentSession: session);
         }
       } catch (e) {
         // Bỏ qua lỗi mạng nhất thời khi polling

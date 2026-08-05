@@ -1,4 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../api/api_providers.dart';
+import '../../../../api/generated/api/finance_api.dart';
+import '../../../../api/generated/model/payment_session.dart';
 import '../data_sources/checkout_api_service.dart';
 import '../models/checkout_model.dart';
 
@@ -6,8 +9,9 @@ part 'checkout_repository.g.dart';
 
 class CheckoutRepository {
   final CheckoutApiService _apiService;
+  final FinanceApi _financeApi;
 
-  CheckoutRepository(this._apiService);
+  CheckoutRepository(this._apiService, this._financeApi);
 
   /// Tạo một purchase session (DraftOrder) cho 1 listing
   Future<DraftOrder> createDraft(CreateDraftRequest request) async {
@@ -83,40 +87,18 @@ class CheckoutRepository {
     }
   }
 
-  // --- Support methods ---
-
-  Future<QuoteTransportResponse> quoteTransport(
-    QuoteTransportRequest request,
-  ) async {
-    try {
-      final response = await _apiService.quoteTransport(request);
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<PaymentUrlResponse> getPaymentUrl(String sessionID) async {
-    try {
-      final response = await _apiService.getPaymentUrl(sessionID);
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<CheckoutSummary> getCheckoutSummary(String txID) async {
-    try {
-      final response = await _apiService.getCheckoutSummary(txID);
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
+  /// Polling reads the payment session itself. There is no summary route: the
+  /// session carries its own status, and the lines are already in hand from the
+  /// checkout that opened it.
+  Future<PaymentSession> paymentSession(String id) async {
+    final session = (await _financeApi.paymentSessionsIdGet(id: id)).data?.data;
+    if (session == null) throw StateError('empty payment session');
+    return session;
   }
 }
 
 @riverpod
-CheckoutRepository checkoutRepository(Ref ref) {
-  final apiService = ref.watch(checkoutApiServiceProvider);
-  return CheckoutRepository(apiService);
-}
+CheckoutRepository checkoutRepository(Ref ref) => CheckoutRepository(
+  ref.watch(checkoutApiServiceProvider),
+  ref.watch(financeApiProvider),
+);
