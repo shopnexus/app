@@ -226,6 +226,46 @@ void main() {
       expect(backend.paths.single, 'listings/lst_a60p5qh3t6ry4/publication');
     });
 
+    test('a card carries its own tags, so chips cost no request', () async {
+      final backend = RecordingBackend(pages(listings: [listingJson]));
+
+      final listings = await backend.seller.listings();
+
+      expect(backend.paths.single, 'listings');
+      expect(listings.single.tags, [
+        'bo-do-an',
+        'dung-cu-an-uong',
+        'nha-cua-va-doi-song',
+      ]);
+    });
+
+    test('a takedown is told apart from the seller hiding their own', () async {
+      final backend = RecordingBackend(
+        pages(listings: [takenDownListingJson, listingJson]),
+      );
+
+      final listings = await backend.seller.listings();
+
+      // Both read `hidden` in the status alone, which is why the badge reads the marker.
+      expect(listings.first.status, ListingStatus.hidden);
+      expect(listings.first.takenDownAt, isNotNull);
+      expect(listings.last.takenDownAt, isNull);
+    });
+
+    test(
+      'the reason is read from the detail, and only for a row that is down',
+      () async {
+        final backend = RecordingBackend((_) => {'data': listingDetailJson});
+
+        final reason = await backend.seller.takedownReason('lst_a60p5qh3t6ry4');
+
+        expect(backend.paths.single, 'listings/lst_a60p5qh3t6ry4');
+        // The fixture is a live listing, so there is no reason to read — which is the same
+        // answer as a moderator who chose not to give one, and the screen says so.
+        expect(reason, isNull);
+      },
+    );
+
     test('deleting a variant is DELETE /variants/{id}', () async {
       final backend = RecordingBackend((_) => {'data': listingDetailJson});
 

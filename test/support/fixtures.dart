@@ -149,8 +149,21 @@ const listingJson = <String, dynamic>{
   'category_id': 'cat_b68877mkawpab',
   'seller': {'id': 'acc_48gmxxfhd8ta3', 'name': 'Bob Electronics'},
   'favorited': false,
+  // On the card, so chips cost no request per row.
+  'tags': ['bo-do-an', 'dung-cu-an-uong', 'nha-cua-va-doi-song'],
+  // Null on a live listing, and null on one the seller hid themselves — it is set only by a
+  // takedown, which is the one thing `status: hidden` cannot tell apart.
+  'taken_down_at': null,
   'deleted_at': null,
   'created_at': '2026-08-02T04:55:15.318908Z',
+};
+
+/// The same card after staff removed it. `status` reads `hidden` exactly as a seller's own
+/// hiding does, so the marker is the whole difference.
+final takenDownListingJson = <String, dynamic>{
+  ...listingJson,
+  'status': 'hidden',
+  'taken_down_at': '2026-08-05T03:20:00Z',
 };
 
 /// `GET /listings/lst_a60p5qh3t6ry4` verbatim, trimmed to two images and two

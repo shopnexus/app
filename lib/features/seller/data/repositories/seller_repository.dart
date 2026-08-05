@@ -150,6 +150,13 @@ class SellerRepository {
     return result?.data ?? const [];
   }
 
+  /// The words a moderator chose to tell the seller, null when they chose not to.
+  /// A detail read per row, on purpose: the card carries the *fact* of a takedown
+  /// (`taken_down_at`) and the reason is a sentence, so only a row that is
+  /// actually down ever pays for it.
+  Future<String?> takedownReason(String id) async =>
+      (await _catalogApi.listingsIdGet(id: id)).data?.data.takedownReason;
+
   Future<void> updateListing(String id, UpdateListingRequest request) =>
       _catalogApi.listingsIdPatch(id: id, updateListingRequest: request);
 
@@ -161,7 +168,8 @@ class SellerRepository {
       _catalogApi.listingsIdPublicationDelete(id: id);
 
   /// Re-queues a hidden listing for moderation, so it comes back as `pending`
-  /// rather than straight to `active`.
+  /// rather than straight to `active`. That is also the route out of a takedown —
+  /// it clears the marker and its reason and the listing is reviewed again.
   Future<void> publishListing(String id) =>
       _catalogApi.listingsIdPublicationPost(id: id);
 

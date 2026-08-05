@@ -14,6 +14,12 @@ part 'seller_products_provider.g.dart';
 Future<Map<ListingStatus, int>> sellerListingCounts(Ref ref) =>
     ref.watch(sellerRepositoryProvider).listingCounts();
 
+/// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
+/// detail reads at all.
+@riverpod
+Future<String?> listingTakedownReason(Ref ref, String listingId) =>
+    ref.watch(sellerRepositoryProvider).takedownReason(listingId);
+
 @freezed
 abstract class SellerProductsState with _$SellerProductsState {
   const factory SellerProductsState({

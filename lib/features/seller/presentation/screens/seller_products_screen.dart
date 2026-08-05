@@ -245,27 +245,40 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     final isHidden = listing.status == ListingStatus.hidden;
-    final statusText = _statusLabels[listing.status] ?? listing.status.value;
-    final statusBgColor = switch (listing.status) {
-      ListingStatus.active =>
-        isDark ? AppColors.darkPrimary.withAlpha(40) : const Color(0xFFA8ECE4),
-      ListingStatus.pending =>
-        isDark
-            ? const Color(0xFFD97706).withAlpha(40)
-            : const Color(0xFFFEF3C7),
-      ListingStatus.hidden || ListingStatus.draft =>
-        isDark
-            ? theme.colorScheme.surfaceContainerHighest
-            : const Color(0xFFE2E8F0),
-    };
-    final statusTextColor = switch (listing.status) {
-      ListingStatus.active =>
-        isDark ? AppColors.darkPrimary : const Color(0xFF00504B),
-      ListingStatus.pending =>
-        isDark ? const Color(0xFFFBBF24) : const Color(0xFF92400E),
-      ListingStatus.hidden ||
-      ListingStatus.draft => theme.colorScheme.onSurfaceVariant,
-    };
+    // A takedown and a seller hiding their own listing both read `hidden`;
+    // `taken_down_at` is the only thing that tells the two apart.
+    final isTakenDown = listing.takenDownAt != null;
+    final statusText = isTakenDown
+        ? 'Bị hạ'
+        : _statusLabels[listing.status] ?? listing.status.value;
+    final statusBgColor = isTakenDown
+        ? (isDark
+              ? const Color(0xFF991B1B).withAlpha(40)
+              : const Color(0xFFFEE2E2))
+        : switch (listing.status) {
+            ListingStatus.active =>
+              isDark
+                  ? AppColors.darkPrimary.withAlpha(40)
+                  : const Color(0xFFA8ECE4),
+            ListingStatus.pending =>
+              isDark
+                  ? const Color(0xFFD97706).withAlpha(40)
+                  : const Color(0xFFFEF3C7),
+            ListingStatus.hidden || ListingStatus.draft =>
+              isDark
+                  ? theme.colorScheme.surfaceContainerHighest
+                  : const Color(0xFFE2E8F0),
+          };
+    final statusTextColor = isTakenDown
+        ? (isDark ? const Color(0xFFF87171) : const Color(0xFF991B1B))
+        : switch (listing.status) {
+            ListingStatus.active =>
+              isDark ? AppColors.darkPrimary : const Color(0xFF00504B),
+            ListingStatus.pending =>
+              isDark ? const Color(0xFFFBBF24) : const Color(0xFF92400E),
+            ListingStatus.hidden ||
+            ListingStatus.draft => theme.colorScheme.onSurfaceVariant,
+          };
 
     final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
     final cardBorderColor = isDark
@@ -385,6 +398,40 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                     ),
                   ],
                 ),
+                // On the card, so chips cost no request per row.
+                if (listing.tags?.isNotEmpty ?? false) ...[
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: [
+                      for (final tag in listing.tags!)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? theme.colorScheme.surfaceContainerHighest
+                                : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            tag,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+                if (isTakenDown) ...[
+                  const SizedBox(height: 8),
+                  _buildTakedownNotice(context, listing.id, isDark),
+                ],
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -497,6 +544,63 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     );
   }
 
+  /// The words the moderator chose, read from the detail only for a row that is
+  /// actually down. Null is a real answer — they may have chosen not to say — and
+  /// it reads differently from "still loading", which is why both are handled.
+  Widget _buildTakedownNotice(
+    BuildContext context,
+    String listingId,
+    bool isDark,
+  ) {
+    final reason = ref.watch(listingTakedownReasonProvider(listingId));
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF451A1A) : const Color(0xFFFEF2F2),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isDark ? const Color(0xFF7F1D1D) : const Color(0xFFFCA5A5),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.error_outline, size: 15, color: Color(0xFFEF4444)),
+          const SizedBox(width: 6),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isDark
+                      ? const Color(0xFFFCA5A5)
+                      : const Color(0xFF991B1B),
+                ),
+                children: [
+                  const TextSpan(
+                    text: 'Sản phẩm đã bị hạ. ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: switch (reason) {
+                      AsyncData(:final value) when value != null =>
+                        'Lý do: $value',
+                      AsyncData() =>
+                        'Quản trị viên không kèm lý do. Hãy liên hệ hỗ trợ nếu bạn cần biết thêm.',
+                      AsyncError() => 'Không tải được lý do.',
+                      _ => 'Đang tải lý do...',
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showProductOptions(
     BuildContext context,
     Listing listing,
@@ -567,7 +671,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isHidden = listing.status == ListingStatus.hidden;
-    final actionText = isHidden ? 'hiển thị lại' : 'ẩn';
+    final isTakenDown = listing.takenDownAt != null;
+    final actionText = isTakenDown
+        ? 'gửi duyệt lại'
+        : (isHidden ? 'hiển thị lại' : 'ẩn');
 
     showDialog(
       context: context,
@@ -596,8 +703,11 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
           ],
         ),
         content: Text(
-          isHidden
-              // Publishing re-queues moderation, so it comes back as `pending`.
+          // Publishing always re-queues moderation, so a hidden or taken-down
+          // listing comes back as `pending`; a takedown's reason is cleared then.
+          isTakenDown
+              ? 'Hãy chắc chắn bạn đã sửa vấn đề bị nêu. Sản phẩm "${listing.name}" sẽ được gửi duyệt lại.'
+              : isHidden
               ? 'Sản phẩm "${listing.name}" sẽ được gửi duyệt lại trước khi hiển thị công khai.'
               : 'Sản phẩm "${listing.name}" sẽ không còn hiển thị với người mua.',
           style: TextStyle(
