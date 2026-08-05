@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_location.dart';
-import 'package:shopnexus_flutter_app/shared/models/rating_model.dart';
-import 'package:shopnexus_flutter_app/shared/models/resource_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 
 part 'catalog_model.freezed.dart';
 part 'catalog_model.g.dart';
@@ -63,7 +62,7 @@ abstract class ListingSeller with _$ListingSeller {
   const factory ListingSeller({
     required String id,
     required String name,
-    ResourceModel? avatar,
+    Resource? avatar,
   }) = _ListingSeller;
 
   factory ListingSeller.fromJson(Map<String, dynamic> json) =>
@@ -83,7 +82,7 @@ abstract class TProductCard with _$TProductCard {
     String? currency,
     @JsonKey(name: 'category_id') String? categoryId,
     String? condition,
-    ResourceModel? cover,
+    Resource? cover,
     @Default(0.0) double rating,
     @JsonKey(name: 'review_count') @Default(0) int reviewCount,
     @Default(0) int sold,
@@ -99,7 +98,6 @@ abstract class TProductCard with _$TProductCard {
     String? thumbnail,
     @JsonKey(name: 'original_price') int? originalPrice,
     @JsonKey(name: 'discount_rate') double? discountRate,
-    RatingModel? ratingModel,
     @JsonKey(name: 'sold_count') int? soldCount,
     List<String>? tags,
     @JsonKey(name: 'vendor_id') String? vendorId,
@@ -151,8 +149,6 @@ abstract class TProductCard with _$TProductCard {
   /// Only set when the browse sent a position, so its absence is "not asked",
   /// not "far away".
   double? get distanceKm => location?.distanceKm;
-  RatingModel get effectiveRating =>
-      ratingModel ?? RatingModel(score: rating, count: reviewCount);
   int get effectiveSoldCount => soldCount ?? sold;
 }
 
@@ -205,7 +201,7 @@ abstract class ProductSku with _$ProductSku {
     VariantStock? stockInfo,
     @JsonKey(name: 'is_featured') @Default(false) bool isFeatured,
     @JsonKey(name: 'created_at') String? createdAt,
-    @JsonKey(name: 'resources') List<ResourceModel>? images,
+    @JsonKey(name: 'resources') List<Resource>? images,
     List<SkuAttribute>? attributes,
   }) = _ProductSku;
 
@@ -252,7 +248,7 @@ abstract class TProductDetail with _$TProductDetail {
     Category? category,
     ListingSeller? seller,
     ListingLocation? location,
-    @JsonKey(name: 'resources') List<ResourceModel>? images,
+    @JsonKey(name: 'resources') List<Resource>? images,
     List<ProductSpecification>? specifications,
     List<ProductSku>? skus,
     List<ProductSku>? variants,
@@ -336,7 +332,7 @@ abstract class ReviewAuthor with _$ReviewAuthor {
   const factory ReviewAuthor({
     required String id,
     required String name,
-    ResourceModel? avatar,
+    Resource? avatar,
   }) = _ReviewAuthor;
 
   factory ReviewAuthor.fromJson(Map<String, dynamic> json) =>
@@ -377,7 +373,7 @@ abstract class ProductComment with _$ProductComment {
     @JsonKey(name: 'created_at') String? createdAt,
     @JsonKey(name: 'date_created') String? dateCreated,
     @JsonKey(name: 'date_updated') String? dateUpdated,
-    @JsonKey(name: 'resources') List<ResourceModel>? attachments,
+    @JsonKey(name: 'resources') List<Resource>? attachments,
     List<SkuAttribute>? attributes,
   }) = _ProductComment;
 

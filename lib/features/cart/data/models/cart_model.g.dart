@@ -60,7 +60,7 @@ _CartItem _$CartItemFromJson(Map<String, dynamic> json) => _CartItem(
       : CartSku.fromJson(json['sku'] as Map<String, dynamic>),
   resource: json['resource'] == null
       ? null
-      : ResourceModel.fromJson(json['resource'] as Map<String, dynamic>),
+      : Resource.fromJson(json['resource'] as Map<String, dynamic>),
   currency: json['currency'] as String? ?? 'VND',
 );
 

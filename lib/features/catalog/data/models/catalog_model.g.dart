@@ -44,7 +44,7 @@ _ListingSeller _$ListingSellerFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       avatar: json['avatar'] == null
           ? null
-          : ResourceModel.fromJson(json['avatar'] as Map<String, dynamic>),
+          : Resource.fromJson(json['avatar'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ListingSellerToJson(_ListingSeller instance) =>
@@ -66,7 +66,7 @@ _TProductCard _$TProductCardFromJson(Map<String, dynamic> json) =>
       condition: json['condition'] as String?,
       cover: json['cover'] == null
           ? null
-          : ResourceModel.fromJson(json['cover'] as Map<String, dynamic>),
+          : Resource.fromJson(json['cover'] as Map<String, dynamic>),
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: (json['review_count'] as num?)?.toInt() ?? 0,
       sold: (json['sold'] as num?)?.toInt() ?? 0,
@@ -84,9 +84,6 @@ _TProductCard _$TProductCardFromJson(Map<String, dynamic> json) =>
       thumbnail: json['thumbnail'] as String?,
       originalPrice: (json['original_price'] as num?)?.toInt(),
       discountRate: (json['discount_rate'] as num?)?.toDouble(),
-      ratingModel: json['ratingModel'] == null
-          ? null
-          : RatingModel.fromJson(json['ratingModel'] as Map<String, dynamic>),
       soldCount: (json['sold_count'] as num?)?.toInt(),
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       vendorId: json['vendor_id'] as String?,
@@ -118,7 +115,6 @@ Map<String, dynamic> _$TProductCardToJson(_TProductCard instance) =>
       'thumbnail': instance.thumbnail,
       'original_price': instance.originalPrice,
       'discount_rate': instance.discountRate,
-      'ratingModel': instance.ratingModel,
       'sold_count': instance.soldCount,
       'tags': instance.tags,
       'vendor_id': instance.vendorId,
@@ -172,7 +168,7 @@ _ProductSku _$ProductSkuFromJson(Map<String, dynamic> json) => _ProductSku(
   isFeatured: json['is_featured'] as bool? ?? false,
   createdAt: json['created_at'] as String?,
   images: (json['resources'] as List<dynamic>?)
-      ?.map((e) => ResourceModel.fromJson(e as Map<String, dynamic>))
+      ?.map((e) => Resource.fromJson(e as Map<String, dynamic>))
       .toList(),
   attributes: (json['attributes'] as List<dynamic>?)
       ?.map((e) => SkuAttribute.fromJson(e as Map<String, dynamic>))
@@ -222,7 +218,7 @@ _TProductDetail _$TProductDetailFromJson(Map<String, dynamic> json) =>
           ? null
           : ListingLocation.fromJson(json['location'] as Map<String, dynamic>),
       images: (json['resources'] as List<dynamic>?)
-          ?.map((e) => ResourceModel.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Resource.fromJson(e as Map<String, dynamic>))
           .toList(),
       specifications: (json['specifications'] as List<dynamic>?)
           ?.map((e) => ProductSpecification.fromJson(e as Map<String, dynamic>))
@@ -304,7 +300,7 @@ _ReviewAuthor _$ReviewAuthorFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       avatar: json['avatar'] == null
           ? null
-          : ResourceModel.fromJson(json['avatar'] as Map<String, dynamic>),
+          : Resource.fromJson(json['avatar'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ReviewAuthorToJson(_ReviewAuthor instance) =>
@@ -354,7 +350,7 @@ _ProductComment _$ProductCommentFromJson(Map<String, dynamic> json) =>
       dateCreated: json['date_created'] as String?,
       dateUpdated: json['date_updated'] as String?,
       attachments: (json['resources'] as List<dynamic>?)
-          ?.map((e) => ResourceModel.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Resource.fromJson(e as Map<String, dynamic>))
           .toList(),
       attributes: (json['attributes'] as List<dynamic>?)
           ?.map((e) => SkuAttribute.fromJson(e as Map<String, dynamic>))

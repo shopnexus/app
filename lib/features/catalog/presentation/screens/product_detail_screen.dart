@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
-import 'package:shopnexus_flutter_app/shared/models/resource_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
@@ -108,7 +108,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         }
 
         // Lấy danh sách ảnh hiển thị trong Gallery (Ưu tiên ảnh biến thể nếu được chọn)
-        List<ResourceModel> galleryItems = detail.images ?? [];
+        List<Resource> galleryItems = detail.images ?? [];
         if (_selectedSku != null &&
             _selectedSku!.images != null &&
             _selectedSku!.images!.isNotEmpty) {
@@ -331,7 +331,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   // 1. Gallery ảnh & video sản phẩm dạng PageView
-  Widget _buildGallerySection(List<ResourceModel> items) {
+  Widget _buildGallerySection(List<Resource> items) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -363,37 +363,52 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             },
             itemBuilder: (context, index) {
               final media = items[index];
+              final mediaUrl = media.url;
               return Stack(
                 fit: StackFit.expand,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: media.url,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: isDarkMode
-                          ? Colors.grey[800]!
-                          : Colors.grey[200]!,
-                      highlightColor: isDarkMode
-                          ? Colors.grey[700]!
-                          : Colors.grey[100]!,
-                      child: Container(
-                        color: isDarkMode
-                            ? AppColors.darkSurface
-                            : Colors.white,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
+                  // `url` is absent until the module can presign one, so one
+                  // un-presigned photo costs a placeholder, not the gallery.
+                  if (mediaUrl == null || mediaUrl.isEmpty)
+                    Container(
                       color: isDarkMode
                           ? AppColors.darkSurface
                           : const Color(0xFFEEEEEB),
                       child: Icon(
-                        Icons.broken_image_outlined,
+                        Icons.image_outlined,
                         size: 48,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
+                    )
+                  else
+                    CachedNetworkImage(
+                      imageUrl: mediaUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: isDarkMode
+                            ? Colors.grey[800]!
+                            : Colors.grey[200]!,
+                        highlightColor: isDarkMode
+                            ? Colors.grey[700]!
+                            : Colors.grey[100]!,
+                        child: Container(
+                          color: isDarkMode
+                              ? AppColors.darkSurface
+                              : Colors.white,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: isDarkMode
+                            ? AppColors.darkSurface
+                            : const Color(0xFFEEEEEB),
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          size: 48,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ),
-                  ),
-                  if (media.type.toLowerCase() == 'video')
+                  if (media.mime.startsWith('video/'))
                     Center(
                       child: GestureDetector(
                         onTap: () {
@@ -1415,7 +1430,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: comment.attachments!.length,
                                 itemBuilder: (context, aIdx) {
-                                  final attach = comment.attachments![aIdx];
+                                  final attachUrl =
+                                      comment.attachments![aIdx].url;
+                                  if (attachUrl == null || attachUrl.isEmpty) {
+                                    return const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
+                                      child: SizedBox(
+                                        width: 60.0,
+                                        height: 60.0,
+                                        child: Center(
+                                          child: Icon(Icons.image_outlined),
+                                        ),
+                                      ),
+                                    );
+                                  }
                                   return Padding(
                                     padding: const EdgeInsets.only(right: 8.0),
                                     child: GestureDetector(
@@ -1424,7 +1452,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                           context: context,
                                           builder: (context) => Dialog(
                                             child: CachedNetworkImage(
-                                              imageUrl: attach.url,
+                                              imageUrl: attachUrl,
                                               fit: BoxFit.contain,
                                             ),
                                           ),
@@ -1435,7 +1463,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                           6.0,
                                         ),
                                         child: CachedNetworkImage(
-                                          imageUrl: attach.url,
+                                          imageUrl: attachUrl,
                                           width: 60.0,
                                           height: 60.0,
                                           fit: BoxFit.cover,
@@ -1954,11 +1982,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
                 child: Row(
                   children: [
-                    if (detail.images != null && detail.images!.isNotEmpty)
+                    if (detail.images?.firstOrNull?.url case final coverUrl?
+                        when coverUrl.isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: CachedNetworkImage(
-                          imageUrl: detail.images!.first.url,
+                          imageUrl: coverUrl,
                           width: 48,
                           height: 48,
                           fit: BoxFit.cover,

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shopnexus_flutter_app/shared/models/resource_model.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 part 'cart_model.freezed.dart';
@@ -46,7 +46,7 @@ abstract class CartItem with _$CartItem {
     // Optional populated / UI display helper fields:
     @JsonKey(name: 'spu_id') String? spuId,
     CartSku? sku,
-    ResourceModel? resource,
+    Resource? resource,
     @Default('VND') String currency,
   }) = _CartItem;
 

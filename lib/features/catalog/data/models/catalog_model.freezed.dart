@@ -565,7 +565,7 @@ as double?,
 /// @nodoc
 mixin _$ListingSeller {
 
- String get id; String get name; ResourceModel? get avatar;
+ String get id; String get name; Resource? get avatar;
 /// Create a copy of ListingSeller
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -598,11 +598,11 @@ abstract mixin class $ListingSellerCopyWith<$Res>  {
   factory $ListingSellerCopyWith(ListingSeller value, $Res Function(ListingSeller) _then) = _$ListingSellerCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, ResourceModel? avatar
+ String id, String name, Resource? avatar
 });
 
 
-$ResourceModelCopyWith<$Res>? get avatar;
+
 
 }
 /// @nodoc
@@ -620,22 +620,10 @@ class _$ListingSellerCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as ResourceModel?,
+as Resource?,
   ));
 }
-/// Create a copy of ListingSeller
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceModelCopyWith<$Res>? get avatar {
-    if (_self.avatar == null) {
-    return null;
-  }
 
-  return $ResourceModelCopyWith<$Res>(_self.avatar!, (value) {
-    return _then(_self.copyWith(avatar: value));
-  });
-}
 }
 
 
@@ -717,7 +705,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  ResourceModel? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  Resource? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ListingSeller() when $default != null:
 return $default(_that.id,_that.name,_that.avatar);case _:
@@ -738,7 +726,7 @@ return $default(_that.id,_that.name,_that.avatar);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  ResourceModel? avatar)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  Resource? avatar)  $default,) {final _that = this;
 switch (_that) {
 case _ListingSeller():
 return $default(_that.id,_that.name,_that.avatar);case _:
@@ -758,7 +746,7 @@ return $default(_that.id,_that.name,_that.avatar);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  ResourceModel? avatar)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  Resource? avatar)?  $default,) {final _that = this;
 switch (_that) {
 case _ListingSeller() when $default != null:
 return $default(_that.id,_that.name,_that.avatar);case _:
@@ -778,7 +766,7 @@ class _ListingSeller implements ListingSeller {
 
 @override final  String id;
 @override final  String name;
-@override final  ResourceModel? avatar;
+@override final  Resource? avatar;
 
 /// Create a copy of ListingSeller
 /// with the given fields replaced by the non-null parameter values.
@@ -813,11 +801,11 @@ abstract mixin class _$ListingSellerCopyWith<$Res> implements $ListingSellerCopy
   factory _$ListingSellerCopyWith(_ListingSeller value, $Res Function(_ListingSeller) _then) = __$ListingSellerCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, ResourceModel? avatar
+ String id, String name, Resource? avatar
 });
 
 
-@override $ResourceModelCopyWith<$Res>? get avatar;
+
 
 }
 /// @nodoc
@@ -835,31 +823,19 @@ class __$ListingSellerCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as ResourceModel?,
+as Resource?,
   ));
 }
 
-/// Create a copy of ListingSeller
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceModelCopyWith<$Res>? get avatar {
-    if (_self.avatar == null) {
-    return null;
-  }
 
-  return $ResourceModelCopyWith<$Res>(_self.avatar!, (value) {
-    return _then(_self.copyWith(avatar: value));
-  });
-}
 }
 
 
 /// @nodoc
 mixin _$TProductCard {
 
- String get id; String get name; String get slug; int get price;@JsonKey(name: 'price_mode') String? get priceMode; String? get currency;@JsonKey(name: 'category_id') String? get categoryId; String? get condition; ResourceModel? get cover; double get rating;@JsonKey(name: 'review_count') int get reviewCount; int get sold; String? get status; bool get favorited; ListingSeller? get seller; ListingLocation? get location;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'deleted_at') String? get deletedAt; double? get score;// Backward-compatibility legacy fields
- String? get thumbnail;@JsonKey(name: 'original_price') int? get originalPrice;@JsonKey(name: 'discount_rate') double? get discountRate; RatingModel? get ratingModel;@JsonKey(name: 'sold_count') int? get soldCount; List<String>? get tags;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'is_negotiable') bool get isNegotiable;
+ String get id; String get name; String get slug; int get price;@JsonKey(name: 'price_mode') String? get priceMode; String? get currency;@JsonKey(name: 'category_id') String? get categoryId; String? get condition; Resource? get cover; double get rating;@JsonKey(name: 'review_count') int get reviewCount; int get sold; String? get status; bool get favorited; ListingSeller? get seller; ListingLocation? get location;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'deleted_at') String? get deletedAt; double? get score;// Backward-compatibility legacy fields
+ String? get thumbnail;@JsonKey(name: 'original_price') int? get originalPrice;@JsonKey(name: 'discount_rate') double? get discountRate;@JsonKey(name: 'sold_count') int? get soldCount; List<String>? get tags;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'is_negotiable') bool get isNegotiable;
 /// Create a copy of TProductCard
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -872,16 +848,16 @@ $TProductCardCopyWith<TProductCard> get copyWith => _$TProductCardCopyWithImpl<T
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TProductCard&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.cover, cover) || other.cover == cover)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.sold, sold) || other.sold == sold)&&(identical(other.status, status) || other.status == status)&&(identical(other.favorited, favorited) || other.favorited == favorited)&&(identical(other.seller, seller) || other.seller == seller)&&(identical(other.location, location) || other.location == location)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.score, score) || other.score == score)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountRate, discountRate) || other.discountRate == discountRate)&&(identical(other.ratingModel, ratingModel) || other.ratingModel == ratingModel)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TProductCard&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.cover, cover) || other.cover == cover)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.sold, sold) || other.sold == sold)&&(identical(other.status, status) || other.status == status)&&(identical(other.favorited, favorited) || other.favorited == favorited)&&(identical(other.seller, seller) || other.seller == seller)&&(identical(other.location, location) || other.location == location)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.score, score) || other.score == score)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountRate, discountRate) || other.discountRate == discountRate)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,name,slug,price,priceMode,currency,categoryId,condition,cover,rating,reviewCount,sold,status,favorited,seller,location,createdAt,deletedAt,score,thumbnail,originalPrice,discountRate,ratingModel,soldCount,const DeepCollectionEquality().hash(tags),vendorId,vendorName,isNegotiable]);
+int get hashCode => Object.hashAll([runtimeType,id,name,slug,price,priceMode,currency,categoryId,condition,cover,rating,reviewCount,sold,status,favorited,seller,location,createdAt,deletedAt,score,thumbnail,originalPrice,discountRate,soldCount,const DeepCollectionEquality().hash(tags),vendorId,vendorName,isNegotiable]);
 
 @override
 String toString() {
-  return 'TProductCard(id: $id, name: $name, slug: $slug, price: $price, priceMode: $priceMode, currency: $currency, categoryId: $categoryId, condition: $condition, cover: $cover, rating: $rating, reviewCount: $reviewCount, sold: $sold, status: $status, favorited: $favorited, seller: $seller, location: $location, createdAt: $createdAt, deletedAt: $deletedAt, score: $score, thumbnail: $thumbnail, originalPrice: $originalPrice, discountRate: $discountRate, ratingModel: $ratingModel, soldCount: $soldCount, tags: $tags, vendorId: $vendorId, vendorName: $vendorName, isNegotiable: $isNegotiable)';
+  return 'TProductCard(id: $id, name: $name, slug: $slug, price: $price, priceMode: $priceMode, currency: $currency, categoryId: $categoryId, condition: $condition, cover: $cover, rating: $rating, reviewCount: $reviewCount, sold: $sold, status: $status, favorited: $favorited, seller: $seller, location: $location, createdAt: $createdAt, deletedAt: $deletedAt, score: $score, thumbnail: $thumbnail, originalPrice: $originalPrice, discountRate: $discountRate, soldCount: $soldCount, tags: $tags, vendorId: $vendorId, vendorName: $vendorName, isNegotiable: $isNegotiable)';
 }
 
 
@@ -892,11 +868,11 @@ abstract mixin class $TProductCardCopyWith<$Res>  {
   factory $TProductCardCopyWith(TProductCard value, $Res Function(TProductCard) _then) = _$TProductCardCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String slug, int price,@JsonKey(name: 'price_mode') String? priceMode, String? currency,@JsonKey(name: 'category_id') String? categoryId, String? condition, ResourceModel? cover, double rating,@JsonKey(name: 'review_count') int reviewCount, int sold, String? status, bool favorited, ListingSeller? seller, ListingLocation? location,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deleted_at') String? deletedAt, double? score, String? thumbnail,@JsonKey(name: 'original_price') int? originalPrice,@JsonKey(name: 'discount_rate') double? discountRate, RatingModel? ratingModel,@JsonKey(name: 'sold_count') int? soldCount, List<String>? tags,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'is_negotiable') bool isNegotiable
+ String id, String name, String slug, int price,@JsonKey(name: 'price_mode') String? priceMode, String? currency,@JsonKey(name: 'category_id') String? categoryId, String? condition, Resource? cover, double rating,@JsonKey(name: 'review_count') int reviewCount, int sold, String? status, bool favorited, ListingSeller? seller, ListingLocation? location,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deleted_at') String? deletedAt, double? score, String? thumbnail,@JsonKey(name: 'original_price') int? originalPrice,@JsonKey(name: 'discount_rate') double? discountRate,@JsonKey(name: 'sold_count') int? soldCount, List<String>? tags,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'is_negotiable') bool isNegotiable
 });
 
 
-$ResourceModelCopyWith<$Res>? get cover;$ListingSellerCopyWith<$Res>? get seller;$RatingModelCopyWith<$Res>? get ratingModel;
+$ListingSellerCopyWith<$Res>? get seller;
 
 }
 /// @nodoc
@@ -909,7 +885,7 @@ class _$TProductCardCopyWithImpl<$Res>
 
 /// Create a copy of TProductCard
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? price = null,Object? priceMode = freezed,Object? currency = freezed,Object? categoryId = freezed,Object? condition = freezed,Object? cover = freezed,Object? rating = null,Object? reviewCount = null,Object? sold = null,Object? status = freezed,Object? favorited = null,Object? seller = freezed,Object? location = freezed,Object? createdAt = freezed,Object? deletedAt = freezed,Object? score = freezed,Object? thumbnail = freezed,Object? originalPrice = freezed,Object? discountRate = freezed,Object? ratingModel = freezed,Object? soldCount = freezed,Object? tags = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? isNegotiable = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? price = null,Object? priceMode = freezed,Object? currency = freezed,Object? categoryId = freezed,Object? condition = freezed,Object? cover = freezed,Object? rating = null,Object? reviewCount = null,Object? sold = null,Object? status = freezed,Object? favorited = null,Object? seller = freezed,Object? location = freezed,Object? createdAt = freezed,Object? deletedAt = freezed,Object? score = freezed,Object? thumbnail = freezed,Object? originalPrice = freezed,Object? discountRate = freezed,Object? soldCount = freezed,Object? tags = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? isNegotiable = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -920,7 +896,7 @@ as String?,currency: freezed == currency ? _self.currency : currency // ignore: 
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as String?,condition: freezed == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
 as String?,cover: freezed == cover ? _self.cover : cover // ignore: cast_nullable_to_non_nullable
-as ResourceModel?,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
+as Resource?,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double,reviewCount: null == reviewCount ? _self.reviewCount : reviewCount // ignore: cast_nullable_to_non_nullable
 as int,sold: null == sold ? _self.sold : sold // ignore: cast_nullable_to_non_nullable
 as int,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -933,8 +909,7 @@ as String?,score: freezed == score ? _self.score : score // ignore: cast_nullabl
 as double?,thumbnail: freezed == thumbnail ? _self.thumbnail : thumbnail // ignore: cast_nullable_to_non_nullable
 as String?,originalPrice: freezed == originalPrice ? _self.originalPrice : originalPrice // ignore: cast_nullable_to_non_nullable
 as int?,discountRate: freezed == discountRate ? _self.discountRate : discountRate // ignore: cast_nullable_to_non_nullable
-as double?,ratingModel: freezed == ratingModel ? _self.ratingModel : ratingModel // ignore: cast_nullable_to_non_nullable
-as RatingModel?,soldCount: freezed == soldCount ? _self.soldCount : soldCount // ignore: cast_nullable_to_non_nullable
+as double?,soldCount: freezed == soldCount ? _self.soldCount : soldCount // ignore: cast_nullable_to_non_nullable
 as int?,tags: freezed == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>?,vendorId: freezed == vendorId ? _self.vendorId : vendorId // ignore: cast_nullable_to_non_nullable
 as String?,vendorName: freezed == vendorName ? _self.vendorName : vendorName // ignore: cast_nullable_to_non_nullable
@@ -946,18 +921,6 @@ as bool,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$ResourceModelCopyWith<$Res>? get cover {
-    if (_self.cover == null) {
-    return null;
-  }
-
-  return $ResourceModelCopyWith<$Res>(_self.cover!, (value) {
-    return _then(_self.copyWith(cover: value));
-  });
-}/// Create a copy of TProductCard
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
 $ListingSellerCopyWith<$Res>? get seller {
     if (_self.seller == null) {
     return null;
@@ -965,18 +928,6 @@ $ListingSellerCopyWith<$Res>? get seller {
 
   return $ListingSellerCopyWith<$Res>(_self.seller!, (value) {
     return _then(_self.copyWith(seller: value));
-  });
-}/// Create a copy of TProductCard
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$RatingModelCopyWith<$Res>? get ratingModel {
-    if (_self.ratingModel == null) {
-    return null;
-  }
-
-  return $RatingModelCopyWith<$Res>(_self.ratingModel!, (value) {
-    return _then(_self.copyWith(ratingModel: value));
   });
 }
 }
@@ -1060,10 +1011,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency, @JsonKey(name: 'category_id')  String? categoryId,  String? condition,  ResourceModel? cover,  double rating, @JsonKey(name: 'review_count')  int reviewCount,  int sold,  String? status,  bool favorited,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt,  double? score,  String? thumbnail, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? ratingModel, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency, @JsonKey(name: 'category_id')  String? categoryId,  String? condition,  Resource? cover,  double rating, @JsonKey(name: 'review_count')  int reviewCount,  int sold,  String? status,  bool favorited,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt,  double? score,  String? thumbnail, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TProductCard() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that.currency,_that.categoryId,_that.condition,_that.cover,_that.rating,_that.reviewCount,_that.sold,_that.status,_that.favorited,_that.seller,_that.location,_that.createdAt,_that.deletedAt,_that.score,_that.thumbnail,_that.originalPrice,_that.discountRate,_that.ratingModel,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
+return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that.currency,_that.categoryId,_that.condition,_that.cover,_that.rating,_that.reviewCount,_that.sold,_that.status,_that.favorited,_that.seller,_that.location,_that.createdAt,_that.deletedAt,_that.score,_that.thumbnail,_that.originalPrice,_that.discountRate,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
   return orElse();
 
 }
@@ -1081,10 +1032,10 @@ return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency, @JsonKey(name: 'category_id')  String? categoryId,  String? condition,  ResourceModel? cover,  double rating, @JsonKey(name: 'review_count')  int reviewCount,  int sold,  String? status,  bool favorited,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt,  double? score,  String? thumbnail, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? ratingModel, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency, @JsonKey(name: 'category_id')  String? categoryId,  String? condition,  Resource? cover,  double rating, @JsonKey(name: 'review_count')  int reviewCount,  int sold,  String? status,  bool favorited,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt,  double? score,  String? thumbnail, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)  $default,) {final _that = this;
 switch (_that) {
 case _TProductCard():
-return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that.currency,_that.categoryId,_that.condition,_that.cover,_that.rating,_that.reviewCount,_that.sold,_that.status,_that.favorited,_that.seller,_that.location,_that.createdAt,_that.deletedAt,_that.score,_that.thumbnail,_that.originalPrice,_that.discountRate,_that.ratingModel,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
+return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that.currency,_that.categoryId,_that.condition,_that.cover,_that.rating,_that.reviewCount,_that.sold,_that.status,_that.favorited,_that.seller,_that.location,_that.createdAt,_that.deletedAt,_that.score,_that.thumbnail,_that.originalPrice,_that.discountRate,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1101,10 +1052,10 @@ return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency, @JsonKey(name: 'category_id')  String? categoryId,  String? condition,  ResourceModel? cover,  double rating, @JsonKey(name: 'review_count')  int reviewCount,  int sold,  String? status,  bool favorited,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt,  double? score,  String? thumbnail, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate,  RatingModel? ratingModel, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency, @JsonKey(name: 'category_id')  String? categoryId,  String? condition,  Resource? cover,  double rating, @JsonKey(name: 'review_count')  int reviewCount,  int sold,  String? status,  bool favorited,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt,  double? score,  String? thumbnail, @JsonKey(name: 'original_price')  int? originalPrice, @JsonKey(name: 'discount_rate')  double? discountRate, @JsonKey(name: 'sold_count')  int? soldCount,  List<String>? tags, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'is_negotiable')  bool isNegotiable)?  $default,) {final _that = this;
 switch (_that) {
 case _TProductCard() when $default != null:
-return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that.currency,_that.categoryId,_that.condition,_that.cover,_that.rating,_that.reviewCount,_that.sold,_that.status,_that.favorited,_that.seller,_that.location,_that.createdAt,_that.deletedAt,_that.score,_that.thumbnail,_that.originalPrice,_that.discountRate,_that.ratingModel,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
+return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that.currency,_that.categoryId,_that.condition,_that.cover,_that.rating,_that.reviewCount,_that.sold,_that.status,_that.favorited,_that.seller,_that.location,_that.createdAt,_that.deletedAt,_that.score,_that.thumbnail,_that.originalPrice,_that.discountRate,_that.soldCount,_that.tags,_that.vendorId,_that.vendorName,_that.isNegotiable);case _:
   return null;
 
 }
@@ -1116,7 +1067,7 @@ return $default(_that.id,_that.name,_that.slug,_that.price,_that.priceMode,_that
 @JsonSerializable()
 
 class _TProductCard extends TProductCard {
-  const _TProductCard({required this.id, required this.name, this.slug = '', this.price = 0, @JsonKey(name: 'price_mode') this.priceMode, this.currency, @JsonKey(name: 'category_id') this.categoryId, this.condition, this.cover, this.rating = 0.0, @JsonKey(name: 'review_count') this.reviewCount = 0, this.sold = 0, this.status, this.favorited = false, this.seller, this.location, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'deleted_at') this.deletedAt, this.score, this.thumbnail, @JsonKey(name: 'original_price') this.originalPrice, @JsonKey(name: 'discount_rate') this.discountRate, this.ratingModel, @JsonKey(name: 'sold_count') this.soldCount, final  List<String>? tags, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'is_negotiable') this.isNegotiable = false}): _tags = tags,super._();
+  const _TProductCard({required this.id, required this.name, this.slug = '', this.price = 0, @JsonKey(name: 'price_mode') this.priceMode, this.currency, @JsonKey(name: 'category_id') this.categoryId, this.condition, this.cover, this.rating = 0.0, @JsonKey(name: 'review_count') this.reviewCount = 0, this.sold = 0, this.status, this.favorited = false, this.seller, this.location, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'deleted_at') this.deletedAt, this.score, this.thumbnail, @JsonKey(name: 'original_price') this.originalPrice, @JsonKey(name: 'discount_rate') this.discountRate, @JsonKey(name: 'sold_count') this.soldCount, final  List<String>? tags, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'is_negotiable') this.isNegotiable = false}): _tags = tags,super._();
   factory _TProductCard.fromJson(Map<String, dynamic> json) => _$TProductCardFromJson(json);
 
 @override final  String id;
@@ -1127,7 +1078,7 @@ class _TProductCard extends TProductCard {
 @override final  String? currency;
 @override@JsonKey(name: 'category_id') final  String? categoryId;
 @override final  String? condition;
-@override final  ResourceModel? cover;
+@override final  Resource? cover;
 @override@JsonKey() final  double rating;
 @override@JsonKey(name: 'review_count') final  int reviewCount;
 @override@JsonKey() final  int sold;
@@ -1142,7 +1093,6 @@ class _TProductCard extends TProductCard {
 @override final  String? thumbnail;
 @override@JsonKey(name: 'original_price') final  int? originalPrice;
 @override@JsonKey(name: 'discount_rate') final  double? discountRate;
-@override final  RatingModel? ratingModel;
 @override@JsonKey(name: 'sold_count') final  int? soldCount;
  final  List<String>? _tags;
 @override List<String>? get tags {
@@ -1170,16 +1120,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TProductCard&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.cover, cover) || other.cover == cover)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.sold, sold) || other.sold == sold)&&(identical(other.status, status) || other.status == status)&&(identical(other.favorited, favorited) || other.favorited == favorited)&&(identical(other.seller, seller) || other.seller == seller)&&(identical(other.location, location) || other.location == location)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.score, score) || other.score == score)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountRate, discountRate) || other.discountRate == discountRate)&&(identical(other.ratingModel, ratingModel) || other.ratingModel == ratingModel)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TProductCard&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceMode, priceMode) || other.priceMode == priceMode)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.cover, cover) || other.cover == cover)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.sold, sold) || other.sold == sold)&&(identical(other.status, status) || other.status == status)&&(identical(other.favorited, favorited) || other.favorited == favorited)&&(identical(other.seller, seller) || other.seller == seller)&&(identical(other.location, location) || other.location == location)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.score, score) || other.score == score)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.discountRate, discountRate) || other.discountRate == discountRate)&&(identical(other.soldCount, soldCount) || other.soldCount == soldCount)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.vendorId, vendorId) || other.vendorId == vendorId)&&(identical(other.vendorName, vendorName) || other.vendorName == vendorName)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,name,slug,price,priceMode,currency,categoryId,condition,cover,rating,reviewCount,sold,status,favorited,seller,location,createdAt,deletedAt,score,thumbnail,originalPrice,discountRate,ratingModel,soldCount,const DeepCollectionEquality().hash(_tags),vendorId,vendorName,isNegotiable]);
+int get hashCode => Object.hashAll([runtimeType,id,name,slug,price,priceMode,currency,categoryId,condition,cover,rating,reviewCount,sold,status,favorited,seller,location,createdAt,deletedAt,score,thumbnail,originalPrice,discountRate,soldCount,const DeepCollectionEquality().hash(_tags),vendorId,vendorName,isNegotiable]);
 
 @override
 String toString() {
-  return 'TProductCard(id: $id, name: $name, slug: $slug, price: $price, priceMode: $priceMode, currency: $currency, categoryId: $categoryId, condition: $condition, cover: $cover, rating: $rating, reviewCount: $reviewCount, sold: $sold, status: $status, favorited: $favorited, seller: $seller, location: $location, createdAt: $createdAt, deletedAt: $deletedAt, score: $score, thumbnail: $thumbnail, originalPrice: $originalPrice, discountRate: $discountRate, ratingModel: $ratingModel, soldCount: $soldCount, tags: $tags, vendorId: $vendorId, vendorName: $vendorName, isNegotiable: $isNegotiable)';
+  return 'TProductCard(id: $id, name: $name, slug: $slug, price: $price, priceMode: $priceMode, currency: $currency, categoryId: $categoryId, condition: $condition, cover: $cover, rating: $rating, reviewCount: $reviewCount, sold: $sold, status: $status, favorited: $favorited, seller: $seller, location: $location, createdAt: $createdAt, deletedAt: $deletedAt, score: $score, thumbnail: $thumbnail, originalPrice: $originalPrice, discountRate: $discountRate, soldCount: $soldCount, tags: $tags, vendorId: $vendorId, vendorName: $vendorName, isNegotiable: $isNegotiable)';
 }
 
 
@@ -1190,11 +1140,11 @@ abstract mixin class _$TProductCardCopyWith<$Res> implements $TProductCardCopyWi
   factory _$TProductCardCopyWith(_TProductCard value, $Res Function(_TProductCard) _then) = __$TProductCardCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String slug, int price,@JsonKey(name: 'price_mode') String? priceMode, String? currency,@JsonKey(name: 'category_id') String? categoryId, String? condition, ResourceModel? cover, double rating,@JsonKey(name: 'review_count') int reviewCount, int sold, String? status, bool favorited, ListingSeller? seller, ListingLocation? location,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deleted_at') String? deletedAt, double? score, String? thumbnail,@JsonKey(name: 'original_price') int? originalPrice,@JsonKey(name: 'discount_rate') double? discountRate, RatingModel? ratingModel,@JsonKey(name: 'sold_count') int? soldCount, List<String>? tags,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'is_negotiable') bool isNegotiable
+ String id, String name, String slug, int price,@JsonKey(name: 'price_mode') String? priceMode, String? currency,@JsonKey(name: 'category_id') String? categoryId, String? condition, Resource? cover, double rating,@JsonKey(name: 'review_count') int reviewCount, int sold, String? status, bool favorited, ListingSeller? seller, ListingLocation? location,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deleted_at') String? deletedAt, double? score, String? thumbnail,@JsonKey(name: 'original_price') int? originalPrice,@JsonKey(name: 'discount_rate') double? discountRate,@JsonKey(name: 'sold_count') int? soldCount, List<String>? tags,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'is_negotiable') bool isNegotiable
 });
 
 
-@override $ResourceModelCopyWith<$Res>? get cover;@override $ListingSellerCopyWith<$Res>? get seller;@override $RatingModelCopyWith<$Res>? get ratingModel;
+@override $ListingSellerCopyWith<$Res>? get seller;
 
 }
 /// @nodoc
@@ -1207,7 +1157,7 @@ class __$TProductCardCopyWithImpl<$Res>
 
 /// Create a copy of TProductCard
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? price = null,Object? priceMode = freezed,Object? currency = freezed,Object? categoryId = freezed,Object? condition = freezed,Object? cover = freezed,Object? rating = null,Object? reviewCount = null,Object? sold = null,Object? status = freezed,Object? favorited = null,Object? seller = freezed,Object? location = freezed,Object? createdAt = freezed,Object? deletedAt = freezed,Object? score = freezed,Object? thumbnail = freezed,Object? originalPrice = freezed,Object? discountRate = freezed,Object? ratingModel = freezed,Object? soldCount = freezed,Object? tags = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? isNegotiable = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? slug = null,Object? price = null,Object? priceMode = freezed,Object? currency = freezed,Object? categoryId = freezed,Object? condition = freezed,Object? cover = freezed,Object? rating = null,Object? reviewCount = null,Object? sold = null,Object? status = freezed,Object? favorited = null,Object? seller = freezed,Object? location = freezed,Object? createdAt = freezed,Object? deletedAt = freezed,Object? score = freezed,Object? thumbnail = freezed,Object? originalPrice = freezed,Object? discountRate = freezed,Object? soldCount = freezed,Object? tags = freezed,Object? vendorId = freezed,Object? vendorName = freezed,Object? isNegotiable = null,}) {
   return _then(_TProductCard(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -1218,7 +1168,7 @@ as String?,currency: freezed == currency ? _self.currency : currency // ignore: 
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as String?,condition: freezed == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
 as String?,cover: freezed == cover ? _self.cover : cover // ignore: cast_nullable_to_non_nullable
-as ResourceModel?,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
+as Resource?,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double,reviewCount: null == reviewCount ? _self.reviewCount : reviewCount // ignore: cast_nullable_to_non_nullable
 as int,sold: null == sold ? _self.sold : sold // ignore: cast_nullable_to_non_nullable
 as int,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -1231,8 +1181,7 @@ as String?,score: freezed == score ? _self.score : score // ignore: cast_nullabl
 as double?,thumbnail: freezed == thumbnail ? _self.thumbnail : thumbnail // ignore: cast_nullable_to_non_nullable
 as String?,originalPrice: freezed == originalPrice ? _self.originalPrice : originalPrice // ignore: cast_nullable_to_non_nullable
 as int?,discountRate: freezed == discountRate ? _self.discountRate : discountRate // ignore: cast_nullable_to_non_nullable
-as double?,ratingModel: freezed == ratingModel ? _self.ratingModel : ratingModel // ignore: cast_nullable_to_non_nullable
-as RatingModel?,soldCount: freezed == soldCount ? _self.soldCount : soldCount // ignore: cast_nullable_to_non_nullable
+as double?,soldCount: freezed == soldCount ? _self.soldCount : soldCount // ignore: cast_nullable_to_non_nullable
 as int?,tags: freezed == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>?,vendorId: freezed == vendorId ? _self.vendorId : vendorId // ignore: cast_nullable_to_non_nullable
 as String?,vendorName: freezed == vendorName ? _self.vendorName : vendorName // ignore: cast_nullable_to_non_nullable
@@ -1245,18 +1194,6 @@ as bool,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$ResourceModelCopyWith<$Res>? get cover {
-    if (_self.cover == null) {
-    return null;
-  }
-
-  return $ResourceModelCopyWith<$Res>(_self.cover!, (value) {
-    return _then(_self.copyWith(cover: value));
-  });
-}/// Create a copy of TProductCard
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
 $ListingSellerCopyWith<$Res>? get seller {
     if (_self.seller == null) {
     return null;
@@ -1264,18 +1201,6 @@ $ListingSellerCopyWith<$Res>? get seller {
 
   return $ListingSellerCopyWith<$Res>(_self.seller!, (value) {
     return _then(_self.copyWith(seller: value));
-  });
-}/// Create a copy of TProductCard
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$RatingModelCopyWith<$Res>? get ratingModel {
-    if (_self.ratingModel == null) {
-    return null;
-  }
-
-  return $RatingModelCopyWith<$Res>(_self.ratingModel!, (value) {
-    return _then(_self.copyWith(ratingModel: value));
   });
 }
 }
@@ -2088,7 +2013,7 @@ as int,
 /// @nodoc
 mixin _$ProductSku {
 
- String get id;@JsonKey(name: 'spu_id') String get spuId;@JsonKey(name: 'name') String get name; int get price;@JsonKey(name: 'original_price') int? get originalPrice; int get stock; VariantStock? get stockInfo;@JsonKey(name: 'is_featured') bool get isFeatured;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'resources') List<ResourceModel>? get images; List<SkuAttribute>? get attributes;
+ String get id;@JsonKey(name: 'spu_id') String get spuId;@JsonKey(name: 'name') String get name; int get price;@JsonKey(name: 'original_price') int? get originalPrice; int get stock; VariantStock? get stockInfo;@JsonKey(name: 'is_featured') bool get isFeatured;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'resources') List<Resource>? get images; List<SkuAttribute>? get attributes;
 /// Create a copy of ProductSku
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2121,7 +2046,7 @@ abstract mixin class $ProductSkuCopyWith<$Res>  {
   factory $ProductSkuCopyWith(ProductSku value, $Res Function(ProductSku) _then) = _$ProductSkuCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'name') String name, int price,@JsonKey(name: 'original_price') int? originalPrice, int stock, VariantStock? stockInfo,@JsonKey(name: 'is_featured') bool isFeatured,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'resources') List<ResourceModel>? images, List<SkuAttribute>? attributes
+ String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'name') String name, int price,@JsonKey(name: 'original_price') int? originalPrice, int stock, VariantStock? stockInfo,@JsonKey(name: 'is_featured') bool isFeatured,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'resources') List<Resource>? images, List<SkuAttribute>? attributes
 });
 
 
@@ -2150,7 +2075,7 @@ as int,stockInfo: freezed == stockInfo ? _self.stockInfo : stockInfo // ignore: 
 as VariantStock?,isFeatured: null == isFeatured ? _self.isFeatured : isFeatured // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,images: freezed == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
-as List<ResourceModel>?,attributes: freezed == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
+as List<Resource>?,attributes: freezed == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
 as List<SkuAttribute>?,
   ));
 }
@@ -2248,7 +2173,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  VariantStock? stockInfo, @JsonKey(name: 'is_featured')  bool isFeatured, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<SkuAttribute>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  VariantStock? stockInfo, @JsonKey(name: 'is_featured')  bool isFeatured, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'resources')  List<Resource>? images,  List<SkuAttribute>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductSku() when $default != null:
 return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,_that.stock,_that.stockInfo,_that.isFeatured,_that.createdAt,_that.images,_that.attributes);case _:
@@ -2269,7 +2194,7 @@ return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  VariantStock? stockInfo, @JsonKey(name: 'is_featured')  bool isFeatured, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<SkuAttribute>? attributes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  VariantStock? stockInfo, @JsonKey(name: 'is_featured')  bool isFeatured, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'resources')  List<Resource>? images,  List<SkuAttribute>? attributes)  $default,) {final _that = this;
 switch (_that) {
 case _ProductSku():
 return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,_that.stock,_that.stockInfo,_that.isFeatured,_that.createdAt,_that.images,_that.attributes);case _:
@@ -2289,7 +2214,7 @@ return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  VariantStock? stockInfo, @JsonKey(name: 'is_featured')  bool isFeatured, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<SkuAttribute>? attributes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'spu_id')  String spuId, @JsonKey(name: 'name')  String name,  int price, @JsonKey(name: 'original_price')  int? originalPrice,  int stock,  VariantStock? stockInfo, @JsonKey(name: 'is_featured')  bool isFeatured, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'resources')  List<Resource>? images,  List<SkuAttribute>? attributes)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductSku() when $default != null:
 return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,_that.stock,_that.stockInfo,_that.isFeatured,_that.createdAt,_that.images,_that.attributes);case _:
@@ -2304,7 +2229,7 @@ return $default(_that.id,_that.spuId,_that.name,_that.price,_that.originalPrice,
 @JsonSerializable()
 
 class _ProductSku extends ProductSku {
-  const _ProductSku({required this.id, @JsonKey(name: 'spu_id') this.spuId = '', @JsonKey(name: 'name') this.name = '', this.price = 0, @JsonKey(name: 'original_price') this.originalPrice, this.stock = 0, this.stockInfo, @JsonKey(name: 'is_featured') this.isFeatured = false, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'resources') final  List<ResourceModel>? images, final  List<SkuAttribute>? attributes}): _images = images,_attributes = attributes,super._();
+  const _ProductSku({required this.id, @JsonKey(name: 'spu_id') this.spuId = '', @JsonKey(name: 'name') this.name = '', this.price = 0, @JsonKey(name: 'original_price') this.originalPrice, this.stock = 0, this.stockInfo, @JsonKey(name: 'is_featured') this.isFeatured = false, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'resources') final  List<Resource>? images, final  List<SkuAttribute>? attributes}): _images = images,_attributes = attributes,super._();
   factory _ProductSku.fromJson(Map<String, dynamic> json) => _$ProductSkuFromJson(json);
 
 @override final  String id;
@@ -2316,8 +2241,8 @@ class _ProductSku extends ProductSku {
 @override final  VariantStock? stockInfo;
 @override@JsonKey(name: 'is_featured') final  bool isFeatured;
 @override@JsonKey(name: 'created_at') final  String? createdAt;
- final  List<ResourceModel>? _images;
-@override@JsonKey(name: 'resources') List<ResourceModel>? get images {
+ final  List<Resource>? _images;
+@override@JsonKey(name: 'resources') List<Resource>? get images {
   final value = _images;
   if (value == null) return null;
   if (_images is EqualUnmodifiableListView) return _images;
@@ -2368,7 +2293,7 @@ abstract mixin class _$ProductSkuCopyWith<$Res> implements $ProductSkuCopyWith<$
   factory _$ProductSkuCopyWith(_ProductSku value, $Res Function(_ProductSku) _then) = __$ProductSkuCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'name') String name, int price,@JsonKey(name: 'original_price') int? originalPrice, int stock, VariantStock? stockInfo,@JsonKey(name: 'is_featured') bool isFeatured,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'resources') List<ResourceModel>? images, List<SkuAttribute>? attributes
+ String id,@JsonKey(name: 'spu_id') String spuId,@JsonKey(name: 'name') String name, int price,@JsonKey(name: 'original_price') int? originalPrice, int stock, VariantStock? stockInfo,@JsonKey(name: 'is_featured') bool isFeatured,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'resources') List<Resource>? images, List<SkuAttribute>? attributes
 });
 
 
@@ -2397,7 +2322,7 @@ as int,stockInfo: freezed == stockInfo ? _self.stockInfo : stockInfo // ignore: 
 as VariantStock?,isFeatured: null == isFeatured ? _self.isFeatured : isFeatured // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,images: freezed == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
-as List<ResourceModel>?,attributes: freezed == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable
+as List<Resource>?,attributes: freezed == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable
 as List<SkuAttribute>?,
   ));
 }
@@ -2421,7 +2346,7 @@ $VariantStockCopyWith<$Res>? get stockInfo {
 /// @nodoc
 mixin _$TProductDetail {
 
- String get id; String get name; String get slug; String? get description; int get price;@JsonKey(name: 'price_mode') String? get priceMode; String? get currency; String? get condition; String? get status;@JsonKey(name: 'original_price') int? get originalPrice; double get rating;@JsonKey(name: 'review_count') int get reviewCount;@JsonKey(name: 'favorite_count') int get favoriteCount; bool get favorited; int get sold;@JsonKey(name: 'sold_count') int? get soldCount; Category? get category; ListingSeller? get seller; ListingLocation? get location;@JsonKey(name: 'resources') List<ResourceModel>? get images; List<ProductSpecification>? get specifications; List<ProductSku>? get skus; List<ProductSku>? get variants; List<String>? get tags;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'deleted_at') String? get deletedAt;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'vendor_avatar') String? get vendorAvatar;@JsonKey(name: 'category_id') String? get categoryId;@JsonKey(name: 'is_negotiable') bool get isNegotiable;@JsonKey(name: 'min_negotiable_price') int? get minNegotiablePrice;@JsonKey(name: 'max_negotiable_price') int? get maxNegotiablePrice;
+ String get id; String get name; String get slug; String? get description; int get price;@JsonKey(name: 'price_mode') String? get priceMode; String? get currency; String? get condition; String? get status;@JsonKey(name: 'original_price') int? get originalPrice; double get rating;@JsonKey(name: 'review_count') int get reviewCount;@JsonKey(name: 'favorite_count') int get favoriteCount; bool get favorited; int get sold;@JsonKey(name: 'sold_count') int? get soldCount; Category? get category; ListingSeller? get seller; ListingLocation? get location;@JsonKey(name: 'resources') List<Resource>? get images; List<ProductSpecification>? get specifications; List<ProductSku>? get skus; List<ProductSku>? get variants; List<String>? get tags;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'deleted_at') String? get deletedAt;@JsonKey(name: 'vendor_id') String? get vendorId;@JsonKey(name: 'vendor_name') String? get vendorName;@JsonKey(name: 'vendor_avatar') String? get vendorAvatar;@JsonKey(name: 'category_id') String? get categoryId;@JsonKey(name: 'is_negotiable') bool get isNegotiable;@JsonKey(name: 'min_negotiable_price') int? get minNegotiablePrice;@JsonKey(name: 'max_negotiable_price') int? get maxNegotiablePrice;
 /// Create a copy of TProductDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2454,7 +2379,7 @@ abstract mixin class $TProductDetailCopyWith<$Res>  {
   factory $TProductDetailCopyWith(TProductDetail value, $Res Function(TProductDetail) _then) = _$TProductDetailCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String slug, String? description, int price,@JsonKey(name: 'price_mode') String? priceMode, String? currency, String? condition, String? status,@JsonKey(name: 'original_price') int? originalPrice, double rating,@JsonKey(name: 'review_count') int reviewCount,@JsonKey(name: 'favorite_count') int favoriteCount, bool favorited, int sold,@JsonKey(name: 'sold_count') int? soldCount, Category? category, ListingSeller? seller, ListingLocation? location,@JsonKey(name: 'resources') List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus, List<ProductSku>? variants, List<String>? tags,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deleted_at') String? deletedAt,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId,@JsonKey(name: 'is_negotiable') bool isNegotiable,@JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,@JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice
+ String id, String name, String slug, String? description, int price,@JsonKey(name: 'price_mode') String? priceMode, String? currency, String? condition, String? status,@JsonKey(name: 'original_price') int? originalPrice, double rating,@JsonKey(name: 'review_count') int reviewCount,@JsonKey(name: 'favorite_count') int favoriteCount, bool favorited, int sold,@JsonKey(name: 'sold_count') int? soldCount, Category? category, ListingSeller? seller, ListingLocation? location,@JsonKey(name: 'resources') List<Resource>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus, List<ProductSku>? variants, List<String>? tags,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deleted_at') String? deletedAt,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId,@JsonKey(name: 'is_negotiable') bool isNegotiable,@JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,@JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice
 });
 
 
@@ -2493,7 +2418,7 @@ as int?,category: freezed == category ? _self.category : category // ignore: cas
 as Category?,seller: freezed == seller ? _self.seller : seller // ignore: cast_nullable_to_non_nullable
 as ListingSeller?,location: freezed == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as ListingLocation?,images: freezed == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
-as List<ResourceModel>?,specifications: freezed == specifications ? _self.specifications : specifications // ignore: cast_nullable_to_non_nullable
+as List<Resource>?,specifications: freezed == specifications ? _self.specifications : specifications // ignore: cast_nullable_to_non_nullable
 as List<ProductSpecification>?,skus: freezed == skus ? _self.skus : skus // ignore: cast_nullable_to_non_nullable
 as List<ProductSku>?,variants: freezed == variants ? _self.variants : variants // ignore: cast_nullable_to_non_nullable
 as List<ProductSku>?,tags: freezed == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
@@ -2615,7 +2540,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency,  String? condition,  String? status, @JsonKey(name: 'original_price')  int? originalPrice,  double rating, @JsonKey(name: 'review_count')  int reviewCount, @JsonKey(name: 'favorite_count')  int favoriteCount,  bool favorited,  int sold, @JsonKey(name: 'sold_count')  int? soldCount,  Category? category,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus,  List<ProductSku>? variants,  List<String>? tags, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency,  String? condition,  String? status, @JsonKey(name: 'original_price')  int? originalPrice,  double rating, @JsonKey(name: 'review_count')  int reviewCount, @JsonKey(name: 'favorite_count')  int favoriteCount,  bool favorited,  int sold, @JsonKey(name: 'sold_count')  int? soldCount,  Category? category,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'resources')  List<Resource>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus,  List<ProductSku>? variants,  List<String>? tags, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TProductDetail() when $default != null:
 return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.priceMode,_that.currency,_that.condition,_that.status,_that.originalPrice,_that.rating,_that.reviewCount,_that.favoriteCount,_that.favorited,_that.sold,_that.soldCount,_that.category,_that.seller,_that.location,_that.images,_that.specifications,_that.skus,_that.variants,_that.tags,_that.createdAt,_that.deletedAt,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId,_that.isNegotiable,_that.minNegotiablePrice,_that.maxNegotiablePrice);case _:
@@ -2636,7 +2561,7 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency,  String? condition,  String? status, @JsonKey(name: 'original_price')  int? originalPrice,  double rating, @JsonKey(name: 'review_count')  int reviewCount, @JsonKey(name: 'favorite_count')  int favoriteCount,  bool favorited,  int sold, @JsonKey(name: 'sold_count')  int? soldCount,  Category? category,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus,  List<ProductSku>? variants,  List<String>? tags, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency,  String? condition,  String? status, @JsonKey(name: 'original_price')  int? originalPrice,  double rating, @JsonKey(name: 'review_count')  int reviewCount, @JsonKey(name: 'favorite_count')  int favoriteCount,  bool favorited,  int sold, @JsonKey(name: 'sold_count')  int? soldCount,  Category? category,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'resources')  List<Resource>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus,  List<ProductSku>? variants,  List<String>? tags, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)  $default,) {final _that = this;
 switch (_that) {
 case _TProductDetail():
 return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.priceMode,_that.currency,_that.condition,_that.status,_that.originalPrice,_that.rating,_that.reviewCount,_that.favoriteCount,_that.favorited,_that.sold,_that.soldCount,_that.category,_that.seller,_that.location,_that.images,_that.specifications,_that.skus,_that.variants,_that.tags,_that.createdAt,_that.deletedAt,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId,_that.isNegotiable,_that.minNegotiablePrice,_that.maxNegotiablePrice);case _:
@@ -2656,7 +2581,7 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency,  String? condition,  String? status, @JsonKey(name: 'original_price')  int? originalPrice,  double rating, @JsonKey(name: 'review_count')  int reviewCount, @JsonKey(name: 'favorite_count')  int favoriteCount,  bool favorited,  int sold, @JsonKey(name: 'sold_count')  int? soldCount,  Category? category,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'resources')  List<ResourceModel>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus,  List<ProductSku>? variants,  List<String>? tags, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String slug,  String? description,  int price, @JsonKey(name: 'price_mode')  String? priceMode,  String? currency,  String? condition,  String? status, @JsonKey(name: 'original_price')  int? originalPrice,  double rating, @JsonKey(name: 'review_count')  int reviewCount, @JsonKey(name: 'favorite_count')  int favoriteCount,  bool favorited,  int sold, @JsonKey(name: 'sold_count')  int? soldCount,  Category? category,  ListingSeller? seller,  ListingLocation? location, @JsonKey(name: 'resources')  List<Resource>? images,  List<ProductSpecification>? specifications,  List<ProductSku>? skus,  List<ProductSku>? variants,  List<String>? tags, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'deleted_at')  String? deletedAt, @JsonKey(name: 'vendor_id')  String? vendorId, @JsonKey(name: 'vendor_name')  String? vendorName, @JsonKey(name: 'vendor_avatar')  String? vendorAvatar, @JsonKey(name: 'category_id')  String? categoryId, @JsonKey(name: 'is_negotiable')  bool isNegotiable, @JsonKey(name: 'min_negotiable_price')  int? minNegotiablePrice, @JsonKey(name: 'max_negotiable_price')  int? maxNegotiablePrice)?  $default,) {final _that = this;
 switch (_that) {
 case _TProductDetail() when $default != null:
 return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_that.priceMode,_that.currency,_that.condition,_that.status,_that.originalPrice,_that.rating,_that.reviewCount,_that.favoriteCount,_that.favorited,_that.sold,_that.soldCount,_that.category,_that.seller,_that.location,_that.images,_that.specifications,_that.skus,_that.variants,_that.tags,_that.createdAt,_that.deletedAt,_that.vendorId,_that.vendorName,_that.vendorAvatar,_that.categoryId,_that.isNegotiable,_that.minNegotiablePrice,_that.maxNegotiablePrice);case _:
@@ -2671,7 +2596,7 @@ return $default(_that.id,_that.name,_that.slug,_that.description,_that.price,_th
 @JsonSerializable()
 
 class _TProductDetail extends TProductDetail {
-  const _TProductDetail({required this.id, required this.name, this.slug = '', this.description, this.price = 0, @JsonKey(name: 'price_mode') this.priceMode, this.currency, this.condition, this.status, @JsonKey(name: 'original_price') this.originalPrice, this.rating = 0.0, @JsonKey(name: 'review_count') this.reviewCount = 0, @JsonKey(name: 'favorite_count') this.favoriteCount = 0, this.favorited = false, this.sold = 0, @JsonKey(name: 'sold_count') this.soldCount, this.category, this.seller, this.location, @JsonKey(name: 'resources') final  List<ResourceModel>? images, final  List<ProductSpecification>? specifications, final  List<ProductSku>? skus, final  List<ProductSku>? variants, final  List<String>? tags, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'deleted_at') this.deletedAt, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'vendor_avatar') this.vendorAvatar, @JsonKey(name: 'category_id') this.categoryId, @JsonKey(name: 'is_negotiable') this.isNegotiable = false, @JsonKey(name: 'min_negotiable_price') this.minNegotiablePrice, @JsonKey(name: 'max_negotiable_price') this.maxNegotiablePrice}): _images = images,_specifications = specifications,_skus = skus,_variants = variants,_tags = tags,super._();
+  const _TProductDetail({required this.id, required this.name, this.slug = '', this.description, this.price = 0, @JsonKey(name: 'price_mode') this.priceMode, this.currency, this.condition, this.status, @JsonKey(name: 'original_price') this.originalPrice, this.rating = 0.0, @JsonKey(name: 'review_count') this.reviewCount = 0, @JsonKey(name: 'favorite_count') this.favoriteCount = 0, this.favorited = false, this.sold = 0, @JsonKey(name: 'sold_count') this.soldCount, this.category, this.seller, this.location, @JsonKey(name: 'resources') final  List<Resource>? images, final  List<ProductSpecification>? specifications, final  List<ProductSku>? skus, final  List<ProductSku>? variants, final  List<String>? tags, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'deleted_at') this.deletedAt, @JsonKey(name: 'vendor_id') this.vendorId, @JsonKey(name: 'vendor_name') this.vendorName, @JsonKey(name: 'vendor_avatar') this.vendorAvatar, @JsonKey(name: 'category_id') this.categoryId, @JsonKey(name: 'is_negotiable') this.isNegotiable = false, @JsonKey(name: 'min_negotiable_price') this.minNegotiablePrice, @JsonKey(name: 'max_negotiable_price') this.maxNegotiablePrice}): _images = images,_specifications = specifications,_skus = skus,_variants = variants,_tags = tags,super._();
   factory _TProductDetail.fromJson(Map<String, dynamic> json) => _$TProductDetailFromJson(json);
 
 @override final  String id;
@@ -2693,8 +2618,8 @@ class _TProductDetail extends TProductDetail {
 @override final  Category? category;
 @override final  ListingSeller? seller;
 @override final  ListingLocation? location;
- final  List<ResourceModel>? _images;
-@override@JsonKey(name: 'resources') List<ResourceModel>? get images {
+ final  List<Resource>? _images;
+@override@JsonKey(name: 'resources') List<Resource>? get images {
   final value = _images;
   if (value == null) return null;
   if (_images is EqualUnmodifiableListView) return _images;
@@ -2781,7 +2706,7 @@ abstract mixin class _$TProductDetailCopyWith<$Res> implements $TProductDetailCo
   factory _$TProductDetailCopyWith(_TProductDetail value, $Res Function(_TProductDetail) _then) = __$TProductDetailCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String slug, String? description, int price,@JsonKey(name: 'price_mode') String? priceMode, String? currency, String? condition, String? status,@JsonKey(name: 'original_price') int? originalPrice, double rating,@JsonKey(name: 'review_count') int reviewCount,@JsonKey(name: 'favorite_count') int favoriteCount, bool favorited, int sold,@JsonKey(name: 'sold_count') int? soldCount, Category? category, ListingSeller? seller, ListingLocation? location,@JsonKey(name: 'resources') List<ResourceModel>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus, List<ProductSku>? variants, List<String>? tags,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deleted_at') String? deletedAt,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId,@JsonKey(name: 'is_negotiable') bool isNegotiable,@JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,@JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice
+ String id, String name, String slug, String? description, int price,@JsonKey(name: 'price_mode') String? priceMode, String? currency, String? condition, String? status,@JsonKey(name: 'original_price') int? originalPrice, double rating,@JsonKey(name: 'review_count') int reviewCount,@JsonKey(name: 'favorite_count') int favoriteCount, bool favorited, int sold,@JsonKey(name: 'sold_count') int? soldCount, Category? category, ListingSeller? seller, ListingLocation? location,@JsonKey(name: 'resources') List<Resource>? images, List<ProductSpecification>? specifications, List<ProductSku>? skus, List<ProductSku>? variants, List<String>? tags,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'deleted_at') String? deletedAt,@JsonKey(name: 'vendor_id') String? vendorId,@JsonKey(name: 'vendor_name') String? vendorName,@JsonKey(name: 'vendor_avatar') String? vendorAvatar,@JsonKey(name: 'category_id') String? categoryId,@JsonKey(name: 'is_negotiable') bool isNegotiable,@JsonKey(name: 'min_negotiable_price') int? minNegotiablePrice,@JsonKey(name: 'max_negotiable_price') int? maxNegotiablePrice
 });
 
 
@@ -2820,7 +2745,7 @@ as int?,category: freezed == category ? _self.category : category // ignore: cas
 as Category?,seller: freezed == seller ? _self.seller : seller // ignore: cast_nullable_to_non_nullable
 as ListingSeller?,location: freezed == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as ListingLocation?,images: freezed == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
-as List<ResourceModel>?,specifications: freezed == specifications ? _self._specifications : specifications // ignore: cast_nullable_to_non_nullable
+as List<Resource>?,specifications: freezed == specifications ? _self._specifications : specifications // ignore: cast_nullable_to_non_nullable
 as List<ProductSpecification>?,skus: freezed == skus ? _self._skus : skus // ignore: cast_nullable_to_non_nullable
 as List<ProductSku>?,variants: freezed == variants ? _self._variants : variants // ignore: cast_nullable_to_non_nullable
 as List<ProductSku>?,tags: freezed == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
@@ -3140,7 +3065,7 @@ as String?,
 /// @nodoc
 mixin _$ReviewAuthor {
 
- String get id; String get name; ResourceModel? get avatar;
+ String get id; String get name; Resource? get avatar;
 /// Create a copy of ReviewAuthor
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3173,11 +3098,11 @@ abstract mixin class $ReviewAuthorCopyWith<$Res>  {
   factory $ReviewAuthorCopyWith(ReviewAuthor value, $Res Function(ReviewAuthor) _then) = _$ReviewAuthorCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, ResourceModel? avatar
+ String id, String name, Resource? avatar
 });
 
 
-$ResourceModelCopyWith<$Res>? get avatar;
+
 
 }
 /// @nodoc
@@ -3195,22 +3120,10 @@ class _$ReviewAuthorCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as ResourceModel?,
+as Resource?,
   ));
 }
-/// Create a copy of ReviewAuthor
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceModelCopyWith<$Res>? get avatar {
-    if (_self.avatar == null) {
-    return null;
-  }
 
-  return $ResourceModelCopyWith<$Res>(_self.avatar!, (value) {
-    return _then(_self.copyWith(avatar: value));
-  });
-}
 }
 
 
@@ -3292,7 +3205,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  ResourceModel? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  Resource? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReviewAuthor() when $default != null:
 return $default(_that.id,_that.name,_that.avatar);case _:
@@ -3313,7 +3226,7 @@ return $default(_that.id,_that.name,_that.avatar);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  ResourceModel? avatar)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  Resource? avatar)  $default,) {final _that = this;
 switch (_that) {
 case _ReviewAuthor():
 return $default(_that.id,_that.name,_that.avatar);case _:
@@ -3333,7 +3246,7 @@ return $default(_that.id,_that.name,_that.avatar);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  ResourceModel? avatar)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  Resource? avatar)?  $default,) {final _that = this;
 switch (_that) {
 case _ReviewAuthor() when $default != null:
 return $default(_that.id,_that.name,_that.avatar);case _:
@@ -3353,7 +3266,7 @@ class _ReviewAuthor implements ReviewAuthor {
 
 @override final  String id;
 @override final  String name;
-@override final  ResourceModel? avatar;
+@override final  Resource? avatar;
 
 /// Create a copy of ReviewAuthor
 /// with the given fields replaced by the non-null parameter values.
@@ -3388,11 +3301,11 @@ abstract mixin class _$ReviewAuthorCopyWith<$Res> implements $ReviewAuthorCopyWi
   factory _$ReviewAuthorCopyWith(_ReviewAuthor value, $Res Function(_ReviewAuthor) _then) = __$ReviewAuthorCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, ResourceModel? avatar
+ String id, String name, Resource? avatar
 });
 
 
-@override $ResourceModelCopyWith<$Res>? get avatar;
+
 
 }
 /// @nodoc
@@ -3410,23 +3323,11 @@ class __$ReviewAuthorCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as ResourceModel?,
+as Resource?,
   ));
 }
 
-/// Create a copy of ReviewAuthor
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceModelCopyWith<$Res>? get avatar {
-    if (_self.avatar == null) {
-    return null;
-  }
 
-  return $ResourceModelCopyWith<$Res>(_self.avatar!, (value) {
-    return _then(_self.copyWith(avatar: value));
-  });
-}
 }
 
 
@@ -3702,7 +3603,7 @@ as int?,
 /// @nodoc
 mixin _$ProductComment {
 
- String get id;@JsonKey(name: 'listing_id') String? get listingId;@JsonKey(name: 'ref_id') String? get refId;@JsonKey(name: 'ref_type') String? get refType;@JsonKey(name: 'account_id') String? get accountId;@JsonKey(name: 'order_id') String? get orderId; CommentProfile? get profile; ReviewAuthor? get author; String? get body; int get rating; int? get upvote; int? get downvote; double? get score; ReviewVoteTally? get votes;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'date_created') String? get dateCreated;@JsonKey(name: 'date_updated') String? get dateUpdated;@JsonKey(name: 'resources') List<ResourceModel>? get attachments; List<SkuAttribute>? get attributes;
+ String get id;@JsonKey(name: 'listing_id') String? get listingId;@JsonKey(name: 'ref_id') String? get refId;@JsonKey(name: 'ref_type') String? get refType;@JsonKey(name: 'account_id') String? get accountId;@JsonKey(name: 'order_id') String? get orderId; CommentProfile? get profile; ReviewAuthor? get author; String? get body; int get rating; int? get upvote; int? get downvote; double? get score; ReviewVoteTally? get votes;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'date_created') String? get dateCreated;@JsonKey(name: 'date_updated') String? get dateUpdated;@JsonKey(name: 'resources') List<Resource>? get attachments; List<SkuAttribute>? get attributes;
 /// Create a copy of ProductComment
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3735,7 +3636,7 @@ abstract mixin class $ProductCommentCopyWith<$Res>  {
   factory $ProductCommentCopyWith(ProductComment value, $Res Function(ProductComment) _then) = _$ProductCommentCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'listing_id') String? listingId,@JsonKey(name: 'ref_id') String? refId,@JsonKey(name: 'ref_type') String? refType,@JsonKey(name: 'account_id') String? accountId,@JsonKey(name: 'order_id') String? orderId, CommentProfile? profile, ReviewAuthor? author, String? body, int rating, int? upvote, int? downvote, double? score, ReviewVoteTally? votes,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'date_updated') String? dateUpdated,@JsonKey(name: 'resources') List<ResourceModel>? attachments, List<SkuAttribute>? attributes
+ String id,@JsonKey(name: 'listing_id') String? listingId,@JsonKey(name: 'ref_id') String? refId,@JsonKey(name: 'ref_type') String? refType,@JsonKey(name: 'account_id') String? accountId,@JsonKey(name: 'order_id') String? orderId, CommentProfile? profile, ReviewAuthor? author, String? body, int rating, int? upvote, int? downvote, double? score, ReviewVoteTally? votes,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'date_updated') String? dateUpdated,@JsonKey(name: 'resources') List<Resource>? attachments, List<SkuAttribute>? attributes
 });
 
 
@@ -3772,7 +3673,7 @@ as ReviewVoteTally?,createdAt: freezed == createdAt ? _self.createdAt : createdA
 as String?,dateCreated: freezed == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
 as String?,dateUpdated: freezed == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
 as String?,attachments: freezed == attachments ? _self.attachments : attachments // ignore: cast_nullable_to_non_nullable
-as List<ResourceModel>?,attributes: freezed == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
+as List<Resource>?,attributes: freezed == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
 as List<SkuAttribute>?,
   ));
 }
@@ -3894,7 +3795,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'ref_id')  String? refId, @JsonKey(name: 'ref_type')  String? refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  ReviewAuthor? author,  String? body,  int rating,  int? upvote,  int? downvote,  double? score,  ReviewVoteTally? votes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'ref_id')  String? refId, @JsonKey(name: 'ref_type')  String? refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  ReviewAuthor? author,  String? body,  int rating,  int? upvote,  int? downvote,  double? score,  ReviewVoteTally? votes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<Resource>? attachments,  List<SkuAttribute>? attributes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductComment() when $default != null:
 return $default(_that.id,_that.listingId,_that.refId,_that.refType,_that.accountId,_that.orderId,_that.profile,_that.author,_that.body,_that.rating,_that.upvote,_that.downvote,_that.score,_that.votes,_that.createdAt,_that.dateCreated,_that.dateUpdated,_that.attachments,_that.attributes);case _:
@@ -3915,7 +3816,7 @@ return $default(_that.id,_that.listingId,_that.refId,_that.refType,_that.account
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'ref_id')  String? refId, @JsonKey(name: 'ref_type')  String? refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  ReviewAuthor? author,  String? body,  int rating,  int? upvote,  int? downvote,  double? score,  ReviewVoteTally? votes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'ref_id')  String? refId, @JsonKey(name: 'ref_type')  String? refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  ReviewAuthor? author,  String? body,  int rating,  int? upvote,  int? downvote,  double? score,  ReviewVoteTally? votes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<Resource>? attachments,  List<SkuAttribute>? attributes)  $default,) {final _that = this;
 switch (_that) {
 case _ProductComment():
 return $default(_that.id,_that.listingId,_that.refId,_that.refType,_that.accountId,_that.orderId,_that.profile,_that.author,_that.body,_that.rating,_that.upvote,_that.downvote,_that.score,_that.votes,_that.createdAt,_that.dateCreated,_that.dateUpdated,_that.attachments,_that.attributes);case _:
@@ -3935,7 +3836,7 @@ return $default(_that.id,_that.listingId,_that.refId,_that.refType,_that.account
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'ref_id')  String? refId, @JsonKey(name: 'ref_type')  String? refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  ReviewAuthor? author,  String? body,  int rating,  int? upvote,  int? downvote,  double? score,  ReviewVoteTally? votes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<ResourceModel>? attachments,  List<SkuAttribute>? attributes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'listing_id')  String? listingId, @JsonKey(name: 'ref_id')  String? refId, @JsonKey(name: 'ref_type')  String? refType, @JsonKey(name: 'account_id')  String? accountId, @JsonKey(name: 'order_id')  String? orderId,  CommentProfile? profile,  ReviewAuthor? author,  String? body,  int rating,  int? upvote,  int? downvote,  double? score,  ReviewVoteTally? votes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'date_updated')  String? dateUpdated, @JsonKey(name: 'resources')  List<Resource>? attachments,  List<SkuAttribute>? attributes)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductComment() when $default != null:
 return $default(_that.id,_that.listingId,_that.refId,_that.refType,_that.accountId,_that.orderId,_that.profile,_that.author,_that.body,_that.rating,_that.upvote,_that.downvote,_that.score,_that.votes,_that.createdAt,_that.dateCreated,_that.dateUpdated,_that.attachments,_that.attributes);case _:
@@ -3950,7 +3851,7 @@ return $default(_that.id,_that.listingId,_that.refId,_that.refType,_that.account
 @JsonSerializable()
 
 class _ProductComment extends ProductComment {
-  const _ProductComment({required this.id, @JsonKey(name: 'listing_id') this.listingId, @JsonKey(name: 'ref_id') this.refId, @JsonKey(name: 'ref_type') this.refType, @JsonKey(name: 'account_id') this.accountId, @JsonKey(name: 'order_id') this.orderId, this.profile, this.author, this.body, this.rating = 0, this.upvote, this.downvote, this.score, this.votes, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'date_created') this.dateCreated, @JsonKey(name: 'date_updated') this.dateUpdated, @JsonKey(name: 'resources') final  List<ResourceModel>? attachments, final  List<SkuAttribute>? attributes}): _attachments = attachments,_attributes = attributes,super._();
+  const _ProductComment({required this.id, @JsonKey(name: 'listing_id') this.listingId, @JsonKey(name: 'ref_id') this.refId, @JsonKey(name: 'ref_type') this.refType, @JsonKey(name: 'account_id') this.accountId, @JsonKey(name: 'order_id') this.orderId, this.profile, this.author, this.body, this.rating = 0, this.upvote, this.downvote, this.score, this.votes, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'date_created') this.dateCreated, @JsonKey(name: 'date_updated') this.dateUpdated, @JsonKey(name: 'resources') final  List<Resource>? attachments, final  List<SkuAttribute>? attributes}): _attachments = attachments,_attributes = attributes,super._();
   factory _ProductComment.fromJson(Map<String, dynamic> json) => _$ProductCommentFromJson(json);
 
 @override final  String id;
@@ -3970,8 +3871,8 @@ class _ProductComment extends ProductComment {
 @override@JsonKey(name: 'created_at') final  String? createdAt;
 @override@JsonKey(name: 'date_created') final  String? dateCreated;
 @override@JsonKey(name: 'date_updated') final  String? dateUpdated;
- final  List<ResourceModel>? _attachments;
-@override@JsonKey(name: 'resources') List<ResourceModel>? get attachments {
+ final  List<Resource>? _attachments;
+@override@JsonKey(name: 'resources') List<Resource>? get attachments {
   final value = _attachments;
   if (value == null) return null;
   if (_attachments is EqualUnmodifiableListView) return _attachments;
@@ -4022,7 +3923,7 @@ abstract mixin class _$ProductCommentCopyWith<$Res> implements $ProductCommentCo
   factory _$ProductCommentCopyWith(_ProductComment value, $Res Function(_ProductComment) _then) = __$ProductCommentCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'listing_id') String? listingId,@JsonKey(name: 'ref_id') String? refId,@JsonKey(name: 'ref_type') String? refType,@JsonKey(name: 'account_id') String? accountId,@JsonKey(name: 'order_id') String? orderId, CommentProfile? profile, ReviewAuthor? author, String? body, int rating, int? upvote, int? downvote, double? score, ReviewVoteTally? votes,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'date_updated') String? dateUpdated,@JsonKey(name: 'resources') List<ResourceModel>? attachments, List<SkuAttribute>? attributes
+ String id,@JsonKey(name: 'listing_id') String? listingId,@JsonKey(name: 'ref_id') String? refId,@JsonKey(name: 'ref_type') String? refType,@JsonKey(name: 'account_id') String? accountId,@JsonKey(name: 'order_id') String? orderId, CommentProfile? profile, ReviewAuthor? author, String? body, int rating, int? upvote, int? downvote, double? score, ReviewVoteTally? votes,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'date_updated') String? dateUpdated,@JsonKey(name: 'resources') List<Resource>? attachments, List<SkuAttribute>? attributes
 });
 
 
@@ -4059,7 +3960,7 @@ as ReviewVoteTally?,createdAt: freezed == createdAt ? _self.createdAt : createdA
 as String?,dateCreated: freezed == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
 as String?,dateUpdated: freezed == dateUpdated ? _self.dateUpdated : dateUpdated // ignore: cast_nullable_to_non_nullable
 as String?,attachments: freezed == attachments ? _self._attachments : attachments // ignore: cast_nullable_to_non_nullable
-as List<ResourceModel>?,attributes: freezed == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable
+as List<Resource>?,attributes: freezed == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable
 as List<SkuAttribute>?,
   ));
 }

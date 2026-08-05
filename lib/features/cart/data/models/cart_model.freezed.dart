@@ -601,7 +601,7 @@ $PackageDetailsCopyWith<$Res>? get packageDetails {
 mixin _$CartItem {
 
  String get id;@JsonKey(name: 'listing_id') String get listingId;@JsonKey(name: 'variant_id') String get variantId; int get quantity;@JsonKey(name: 'created_at') String? get createdAt;// Optional populated / UI display helper fields:
-@JsonKey(name: 'spu_id') String? get spuId; CartSku? get sku; ResourceModel? get resource; String get currency;
+@JsonKey(name: 'spu_id') String? get spuId; CartSku? get sku; Resource? get resource; String get currency;
 /// Create a copy of CartItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -634,11 +634,11 @@ abstract mixin class $CartItemCopyWith<$Res>  {
   factory $CartItemCopyWith(CartItem value, $Res Function(CartItem) _then) = _$CartItemCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'listing_id') String listingId,@JsonKey(name: 'variant_id') String variantId, int quantity,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'spu_id') String? spuId, CartSku? sku, ResourceModel? resource, String currency
+ String id,@JsonKey(name: 'listing_id') String listingId,@JsonKey(name: 'variant_id') String variantId, int quantity,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'spu_id') String? spuId, CartSku? sku, Resource? resource, String currency
 });
 
 
-$CartSkuCopyWith<$Res>? get sku;$ResourceModelCopyWith<$Res>? get resource;
+$CartSkuCopyWith<$Res>? get sku;
 
 }
 /// @nodoc
@@ -661,7 +661,7 @@ as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: 
 as String?,spuId: freezed == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
 as String?,sku: freezed == sku ? _self.sku : sku // ignore: cast_nullable_to_non_nullable
 as CartSku?,resource: freezed == resource ? _self.resource : resource // ignore: cast_nullable_to_non_nullable
-as ResourceModel?,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as Resource?,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -676,18 +676,6 @@ $CartSkuCopyWith<$Res>? get sku {
 
   return $CartSkuCopyWith<$Res>(_self.sku!, (value) {
     return _then(_self.copyWith(sku: value));
-  });
-}/// Create a copy of CartItem
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceModelCopyWith<$Res>? get resource {
-    if (_self.resource == null) {
-    return null;
-  }
-
-  return $ResourceModelCopyWith<$Res>(_self.resource!, (value) {
-    return _then(_self.copyWith(resource: value));
   });
 }
 }
@@ -771,7 +759,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  ResourceModel? resource,  String currency)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  Resource? resource,  String currency)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CartItem() when $default != null:
 return $default(_that.id,_that.listingId,_that.variantId,_that.quantity,_that.createdAt,_that.spuId,_that.sku,_that.resource,_that.currency);case _:
@@ -792,7 +780,7 @@ return $default(_that.id,_that.listingId,_that.variantId,_that.quantity,_that.cr
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  ResourceModel? resource,  String currency)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  Resource? resource,  String currency)  $default,) {final _that = this;
 switch (_that) {
 case _CartItem():
 return $default(_that.id,_that.listingId,_that.variantId,_that.quantity,_that.createdAt,_that.spuId,_that.sku,_that.resource,_that.currency);case _:
@@ -812,7 +800,7 @@ return $default(_that.id,_that.listingId,_that.variantId,_that.quantity,_that.cr
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  ResourceModel? resource,  String currency)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'listing_id')  String listingId, @JsonKey(name: 'variant_id')  String variantId,  int quantity, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'spu_id')  String? spuId,  CartSku? sku,  Resource? resource,  String currency)?  $default,) {final _that = this;
 switch (_that) {
 case _CartItem() when $default != null:
 return $default(_that.id,_that.listingId,_that.variantId,_that.quantity,_that.createdAt,_that.spuId,_that.sku,_that.resource,_that.currency);case _:
@@ -838,7 +826,7 @@ class _CartItem implements CartItem {
 // Optional populated / UI display helper fields:
 @override@JsonKey(name: 'spu_id') final  String? spuId;
 @override final  CartSku? sku;
-@override final  ResourceModel? resource;
+@override final  Resource? resource;
 @override@JsonKey() final  String currency;
 
 /// Create a copy of CartItem
@@ -874,11 +862,11 @@ abstract mixin class _$CartItemCopyWith<$Res> implements $CartItemCopyWith<$Res>
   factory _$CartItemCopyWith(_CartItem value, $Res Function(_CartItem) _then) = __$CartItemCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'listing_id') String listingId,@JsonKey(name: 'variant_id') String variantId, int quantity,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'spu_id') String? spuId, CartSku? sku, ResourceModel? resource, String currency
+ String id,@JsonKey(name: 'listing_id') String listingId,@JsonKey(name: 'variant_id') String variantId, int quantity,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'spu_id') String? spuId, CartSku? sku, Resource? resource, String currency
 });
 
 
-@override $CartSkuCopyWith<$Res>? get sku;@override $ResourceModelCopyWith<$Res>? get resource;
+@override $CartSkuCopyWith<$Res>? get sku;
 
 }
 /// @nodoc
@@ -901,7 +889,7 @@ as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: 
 as String?,spuId: freezed == spuId ? _self.spuId : spuId // ignore: cast_nullable_to_non_nullable
 as String?,sku: freezed == sku ? _self.sku : sku // ignore: cast_nullable_to_non_nullable
 as CartSku?,resource: freezed == resource ? _self.resource : resource // ignore: cast_nullable_to_non_nullable
-as ResourceModel?,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as Resource?,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -917,18 +905,6 @@ $CartSkuCopyWith<$Res>? get sku {
 
   return $CartSkuCopyWith<$Res>(_self.sku!, (value) {
     return _then(_self.copyWith(sku: value));
-  });
-}/// Create a copy of CartItem
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ResourceModelCopyWith<$Res>? get resource {
-    if (_self.resource == null) {
-    return null;
-  }
-
-  return $ResourceModelCopyWith<$Res>(_self.resource!, (value) {
-    return _then(_self.copyWith(resource: value));
   });
 }
 }

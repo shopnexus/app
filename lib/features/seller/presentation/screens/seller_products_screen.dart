@@ -321,6 +321,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     final imageBgColor = isDark
         ? theme.colorScheme.surfaceContainerHighest
         : const Color(0xFFF1F5F9);
+    // A resource carries no `url` until its module can presign one, so "no
+    // picture to show" is the same case as "no picture uploaded".
+    final coverUrl = product.images?.firstOrNull?.url;
+    final hasCover = coverUrl != null && coverUrl.isNotEmpty;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -349,19 +353,19 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: imageBgColor,
-                image: (product.images != null && product.images!.isNotEmpty)
+                image: hasCover
                     ? DecorationImage(
-                        image: NetworkImage(product.images!.first.url),
+                        image: NetworkImage(coverUrl),
                         fit: BoxFit.cover,
                       )
                     : null,
               ),
-              child: (product.images == null || product.images!.isEmpty)
-                  ? Icon(
+              child: hasCover
+                  ? null
+                  : Icon(
                       Icons.image_outlined,
                       color: theme.colorScheme.onSurfaceVariant,
-                    )
-                  : null,
+                    ),
             ),
           ),
           const SizedBox(width: 12),
