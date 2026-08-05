@@ -28,7 +28,16 @@ class CatalogProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final card = SharedProductCard(
-      product: product,
+      // TProductCard is still the feed's parse target; the catalog wave replaces
+      // it with `Listing` and this becomes `ProductCardView.fromListing`.
+      product: ProductCardView(
+        name: product.name,
+        price: product.price,
+        coverUrl: product.effectiveThumbnail,
+        sellerName: product.effectiveVendorName,
+        rating: product.rating,
+        negotiable: product.effectiveIsNegotiable,
+      ),
       onTap: onTap,
       aspectRatio: aspectRatio,
       isFavorite: isFavorite,

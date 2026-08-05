@@ -380,7 +380,16 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: SharedProductCard(
-                            product: product,
+                            // Replaced by `ProductCardView.fromListing` once the
+                            // catalog wave has this provider answering `Listing`.
+                            product: ProductCardView(
+                              name: product.name,
+                              price: product.price,
+                              coverUrl: product.effectiveThumbnail,
+                              sellerName: product.effectiveVendorName,
+                              rating: product.rating,
+                              negotiable: product.effectiveIsNegotiable,
+                            ),
                             aspectRatio: aspect,
                             showVendor: false,
                             onTap: () {

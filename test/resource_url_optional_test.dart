@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
 
 /// `Resource.required` is `[id, provider, object_key, mime, size]`: `url` is a
 /// short-lived presigned link and is simply absent when the module could not
@@ -56,5 +58,32 @@ void main() {
         expect(page.last.effectiveThumbnail, isNull);
       },
     );
+
+    testWidgets('the card draws a placeholder instead of throwing', (
+      tester,
+    ) async {
+      final view = ProductCardView.fromListing(
+        Listing.fromJson(card(presigned: false)),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          // A grid cell, so the card is not asked to fill the whole screen.
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 180,
+                child: SharedProductCard(product: view),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.image_outlined), findsOneWidget);
+      expect(find.text('Kệ ống đựng đũa muỗng'), findsOneWidget);
+      expect(find.textContaining('Bob Electronics'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   });
 }

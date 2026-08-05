@@ -1,12 +1,48 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
+
+/// The six things the card draws, derived from a `Listing` here at the widget
+/// boundary. The contract sends a `cover` resource and a `seller`, not a
+/// thumbnail URL and a shop name; deriving them in a DTO instead is what let the
+/// card read fields — `thumbnail`, `original_price`, `sold_count`, `vendor_name`
+/// — that no response has ever carried.
+class ProductCardView {
+  final String name;
+  final int price;
+
+  /// Null whenever the module could not presign one, which the card draws as a
+  /// placeholder rather than a broken image.
+  final String? coverUrl;
+  final String? sellerName;
+  final double rating;
+  final bool negotiable;
+
+  const ProductCardView({
+    required this.name,
+    required this.price,
+    this.coverUrl,
+    this.sellerName,
+    this.rating = 0.0,
+    this.negotiable = false,
+  });
+
+  factory ProductCardView.fromListing(Listing listing) => ProductCardView(
+    name: listing.name,
+    price: listing.price,
+    coverUrl: listing.cover?.url,
+    sellerName: listing.seller.name,
+    rating: listing.rating,
+    negotiable: listing.priceMode == PriceMode.negotiable,
+  );
+}
 
 class SharedProductCard extends StatelessWidget {
-  final TProductCard product;
+  final ProductCardView product;
   final VoidCallback? onTap;
   final double aspectRatio;
   final bool isFavorite;
@@ -74,10 +110,10 @@ class SharedProductCard extends StatelessWidget {
                             : const Color(0xFFF1F5F9),
                         // Nền xám nhạt normalize ảnh
                         child:
-                            product.thumbnail != null &&
-                                product.thumbnail!.isNotEmpty
+                            product.coverUrl != null &&
+                                product.coverUrl!.isNotEmpty
                             ? CachedNetworkImage(
-                                imageUrl: product.thumbnail!,
+                                imageUrl: product.coverUrl!,
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) =>
                                     Shimmer.fromColors(
@@ -186,7 +222,7 @@ class SharedProductCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: product.effectiveIsNegotiable
+                              color: product.negotiable
                                   ? theme.colorScheme.primary.withAlpha(25)
                                   : (isDarkMode
                                         ? theme
@@ -195,7 +231,7 @@ class SharedProductCard extends StatelessWidget {
                                         : const Color(0xFFF1F5F9)),
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
-                                color: product.effectiveIsNegotiable
+                                color: product.negotiable
                                     ? theme.colorScheme.primary.withAlpha(80)
                                     : Colors.transparent,
                                 width: 0.8,
@@ -205,24 +241,24 @@ class SharedProductCard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  product.effectiveIsNegotiable
+                                  product.negotiable
                                       ? Icons.handshake_outlined
                                       : Icons.flash_on_rounded,
                                   size: 10,
-                                  color: product.effectiveIsNegotiable
+                                  color: product.negotiable
                                       ? theme.colorScheme.primary
                                       : theme.colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(width: 3),
                                 Text(
-                                  product.effectiveIsNegotiable
+                                  product.negotiable
                                       ? 'Thương lượng'
                                       : 'Mua ngay',
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: product.effectiveIsNegotiable
+                                    color: product.negotiable
                                         ? theme.colorScheme.primary
                                         : theme.colorScheme.onSurfaceVariant,
                                   ),
@@ -235,24 +271,8 @@ class SharedProductCard extends StatelessWidget {
                     ],
                   ),
 
-                  // Giá gốc hiển thị mờ có gạch ngang (nếu giảm giá)
-                  if (product.originalPrice != null &&
-                      product.originalPrice! > product.price) ...[
-                    const SizedBox(height: 4.0),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        MoneyUtils.format(product.originalPrice!),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontFamily: 'Inter',
-                          color: theme.colorScheme.onSurfaceVariant,
-                          decoration: TextDecoration.lineThrough,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ),
-                  ],
-
+                  // No struck-through original price: a listing has one price,
+                  // and `original_price` was a field the server never sent.
                   if (showVendor) ...[
                     const SizedBox(height: 10.0),
                     // Đường kẻ phân cách mờ nhẹ
@@ -289,7 +309,7 @@ class SharedProductCard extends StatelessWidget {
                         // Tên và Đánh giá sao của Vendor
                         Expanded(
                           child: Text(
-                            '@${product.vendorName ?? "shop"} • ${product.rating.toStringAsFixed(1)} ★',
+                            '@${product.sellerName ?? "shop"} • ${product.rating.toStringAsFixed(1)} ★',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelMedium?.copyWith(
