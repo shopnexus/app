@@ -10,10 +10,14 @@ enum KycImageType { frontCard, backCard, selfie }
 
 class KycFormState {
   final IdentityDocument? kycModel;
+
+  /// Set when the vendor runs its own web flow instead of deciding now — the
+  /// seam covers both, and the caller stores whichever came back.
+  final String? vendorSessionUrl;
   final bool isLoading;
   final bool isSubmitting;
 
-  final IdentityDocType docType;
+  final IdentityDocumentType docType;
 
   // Selected Image Local Paths
   final String? frontCardPath;
@@ -34,9 +38,10 @@ class KycFormState {
 
   const KycFormState({
     this.kycModel,
+    this.vendorSessionUrl,
     this.isLoading = false,
     this.isSubmitting = false,
-    this.docType = IdentityDocType.nationalId,
+    this.docType = IdentityDocumentType.nationalId,
     this.frontCardPath,
     this.backCardPath,
     this.selfiePath,
@@ -52,9 +57,10 @@ class KycFormState {
 
   KycFormState copyWith({
     IdentityDocument? kycModel,
+    String? vendorSessionUrl,
     bool? isLoading,
     bool? isSubmitting,
-    IdentityDocType? docType,
+    IdentityDocumentType? docType,
     String? frontCardPath,
     String? backCardPath,
     String? selfiePath,
@@ -69,6 +75,7 @@ class KycFormState {
   }) {
     return KycFormState(
       kycModel: kycModel ?? this.kycModel,
+      vendorSessionUrl: vendorSessionUrl ?? this.vendorSessionUrl,
       isLoading: isLoading ?? this.isLoading,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       docType: docType ?? this.docType,
@@ -106,7 +113,7 @@ class KycNotifier extends _$KycNotifier {
         final kyc = await repository.getKycStatus(profile.id);
         state = state.copyWith(
           kycModel: kyc,
-          docType: kyc?.docType ?? IdentityDocType.nationalId,
+          docType: kyc?.docType ?? IdentityDocumentType.nationalId,
           isLoading: false,
         );
       } else {
@@ -117,7 +124,7 @@ class KycNotifier extends _$KycNotifier {
     }
   }
 
-  void setDocType(IdentityDocType docType) {
+  void setDocType(IdentityDocumentType docType) {
     state = state.copyWith(docType: docType, errorMessage: null);
   }
 
@@ -226,7 +233,7 @@ class KycNotifier extends _$KycNotifier {
       return false;
     }
 
-    if (state.docType == IdentityDocType.nationalId &&
+    if (state.docType == IdentityDocumentType.nationalId &&
         state.backResourceId == null &&
         state.backCardPath == null) {
       state = state.copyWith(
@@ -259,7 +266,8 @@ class KycNotifier extends _$KycNotifier {
       );
 
       state = state.copyWith(
-        kycModel: kycResult,
+        kycModel: kycResult.document,
+        vendorSessionUrl: kycResult.vendorSessionUrl,
         isSubmitting: false,
         successMessage: 'Gửi hồ sơ xác minh danh tính thành công!',
       );

@@ -43,7 +43,7 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
       }
     });
 
-    final currentStatus = state.kycModel?.status ?? IdentityStatus.unverified;
+    final currentStatus = state.kycModel?.status;
     final isSubmittedOrVerified =
         currentStatus == IdentityStatus.pending ||
         currentStatus == IdentityStatus.verified;
@@ -132,7 +132,7 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
                       const SizedBox(height: 12),
 
                       // Back Card Picker (if required)
-                      if (state.docType == IdentityDocType.nationalId) ...[
+                      if (state.docType == IdentityDocumentType.nationalId) ...[
                         KycCardPickerWidget(
                           title: 'Mặt sau CCCD / CMND',
                           description:
@@ -226,13 +226,15 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
 
   Widget _buildKycStatusBanner(IdentityDocument? kyc) {
     final theme = Theme.of(context);
-    final status = kyc?.status ?? IdentityStatus.unverified;
+    // No document on file is its own case: the contract has no `unverified`
+    // status, because absence already says it.
+    final status = kyc?.status;
 
-    Color bgColor;
-    Color textColor;
-    IconData iconData;
-    String statusTitle;
-    String statusSubtitle;
+    final Color bgColor;
+    final Color textColor;
+    final IconData iconData;
+    final String statusTitle;
+    final String statusSubtitle;
 
     switch (status) {
       case IdentityStatus.verified:
@@ -260,7 +262,7 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
             kyc?.rejectionReason ??
             'Hồ sơ chưa đạt yêu cầu. Vui lòng kiểm tra lại hình ảnh và gửi lại.';
         break;
-      case IdentityStatus.unverified:
+      case null:
         bgColor = theme.brightness == Brightness.dark
             ? theme.colorScheme.surfaceContainerHighest
             : const Color(0xFFF8FAFC);
@@ -361,14 +363,13 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
             doc.status == IdentityStatus.verified ? 'Đã xác minh' : 'Đang chờ xử lý',
           ),
           if (doc.id.isNotEmpty) _buildInfoRow('Mã hồ sơ', doc.id),
-          if (doc.provider != null && doc.provider!.isNotEmpty)
-            _buildInfoRow('Nhà cung cấp', doc.provider!),
-          if (doc.createdAt != null)
-            _buildInfoRow('Ngày nộp', _formatDateTime(doc.createdAt)),
+          if (doc.provider.isNotEmpty)
+            _buildInfoRow('Nhà cung cấp', doc.provider),
+          _buildInfoRow('Ngày nộp', _formatDateTime(doc.createdAt.toIso8601String())),
           if (doc.verifiedAt != null)
-            _buildInfoRow('Ngày duyệt', _formatDateTime(doc.verifiedAt)),
+            _buildInfoRow('Ngày duyệt', _formatDateTime(doc.verifiedAt?.toIso8601String())),
           if (doc.expiresAt != null)
-            _buildInfoRow('Ngày hết hạn', _formatDateTime(doc.expiresAt)),
+            _buildInfoRow('Ngày hết hạn', _formatDateTime(doc.expiresAt?.toIso8601String())),
           if (doc.rejectionReason != null && doc.rejectionReason!.isNotEmpty)
             _buildInfoRow('Lý do từ chối', doc.rejectionReason!, isError: true),
         ],
@@ -412,38 +413,38 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
     );
   }
 
-  Widget _buildDocTypeSelector(IdentityDocType selected, KycNotifier notifier) {
+  Widget _buildDocTypeSelector(IdentityDocumentType selected, KycNotifier notifier) {
     return Column(
       children: [
         _buildDocTypeOption(
-          type: IdentityDocType.nationalId,
+          type: IdentityDocumentType.nationalId,
           title: 'Căn cước công dân / CMND',
           subtitle: 'Sử dụng thẻ CCCD gắn chíp hoặc CMND hợp lệ',
-          isSelected: selected == IdentityDocType.nationalId,
-          onTap: () => notifier.setDocType(IdentityDocType.nationalId),
+          isSelected: selected == IdentityDocumentType.nationalId,
+          onTap: () => notifier.setDocType(IdentityDocumentType.nationalId),
         ),
         const SizedBox(height: 8),
         _buildDocTypeOption(
-          type: IdentityDocType.passport,
+          type: IdentityDocumentType.passport,
           title: 'Hộ chiếu (Passport)',
           subtitle: 'Sử dụng trang thông tin chính trên hộ chiếu còn hạn',
-          isSelected: selected == IdentityDocType.passport,
-          onTap: () => notifier.setDocType(IdentityDocType.passport),
+          isSelected: selected == IdentityDocumentType.passport,
+          onTap: () => notifier.setDocType(IdentityDocumentType.passport),
         ),
         const SizedBox(height: 8),
         _buildDocTypeOption(
-          type: IdentityDocType.driverLicense,
+          type: IdentityDocumentType.driverLicense,
           title: 'Bằng lái xe (Driver License)',
           subtitle: 'Giấy phép lái xe bản gốc do cơ quan nhà nước cấp',
-          isSelected: selected == IdentityDocType.driverLicense,
-          onTap: () => notifier.setDocType(IdentityDocType.driverLicense),
+          isSelected: selected == IdentityDocumentType.driverLicense,
+          onTap: () => notifier.setDocType(IdentityDocumentType.driverLicense),
         ),
       ],
     );
   }
 
   Widget _buildDocTypeOption({
-    required IdentityDocType type,
+    required IdentityDocumentType type,
     required String title,
     required String subtitle,
     required bool isSelected,
@@ -527,24 +528,24 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
     );
   }
 
-  String _getFrontCardTitle(IdentityDocType docType) {
+  String _getFrontCardTitle(IdentityDocumentType docType) {
     switch (docType) {
-      case IdentityDocType.nationalId:
+      case IdentityDocumentType.nationalId:
         return 'Mặt trước CCCD / CMND';
-      case IdentityDocType.passport:
+      case IdentityDocumentType.passport:
         return 'Ảnh trang nhân thân Hộ chiếu';
-      case IdentityDocType.driverLicense:
+      case IdentityDocumentType.driverLicense:
         return 'Mặt trước Giấy phép lái xe';
     }
   }
 
-  String _getDocTypeName(IdentityDocType docType) {
+  String _getDocTypeName(IdentityDocumentType docType) {
     switch (docType) {
-      case IdentityDocType.nationalId:
+      case IdentityDocumentType.nationalId:
         return 'Căn cước công dân (National ID)';
-      case IdentityDocType.passport:
+      case IdentityDocumentType.passport:
         return 'Hộ chiếu (Passport)';
-      case IdentityDocType.driverLicense:
+      case IdentityDocumentType.driverLicense:
         return 'Giấy phép lái xe (Driver License)';
     }
   }

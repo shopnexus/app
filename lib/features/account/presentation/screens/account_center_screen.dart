@@ -188,36 +188,34 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
     );
   }
 
-  Widget _buildKycCenterCard(KycModel? kyc) {
+  Widget _buildKycCenterCard(IdentityDocument? kyc) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final status = kyc?.status ?? KycStatus.unverified;
+    // No document on file is its own case: the contract has no `unverified`
+    // status, because absence already says it.
+    final status = kyc?.status;
 
-    String statusText;
-    Color statusColor;
-    IconData statusIcon;
+    final String statusText;
+    final Color statusColor;
+    final IconData statusIcon;
 
     switch (status) {
-      case KycStatus.verified:
+      case IdentityStatus.verified:
         statusText = 'Đã xác minh KYC';
         statusColor = const Color(0xFF10B981);
         statusIcon = Icons.verified_rounded;
-        break;
-      case KycStatus.pending:
+      case IdentityStatus.pending:
         statusText = 'Đang chờ xét duyệt';
         statusColor = const Color(0xFFF59E0B);
         statusIcon = Icons.pending_actions_rounded;
-        break;
-      case KycStatus.rejected:
+      case IdentityStatus.rejected:
         statusText = 'Bị từ chối - Cần nộp lại';
         statusColor = const Color(0xFFEF4444);
         statusIcon = Icons.error_rounded;
-        break;
-      case KycStatus.unverified:
+      case null:
         statusText = 'Chưa xác minh danh tính';
         statusColor = const Color(0xFF64748B);
         statusIcon = Icons.shield_outlined;
-        break;
     }
 
     return Container(
@@ -292,13 +290,13 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
             child: OutlinedButton.icon(
               onPressed: () => context.push('/account/kyc'),
               icon: Icon(
-                status == KycStatus.verified
+                status == IdentityStatus.verified
                     ? Icons.remove_red_eye_outlined
                     : Icons.badge_outlined,
                 size: 18,
               ),
               label: Text(
-                status == KycStatus.verified
+                status == IdentityStatus.verified
                     ? 'Xem thông tin KYC đã nộp'
                     : 'Thực hiện xác minh KYC ngay',
                 style: const TextStyle(
