@@ -59,7 +59,7 @@ void main() {
   test('the wishlist reads the favorited listing feed', () async {
     final products = await container.read(wishlistProductsProvider.future);
 
-    expect(requests.map((r) => r.path), ['listings']);
+    expect(requests.map((r) => r.path), ['/listings']);
     expect(requests.single.queryParameters['favorited'], true);
 
     expect(products, hasLength(1));
