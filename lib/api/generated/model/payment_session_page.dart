@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'payment_session_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'payment_session_page.g.dart';
 )
 class PaymentSessionPage {
   /// Returns a new [PaymentSessionPage] instance.
-  PaymentSessionPage({
+  PaymentSessionPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<PaymentSession> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final PageMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PaymentSessionPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is PaymentSessionPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory PaymentSessionPage.fromJson(Map<String, dynamic> json) => _$PaymentSessionPageFromJson(json);
+  factory PaymentSessionPage.fromJson(Map<String, dynamic> json) =>
+      _$PaymentSessionPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$PaymentSessionPageToJson(this);
 
@@ -71,6 +44,4 @@ class PaymentSessionPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

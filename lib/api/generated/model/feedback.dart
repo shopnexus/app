@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'feedback.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -21,164 +20,83 @@ part 'feedback.g.dart';
 class Feedback {
   /// Returns a new [Feedback] instance.
   Feedback({
+    required this.comment,
 
-    required  this.comment,
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.direction,
 
-    required  this.direction,
+    required this.id,
 
-    required  this.id,
+    required this.orderId,
 
-    required  this.orderId,
+    this.publishedAt,
 
-     this.publishedAt,
+    required this.rateeId,
 
-    required  this.rateeId,
+    required this.rater,
 
-    required  this.rater,
-
-    required  this.rating,
+    required this.rating,
   });
 
-  @JsonKey(
-    
-    name: r'comment',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'comment', required: true, includeIfNull: false)
   final String comment;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'direction',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'direction', required: true, includeIfNull: false)
   final FeedbackDirection direction;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-  @JsonKey(
-    
-    name: r'order_id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'order_id', required: true, includeIfNull: false)
   final String orderId;
 
-
-
-      /// Null while the rating is still blind. Only published feedback is visible to anyone but its author and counted towards reputation. 
-  @JsonKey(
-    
-    name: r'published_at',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Null while the rating is still blind. Only published feedback is visible to anyone but its author and counted towards reputation.
+  @JsonKey(name: r'published_at', required: false, includeIfNull: false)
   final DateTime? publishedAt;
 
-
-
-  @JsonKey(
-    
-    name: r'ratee_id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'ratee_id', required: true, includeIfNull: false)
   final String rateeId;
 
-
-
-  @JsonKey(
-    
-    name: r'rater',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'rater', required: true, includeIfNull: false)
   final AccountSummary rater;
 
-
-
-          // minimum: 1
-          // maximum: 5
-  @JsonKey(
-    
-    name: r'rating',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 1
+  // maximum: 5
+  @JsonKey(name: r'rating', required: true, includeIfNull: false)
   final int rating;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Feedback &&
+          other.comment == comment &&
+          other.createdAt == createdAt &&
+          other.direction == direction &&
+          other.id == id &&
+          other.orderId == orderId &&
+          other.publishedAt == publishedAt &&
+          other.rateeId == rateeId &&
+          other.rater == rater &&
+          other.rating == rating;
 
+  @override
+  int get hashCode =>
+      comment.hashCode +
+      createdAt.hashCode +
+      direction.hashCode +
+      id.hashCode +
+      orderId.hashCode +
+      (publishedAt == null ? 0 : publishedAt.hashCode) +
+      rateeId.hashCode +
+      rater.hashCode +
+      rating.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is Feedback &&
-      other.comment == comment &&
-      other.createdAt == createdAt &&
-      other.direction == direction &&
-      other.id == id &&
-      other.orderId == orderId &&
-      other.publishedAt == publishedAt &&
-      other.rateeId == rateeId &&
-      other.rater == rater &&
-      other.rating == rating;
-
-    @override
-    int get hashCode =>
-        comment.hashCode +
-        createdAt.hashCode +
-        direction.hashCode +
-        id.hashCode +
-        orderId.hashCode +
-        (publishedAt == null ? 0 : publishedAt.hashCode) +
-        rateeId.hashCode +
-        rater.hashCode +
-        rating.hashCode;
-
-  factory Feedback.fromJson(Map<String, dynamic> json) => _$FeedbackFromJson(json);
+  factory Feedback.fromJson(Map<String, dynamic> json) =>
+      _$FeedbackFromJson(json);
 
   Map<String, dynamic> toJson() => _$FeedbackToJson(this);
 
@@ -186,6 +104,4 @@ class Feedback {
   String toString() {
     return toJson().toString();
   }
-
 }
-

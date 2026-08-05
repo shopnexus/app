@@ -420,7 +420,8 @@ class _ListingSuggestionScreenState
           maxLines: 5,
           style: TextStyle(color: theme.colorScheme.onSurface),
           decoration: _inputDecoration(
-            hint: 'Tình trạng thật của sản phẩm, khuyết điểm, phụ kiện kèm theo',
+            hint:
+                'Tình trạng thật của sản phẩm, khuyết điểm, phụ kiện kèm theo',
           ),
         ),
         const SizedBox(height: 16),
@@ -838,7 +839,10 @@ class _ListingSuggestionScreenState
               ),
             ),
             ListTile(
-              leading: Icon(Icons.home_outlined, color: theme.colorScheme.primary),
+              leading: Icon(
+                Icons.home_outlined,
+                color: theme.colorScheme.primary,
+              ),
               title: Text(
                 'Địa chỉ lấy hàng mặc định',
                 style: TextStyle(color: theme.colorScheme.onSurface),
@@ -921,7 +925,9 @@ class _ListingSuggestionScreenState
               controller: keyController,
               autofocus: true,
               style: TextStyle(color: theme.colorScheme.onSurface),
-              decoration: _inputDecoration(hint: 'Tên thông số, ví dụ: Dung lượng'),
+              decoration: _inputDecoration(
+                hint: 'Tên thông số, ví dụ: Dung lượng',
+              ),
             ),
             const SizedBox(height: 10),
             TextField(

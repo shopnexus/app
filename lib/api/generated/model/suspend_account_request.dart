@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'suspend_account_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,51 +17,27 @@ part 'suspend_account_request.g.dart';
 )
 class SuspendAccountRequest {
   /// Returns a new [SuspendAccountRequest] instance.
-  SuspendAccountRequest({
+  SuspendAccountRequest({required this.reason, this.until});
 
-    required  this.reason,
-
-     this.until,
-  });
-
-  @JsonKey(
-    
-    name: r'reason',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'reason', required: true, includeIfNull: false)
   final String reason;
 
-
-
-      /// Omit for a permanent suspension.
-  @JsonKey(
-    
-    name: r'until',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Omit for a permanent suspension.
+  @JsonKey(name: r'until', required: false, includeIfNull: false)
   final DateTime? until;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SuspendAccountRequest &&
+          other.reason == reason &&
+          other.until == until;
 
+  @override
+  int get hashCode => reason.hashCode + until.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is SuspendAccountRequest &&
-      other.reason == reason &&
-      other.until == until;
-
-    @override
-    int get hashCode =>
-        reason.hashCode +
-        until.hashCode;
-
-  factory SuspendAccountRequest.fromJson(Map<String, dynamic> json) => _$SuspendAccountRequestFromJson(json);
+  factory SuspendAccountRequest.fromJson(Map<String, dynamic> json) =>
+      _$SuspendAccountRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$SuspendAccountRequestToJson(this);
 
@@ -70,6 +45,4 @@ class SuspendAccountRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

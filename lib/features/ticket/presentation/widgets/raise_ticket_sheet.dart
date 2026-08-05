@@ -79,7 +79,8 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
   void initState() {
     super.initState();
     _kind = widget.kind ?? TicketKindInfo.selfServe.first.kind;
-    if (widget.subjectHint != null) _subjectController.text = widget.subjectHint!;
+    final hint = widget.subjectHint;
+    if (hint != null) _subjectController.text = hint;
   }
 
   @override
@@ -110,22 +111,28 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
       final repository = ref.read(ticketRepositoryProvider);
       final attachments = <String>[];
       for (final file in _pending) {
-        attachments.add(await repository.uploadAttachment(file, mime: 'image/jpeg'));
+        attachments.add(
+          await repository.uploadAttachment(file, mime: 'image/jpeg'),
+        );
       }
 
-      final ticket = await ref.read(raiseTicketProvider.notifier).submit(
-        kind: _kind,
-        subject: _subjectController.text.trim(),
-        body: _bodyController.text.trim(),
-        attachments: attachments,
-        refId: _info.needsRef ? widget.refId : null,
-        reason: _info.needsReason ? _reason : null,
-      );
+      final ticket = await ref
+          .read(raiseTicketProvider.notifier)
+          .submit(
+            kind: _kind,
+            subject: _subjectController.text.trim(),
+            body: _bodyController.text.trim(),
+            attachments: attachments,
+            refId: _info.needsRef ? widget.refId : null,
+            reason: _info.needsReason ? _reason : null,
+          );
 
       if (!mounted) return;
       if (ticket == null) {
         final error = ref.read(raiseTicketProvider).error;
-        _showSnack(error?.toString() ?? 'Không gửi được yêu cầu. Vui lòng thử lại.');
+        _showSnack(
+          error?.toString() ?? 'Không gửi được yêu cầu. Vui lòng thử lại.',
+        );
         setState(() => _submitting = false);
         return;
       }
@@ -138,7 +145,9 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
   }
 
   void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -174,7 +183,10 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
                   decoration: const InputDecoration(labelText: 'Loại yêu cầu'),
                   items: [
                     for (final info in TicketKindInfo.selfServe)
-                      DropdownMenuItem(value: info.kind, child: Text(info.label)),
+                      DropdownMenuItem(
+                        value: info.kind,
+                        child: Text(info.label),
+                      ),
                   ],
                   onChanged: (value) {
                     if (value != null) setState(() => _kind = value);
@@ -244,7 +256,9 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: OutlinedButton.icon(
-                  onPressed: _submitting || _pending.length >= 10 ? null : _pickImages,
+                  onPressed: _submitting || _pending.length >= 10
+                      ? null
+                      : _pickImages,
                   icon: const Icon(Icons.add_photo_alternate_outlined),
                   label: Text('Thêm ảnh (${_pending.length}/10)'),
                 ),
@@ -275,7 +289,8 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
                             icon: const Icon(Icons.close, size: 16),
                             onPressed: _submitting
                                 ? null
-                                : () => setState(() => _pending.removeAt(index)),
+                                : () =>
+                                      setState(() => _pending.removeAt(index)),
                           ),
                         ),
                       ],

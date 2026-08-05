@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'upsert_tax_info_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,66 +19,37 @@ part 'upsert_tax_info_request.g.dart';
 class UpsertTaxInfoRequest {
   /// Returns a new [UpsertTaxInfoRequest] instance.
   UpsertTaxInfoRequest({
+    required this.legalName,
 
-    required  this.legalName,
+    required this.taxCode,
 
-    required  this.taxCode,
-
-    required  this.taxCodeType,
+    required this.taxCodeType,
   });
 
-  @JsonKey(
-    
-    name: r'legal_name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'legal_name', required: true, includeIfNull: false)
   final String legalName;
 
-
-
-      /// Vietnamese MST — ten digits, or ten plus a three-digit branch.
-  @JsonKey(
-    
-    name: r'tax_code',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Vietnamese MST — ten digits, or ten plus a three-digit branch.
+  @JsonKey(name: r'tax_code', required: true, includeIfNull: false)
   final String taxCode;
 
-
-
-  @JsonKey(
-    
-    name: r'tax_code_type',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'tax_code_type', required: true, includeIfNull: false)
   final TaxCodeType taxCodeType;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UpsertTaxInfoRequest &&
+          other.legalName == legalName &&
+          other.taxCode == taxCode &&
+          other.taxCodeType == taxCodeType;
 
+  @override
+  int get hashCode =>
+      legalName.hashCode + taxCode.hashCode + taxCodeType.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is UpsertTaxInfoRequest &&
-      other.legalName == legalName &&
-      other.taxCode == taxCode &&
-      other.taxCodeType == taxCodeType;
-
-    @override
-    int get hashCode =>
-        legalName.hashCode +
-        taxCode.hashCode +
-        taxCodeType.hashCode;
-
-  factory UpsertTaxInfoRequest.fromJson(Map<String, dynamic> json) => _$UpsertTaxInfoRequestFromJson(json);
+  factory UpsertTaxInfoRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpsertTaxInfoRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$UpsertTaxInfoRequestToJson(this);
 
@@ -87,6 +57,4 @@ class UpsertTaxInfoRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

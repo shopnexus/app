@@ -46,7 +46,10 @@ class _RefundListScreenState extends ConsumerState<RefundListScreen>
   Widget build(BuildContext context) {
     final tabs = TabBar(
       controller: _tabs,
-      tabs: const [Tab(text: 'Tôi mua'), Tab(text: 'Tôi bán')],
+      tabs: const [
+        Tab(text: 'Tôi mua'),
+        Tab(text: 'Tôi bán'),
+      ],
     );
     final body = TabBarView(
       controller: _tabs,
@@ -57,7 +60,12 @@ class _RefundListScreenState extends ConsumerState<RefundListScreen>
     );
 
     if (!widget.showAppBar) {
-      return Column(children: [tabs, Expanded(child: body)]);
+      return Column(
+        children: [
+          tabs,
+          Expanded(child: body),
+        ],
+      );
     }
     return Scaffold(
       appBar: AppBar(title: const Text('Yêu cầu hoàn tiền'), bottom: tabs),

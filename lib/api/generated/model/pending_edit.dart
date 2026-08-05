@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'pending_edit.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -21,145 +20,73 @@ part 'pending_edit.g.dart';
 class PendingEdit {
   /// Returns a new [PendingEdit] instance.
   PendingEdit({
+    this.attachments,
 
-     this.attachments,
+    this.categoryId,
 
-     this.categoryId,
+    this.condition,
 
-     this.condition,
+    this.description,
 
-     this.description,
+    this.name,
 
-     this.name,
+    this.priceMode,
 
-     this.priceMode,
+    this.specifications,
 
-     this.specifications,
-
-     this.tags,
+    this.tags,
   });
 
-  @JsonKey(
-    
-    name: r'attachments',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'attachments', required: false, includeIfNull: false)
   final List<String>? attachments;
 
-
-
-  @JsonKey(
-    
-    name: r'category_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'category_id', required: false, includeIfNull: false)
   final String? categoryId;
 
-
-
-  @JsonKey(
-    
-    name: r'condition',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'condition', required: false, includeIfNull: false)
   final ListingCondition? condition;
 
-
-
-  @JsonKey(
-    
-    name: r'description',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'description', required: false, includeIfNull: false)
   final String? description;
 
-
-
-  @JsonKey(
-    
-    name: r'name',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'name', required: false, includeIfNull: false)
   final String? name;
 
-
-
-  @JsonKey(
-    
-    name: r'price_mode',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'price_mode', required: false, includeIfNull: false)
   final PriceMode? priceMode;
 
-
-
-  @JsonKey(
-    
-    name: r'specifications',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'specifications', required: false, includeIfNull: false)
   final Map<String, Object>? specifications;
 
-
-
-  @JsonKey(
-    
-    name: r'tags',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'tags', required: false, includeIfNull: false)
   final List<String>? tags;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PendingEdit &&
+          other.attachments == attachments &&
+          other.categoryId == categoryId &&
+          other.condition == condition &&
+          other.description == description &&
+          other.name == name &&
+          other.priceMode == priceMode &&
+          other.specifications == specifications &&
+          other.tags == tags;
 
+  @override
+  int get hashCode =>
+      attachments.hashCode +
+      categoryId.hashCode +
+      condition.hashCode +
+      description.hashCode +
+      name.hashCode +
+      priceMode.hashCode +
+      specifications.hashCode +
+      tags.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is PendingEdit &&
-      other.attachments == attachments &&
-      other.categoryId == categoryId &&
-      other.condition == condition &&
-      other.description == description &&
-      other.name == name &&
-      other.priceMode == priceMode &&
-      other.specifications == specifications &&
-      other.tags == tags;
-
-    @override
-    int get hashCode =>
-        attachments.hashCode +
-        categoryId.hashCode +
-        condition.hashCode +
-        description.hashCode +
-        name.hashCode +
-        priceMode.hashCode +
-        specifications.hashCode +
-        tags.hashCode;
-
-  factory PendingEdit.fromJson(Map<String, dynamic> json) => _$PendingEditFromJson(json);
+  factory PendingEdit.fromJson(Map<String, dynamic> json) =>
+      _$PendingEditFromJson(json);
 
   Map<String, dynamic> toJson() => _$PendingEditToJson(this);
 
@@ -167,6 +94,4 @@ class PendingEdit {
   String toString() {
     return toJson().toString();
   }
-
 }
-

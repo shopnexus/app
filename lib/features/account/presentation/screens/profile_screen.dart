@@ -36,11 +36,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     });
 
     try {
-      final rsId = await ref.read(accountRepositoryProvider).uploadAvatar(
-        bytes: await image.readAsBytes(),
-        filename: image.name,
-        mime: image.mimeType ?? 'image/jpeg',
-      );
+      final rsId = await ref
+          .read(accountRepositoryProvider)
+          .uploadAvatar(
+            bytes: await image.readAsBytes(),
+            filename: image.name,
+            mime: image.mimeType ?? 'image/jpeg',
+          );
 
       await ref
           .read(accountControllerProvider.notifier)

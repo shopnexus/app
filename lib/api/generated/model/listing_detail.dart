@@ -17,7 +17,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'listing_detail.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -28,416 +27,200 @@ part 'listing_detail.g.dart';
 class ListingDetail {
   /// Returns a new [ListingDetail] instance.
   ListingDetail({
+    required this.category,
 
-    required  this.category,
+    required this.condition,
 
-    required  this.condition,
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.currency,
 
-    required  this.currency,
+    this.deletedAt,
 
-     this.deletedAt,
+    required this.description,
 
-    required  this.description,
+    required this.favoriteCount,
 
-    required  this.favoriteCount,
+    required this.favorited,
 
-    required  this.favorited,
+    this.featuredVariantId,
 
-     this.featuredVariantId,
+    required this.id,
 
-    required  this.id,
+    required this.images,
 
-    required  this.images,
+    this.location,
 
-     this.location,
+    required this.name,
 
-    required  this.name,
+    this.pendingEdit,
 
-     this.pendingEdit,
+    required this.priceMode,
 
-    required  this.priceMode,
+    required this.rating,
 
-    required  this.rating,
+    required this.reviewCount,
 
-    required  this.reviewCount,
+    required this.seller,
 
-    required  this.seller,
+    required this.slug,
 
-    required  this.slug,
+    required this.sold,
 
-    required  this.sold,
+    required this.specifications,
 
-    required  this.specifications,
+    required this.status,
 
-    required  this.status,
+    required this.tags,
 
-    required  this.tags,
-
-    required  this.variants,
+    required this.variants,
   });
 
-  @JsonKey(
-    
-    name: r'category',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'category', required: true, includeIfNull: false)
   final Category category;
 
-
-
-  @JsonKey(
-    
-    name: r'condition',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'condition', required: true, includeIfNull: false)
   final ListingCondition condition;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-      /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one. 
-  @JsonKey(
-    
-    name: r'currency',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one.
+  @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
 
-
-
-      /// Set on a listing the seller removed.
-  @JsonKey(
-    
-    name: r'deleted_at',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Set on a listing the seller removed.
+  @JsonKey(name: r'deleted_at', required: false, includeIfNull: false)
   final DateTime? deletedAt;
 
-
-
-  @JsonKey(
-    
-    name: r'description',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'description', required: true, includeIfNull: false)
   final String description;
 
-
-
-      /// How many accounts saved it — social proof on the product page. Only here and not on the card: it is a count per listing, cheap for one row and N counts for a page of them. 
-          // minimum: 0
-  @JsonKey(
-    
-    name: r'favorite_count',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// How many accounts saved it — social proof on the product page. Only here and not on the card: it is a count per listing, cheap for one row and N counts for a page of them.
+  // minimum: 0
+  @JsonKey(name: r'favorite_count', required: true, includeIfNull: false)
   final int favoriteCount;
 
-
-
-      /// Whether the caller has this saved. False for an anonymous request.
-  @JsonKey(
-    
-    name: r'favorited',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Whether the caller has this saved. False for an anonymous request.
+  @JsonKey(name: r'favorited', required: true, includeIfNull: false)
   final bool favorited;
 
-
-
-  @JsonKey(
-    
-    name: r'featured_variant_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'featured_variant_id', required: false, includeIfNull: false)
   final String? featuredVariantId;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-      /// Ordered. The first is the cover.
-  @JsonKey(
-    
-    name: r'images',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Ordered. The first is the cover.
+  @JsonKey(name: r'images', required: true, includeIfNull: false)
   final List<Resource> images;
 
-
-
-      /// Where the goods are. Null on a listing that was never published — the address is taken when the seller publishes, because that is when it becomes something a buyer can find. 
-  @JsonKey(
-    
-    name: r'location',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Where the goods are. Null on a listing that was never published — the address is taken when the seller publishes, because that is when it becomes something a buyer can find.
+  @JsonKey(name: r'location', required: false, includeIfNull: false)
   final ListingLocation? location;
 
-
-
-  @JsonKey(
-    
-    name: r'name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'name', required: true, includeIfNull: false)
   final String name;
 
-
-
-      /// An edit waiting on moderation, null when there is none. Visible to the owner and to staff only; buyers see the published version until it is approved. 
-  @JsonKey(
-    
-    name: r'pending_edit',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// An edit waiting on moderation, null when there is none. Visible to the owner and to staff only; buyers see the published version until it is approved.
+  @JsonKey(name: r'pending_edit', required: false, includeIfNull: false)
   final PendingEdit? pendingEdit;
 
-
-
-  @JsonKey(
-    
-    name: r'price_mode',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'price_mode', required: true, includeIfNull: false)
   final PriceMode priceMode;
 
-
-
-          // minimum: 0
-          // maximum: 5
-  @JsonKey(
-    
-    name: r'rating',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 0
+  // maximum: 5
+  @JsonKey(name: r'rating', required: true, includeIfNull: false)
   final double rating;
 
-
-
-      /// How many reviews the rating averages — see Listing.review_count.
-          // minimum: 0
-  @JsonKey(
-    
-    name: r'review_count',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// How many reviews the rating averages — see Listing.review_count.
+  // minimum: 0
+  @JsonKey(name: r'review_count', required: true, includeIfNull: false)
   final int reviewCount;
 
-
-
-  @JsonKey(
-    
-    name: r'seller',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'seller', required: true, includeIfNull: false)
   final AccountSummary seller;
 
-
-
-  @JsonKey(
-    
-    name: r'slug',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'slug', required: true, includeIfNull: false)
   final String slug;
 
-
-
-      /// Completed sales across the variants — see Listing.sold.
-          // minimum: 0
-  @JsonKey(
-    
-    name: r'sold',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Completed sales across the variants — see Listing.sold.
+  // minimum: 0
+  @JsonKey(name: r'sold', required: true, includeIfNull: false)
   final int sold;
 
-
-
-      /// Structured attributes specific to the product type.
-  @JsonKey(
-    
-    name: r'specifications',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Structured attributes specific to the product type.
+  @JsonKey(name: r'specifications', required: true, includeIfNull: false)
   final Map<String, Object> specifications;
 
-
-
-  @JsonKey(
-    
-    name: r'status',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'status', required: true, includeIfNull: false)
   final ListingStatus status;
 
-
-
-  @JsonKey(
-    
-    name: r'tags',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'tags', required: true, includeIfNull: false)
   final List<String> tags;
 
-
-
-  @JsonKey(
-    
-    name: r'variants',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'variants', required: true, includeIfNull: false)
   final List<Variant> variants;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ListingDetail &&
+          other.category == category &&
+          other.condition == condition &&
+          other.createdAt == createdAt &&
+          other.currency == currency &&
+          other.deletedAt == deletedAt &&
+          other.description == description &&
+          other.favoriteCount == favoriteCount &&
+          other.favorited == favorited &&
+          other.featuredVariantId == featuredVariantId &&
+          other.id == id &&
+          other.images == images &&
+          other.location == location &&
+          other.name == name &&
+          other.pendingEdit == pendingEdit &&
+          other.priceMode == priceMode &&
+          other.rating == rating &&
+          other.reviewCount == reviewCount &&
+          other.seller == seller &&
+          other.slug == slug &&
+          other.sold == sold &&
+          other.specifications == specifications &&
+          other.status == status &&
+          other.tags == tags &&
+          other.variants == variants;
 
+  @override
+  int get hashCode =>
+      category.hashCode +
+      condition.hashCode +
+      createdAt.hashCode +
+      currency.hashCode +
+      (deletedAt == null ? 0 : deletedAt.hashCode) +
+      description.hashCode +
+      favoriteCount.hashCode +
+      favorited.hashCode +
+      (featuredVariantId == null ? 0 : featuredVariantId.hashCode) +
+      id.hashCode +
+      images.hashCode +
+      (location == null ? 0 : location.hashCode) +
+      name.hashCode +
+      (pendingEdit == null ? 0 : pendingEdit.hashCode) +
+      priceMode.hashCode +
+      rating.hashCode +
+      reviewCount.hashCode +
+      seller.hashCode +
+      slug.hashCode +
+      sold.hashCode +
+      specifications.hashCode +
+      status.hashCode +
+      tags.hashCode +
+      variants.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is ListingDetail &&
-      other.category == category &&
-      other.condition == condition &&
-      other.createdAt == createdAt &&
-      other.currency == currency &&
-      other.deletedAt == deletedAt &&
-      other.description == description &&
-      other.favoriteCount == favoriteCount &&
-      other.favorited == favorited &&
-      other.featuredVariantId == featuredVariantId &&
-      other.id == id &&
-      other.images == images &&
-      other.location == location &&
-      other.name == name &&
-      other.pendingEdit == pendingEdit &&
-      other.priceMode == priceMode &&
-      other.rating == rating &&
-      other.reviewCount == reviewCount &&
-      other.seller == seller &&
-      other.slug == slug &&
-      other.sold == sold &&
-      other.specifications == specifications &&
-      other.status == status &&
-      other.tags == tags &&
-      other.variants == variants;
-
-    @override
-    int get hashCode =>
-        category.hashCode +
-        condition.hashCode +
-        createdAt.hashCode +
-        currency.hashCode +
-        (deletedAt == null ? 0 : deletedAt.hashCode) +
-        description.hashCode +
-        favoriteCount.hashCode +
-        favorited.hashCode +
-        (featuredVariantId == null ? 0 : featuredVariantId.hashCode) +
-        id.hashCode +
-        images.hashCode +
-        (location == null ? 0 : location.hashCode) +
-        name.hashCode +
-        (pendingEdit == null ? 0 : pendingEdit.hashCode) +
-        priceMode.hashCode +
-        rating.hashCode +
-        reviewCount.hashCode +
-        seller.hashCode +
-        slug.hashCode +
-        sold.hashCode +
-        specifications.hashCode +
-        status.hashCode +
-        tags.hashCode +
-        variants.hashCode;
-
-  factory ListingDetail.fromJson(Map<String, dynamic> json) => _$ListingDetailFromJson(json);
+  factory ListingDetail.fromJson(Map<String, dynamic> json) =>
+      _$ListingDetailFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListingDetailToJson(this);
 
@@ -445,6 +228,4 @@ class ListingDetail {
   String toString() {
     return toJson().toString();
   }
-
 }
-

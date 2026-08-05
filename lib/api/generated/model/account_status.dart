@@ -5,12 +5,11 @@
 // ignore_for_file: unused_element
 import 'package:json_annotation/json_annotation.dart';
 
-
 enum AccountStatus {
-      @JsonValue(r'active')
-      active(r'active'),
-      @JsonValue(r'suspended')
-      suspended(r'suspended');
+  @JsonValue(r'active')
+  active(r'active'),
+  @JsonValue(r'suspended')
+  suspended(r'suspended');
 
   const AccountStatus(this.value);
 

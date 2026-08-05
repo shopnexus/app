@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'me_get200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,20 @@ part 'me_get200_response.g.dart';
 )
 class MeGet200Response {
   /// Returns a new [MeGet200Response] instance.
-  MeGet200Response({
+  MeGet200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final Me data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is MeGet200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is MeGet200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory MeGet200Response.fromJson(Map<String, dynamic> json) => _$MeGet200ResponseFromJson(json);
+  factory MeGet200Response.fromJson(Map<String, dynamic> json) =>
+      _$MeGet200ResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$MeGet200ResponseToJson(this);
 
@@ -54,6 +39,4 @@ class MeGet200Response {
   String toString() {
     return toJson().toString();
   }
-
 }
-

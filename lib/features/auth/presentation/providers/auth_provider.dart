@@ -133,7 +133,9 @@ class AuthNotifier extends _$AuthNotifier {
     state = const AuthState.loading();
     try {
       final repository = ref.read(authRepositoryProvider);
-      await repository.forgotPassword(PasswordResetRequest(identifier: identifier));
+      await repository.forgotPassword(
+        PasswordResetRequest(identifier: identifier),
+      );
       state = const AuthState.unauthenticated();
     } catch (e) {
       state = AuthState.error(message: ErrorHandler.getErrorMessage(e));

@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'device.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,96 +19,50 @@ part 'device.g.dart';
 class Device {
   /// Returns a new [Device] instance.
   Device({
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.id,
 
-    required  this.id,
+    required this.lastSeenAt,
 
-    required  this.lastSeenAt,
+    required this.platform,
 
-    required  this.platform,
-
-    required  this.pushTokenSuffix,
+    required this.pushTokenSuffix,
   });
 
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-  @JsonKey(
-    
-    name: r'last_seen_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'last_seen_at', required: true, includeIfNull: false)
   final DateTime lastSeenAt;
 
-
-
-  @JsonKey(
-    
-    name: r'platform',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'platform', required: true, includeIfNull: false)
   final DevicePlatform platform;
 
-
-
-      /// The tail of the token, enough for a client to recognise its own install. The whole token is a delivery credential and is never returned. 
-  @JsonKey(
-    
-    name: r'push_token_suffix',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// The tail of the token, enough for a client to recognise its own install. The whole token is a delivery credential and is never returned.
+  @JsonKey(name: r'push_token_suffix', required: true, includeIfNull: false)
   final String pushTokenSuffix;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Device &&
+          other.createdAt == createdAt &&
+          other.id == id &&
+          other.lastSeenAt == lastSeenAt &&
+          other.platform == platform &&
+          other.pushTokenSuffix == pushTokenSuffix;
 
-
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is Device &&
-      other.createdAt == createdAt &&
-      other.id == id &&
-      other.lastSeenAt == lastSeenAt &&
-      other.platform == platform &&
-      other.pushTokenSuffix == pushTokenSuffix;
-
-    @override
-    int get hashCode =>
-        createdAt.hashCode +
-        id.hashCode +
-        lastSeenAt.hashCode +
-        platform.hashCode +
-        pushTokenSuffix.hashCode;
+  @override
+  int get hashCode =>
+      createdAt.hashCode +
+      id.hashCode +
+      lastSeenAt.hashCode +
+      platform.hashCode +
+      pushTokenSuffix.hashCode;
 
   factory Device.fromJson(Map<String, dynamic> json) => _$DeviceFromJson(json);
 
@@ -119,6 +72,4 @@ class Device {
   String toString() {
     return toJson().toString();
   }
-
 }
-

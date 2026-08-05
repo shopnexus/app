@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'admin_tickets_id_get200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,21 @@ part 'admin_tickets_id_get200_response.g.dart';
 )
 class AdminTicketsIdGet200Response {
   /// Returns a new [AdminTicketsIdGet200Response] instance.
-  AdminTicketsIdGet200Response({
+  AdminTicketsIdGet200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final AdminTicket data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminTicketsIdGet200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AdminTicketsIdGet200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory AdminTicketsIdGet200Response.fromJson(Map<String, dynamic> json) => _$AdminTicketsIdGet200ResponseFromJson(json);
+  factory AdminTicketsIdGet200Response.fromJson(Map<String, dynamic> json) =>
+      _$AdminTicketsIdGet200ResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$AdminTicketsIdGet200ResponseToJson(this);
 
@@ -54,6 +40,4 @@ class AdminTicketsIdGet200Response {
   String toString() {
     return toJson().toString();
   }
-
 }
-

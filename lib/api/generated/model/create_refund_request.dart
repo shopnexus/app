@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'create_refund_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,51 +17,27 @@ part 'create_refund_request.g.dart';
 )
 class CreateRefundRequest {
   /// Returns a new [CreateRefundRequest] instance.
-  CreateRefundRequest({
+  CreateRefundRequest({this.attachments, required this.reason});
 
-     this.attachments,
-
-    required  this.reason,
-  });
-
-      /// Evidence, and it can be topped up until the case closes.
-  @JsonKey(
-    
-    name: r'attachments',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Evidence, and it can be topped up until the case closes.
+  @JsonKey(name: r'attachments', required: false, includeIfNull: false)
   final List<String>? attachments;
 
-
-
-  @JsonKey(
-    
-    name: r'reason',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'reason', required: true, includeIfNull: false)
   final String reason;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CreateRefundRequest &&
+          other.attachments == attachments &&
+          other.reason == reason;
 
+  @override
+  int get hashCode => attachments.hashCode + reason.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is CreateRefundRequest &&
-      other.attachments == attachments &&
-      other.reason == reason;
-
-    @override
-    int get hashCode =>
-        attachments.hashCode +
-        reason.hashCode;
-
-  factory CreateRefundRequest.fromJson(Map<String, dynamic> json) => _$CreateRefundRequestFromJson(json);
+  factory CreateRefundRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateRefundRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$CreateRefundRequestToJson(this);
 
@@ -70,6 +45,4 @@ class CreateRefundRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

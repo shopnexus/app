@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'device_list.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,20 @@ part 'device_list.g.dart';
 )
 class DeviceList {
   /// Returns a new [DeviceList] instance.
-  DeviceList({
+  DeviceList({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Device> data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is DeviceList && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is DeviceList &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory DeviceList.fromJson(Map<String, dynamic> json) => _$DeviceListFromJson(json);
+  factory DeviceList.fromJson(Map<String, dynamic> json) =>
+      _$DeviceListFromJson(json);
 
   Map<String, dynamic> toJson() => _$DeviceListToJson(this);
 
@@ -54,6 +39,4 @@ class DeviceList {
   String toString() {
     return toJson().toString();
   }
-
 }
-

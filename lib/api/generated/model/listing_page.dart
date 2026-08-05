@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'listing_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'listing_page.g.dart';
 )
 class ListingPage {
   /// Returns a new [ListingPage] instance.
-  ListingPage({
+  ListingPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Listing> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final PageMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ListingPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is ListingPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory ListingPage.fromJson(Map<String, dynamic> json) => _$ListingPageFromJson(json);
+  factory ListingPage.fromJson(Map<String, dynamic> json) =>
+      _$ListingPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListingPageToJson(this);
 
@@ -71,6 +44,4 @@ class ListingPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

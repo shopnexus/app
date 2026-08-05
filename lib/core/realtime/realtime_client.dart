@@ -27,7 +27,8 @@ class RealtimeClient {
 
   final StreamController<RealtimeEvent> _events =
       StreamController<RealtimeEvent>.broadcast();
-  final StreamController<void> _reconnected = StreamController<void>.broadcast();
+  final StreamController<void> _reconnected =
+      StreamController<void>.broadcast();
 
   WebSocketChannel? _channel;
   StreamSubscription<dynamic>? _subscription;

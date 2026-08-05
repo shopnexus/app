@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'transaction_list.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,20 @@ part 'transaction_list.g.dart';
 )
 class TransactionList {
   /// Returns a new [TransactionList] instance.
-  TransactionList({
+  TransactionList({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Transaction> data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is TransactionList && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is TransactionList &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory TransactionList.fromJson(Map<String, dynamic> json) => _$TransactionListFromJson(json);
+  factory TransactionList.fromJson(Map<String, dynamic> json) =>
+      _$TransactionListFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransactionListToJson(this);
 
@@ -54,6 +39,4 @@ class TransactionList {
   String toString() {
     return toJson().toString();
   }
-
 }
-

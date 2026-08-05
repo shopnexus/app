@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'update_offer_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,67 +18,37 @@ part 'update_offer_request.g.dart';
 class UpdateOfferRequest {
   /// Returns a new [UpdateOfferRequest] instance.
   UpdateOfferRequest({
+    required this.quantity,
 
-    required  this.quantity,
+    this.reason,
 
-     this.reason,
-
-    required  this.total,
+    required this.total,
   });
 
-          // minimum: 1
-  @JsonKey(
-    
-    name: r'quantity',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 1
+  @JsonKey(name: r'quantity', required: true, includeIfNull: false)
   final int quantity;
 
-
-
-  @JsonKey(
-    
-    name: r'reason',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'reason', required: false, includeIfNull: false)
   final String? reason;
 
-
-
-          // minimum: 1
-  @JsonKey(
-    
-    name: r'total',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 1
+  @JsonKey(name: r'total', required: true, includeIfNull: false)
   final int total;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UpdateOfferRequest &&
+          other.quantity == quantity &&
+          other.reason == reason &&
+          other.total == total;
 
+  @override
+  int get hashCode => quantity.hashCode + reason.hashCode + total.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is UpdateOfferRequest &&
-      other.quantity == quantity &&
-      other.reason == reason &&
-      other.total == total;
-
-    @override
-    int get hashCode =>
-        quantity.hashCode +
-        reason.hashCode +
-        total.hashCode;
-
-  factory UpdateOfferRequest.fromJson(Map<String, dynamic> json) => _$UpdateOfferRequestFromJson(json);
+  factory UpdateOfferRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateOfferRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$UpdateOfferRequestToJson(this);
 
@@ -87,6 +56,4 @@ class UpdateOfferRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

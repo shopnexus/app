@@ -56,14 +56,10 @@ abstract class AccountApiService {
   );
 
   @PUT(ApiEndpoints.favoriteListingTemplate)
-  Future<void> addFavorite(
-    @Path('listingID') String listingId,
-  );
+  Future<void> addFavorite(@Path('listingID') String listingId);
 
   @DELETE(ApiEndpoints.favoriteListingTemplate)
-  Future<void> removeFavorite(
-    @Path('listingID') String listingId,
-  );
+  Future<void> removeFavorite(@Path('listingID') String listingId);
 
   // --- Notifications Features ---
   @GET(ApiEndpoints.notifications)

@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'transaction.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,231 +19,114 @@ part 'transaction.g.dart';
 class Transaction {
   /// Returns a new [Transaction] instance.
   Transaction({
+    required this.amount,
 
-    required  this.amount,
+    this.checkoutUrl,
 
-     this.checkoutUrl,
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.currency,
 
-    required  this.currency,
+    this.error,
 
-     this.error,
+    this.expiredAt,
 
-     this.expiredAt,
+    required this.id,
 
-    required  this.id,
+    required this.note,
 
-    required  this.note,
+    required this.paymentOption,
 
-    required  this.paymentOption,
+    this.reversesId,
 
-     this.reversesId,
+    required this.sessionId,
 
-    required  this.sessionId,
+    this.settledAt,
 
-     this.settledAt,
-
-    required  this.status,
+    required this.status,
   });
 
-      /// Signed — positive is a charge, negative is a reversal.
-  @JsonKey(
-    
-    name: r'amount',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Signed — positive is a charge, negative is a reversal.
+  @JsonKey(name: r'amount', required: true, includeIfNull: false)
   final int amount;
 
-
-
-      /// Where to send the payer for this leg. Null once the rail no longer needs it, or for rails that have none.
-  @JsonKey(
-    
-    name: r'checkout_url',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Where to send the payer for this leg. Null once the rail no longer needs it, or for rails that have none.
+  @JsonKey(name: r'checkout_url', required: false, includeIfNull: false)
   final String? checkoutUrl;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-      /// What the rail actually debits, which split tender may make differ from the session's currency.
-  @JsonKey(
-    
-    name: r'currency',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// What the rail actually debits, which split tender may make differ from the session's currency.
+  @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
 
-
-
-  @JsonKey(
-    
-    name: r'error',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'error', required: false, includeIfNull: false)
   final String? error;
 
-
-
-      /// Gateway URL expiry
-  @JsonKey(
-    
-    name: r'expired_at',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Gateway URL expiry
+  @JsonKey(name: r'expired_at', required: false, includeIfNull: false)
   final DateTime? expiredAt;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-  @JsonKey(
-    
-    name: r'note',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'note', required: true, includeIfNull: false)
   final String note;
 
-
-
-      /// A payment option slug owned by the common module
-  @JsonKey(
-    
-    name: r'payment_option',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// A payment option slug owned by the common module
+  @JsonKey(name: r'payment_option', required: true, includeIfNull: false)
   final String paymentOption;
 
-
-
-      /// The leg this one reverses. Set on reversals, null on originals.
-  @JsonKey(
-    
-    name: r'reverses_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// The leg this one reverses. Set on reversals, null on originals.
+  @JsonKey(name: r'reverses_id', required: false, includeIfNull: false)
   final String? reversesId;
 
-
-
-  @JsonKey(
-    
-    name: r'session_id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'session_id', required: true, includeIfNull: false)
   final String sessionId;
 
-
-
-  @JsonKey(
-    
-    name: r'settled_at',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'settled_at', required: false, includeIfNull: false)
   final DateTime? settledAt;
 
-
-
-  @JsonKey(
-    
-    name: r'status',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'status', required: true, includeIfNull: false)
   final TransactionStatus status;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Transaction &&
+          other.amount == amount &&
+          other.checkoutUrl == checkoutUrl &&
+          other.createdAt == createdAt &&
+          other.currency == currency &&
+          other.error == error &&
+          other.expiredAt == expiredAt &&
+          other.id == id &&
+          other.note == note &&
+          other.paymentOption == paymentOption &&
+          other.reversesId == reversesId &&
+          other.sessionId == sessionId &&
+          other.settledAt == settledAt &&
+          other.status == status;
 
+  @override
+  int get hashCode =>
+      amount.hashCode +
+      (checkoutUrl == null ? 0 : checkoutUrl.hashCode) +
+      createdAt.hashCode +
+      currency.hashCode +
+      (error == null ? 0 : error.hashCode) +
+      (expiredAt == null ? 0 : expiredAt.hashCode) +
+      id.hashCode +
+      note.hashCode +
+      paymentOption.hashCode +
+      (reversesId == null ? 0 : reversesId.hashCode) +
+      sessionId.hashCode +
+      (settledAt == null ? 0 : settledAt.hashCode) +
+      status.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is Transaction &&
-      other.amount == amount &&
-      other.checkoutUrl == checkoutUrl &&
-      other.createdAt == createdAt &&
-      other.currency == currency &&
-      other.error == error &&
-      other.expiredAt == expiredAt &&
-      other.id == id &&
-      other.note == note &&
-      other.paymentOption == paymentOption &&
-      other.reversesId == reversesId &&
-      other.sessionId == sessionId &&
-      other.settledAt == settledAt &&
-      other.status == status;
-
-    @override
-    int get hashCode =>
-        amount.hashCode +
-        (checkoutUrl == null ? 0 : checkoutUrl.hashCode) +
-        createdAt.hashCode +
-        currency.hashCode +
-        (error == null ? 0 : error.hashCode) +
-        (expiredAt == null ? 0 : expiredAt.hashCode) +
-        id.hashCode +
-        note.hashCode +
-        paymentOption.hashCode +
-        (reversesId == null ? 0 : reversesId.hashCode) +
-        sessionId.hashCode +
-        (settledAt == null ? 0 : settledAt.hashCode) +
-        status.hashCode;
-
-  factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
@@ -252,6 +134,4 @@ class Transaction {
   String toString() {
     return toJson().toString();
   }
-
 }
-

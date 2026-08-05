@@ -444,8 +444,6 @@ class AccountRepository {
     ),
   ];
 
-
-
   static final List<Notification> _mockNotifications = [
     const Notification(
       title: 'Đơn hàng #DH8470 đã được giao thành công',

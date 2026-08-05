@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'register_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,147 +18,75 @@ part 'register_request.g.dart';
 class RegisterRequest {
   /// Returns a new [RegisterRequest] instance.
   RegisterRequest({
+    required this.country,
 
-    required  this.country,
+    this.email,
 
-     this.email,
+    required this.locale,
 
-    required  this.locale,
+    required this.name,
 
-    required  this.name,
+    required this.password,
 
-    required  this.password,
+    this.phone,
 
-     this.phone,
+    required this.timezone,
 
-    required  this.timezone,
-
-     this.username,
+    this.username,
   });
 
-  @JsonKey(
-    
-    name: r'country',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'country', required: true, includeIfNull: false)
   final String country;
 
-
-
-  @JsonKey(
-    
-    name: r'email',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'email', required: false, includeIfNull: false)
   final String? email;
 
-
-
-  @JsonKey(
-    
-    name: r'locale',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'locale', required: true, includeIfNull: false)
   final String locale;
 
-
-
-      /// Display name.
-  @JsonKey(
-    
-    name: r'name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Display name.
+  @JsonKey(name: r'name', required: true, includeIfNull: false)
   final String name;
 
-
-
-  @JsonKey(
-    
-    name: r'password',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'password', required: true, includeIfNull: false)
   final String password;
 
-
-
-      /// E.164.
-  @JsonKey(
-    
-    name: r'phone',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// E.164.
+  @JsonKey(name: r'phone', required: false, includeIfNull: false)
   final String? phone;
 
-
-
-  @JsonKey(
-    
-    name: r'timezone',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'timezone', required: true, includeIfNull: false)
   final String timezone;
 
-
-
-  @JsonKey(
-    
-    name: r'username',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'username', required: false, includeIfNull: false)
   final String? username;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RegisterRequest &&
+          other.country == country &&
+          other.email == email &&
+          other.locale == locale &&
+          other.name == name &&
+          other.password == password &&
+          other.phone == phone &&
+          other.timezone == timezone &&
+          other.username == username;
 
+  @override
+  int get hashCode =>
+      country.hashCode +
+      email.hashCode +
+      locale.hashCode +
+      name.hashCode +
+      password.hashCode +
+      phone.hashCode +
+      timezone.hashCode +
+      username.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is RegisterRequest &&
-      other.country == country &&
-      other.email == email &&
-      other.locale == locale &&
-      other.name == name &&
-      other.password == password &&
-      other.phone == phone &&
-      other.timezone == timezone &&
-      other.username == username;
-
-    @override
-    int get hashCode =>
-        country.hashCode +
-        email.hashCode +
-        locale.hashCode +
-        name.hashCode +
-        password.hashCode +
-        phone.hashCode +
-        timezone.hashCode +
-        username.hashCode;
-
-  factory RegisterRequest.fromJson(Map<String, dynamic> json) => _$RegisterRequestFromJson(json);
+  factory RegisterRequest.fromJson(Map<String, dynamic> json) =>
+      _$RegisterRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$RegisterRequestToJson(this);
 
@@ -167,6 +94,4 @@ class RegisterRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

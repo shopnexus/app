@@ -46,13 +46,12 @@ import 'package:shopnexus_flutter_app/api/generated/model/update_cart_item_reque
 import 'package:shopnexus_flutter_app/api/generated/model/update_offer_request.dart';
 
 class OrderApi {
-
   final Dio _dio;
 
   const OrderApi(this._dio);
 
   /// List the caller&#39;s cart
-  /// The whole cart, unpaginated. A cart is bounded by what one person means to buy, so there is nothing to page through. 
+  /// The whole cart, unpaginated. A cart is bounded by what one person means to buy, so there is nothing to page through.
   ///
   /// Parameters:
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -64,7 +63,7 @@ class OrderApi {
   ///
   /// Returns a [Future] containing a [Response] with a [CartItemsGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<CartItemsGet200Response>> cartItemsGet({ 
+  Future<Response<CartItemsGet200Response>> cartItemsGet({
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -75,16 +74,10 @@ class OrderApi {
     final _path = r'/cart-items';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -102,9 +95,14 @@ class OrderApi {
     CartItemsGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<CartItemsGet200Response, CartItemsGet200Response>(rawData, 'CartItemsGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<CartItemsGet200Response, CartItemsGet200Response>(
+              rawData,
+              'CartItemsGet200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -128,10 +126,10 @@ _responseData = rawData == null ? null : deserialize<CartItemsGet200Response, Ca
   }
 
   /// Remove a cart row
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -141,7 +139,7 @@ _responseData = rawData == null ? null : deserialize<CartItemsGet200Response, Ca
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> cartItemsIdDelete({ 
+  Future<Response<void>> cartItemsIdDelete({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -150,19 +148,18 @@ _responseData = rawData == null ? null : deserialize<CartItemsGet200Response, Ca
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/cart-items/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/cart-items/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -181,11 +178,11 @@ _responseData = rawData == null ? null : deserialize<CartItemsGet200Response, Ca
   }
 
   /// Change the quantity of a cart row
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [updateCartItemRequest] 
+  /// * [id]
+  /// * [updateCartItemRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -195,7 +192,7 @@ _responseData = rawData == null ? null : deserialize<CartItemsGet200Response, Ca
   ///
   /// Returns a [Future] containing a [Response] with a [CartItemsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<CartItemsPost201Response>> cartItemsIdPatch({ 
+  Future<Response<CartItemsPost201Response>> cartItemsIdPatch({
     required String id,
     required UpdateCartItemRequest updateCartItemRequest,
     CancelToken? cancelToken,
@@ -205,19 +202,18 @@ _responseData = rawData == null ? null : deserialize<CartItemsGet200Response, Ca
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/cart-items/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/cart-items/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'PATCH',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -229,13 +225,9 @@ _responseData = rawData == null ? null : deserialize<CartItemsGet200Response, Ca
 
     try {
       _bodyData = jsonEncode(updateCartItemRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -254,9 +246,14 @@ _responseData = rawData == null ? null : deserialize<CartItemsGet200Response, Ca
     CartItemsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<CartItemsPost201Response, CartItemsPost201Response>(rawData, 'CartItemsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<CartItemsPost201Response, CartItemsPost201Response>(
+              rawData,
+              'CartItemsPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -280,10 +277,10 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
   }
 
   /// Add a SKU to the cart
-  /// One row per (account, SKU). Adding a SKU already in the cart tops that row up rather than stacking a second one — adding twice means wanting more. 
+  /// One row per (account, SKU). Adding a SKU already in the cart tops that row up rather than stacking a second one — adding twice means wanting more.
   ///
   /// Parameters:
-  /// * [addCartItemRequest] 
+  /// * [addCartItemRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -293,7 +290,7 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
   ///
   /// Returns a [Future] containing a [Response] with a [CartItemsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<CartItemsPost201Response>> cartItemsPost({ 
+  Future<Response<CartItemsPost201Response>> cartItemsPost({
     required AddCartItemRequest addCartItemRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -305,16 +302,10 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
     final _path = r'/cart-items';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -326,13 +317,9 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
 
     try {
       _bodyData = jsonEncode(addCartItemRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -351,9 +338,14 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
     CartItemsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<CartItemsPost201Response, CartItemsPost201Response>(rawData, 'CartItemsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<CartItemsPost201Response, CartItemsPost201Response>(
+              rawData,
+              'CartItemsPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -377,11 +369,11 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
   }
 
   /// List the caller&#39;s purchase sessions
-  /// 
+  ///
   ///
   /// Parameters:
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -391,7 +383,7 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
   ///
   /// Returns a [Future] containing a [Response] with a [DraftOrderPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<DraftOrderPage>> draftsGet({ 
+  Future<Response<DraftOrderPage>> draftsGet({
     String? cursor,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -404,16 +396,10 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
     final _path = r'/drafts';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -437,9 +423,14 @@ _responseData = rawData == null ? null : deserialize<CartItemsPost201Response, C
     DraftOrderPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<DraftOrderPage, DraftOrderPage>(rawData, 'DraftOrderPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<DraftOrderPage, DraftOrderPage>(
+              rawData,
+              'DraftOrderPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -463,11 +454,11 @@ _responseData = rawData == null ? null : deserialize<DraftOrderPage, DraftOrderP
   }
 
   /// Check out a purchase session (pay-first)
-  /// Creates one &#x60;item&#x60; per line plus a single buyer-checkout payment session, and returns both. Line prices come from the session&#39;s frozen snapshot, never from the live catalog. &#x60;contact_id&#x60; is snapshotted into every line&#39;s delivery address: one session covers one SPU and therefore one seller, so a single address is correct.  The session is spent before the money is asked for: the claim is what makes two concurrent checkouts of one draft impossible, and the loser is answered 409 rather than handed a second payment session for the same frozen price.  This is the checkout for terms a draft froze — the seller&#39;s own price, whether the listing is &#x60;fixed&#x60; or &#x60;negotiable&#x60;. Terms that were *negotiated* are checked out at &#x60;POST /offers/{id}/checkout&#x60; instead, which is the same flow against the agreed price. The buyer pays delivery either way. 
+  /// Creates one &#x60;item&#x60; per line plus a single buyer-checkout payment session, and returns both. Line prices come from the session&#39;s frozen snapshot, never from the live catalog. &#x60;contact_id&#x60; is snapshotted into every line&#39;s delivery address: one session covers one SPU and therefore one seller, so a single address is correct.  The session is spent before the money is asked for: the claim is what makes two concurrent checkouts of one draft impossible, and the loser is answered 409 rather than handed a second payment session for the same frozen price.  This is the checkout for terms a draft froze — the seller&#39;s own price, whether the listing is &#x60;fixed&#x60; or &#x60;negotiable&#x60;. Terms that were *negotiated* are checked out at &#x60;POST /offers/{id}/checkout&#x60; instead, which is the same flow against the agreed price. The buyer pays delivery either way.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [checkoutRequest] 
+  /// * [id]
+  /// * [checkoutRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -477,7 +468,7 @@ _responseData = rawData == null ? null : deserialize<DraftOrderPage, DraftOrderP
   ///
   /// Returns a [Future] containing a [Response] with a [DraftsIdCheckoutPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<DraftsIdCheckoutPost201Response>> draftsIdCheckoutPost({ 
+  Future<Response<DraftsIdCheckoutPost201Response>> draftsIdCheckoutPost({
     required String id,
     required CheckoutRequest checkoutRequest,
     CancelToken? cancelToken,
@@ -487,19 +478,18 @@ _responseData = rawData == null ? null : deserialize<DraftOrderPage, DraftOrderP
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/drafts/{id}/checkout'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/drafts/{id}/checkout'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -511,13 +501,9 @@ _responseData = rawData == null ? null : deserialize<DraftOrderPage, DraftOrderP
 
     try {
       _bodyData = jsonEncode(checkoutRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -536,9 +522,13 @@ _responseData = rawData == null ? null : deserialize<DraftOrderPage, DraftOrderP
     DraftsIdCheckoutPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Response, DraftsIdCheckoutPost201Response>(rawData, 'DraftsIdCheckoutPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              DraftsIdCheckoutPost201Response,
+              DraftsIdCheckoutPost201Response
+            >(rawData, 'DraftsIdCheckoutPost201Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -565,7 +555,7 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
   /// Sets &#x60;cancelled_at&#x60;. A session that already produced paid items cannot be cancelled.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -575,7 +565,7 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> draftsIdDelete({ 
+  Future<Response<void>> draftsIdDelete({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -584,19 +574,18 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/drafts/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/drafts/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -615,10 +604,10 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
   }
 
   /// Read a purchase session and its frozen terms
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -628,7 +617,7 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
   ///
   /// Returns a [Future] containing a [Response] with a [DraftsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<DraftsPost201Response>> draftsIdGet({ 
+  Future<Response<DraftsPost201Response>> draftsIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -637,19 +626,18 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/drafts/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/drafts/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -667,9 +655,14 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
     DraftsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<DraftsPost201Response, DraftsPost201Response>(rawData, 'DraftsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<DraftsPost201Response, DraftsPost201Response>(
+              rawData,
+              'DraftsPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -693,10 +686,10 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
   }
 
   /// Open a purchase session for one listing
-  /// Freezes the listing terms so a price the seller edits afterwards cannot be charged. The server snapshots the listing together with every variant — price and package details live on the variant, and those are exactly what must not move under the buyer — and sets &#x60;valid_until&#x60;.  Every listing has one, whichever way it is priced. A &#x60;negotiable&#x60; listing carries the seller&#39;s asking price like any other, and a buyer who does not want to haggle takes it: the listing page offers both, and this is the \&quot;buy now\&quot; half. Negotiating instead freezes the agreed terms in the offer, and &#x60;POST /offers/{id}/checkout&#x60; is the same checkout from there. 
+  /// Freezes the listing terms so a price the seller edits afterwards cannot be charged. The server snapshots the listing together with every variant — price and package details live on the variant, and those are exactly what must not move under the buyer — and sets &#x60;valid_until&#x60;.  Every listing has one, whichever way it is priced. A &#x60;negotiable&#x60; listing carries the seller&#39;s asking price like any other, and a buyer who does not want to haggle takes it: the listing page offers both, and this is the \&quot;buy now\&quot; half. Negotiating instead freezes the agreed terms in the offer, and &#x60;POST /offers/{id}/checkout&#x60; is the same checkout from there.
   ///
   /// Parameters:
-  /// * [createDraftRequest] 
+  /// * [createDraftRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -706,7 +699,7 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
   ///
   /// Returns a [Future] containing a [Response] with a [DraftsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<DraftsPost201Response>> draftsPost({ 
+  Future<Response<DraftsPost201Response>> draftsPost({
     required CreateDraftRequest createDraftRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -718,16 +711,10 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
     final _path = r'/drafts';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -739,13 +726,9 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
 
     try {
       _bodyData = jsonEncode(createDraftRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -764,9 +747,14 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
     DraftsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<DraftsPost201Response, DraftsPost201Response>(rawData, 'DraftsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<DraftsPost201Response, DraftsPost201Response>(
+              rawData,
+              'DraftsPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -790,13 +778,13 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
   }
 
   /// List checkout lines, as buyer or as seller
-  /// &#x60;role&#x3D;seller&amp;pending&#x3D;true&#x60; is the seller&#39;s retry list: lines the money has paid for that no order covers yet. Not an inbox — nobody confirms them. The order is written by the payment webhook, so a line sitting here for long is a settlement that has not succeeded yet rather than one waiting on a person. 
+  /// &#x60;role&#x3D;seller&amp;pending&#x3D;true&#x60; is the seller&#39;s retry list: lines the money has paid for that no order covers yet. Not an inbox — nobody confirms them. The order is written by the payment webhook, so a line sitting here for long is a settlement that has not succeeded yet rather than one waiting on a person.
   ///
   /// Parameters:
-  /// * [role] 
+  /// * [role]
   /// * [pending] - Only lines no order covers and nobody cancelled.
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -806,7 +794,7 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
   ///
   /// Returns a [Future] containing a [Response] with a [OrderItemPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OrderItemPage>> itemsGet({ 
+  Future<Response<OrderItemPage>> itemsGet({
     String? role = 'buyer',
     bool? pending = false,
     String? cursor,
@@ -821,16 +809,10 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
     final _path = r'/items';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -856,9 +838,14 @@ _responseData = rawData == null ? null : deserialize<DraftsPost201Response, Draf
     OrderItemPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OrderItemPage, OrderItemPage>(rawData, 'OrderItemPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OrderItemPage, OrderItemPage>(
+              rawData,
+              'OrderItemPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -882,10 +869,10 @@ _responseData = rawData == null ? null : deserialize<OrderItemPage, OrderItemPag
   }
 
   /// Cancel a line the money has not reached
-  /// Either party may drop a line while it is unpaid — the buyer changed their mind, or the seller cannot fulfil it — and the reserved units go back. The cancelling account is recorded.  A paid line is 409, and that is checked against the payment session rather than against &#x60;order_id&#x60;: the order is written by the webhook, so a line that has been charged for has a null &#x60;order_id&#x60; for as long as that write keeps failing. From there the way back is a refund, which the seller gets to see. 
+  /// Either party may drop a line while it is unpaid — the buyer changed their mind, or the seller cannot fulfil it — and the reserved units go back. The cancelling account is recorded.  A paid line is 409, and that is checked against the payment session rather than against &#x60;order_id&#x60;: the order is written by the webhook, so a line that has been charged for has a null &#x60;order_id&#x60; for as long as that write keeps failing. From there the way back is a refund, which the seller gets to see.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -895,7 +882,7 @@ _responseData = rawData == null ? null : deserialize<OrderItemPage, OrderItemPag
   ///
   /// Returns a [Future] containing a [Response] with a [ItemsIdCancellationPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ItemsIdCancellationPost200Response>> itemsIdCancellationPost({ 
+  Future<Response<ItemsIdCancellationPost200Response>> itemsIdCancellationPost({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -904,19 +891,18 @@ _responseData = rawData == null ? null : deserialize<OrderItemPage, OrderItemPag
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/items/{id}/cancellation'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/items/{id}/cancellation'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -934,9 +920,13 @@ _responseData = rawData == null ? null : deserialize<OrderItemPage, OrderItemPag
     ItemsIdCancellationPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ItemsIdCancellationPost200Response, ItemsIdCancellationPost200Response>(rawData, 'ItemsIdCancellationPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ItemsIdCancellationPost200Response,
+              ItemsIdCancellationPost200Response
+            >(rawData, 'ItemsIdCancellationPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -960,13 +950,13 @@ _responseData = rawData == null ? null : deserialize<ItemsIdCancellationPost200R
   }
 
   /// List negotiations, as buyer or as seller
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [role] 
-  /// * [status] 
+  /// * [role]
+  /// * [status]
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -976,7 +966,7 @@ _responseData = rawData == null ? null : deserialize<ItemsIdCancellationPost200R
   ///
   /// Returns a [Future] containing a [Response] with a [OfferPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OfferPage>> offersGet({ 
+  Future<Response<OfferPage>> offersGet({
     required String role,
     OfferStatus? status,
     String? cursor,
@@ -991,16 +981,10 @@ _responseData = rawData == null ? null : deserialize<ItemsIdCancellationPost200R
     final _path = r'/offers';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1026,9 +1010,14 @@ _responseData = rawData == null ? null : deserialize<ItemsIdCancellationPost200R
     OfferPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OfferPage, OfferPage>(rawData, 'OfferPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OfferPage, OfferPage>(
+              rawData,
+              'OfferPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1052,10 +1041,10 @@ _responseData = rawData == null ? null : deserialize<OfferPage, OfferPage>(rawDa
   }
 
   /// Agree to the terms on the table
-  /// Whoever does *not* own the standing proposal — the two sides alternate, so the price in front of you is always the other party&#39;s, and either of them may be the one who says yes.  Agreeing is not the sale, and nothing is charged. It freezes the price and starts a short window for the buyer to press \&quot;create order now\&quot; (&#x60;POST /offers/{id}/checkout&#x60;), where they choose delivery and pay — exactly as they would from a fixed-price listing. That separation is what makes a seller accepting a buyer&#39;s price safe: no order exists and no money moves until the buyer checks out.  The window is short on purpose. An agreed price is a frozen price, and a buyer who lets it lapse negotiates again rather than holding yesterday&#39;s number open. 
+  /// Whoever does *not* own the standing proposal — the two sides alternate, so the price in front of you is always the other party&#39;s, and either of them may be the one who says yes.  Agreeing is not the sale, and nothing is charged. It freezes the price and starts a short window for the buyer to press \&quot;create order now\&quot; (&#x60;POST /offers/{id}/checkout&#x60;), where they choose delivery and pay — exactly as they would from a fixed-price listing. That separation is what makes a seller accepting a buyer&#39;s price safe: no order exists and no money moves until the buyer checks out.  The window is short on purpose. An agreed price is a frozen price, and a buyer who lets it lapse negotiates again rather than holding yesterday&#39;s number open.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1065,7 +1054,7 @@ _responseData = rawData == null ? null : deserialize<OfferPage, OfferPage>(rawDa
   ///
   /// Returns a [Future] containing a [Response] with a [OffersPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OffersPost201Response>> offersIdAcceptancePost({ 
+  Future<Response<OffersPost201Response>> offersIdAcceptancePost({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1074,19 +1063,18 @@ _responseData = rawData == null ? null : deserialize<OfferPage, OfferPage>(rawDa
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/offers/{id}/acceptance'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/offers/{id}/acceptance'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1104,9 +1092,14 @@ _responseData = rawData == null ? null : deserialize<OfferPage, OfferPage>(rawDa
     OffersPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OffersPost201Response, OffersPost201Response>(rawData, 'OffersPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OffersPost201Response, OffersPost201Response>(
+              rawData,
+              'OffersPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1130,11 +1123,11 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
   }
 
   /// Create the order now, on agreed terms (buyer)
-  /// The buyer turning an agreed price into an order: they pick a carrier and an address here and pay, in exactly the checkout a fixed-price listing uses. Only the buyer, because only the buyer pays — and only once, so a double-clicked button opens one payment session.  The negotiated total covers the goods. Delivery is quoted from the carrier on top of it and is also the buyer&#39;s, the same as on a fixed-price sale; &#x60;POST /shipping-quotes&#x60; is how the options and their fees are listed before choosing.  The order follows when the session completes, with &#x60;offer_id&#x60; set to this negotiation and no draft. 
+  /// The buyer turning an agreed price into an order: they pick a carrier and an address here and pay, in exactly the checkout a fixed-price listing uses. Only the buyer, because only the buyer pays — and only once, so a double-clicked button opens one payment session.  The negotiated total covers the goods. Delivery is quoted from the carrier on top of it and is also the buyer&#39;s, the same as on a fixed-price sale; &#x60;POST /shipping-quotes&#x60; is how the options and their fees are listed before choosing.  The order follows when the session completes, with &#x60;offer_id&#x60; set to this negotiation and no draft.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [checkoutOfferRequest] 
+  /// * [id]
+  /// * [checkoutOfferRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1144,7 +1137,7 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
   ///
   /// Returns a [Future] containing a [Response] with a [DraftsIdCheckoutPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<DraftsIdCheckoutPost201Response>> offersIdCheckoutPost({ 
+  Future<Response<DraftsIdCheckoutPost201Response>> offersIdCheckoutPost({
     required String id,
     required CheckoutOfferRequest checkoutOfferRequest,
     CancelToken? cancelToken,
@@ -1154,19 +1147,18 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/offers/{id}/checkout'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/offers/{id}/checkout'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1178,13 +1170,9 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
 
     try {
       _bodyData = jsonEncode(checkoutOfferRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -1203,9 +1191,13 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
     DraftsIdCheckoutPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Response, DraftsIdCheckoutPost201Response>(rawData, 'DraftsIdCheckoutPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              DraftsIdCheckoutPost201Response,
+              DraftsIdCheckoutPost201Response
+            >(rawData, 'DraftsIdCheckoutPost201Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1229,10 +1221,10 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
   }
 
   /// Cancel a negotiation
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1242,7 +1234,7 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> offersIdDelete({ 
+  Future<Response<void>> offersIdDelete({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1251,19 +1243,18 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/offers/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/offers/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1282,10 +1273,10 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
   }
 
   /// Read a negotiation
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1295,7 +1286,7 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
   ///
   /// Returns a [Future] containing a [Response] with a [OffersPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OffersPost201Response>> offersIdGet({ 
+  Future<Response<OffersPost201Response>> offersIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1304,19 +1295,18 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/offers/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/offers/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1334,9 +1324,14 @@ _responseData = rawData == null ? null : deserialize<DraftsIdCheckoutPost201Resp
     OffersPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OffersPost201Response, OffersPost201Response>(rawData, 'OffersPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OffersPost201Response, OffersPost201Response>(
+              rawData,
+              'OffersPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1360,11 +1355,11 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
   }
 
   /// Counter-offer
-  /// Revises the current terms in place, moves authorship to the caller and posts the new card into the thread. Only the party that does not own the standing proposal may counter, so the two sides alternate. 
+  /// Revises the current terms in place, moves authorship to the caller and posts the new card into the thread. Only the party that does not own the standing proposal may counter, so the two sides alternate.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [updateOfferRequest] 
+  /// * [id]
+  /// * [updateOfferRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1374,7 +1369,7 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
   ///
   /// Returns a [Future] containing a [Response] with a [OffersPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OffersPost201Response>> offersIdPatch({ 
+  Future<Response<OffersPost201Response>> offersIdPatch({
     required String id,
     required UpdateOfferRequest updateOfferRequest,
     CancelToken? cancelToken,
@@ -1384,19 +1379,18 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/offers/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/offers/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'PATCH',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1408,13 +1402,9 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
 
     try {
       _bodyData = jsonEncode(updateOfferRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -1433,9 +1423,14 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
     OffersPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OffersPost201Response, OffersPost201Response>(rawData, 'OffersPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OffersPost201Response, OffersPost201Response>(
+              rawData,
+              'OffersPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1459,10 +1454,10 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
   }
 
   /// Open a price negotiation on a variant
-  /// The buyer opens it, from the listing page: a seller has nobody to propose to on their own listing, so they answer rather than start. One active negotiation per (buyer, variant); the terms are then revised in place rather than by stacking rows, and each revision posts a card into the pair&#39;s chat thread. 
+  /// The buyer opens it, from the listing page: a seller has nobody to propose to on their own listing, so they answer rather than start. One active negotiation per (buyer, variant); the terms are then revised in place rather than by stacking rows, and each revision posts a card into the pair&#39;s chat thread.
   ///
   /// Parameters:
-  /// * [createOfferRequest] 
+  /// * [createOfferRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1472,7 +1467,7 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
   ///
   /// Returns a [Future] containing a [Response] with a [OffersPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OffersPost201Response>> offersPost({ 
+  Future<Response<OffersPost201Response>> offersPost({
     required CreateOfferRequest createOfferRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1484,16 +1479,10 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
     final _path = r'/offers';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1505,13 +1494,9 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
 
     try {
       _bodyData = jsonEncode(createOfferRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -1530,9 +1515,14 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
     OffersPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OffersPost201Response, OffersPost201Response>(rawData, 'OffersPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OffersPost201Response, OffersPost201Response>(
+              rawData,
+              'OffersPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1556,13 +1546,13 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
   }
 
   /// List orders, as buyer or as seller
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [role] 
-  /// * [state] 
+  /// * [role]
+  /// * [state]
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1572,7 +1562,7 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
   ///
   /// Returns a [Future] containing a [Response] with a [OrderPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OrderPage>> ordersGet({ 
+  Future<Response<OrderPage>> ordersGet({
     required String role,
     OrderState? state,
     String? cursor,
@@ -1587,16 +1577,10 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
     final _path = r'/orders';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1622,9 +1606,14 @@ _responseData = rawData == null ? null : deserialize<OffersPost201Response, Offe
     OrderPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OrderPage, OrderPage>(rawData, 'OrderPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OrderPage, OrderPage>(
+              rawData,
+              'OrderPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1648,10 +1637,10 @@ _responseData = rawData == null ? null : deserialize<OrderPage, OrderPage>(rawDa
   }
 
   /// Cancel an order
-  /// Either party may cancel while the shipment has not left &#x60;pending&#x60;. The escrow goes back to the buyer and the sale is reversed in the catalog. No body: there is nowhere to record a reason, and a field a client fills in that reaches nobody is worse than none. 
+  /// Either party may cancel while the shipment has not left &#x60;pending&#x60;. The escrow goes back to the buyer and the sale is reversed in the catalog. No body: there is nowhere to record a reason, and a field a client fills in that reaches nobody is worse than none.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1661,7 +1650,7 @@ _responseData = rawData == null ? null : deserialize<OrderPage, OrderPage>(rawDa
   ///
   /// Returns a [Future] containing a [Response] with a [OrdersIdGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OrdersIdGet200Response>> ordersIdCancellationPost({ 
+  Future<Response<OrdersIdGet200Response>> ordersIdCancellationPost({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1670,19 +1659,18 @@ _responseData = rawData == null ? null : deserialize<OrderPage, OrderPage>(rawDa
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/orders/{id}/cancellation'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/orders/{id}/cancellation'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1700,9 +1688,14 @@ _responseData = rawData == null ? null : deserialize<OrderPage, OrderPage>(rawDa
     OrdersIdGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, OrdersIdGet200Response>(rawData, 'OrdersIdGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OrdersIdGet200Response, OrdersIdGet200Response>(
+              rawData,
+              'OrdersIdGet200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1726,10 +1719,10 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
   }
 
   /// Read an order
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1739,7 +1732,7 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
   ///
   /// Returns a [Future] containing a [Response] with a [OrdersIdGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OrdersIdGet200Response>> ordersIdGet({ 
+  Future<Response<OrdersIdGet200Response>> ordersIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1748,19 +1741,18 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/orders/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/orders/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1778,9 +1770,14 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
     OrdersIdGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, OrdersIdGet200Response>(rawData, 'OrdersIdGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OrdersIdGet200Response, OrdersIdGet200Response>(
+              rawData,
+              'OrdersIdGet200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1804,11 +1801,11 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
   }
 
   /// Confirm receipt of the goods (buyer)
-  /// The buyer confirms delivery and attaches unboxing evidence — at least one photo or video is mandatory, because this evidence is what a later refund is judged on. Sets &#x60;received_at&#x60; and starts the 72-hour payout countdown in &#x60;payout_deadline_at&#x60;.  Confirming twice is a conflict rather than a no-op: a retried upload must not be able to restart the clock and move the payout date. 
+  /// The buyer confirms delivery and attaches unboxing evidence — at least one photo or video is mandatory, because this evidence is what a later refund is judged on. Sets &#x60;received_at&#x60; and starts the 72-hour payout countdown in &#x60;payout_deadline_at&#x60;.  Confirming twice is a conflict rather than a no-op: a retried upload must not be able to restart the clock and move the payout date.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [confirmReceiptRequest] 
+  /// * [id]
+  /// * [confirmReceiptRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1818,7 +1815,7 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
   ///
   /// Returns a [Future] containing a [Response] with a [OrdersIdGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OrdersIdGet200Response>> ordersIdReceiptPost({ 
+  Future<Response<OrdersIdGet200Response>> ordersIdReceiptPost({
     required String id,
     required ConfirmReceiptRequest confirmReceiptRequest,
     CancelToken? cancelToken,
@@ -1828,19 +1825,18 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/orders/{id}/receipt'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/orders/{id}/receipt'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1852,13 +1848,9 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
 
     try {
       _bodyData = jsonEncode(confirmReceiptRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -1877,9 +1869,14 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
     OrdersIdGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, OrdersIdGet200Response>(rawData, 'OrdersIdGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OrdersIdGet200Response, OrdersIdGet200Response>(
+              rawData,
+              'OrdersIdGet200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1903,11 +1900,11 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
   }
 
   /// Open a refund request (buyer)
-  /// Covers the whole order; there is no way to refund part of one, and one live refund per order. Evidence is optional here and can be added until the case closes.  Nothing ships yet — the buyer keeps the goods until the refund is granted. The seller has until &#x60;deadline_at&#x60; to accept or reject, and letting that pass hands the next move to the buyer rather than settling anything. 
+  /// Covers the whole order; there is no way to refund part of one, and one live refund per order. Evidence is optional here and can be added until the case closes.  Nothing ships yet — the buyer keeps the goods until the refund is granted. The seller has until &#x60;deadline_at&#x60; to accept or reject, and letting that pass hands the next move to the buyer rather than settling anything.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [createRefundRequest] 
+  /// * [id]
+  /// * [createRefundRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1917,7 +1914,7 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
   ///
   /// Returns a [Future] containing a [Response] with a [AdminRefundsIdVerdictPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminRefundsIdVerdictPost200Response>> ordersIdRefundsPost({ 
+  Future<Response<AdminRefundsIdVerdictPost200Response>> ordersIdRefundsPost({
     required String id,
     required CreateRefundRequest createRefundRequest,
     CancelToken? cancelToken,
@@ -1927,19 +1924,18 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/orders/{id}/refunds'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/orders/{id}/refunds'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1951,13 +1947,9 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
 
     try {
       _bodyData = jsonEncode(createRefundRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -1976,9 +1968,13 @@ _responseData = rawData == null ? null : deserialize<OrdersIdGet200Response, Ord
     AdminRefundsIdVerdictPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost200Response, AdminRefundsIdVerdictPost200Response>(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminRefundsIdVerdictPost200Response,
+              AdminRefundsIdVerdictPost200Response
+            >(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2002,11 +1998,11 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   }
 
   /// Report a carrier checkpoint on the outbound leg (seller)
-  /// The seller&#39;s route — they are the one who hands the parcel over — and a moderator may correct it; nobody else writes this status.  Forward-only. Carrier reports arrive out of order, and whether the parcel has left is what decides whether the order can still be cancelled and the escrow taken back, so it is not a fact a later report may undo: a checkpoint at or behind where the shipment already is, or one on a leg that has ended, is 409. 
+  /// The seller&#39;s route — they are the one who hands the parcel over — and a moderator may correct it; nobody else writes this status.  Forward-only. Carrier reports arrive out of order, and whether the parcel has left is what decides whether the order can still be cancelled and the escrow taken back, so it is not a fact a later report may undo: a checkpoint at or behind where the shipment already is, or one on a leg that has ended, is 409.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [transportCheckpointRequest] 
+  /// * [id]
+  /// * [transportCheckpointRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2016,7 +2012,8 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   ///
   /// Returns a [Future] containing a [Response] with a [OrdersIdTransportGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OrdersIdTransportGet200Response>> ordersIdTransportCheckpointsPost({ 
+  Future<Response<OrdersIdTransportGet200Response>>
+  ordersIdTransportCheckpointsPost({
     required String id,
     required TransportCheckpointRequest transportCheckpointRequest,
     CancelToken? cancelToken,
@@ -2026,19 +2023,18 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/orders/{id}/transport/checkpoints'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/orders/{id}/transport/checkpoints'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2050,13 +2046,9 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
 
     try {
       _bodyData = jsonEncode(transportCheckpointRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -2075,9 +2067,13 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     OrdersIdTransportGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Response, OrdersIdTransportGet200Response>(rawData, 'OrdersIdTransportGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              OrdersIdTransportGet200Response,
+              OrdersIdTransportGet200Response
+            >(rawData, 'OrdersIdTransportGet200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2101,10 +2097,10 @@ _responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Resp
   }
 
   /// Read the shipment
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2114,7 +2110,7 @@ _responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Resp
   ///
   /// Returns a [Future] containing a [Response] with a [OrdersIdTransportGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<OrdersIdTransportGet200Response>> ordersIdTransportGet({ 
+  Future<Response<OrdersIdTransportGet200Response>> ordersIdTransportGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -2123,19 +2119,18 @@ _responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Resp
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/orders/{id}/transport'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/orders/{id}/transport'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2153,9 +2148,13 @@ _responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Resp
     OrdersIdTransportGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Response, OrdersIdTransportGet200Response>(rawData, 'OrdersIdTransportGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              OrdersIdTransportGet200Response,
+              OrdersIdTransportGet200Response
+            >(rawData, 'OrdersIdTransportGet200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2179,10 +2178,10 @@ _responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Resp
   }
 
   /// Confirm the bytes are at the store
-  /// Until this lands the resource resolves to nothing, so a half-finished upload cannot be named as evidence on a receipt confirmation or a refund. The recorded size is the store&#39;s, not the one declared when the slot was reserved. 
+  /// Until this lands the resource resolves to nothing, so a half-finished upload cannot be named as evidence on a receipt confirmation or a refund. The recorded size is the store&#39;s, not the one declared when the slot was reserved.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2192,7 +2191,8 @@ _responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Resp
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsUploadsIdConfirmationPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsUploadsIdConfirmationPost200Response>> ordersUploadsIdConfirmationPost({ 
+  Future<Response<ConversationsUploadsIdConfirmationPost200Response>>
+  ordersUploadsIdConfirmationPost({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -2201,19 +2201,18 @@ _responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Resp
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/orders/uploads/{id}/confirmation'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/orders/uploads/{id}/confirmation'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2231,9 +2230,17 @@ _responseData = rawData == null ? null : deserialize<OrdersIdTransportGet200Resp
     ConversationsUploadsIdConfirmationPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfirmationPost200Response, ConversationsUploadsIdConfirmationPost200Response>(rawData, 'ConversationsUploadsIdConfirmationPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsUploadsIdConfirmationPost200Response,
+              ConversationsUploadsIdConfirmationPost200Response
+            >(
+              rawData,
+              'ConversationsUploadsIdConfirmationPost200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2257,10 +2264,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
   }
 
   /// Reserve a slot to upload evidence into
-  /// The bytes never pass through this API. The answer is a short-lived signed URL to PUT to, and &#x60;POST /orders/uploads/{id}/confirmation&#x60; makes the row real once the object is there — so a receipt confirmation or a refund can never be judged on a photo whose bytes never arrived.  &#x60;mime&#x60; and &#x60;size&#x60; are checked before a byte moves: a slot signed for anything is a slot for anything. 
+  /// The bytes never pass through this API. The answer is a short-lived signed URL to PUT to, and &#x60;POST /orders/uploads/{id}/confirmation&#x60; makes the row real once the object is there — so a receipt confirmation or a refund can never be judged on a photo whose bytes never arrived.  &#x60;mime&#x60; and &#x60;size&#x60; are checked before a byte moves: a slot signed for anything is a slot for anything.
   ///
   /// Parameters:
-  /// * [createUploadRequest] 
+  /// * [createUploadRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2270,7 +2277,7 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsUploadsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsUploadsPost201Response>> ordersUploadsPost({ 
+  Future<Response<ConversationsUploadsPost201Response>> ordersUploadsPost({
     required CreateUploadRequest createUploadRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -2282,16 +2289,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
     final _path = r'/orders/uploads';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2303,13 +2304,9 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
 
     try {
       _bodyData = jsonEncode(createUploadRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -2328,9 +2325,13 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
     ConversationsUploadsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201Response, ConversationsUploadsPost201Response>(rawData, 'ConversationsUploadsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsUploadsPost201Response,
+              ConversationsUploadsPost201Response
+            >(rawData, 'ConversationsUploadsPost201Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2357,10 +2358,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
   /// &#x60;role&#x3D;seller&#x60; resolves through the order&#39;s seller; a refund row itself only records the buyer.
   ///
   /// Parameters:
-  /// * [role] 
-  /// * [status] 
+  /// * [role]
+  /// * [status]
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2370,7 +2371,7 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
   ///
   /// Returns a [Future] containing a [Response] with a [RefundPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<RefundPage>> refundsGet({ 
+  Future<Response<RefundPage>> refundsGet({
     required String role,
     RefundStatus? status,
     String? cursor,
@@ -2385,16 +2386,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
     final _path = r'/refunds';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2420,9 +2415,14 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
     RefundPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<RefundPage, RefundPage>(rawData, 'RefundPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<RefundPage, RefundPage>(
+              rawData,
+              'RefundPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2446,10 +2446,10 @@ _responseData = rawData == null ? null : deserialize<RefundPage, RefundPage>(raw
   }
 
   /// Accept a refund (seller)
-  /// Grants it without staff. The goods have to come back first, so this books the return shipment on the same carrier as the outbound leg and moves the refund to &#x60;returning&#x60;; the money goes back once that leg is delivered and the seller has not escalated it. No body — there is nothing left to choose. 
+  /// Grants it without staff. The goods have to come back first, so this books the return shipment on the same carrier as the outbound leg and moves the refund to &#x60;returning&#x60;; the money goes back once that leg is delivered and the seller has not escalated it. No body — there is nothing left to choose.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2459,7 +2459,8 @@ _responseData = rawData == null ? null : deserialize<RefundPage, RefundPage>(raw
   ///
   /// Returns a [Future] containing a [Response] with a [AdminRefundsIdVerdictPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminRefundsIdVerdictPost200Response>> refundsIdAcceptancePost({ 
+  Future<Response<AdminRefundsIdVerdictPost200Response>>
+  refundsIdAcceptancePost({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -2468,19 +2469,18 @@ _responseData = rawData == null ? null : deserialize<RefundPage, RefundPage>(raw
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/refunds/{id}/acceptance'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/refunds/{id}/acceptance'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2498,9 +2498,13 @@ _responseData = rawData == null ? null : deserialize<RefundPage, RefundPage>(raw
     AdminRefundsIdVerdictPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost200Response, AdminRefundsIdVerdictPost200Response>(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminRefundsIdVerdictPost200Response,
+              AdminRefundsIdVerdictPost200Response
+            >(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2527,8 +2531,8 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   /// Either party to the order, while the case is open. A closed one is the record a verdict was reached on, so nothing is added to it afterwards.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [addAttachmentsRequest] 
+  /// * [id]
+  /// * [addAttachmentsRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2538,7 +2542,8 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   ///
   /// Returns a [Future] containing a [Response] with a [AdminRefundsIdVerdictPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminRefundsIdVerdictPost200Response>> refundsIdAttachmentsPost({ 
+  Future<Response<AdminRefundsIdVerdictPost200Response>>
+  refundsIdAttachmentsPost({
     required String id,
     required AddAttachmentsRequest addAttachmentsRequest,
     CancelToken? cancelToken,
@@ -2548,19 +2553,18 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/refunds/{id}/attachments'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/refunds/{id}/attachments'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2572,13 +2576,9 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
 
     try {
       _bodyData = jsonEncode(addAttachmentsRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -2597,9 +2597,13 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     AdminRefundsIdVerdictPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost200Response, AdminRefundsIdVerdictPost200Response>(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminRefundsIdVerdictPost200Response,
+              AdminRefundsIdVerdictPost200Response
+            >(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2623,10 +2627,10 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   }
 
   /// Withdraw a refund request (buyer)
-  /// Only while the seller has not decided. Once anything has moved — a decision, an escalation, a parcel — the case is closed by a verdict, not by walking away from it.  The case ends as &#x60;cancelled&#x60;, which gives the escrow back up: the payout becomes the seller&#39;s again. 
+  /// Only while the seller has not decided. Once anything has moved — a decision, an escalation, a parcel — the case is closed by a verdict, not by walking away from it.  The case ends as &#x60;cancelled&#x60;, which gives the escrow back up: the payout becomes the seller&#39;s again.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2636,7 +2640,7 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> refundsIdDelete({ 
+  Future<Response<void>> refundsIdDelete({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -2645,19 +2649,18 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/refunds/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/refunds/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2676,10 +2679,10 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   }
 
   /// Read a refund and its case
-  /// The case: &#x60;deadline_at&#x60; for whoever is on the clock, and the facts each stage recorded. A party sees a staff verdict in the status the case ended up in. 
+  /// The case: &#x60;deadline_at&#x60; for whoever is on the clock, and the facts each stage recorded. A party sees a staff verdict in the status the case ended up in.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2689,7 +2692,7 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   ///
   /// Returns a [Future] containing a [Response] with a [AdminRefundsIdVerdictPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminRefundsIdVerdictPost200Response>> refundsIdGet({ 
+  Future<Response<AdminRefundsIdVerdictPost200Response>> refundsIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -2698,19 +2701,18 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/refunds/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/refunds/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2728,9 +2730,13 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     AdminRefundsIdVerdictPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost200Response, AdminRefundsIdVerdictPost200Response>(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminRefundsIdVerdictPost200Response,
+              AdminRefundsIdVerdictPost200Response
+            >(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2754,11 +2760,11 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   }
 
   /// Reject a refund (seller)
-  /// Refusing costs a reason, and it does not close the case: the next move is the buyer&#39;s, who may escalate to staff until the refund lapses. A seller who simply lets the review window pass ends up in the same place without one. 
+  /// Refusing costs a reason, and it does not close the case: the next move is the buyer&#39;s, who may escalate to staff until the refund lapses. A seller who simply lets the review window pass ends up in the same place without one.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [rejectRefundRequest] 
+  /// * [id]
+  /// * [rejectRefundRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2768,7 +2774,8 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   ///
   /// Returns a [Future] containing a [Response] with a [AdminRefundsIdVerdictPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminRefundsIdVerdictPost200Response>> refundsIdRejectionPost({ 
+  Future<Response<AdminRefundsIdVerdictPost200Response>>
+  refundsIdRejectionPost({
     required String id,
     required RejectRefundRequest rejectRefundRequest,
     CancelToken? cancelToken,
@@ -2778,19 +2785,18 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/refunds/{id}/rejection'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/refunds/{id}/rejection'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2802,13 +2808,9 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
 
     try {
       _bodyData = jsonEncode(rejectRefundRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -2827,9 +2829,13 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     AdminRefundsIdVerdictPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost200Response, AdminRefundsIdVerdictPost200Response>(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminRefundsIdVerdictPost200Response,
+              AdminRefundsIdVerdictPost200Response
+            >(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2853,11 +2859,11 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   }
 
   /// Report a checkpoint on the leg carrying the goods back
-  /// The return leg exists only from the moment a refund is granted, and &#x60;delivered&#x60; is what moves the case to &#x60;returned&#x60; and opens the seller&#39;s appeal window. It is the only exit from &#x60;returning&#x60;.  Either party to the order may report it. The buyer posted the parcel and the seller received it, and requiring the seller alone would let one who simply never confirms strand the escrow with nobody on a clock — which is what having no writer at all did. A buyer who claims a delivery that did not happen is answered by the seller escalating, which is exactly what that window is for. 
+  /// The return leg exists only from the moment a refund is granted, and &#x60;delivered&#x60; is what moves the case to &#x60;returned&#x60; and opens the seller&#39;s appeal window. It is the only exit from &#x60;returning&#x60;.  Either party to the order may report it. The buyer posted the parcel and the seller received it, and requiring the seller alone would let one who simply never confirms strand the escrow with nobody on a clock — which is what having no writer at all did. A buyer who claims a delivery that did not happen is answered by the seller escalating, which is exactly what that window is for.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [transportCheckpointRequest] 
+  /// * [id]
+  /// * [transportCheckpointRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2867,7 +2873,8 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   ///
   /// Returns a [Future] containing a [Response] with a [AdminRefundsIdVerdictPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminRefundsIdVerdictPost200Response>> refundsIdReturnTransportCheckpointsPost({ 
+  Future<Response<AdminRefundsIdVerdictPost200Response>>
+  refundsIdReturnTransportCheckpointsPost({
     required String id,
     required TransportCheckpointRequest transportCheckpointRequest,
     CancelToken? cancelToken,
@@ -2877,19 +2884,18 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/refunds/{id}/return-transport/checkpoints'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/refunds/{id}/return-transport/checkpoints'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2901,13 +2907,9 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
 
     try {
       _bodyData = jsonEncode(transportCheckpointRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -2926,9 +2928,13 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     AdminRefundsIdVerdictPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost200Response, AdminRefundsIdVerdictPost200Response>(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminRefundsIdVerdictPost200Response,
+              AdminRefundsIdVerdictPost200Response
+            >(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2952,10 +2958,10 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   }
 
   /// What delivery would cost, per carrier
-  /// One entry per enabled carrier that could price the parcel, so the buyer sees delivery before they pay for it. A carrier that declined is simply absent.  Name exactly one source. &#x60;variant_id&#x60; is the listing page&#39;s question — what would this cost to send — answered before any draft exists, with &#x60;quantity&#x60; defaulting to one and the caller&#39;s default address used when &#x60;contact_id&#x60; is omitted. &#x60;draft_id&#x60; and &#x60;offer_id&#x60; are the two things that freeze a price, and the parcel is whichever of them is about to be checked out. The same list serves all three, because the buyer pays carriage on a fixed-price sale and a negotiated one alike.  An estimate a client renders, not a price it can hold: the fee is quoted again at checkout, so a quote kept past the point it was true does not become the charge. Show it as its own line beside the price rather than folded into it — the total a buyer is charged is the checkout&#39;s, itemised. 
+  /// One entry per enabled carrier that could price the parcel, so the buyer sees delivery before they pay for it. A carrier that declined is simply absent.  Name exactly one source. &#x60;variant_id&#x60; is the listing page&#39;s question — what would this cost to send — answered before any draft exists, with &#x60;quantity&#x60; defaulting to one and the caller&#39;s default address used when &#x60;contact_id&#x60; is omitted. &#x60;draft_id&#x60; and &#x60;offer_id&#x60; are the two things that freeze a price, and the parcel is whichever of them is about to be checked out. The same list serves all three, because the buyer pays carriage on a fixed-price sale and a negotiated one alike.  An estimate a client renders, not a price it can hold: the fee is quoted again at checkout, so a quote kept past the point it was true does not become the charge. Show it as its own line beside the price rather than folded into it — the total a buyer is charged is the checkout&#39;s, itemised.
   ///
   /// Parameters:
-  /// * [shippingQuotesRequest] 
+  /// * [shippingQuotesRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2965,7 +2971,7 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
   ///
   /// Returns a [Future] containing a [Response] with a [ShippingQuotesPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ShippingQuotesPost200Response>> shippingQuotesPost({ 
+  Future<Response<ShippingQuotesPost200Response>> shippingQuotesPost({
     required ShippingQuotesRequest shippingQuotesRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -2977,16 +2983,10 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     final _path = r'/shipping-quotes';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -2998,13 +2998,9 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
 
     try {
       _bodyData = jsonEncode(shippingQuotesRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -3023,9 +3019,13 @@ _responseData = rawData == null ? null : deserialize<AdminRefundsIdVerdictPost20
     ShippingQuotesPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ShippingQuotesPost200Response, ShippingQuotesPost200Response>(rawData, 'ShippingQuotesPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ShippingQuotesPost200Response,
+              ShippingQuotesPost200Response
+            >(rawData, 'ShippingQuotesPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -3047,5 +3047,4 @@ _responseData = rawData == null ? null : deserialize<ShippingQuotesPost200Respon
       extra: _response.extra,
     );
   }
-
 }

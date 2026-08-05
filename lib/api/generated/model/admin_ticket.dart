@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'admin_ticket.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -21,117 +20,67 @@ part 'admin_ticket.g.dart';
 class AdminTicket {
   /// Returns a new [AdminTicket] instance.
   AdminTicket({
+    this.assignee,
 
-     this.assignee,
+    required this.openTicketsAgainstTarget,
 
-    required  this.openTicketsAgainstTarget,
+    required this.requester,
 
-    required  this.requester,
+    this.resolvedBy,
 
-     this.resolvedBy,
+    this.target,
 
-     this.target,
-
-    required  this.ticket,
+    required this.ticket,
   });
 
-      /// The moderator working it. Staff-only, and null until it is claimed.
-  @JsonKey(
-    
-    name: r'assignee',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// The moderator working it. Staff-only, and null until it is claimed.
+  @JsonKey(name: r'assignee', required: false, includeIfNull: false)
   final AccountSummary? assignee;
 
-
-
-      /// How many other unresolved tickets name the same target. A pattern is what a decision rests on rather than a single complaint. 
-          // minimum: 0
+  /// How many other unresolved tickets name the same target. A pattern is what a decision rests on rather than a single complaint.
+  // minimum: 0
   @JsonKey(
-    
     name: r'open_tickets_against_target',
     required: true,
     includeIfNull: false,
   )
-
-
   final int openTicketsAgainstTarget;
 
-
-
-  @JsonKey(
-    
-    name: r'requester',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'requester', required: true, includeIfNull: false)
   final AccountSummary requester;
 
-
-
-  @JsonKey(
-    
-    name: r'resolved_by',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'resolved_by', required: false, includeIfNull: false)
   final AccountSummary? resolvedBy;
 
-
-
-      /// What the ticket is about, shaped by `ref_type`. Fetched from the module that owns it, and absent once that module no longer has it — a listing already taken down. 
-  @JsonKey(
-    
-    name: r'target',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// What the ticket is about, shaped by `ref_type`. Fetched from the module that owns it, and absent once that module no longer has it — a listing already taken down.
+  @JsonKey(name: r'target', required: false, includeIfNull: false)
   final Map<String, Object>? target;
 
-
-
-  @JsonKey(
-    
-    name: r'ticket',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'ticket', required: true, includeIfNull: false)
   final Ticket ticket;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminTicket &&
+          other.assignee == assignee &&
+          other.openTicketsAgainstTarget == openTicketsAgainstTarget &&
+          other.requester == requester &&
+          other.resolvedBy == resolvedBy &&
+          other.target == target &&
+          other.ticket == ticket;
 
+  @override
+  int get hashCode =>
+      (assignee == null ? 0 : assignee.hashCode) +
+      openTicketsAgainstTarget.hashCode +
+      requester.hashCode +
+      (resolvedBy == null ? 0 : resolvedBy.hashCode) +
+      target.hashCode +
+      ticket.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AdminTicket &&
-      other.assignee == assignee &&
-      other.openTicketsAgainstTarget == openTicketsAgainstTarget &&
-      other.requester == requester &&
-      other.resolvedBy == resolvedBy &&
-      other.target == target &&
-      other.ticket == ticket;
-
-    @override
-    int get hashCode =>
-        (assignee == null ? 0 : assignee.hashCode) +
-        openTicketsAgainstTarget.hashCode +
-        requester.hashCode +
-        (resolvedBy == null ? 0 : resolvedBy.hashCode) +
-        target.hashCode +
-        ticket.hashCode;
-
-  factory AdminTicket.fromJson(Map<String, dynamic> json) => _$AdminTicketFromJson(json);
+  factory AdminTicket.fromJson(Map<String, dynamic> json) =>
+      _$AdminTicketFromJson(json);
 
   Map<String, dynamic> toJson() => _$AdminTicketToJson(this);
 
@@ -139,6 +88,4 @@ class AdminTicket {
   String toString() {
     return toJson().toString();
   }
-
 }
-

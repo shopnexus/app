@@ -58,7 +58,7 @@ final class RealtimeClientProvider
   }
 }
 
-String _$realtimeClientHash() => r'4909a98db9aa509dd53e13ffb02b295e00b60c4d';
+String _$realtimeClientHash() => r'925d7ef196e3a00f47651a1d509ee4a603ae7c51';
 
 /// What a screen watches: the raw event feed, filtered by whatever it cares
 /// about. Watching this is also what makes the socket connect.

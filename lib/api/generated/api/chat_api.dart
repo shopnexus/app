@@ -24,17 +24,16 @@ import 'package:shopnexus_flutter_app/api/generated/model/start_conversation_req
 import 'package:shopnexus_flutter_app/api/generated/model/update_message_request.dart';
 
 class ChatApi {
-
   final Dio _dio;
 
   const ChatApi(this._dio);
 
   /// The caller&#39;s inbox
-  /// Threads by latest activity. A participant sits on either side of the stored pair, so this is answered as two ordered index scans merged together rather than one scan that sorts. 
+  /// Threads by latest activity. A participant sits on either side of the stored pair, so this is answered as two ordered index scans merged together rather than one scan that sorts.
   ///
   /// Parameters:
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -44,7 +43,7 @@ class ChatApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationPage>> conversationsGet({ 
+  Future<Response<ConversationPage>> conversationsGet({
     String? cursor,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -57,16 +56,10 @@ class ChatApi {
     final _path = r'/conversations';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -90,9 +83,14 @@ class ChatApi {
     ConversationPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationPage, ConversationPage>(rawData, 'ConversationPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<ConversationPage, ConversationPage>(
+              rawData,
+              'ConversationPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -119,7 +117,7 @@ _responseData = rawData == null ? null : deserialize<ConversationPage, Conversat
   /// Carries the counterparty rather than both sides — the caller already knows who they are.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -129,7 +127,7 @@ _responseData = rawData == null ? null : deserialize<ConversationPage, Conversat
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsPost200Response>> conversationsIdGet({ 
+  Future<Response<ConversationsPost200Response>> conversationsIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -138,19 +136,18 @@ _responseData = rawData == null ? null : deserialize<ConversationPage, Conversat
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/conversations/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/conversations/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -168,9 +165,13 @@ _responseData = rawData == null ? null : deserialize<ConversationPage, Conversat
     ConversationsPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsPost200Response, ConversationsPost200Response>(rawData, 'ConversationsPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsPost200Response,
+              ConversationsPost200Response
+            >(rawData, 'ConversationsPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -194,12 +195,12 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
   }
 
   /// Read a thread&#39;s messages
-  /// Newest first, cursor only. Offset paging would defeat the chunk exclusion the time partitioning exists for.  A redacted message is still returned, with its body emptied and &#x60;deleted_at&#x60; set: a gap in a thread that a dispute may hinge on is worse than a visible removal. 
+  /// Newest first, cursor only. Offset paging would defeat the chunk exclusion the time partitioning exists for.  A redacted message is still returned, with its body emptied and &#x60;deleted_at&#x60; set: a gap in a thread that a dispute may hinge on is worse than a visible removal.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -209,7 +210,7 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
   ///
   /// Returns a [Future] containing a [Response] with a [MessagePage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<MessagePage>> conversationsIdMessagesGet({ 
+  Future<Response<MessagePage>> conversationsIdMessagesGet({
     required String id,
     String? cursor,
     int? limit = 20,
@@ -220,19 +221,18 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/conversations/{id}/messages'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/conversations/{id}/messages'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -256,9 +256,14 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
     MessagePage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<MessagePage, MessagePage>(rawData, 'MessagePage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<MessagePage, MessagePage>(
+              rawData,
+              'MessagePage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -282,11 +287,11 @@ _responseData = rawData == null ? null : deserialize<MessagePage, MessagePage>(r
   }
 
   /// Send a message
-  /// Text, attachments or both. &#x60;refs&#x60; carries pointers to a listing or a variant or an order, which is how a product is referred to inside a thread that is not itself listing-scoped. 
+  /// Text, attachments or both. &#x60;refs&#x60; carries pointers to a listing or a variant or an order, which is how a product is referred to inside a thread that is not itself listing-scoped.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [sendMessageRequest] 
+  /// * [id]
+  /// * [sendMessageRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -296,7 +301,8 @@ _responseData = rawData == null ? null : deserialize<MessagePage, MessagePage>(r
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsIdMessagesPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsIdMessagesPost201Response>> conversationsIdMessagesPost({ 
+  Future<Response<ConversationsIdMessagesPost201Response>>
+  conversationsIdMessagesPost({
     required String id,
     required SendMessageRequest sendMessageRequest,
     CancelToken? cancelToken,
@@ -306,19 +312,18 @@ _responseData = rawData == null ? null : deserialize<MessagePage, MessagePage>(r
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/conversations/{id}/messages'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/conversations/{id}/messages'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -330,13 +335,9 @@ _responseData = rawData == null ? null : deserialize<MessagePage, MessagePage>(r
 
     try {
       _bodyData = jsonEncode(sendMessageRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -355,9 +356,17 @@ _responseData = rawData == null ? null : deserialize<MessagePage, MessagePage>(r
     ConversationsIdMessagesPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsIdMessagesPost201Response, ConversationsIdMessagesPost201Response>(rawData, 'ConversationsIdMessagesPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsIdMessagesPost201Response,
+              ConversationsIdMessagesPost201Response
+            >(
+              rawData,
+              'ConversationsIdMessagesPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -381,11 +390,11 @@ _responseData = rawData == null ? null : deserialize<ConversationsIdMessagesPost
   }
 
   /// Mark a thread read up to a point in time
-  /// Moves the caller&#39;s read mark on the thread — one UPDATE of one row, whatever it covers. Omit &#x60;before&#x60; to mark the whole thread read. A mark never moves backwards: passing an earlier instant than the current one is a no-op, because un-reading is not a thing a client should be able to do to its own badge.  Answers the updated thread rather than just the badge, so a client that marked it read can repaint the row from one response instead of a second GET. 
+  /// Moves the caller&#39;s read mark on the thread — one UPDATE of one row, whatever it covers. Omit &#x60;before&#x60; to mark the whole thread read. A mark never moves backwards: passing an earlier instant than the current one is a no-op, because un-reading is not a thing a client should be able to do to its own badge.  Answers the updated thread rather than just the badge, so a client that marked it read can repaint the row from one response instead of a second GET.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [markConversationReadRequest] 
+  /// * [id]
+  /// * [markConversationReadRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -395,7 +404,7 @@ _responseData = rawData == null ? null : deserialize<ConversationsIdMessagesPost
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsPost200Response>> conversationsIdReadPost({ 
+  Future<Response<ConversationsPost200Response>> conversationsIdReadPost({
     required String id,
     MarkConversationReadRequest? markConversationReadRequest,
     CancelToken? cancelToken,
@@ -405,19 +414,18 @@ _responseData = rawData == null ? null : deserialize<ConversationsIdMessagesPost
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/conversations/{id}/read'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/conversations/{id}/read'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -429,13 +437,9 @@ _responseData = rawData == null ? null : deserialize<ConversationsIdMessagesPost
 
     try {
       _bodyData = jsonEncode(markConversationReadRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -454,9 +458,13 @@ _responseData = rawData == null ? null : deserialize<ConversationsIdMessagesPost
     ConversationsPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsPost200Response, ConversationsPost200Response>(rawData, 'ConversationsPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsPost200Response,
+              ConversationsPost200Response
+            >(rawData, 'ConversationsPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -480,10 +488,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
   }
 
   /// Open the thread with another account
-  /// Idempotent by design: there is exactly one thread per pair, so this returns the existing one when it exists and creates it otherwise. A client does not have to track whether it has messaged someone before. 
+  /// Idempotent by design: there is exactly one thread per pair, so this returns the existing one when it exists and creates it otherwise. A client does not have to track whether it has messaged someone before.
   ///
   /// Parameters:
-  /// * [startConversationRequest] 
+  /// * [startConversationRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -493,7 +501,7 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsPost200Response>> conversationsPost({ 
+  Future<Response<ConversationsPost200Response>> conversationsPost({
     required StartConversationRequest startConversationRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -505,16 +513,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
     final _path = r'/conversations';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -526,13 +528,9 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
 
     try {
       _bodyData = jsonEncode(startConversationRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -551,9 +549,13 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
     ConversationsPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsPost200Response, ConversationsPost200Response>(rawData, 'ConversationsPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsPost200Response,
+              ConversationsPost200Response
+            >(rawData, 'ConversationsPost200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -577,7 +579,7 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
   }
 
   /// The unread badge across every thread
-  /// One range scan per thread the caller has, each bounded below by that thread&#39;s read mark — so an old unread message costs no more than a recent one and chunk exclusion applies throughout, but the work is proportional to how many threads the caller has, not constant. Separate from the inbox because the badge is read far more often than the list. 
+  /// One range scan per thread the caller has, each bounded below by that thread&#39;s read mark — so an old unread message costs no more than a recent one and chunk exclusion applies throughout, but the work is proportional to how many threads the caller has, not constant. Separate from the inbox because the badge is read far more often than the list.
   ///
   /// Parameters:
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -589,7 +591,8 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsUnreadCountGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsUnreadCountGet200Response>> conversationsUnreadCountGet({ 
+  Future<Response<ConversationsUnreadCountGet200Response>>
+  conversationsUnreadCountGet({
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -600,16 +603,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
     final _path = r'/conversations/unread-count';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -627,9 +624,17 @@ _responseData = rawData == null ? null : deserialize<ConversationsPost200Respons
     ConversationsUnreadCountGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsUnreadCountGet200Response, ConversationsUnreadCountGet200Response>(rawData, 'ConversationsUnreadCountGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsUnreadCountGet200Response,
+              ConversationsUnreadCountGet200Response
+            >(
+              rawData,
+              'ConversationsUnreadCountGet200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -653,10 +658,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsUnreadCountGet
   }
 
   /// Confirm the bytes are at the store
-  /// Until this lands the resource resolves to nothing, so a half-finished upload cannot be attached to a message. The recorded size is the store&#39;s, not the one declared when the slot was reserved. 
+  /// Until this lands the resource resolves to nothing, so a half-finished upload cannot be attached to a message. The recorded size is the store&#39;s, not the one declared when the slot was reserved.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -666,7 +671,8 @@ _responseData = rawData == null ? null : deserialize<ConversationsUnreadCountGet
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsUploadsIdConfirmationPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsUploadsIdConfirmationPost200Response>> conversationsUploadsIdConfirmationPost({ 
+  Future<Response<ConversationsUploadsIdConfirmationPost200Response>>
+  conversationsUploadsIdConfirmationPost({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -675,19 +681,18 @@ _responseData = rawData == null ? null : deserialize<ConversationsUnreadCountGet
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/conversations/uploads/{id}/confirmation'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/conversations/uploads/{id}/confirmation'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -705,9 +710,17 @@ _responseData = rawData == null ? null : deserialize<ConversationsUnreadCountGet
     ConversationsUploadsIdConfirmationPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfirmationPost200Response, ConversationsUploadsIdConfirmationPost200Response>(rawData, 'ConversationsUploadsIdConfirmationPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsUploadsIdConfirmationPost200Response,
+              ConversationsUploadsIdConfirmationPost200Response
+            >(
+              rawData,
+              'ConversationsUploadsIdConfirmationPost200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -731,10 +744,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
   }
 
   /// Reserve a slot to upload a message attachment into
-  /// The bytes never pass through this API. The answer is a short-lived signed URL to PUT to, and &#x60;POST /conversations/uploads/{id}/confirmation&#x60; makes the row real once the object is there — so a message can never render a photo whose bytes never arrived.  &#x60;mime&#x60; and &#x60;size&#x60; are checked before a byte moves: a slot signed for anything is a slot for anything. 
+  /// The bytes never pass through this API. The answer is a short-lived signed URL to PUT to, and &#x60;POST /conversations/uploads/{id}/confirmation&#x60; makes the row real once the object is there — so a message can never render a photo whose bytes never arrived.  &#x60;mime&#x60; and &#x60;size&#x60; are checked before a byte moves: a slot signed for anything is a slot for anything.
   ///
   /// Parameters:
-  /// * [createUploadRequest] 
+  /// * [createUploadRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -744,7 +757,8 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsUploadsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsUploadsPost201Response>> conversationsUploadsPost({ 
+  Future<Response<ConversationsUploadsPost201Response>>
+  conversationsUploadsPost({
     required CreateUploadRequest createUploadRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -756,16 +770,10 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
     final _path = r'/conversations/uploads';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -777,13 +785,9 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
 
     try {
       _bodyData = jsonEncode(createUploadRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -802,9 +806,13 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsIdConfi
     ConversationsUploadsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201Response, ConversationsUploadsPost201Response>(rawData, 'ConversationsUploadsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsUploadsPost201Response,
+              ConversationsUploadsPost201Response
+            >(rawData, 'ConversationsUploadsPost201Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -828,11 +836,11 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
   }
 
   /// Redact a message
-  /// The sender unsending, or a moderator acting on an upheld report. The row survives with its body **and its attachments** cleared: a thread is evidence in a refund dispute, so removal is recorded rather than erased, but a redaction that leaves the picture up has not removed anything. 
+  /// The sender unsending, or a moderator acting on an upheld report. The row survives with its body **and its attachments** cleared: a thread is evidence in a refund dispute, so removal is recorded rather than erased, but a redaction that leaves the picture up has not removed anything.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [createdAt] - The message's own `created_at`, passed straight back. Required, and not redundant: `message` is partitioned on it and its primary key is `(id, created_at)`, so without it the row has to be hunted through every chunk of the table. A client always has the message before editing or redacting it, so it always has this. Named after the field it comes from — anything else would have the client copying `created_at` into a differently-named parameter. 
+  /// * [id]
+  /// * [createdAt] - The message's own `created_at`, passed straight back. Required, and not redundant: `message` is partitioned on it and its primary key is `(id, created_at)`, so without it the row has to be hunted through every chunk of the table. A client always has the message before editing or redacting it, so it always has this. Named after the field it comes from — anything else would have the client copying `created_at` into a differently-named parameter.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -842,7 +850,7 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> messagesIdDelete({ 
+  Future<Response<void>> messagesIdDelete({
     required String id,
     required DateTime createdAt,
     CancelToken? cancelToken,
@@ -852,28 +860,25 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/messages/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/messages/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
       validateStatus: validateStatus,
     );
 
-    final _queryParameters = <String, dynamic>{
-      r'created_at': createdAt,
-    };
+    final _queryParameters = <String, dynamic>{r'created_at': createdAt};
 
     final _response = await _dio.request<Object>(
       _path,
@@ -888,12 +893,12 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
   }
 
   /// Edit a message
-  /// Sender only, and it records that the message was edited — the counterparty has to be able to see that what they read has changed. A system message cannot be edited because it has no author. 
+  /// Sender only, and it records that the message was edited — the counterparty has to be able to see that what they read has changed. A system message cannot be edited because it has no author.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [createdAt] - The message's own `created_at`, passed straight back. Required, and not redundant: `message` is partitioned on it and its primary key is `(id, created_at)`, so without it the row has to be hunted through every chunk of the table. A client always has the message before editing or redacting it, so it always has this. Named after the field it comes from — anything else would have the client copying `created_at` into a differently-named parameter. 
-  /// * [updateMessageRequest] 
+  /// * [id]
+  /// * [createdAt] - The message's own `created_at`, passed straight back. Required, and not redundant: `message` is partitioned on it and its primary key is `(id, created_at)`, so without it the row has to be hunted through every chunk of the table. A client always has the message before editing or redacting it, so it always has this. Named after the field it comes from — anything else would have the client copying `created_at` into a differently-named parameter.
+  /// * [updateMessageRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -903,7 +908,7 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
   ///
   /// Returns a [Future] containing a [Response] with a [ConversationsIdMessagesPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ConversationsIdMessagesPost201Response>> messagesIdPatch({ 
+  Future<Response<ConversationsIdMessagesPost201Response>> messagesIdPatch({
     required String id,
     required DateTime createdAt,
     required UpdateMessageRequest updateMessageRequest,
@@ -914,19 +919,18 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/messages/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/messages/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'PATCH',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -934,18 +938,15 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
       validateStatus: validateStatus,
     );
 
-    final _queryParameters = <String, dynamic>{
-      r'created_at': createdAt,
-    };
+    final _queryParameters = <String, dynamic>{r'created_at': createdAt};
 
     dynamic _bodyData;
 
     try {
       _bodyData = jsonEncode(updateMessageRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
+        requestOptions: _options.compose(
           _dio.options,
           _path,
           queryParameters: _queryParameters,
@@ -969,9 +970,17 @@ _responseData = rawData == null ? null : deserialize<ConversationsUploadsPost201
     ConversationsIdMessagesPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ConversationsIdMessagesPost201Response, ConversationsIdMessagesPost201Response>(rawData, 'ConversationsIdMessagesPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ConversationsIdMessagesPost201Response,
+              ConversationsIdMessagesPost201Response
+            >(
+              rawData,
+              'ConversationsIdMessagesPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -993,5 +1002,4 @@ _responseData = rawData == null ? null : deserialize<ConversationsIdMessagesPost
       extra: _response.extra,
     );
   }
-
 }

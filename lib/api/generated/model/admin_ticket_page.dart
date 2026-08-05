@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'admin_ticket_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'admin_ticket_page.g.dart';
 )
 class AdminTicketPage {
   /// Returns a new [AdminTicketPage] instance.
-  AdminTicketPage({
+  AdminTicketPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<AdminTicket> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final CursorMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminTicketPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AdminTicketPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory AdminTicketPage.fromJson(Map<String, dynamic> json) => _$AdminTicketPageFromJson(json);
+  factory AdminTicketPage.fromJson(Map<String, dynamic> json) =>
+      _$AdminTicketPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$AdminTicketPageToJson(this);
 
@@ -71,6 +44,4 @@ class AdminTicketPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

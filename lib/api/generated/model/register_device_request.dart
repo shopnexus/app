@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'register_device_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,50 +18,26 @@ part 'register_device_request.g.dart';
 )
 class RegisterDeviceRequest {
   /// Returns a new [RegisterDeviceRequest] instance.
-  RegisterDeviceRequest({
+  RegisterDeviceRequest({required this.platform, required this.pushToken});
 
-    required  this.platform,
-
-    required  this.pushToken,
-  });
-
-  @JsonKey(
-    
-    name: r'platform',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'platform', required: true, includeIfNull: false)
   final DevicePlatform platform;
 
-
-
-  @JsonKey(
-    
-    name: r'push_token',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'push_token', required: true, includeIfNull: false)
   final String pushToken;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RegisterDeviceRequest &&
+          other.platform == platform &&
+          other.pushToken == pushToken;
 
+  @override
+  int get hashCode => platform.hashCode + pushToken.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is RegisterDeviceRequest &&
-      other.platform == platform &&
-      other.pushToken == pushToken;
-
-    @override
-    int get hashCode =>
-        platform.hashCode +
-        pushToken.hashCode;
-
-  factory RegisterDeviceRequest.fromJson(Map<String, dynamic> json) => _$RegisterDeviceRequestFromJson(json);
+  factory RegisterDeviceRequest.fromJson(Map<String, dynamic> json) =>
+      _$RegisterDeviceRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$RegisterDeviceRequestToJson(this);
 
@@ -70,6 +45,4 @@ class RegisterDeviceRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

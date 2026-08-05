@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'profile.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -21,161 +20,80 @@ part 'profile.g.dart';
 class Profile {
   /// Returns a new [Profile] instance.
   Profile({
+    this.avatar,
 
-     this.avatar,
+    required this.country,
 
-    required  this.country,
+    required this.createdAt,
 
-    required  this.createdAt,
+    this.dateOfBirth,
 
-     this.dateOfBirth,
+    this.description,
 
-     this.description,
+    this.gender,
 
-     this.gender,
+    required this.locale,
 
-    required  this.locale,
+    required this.name,
 
-    required  this.name,
-
-    required  this.timezone,
+    required this.timezone,
   });
 
-  @JsonKey(
-    
-    name: r'avatar',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'avatar', required: false, includeIfNull: false)
   final Resource? avatar;
 
-
-
-  @JsonKey(
-    
-    name: r'country',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'country', required: true, includeIfNull: false)
   final String country;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'date_of_birth',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'date_of_birth', required: false, includeIfNull: false)
   final DateTime? dateOfBirth;
 
-
-
-  @JsonKey(
-    
-    name: r'description',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'description', required: false, includeIfNull: false)
   final String? description;
 
-
-
-  @JsonKey(
-    
-    name: r'gender',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'gender', required: false, includeIfNull: false)
   final ProfileGender? gender;
 
-
-
-  @JsonKey(
-    
-    name: r'locale',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'locale', required: true, includeIfNull: false)
   final String locale;
 
-
-
-  @JsonKey(
-    
-    name: r'name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'name', required: true, includeIfNull: false)
   final String name;
 
-
-
-  @JsonKey(
-    
-    name: r'timezone',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'timezone', required: true, includeIfNull: false)
   final String timezone;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Profile &&
+          other.avatar == avatar &&
+          other.country == country &&
+          other.createdAt == createdAt &&
+          other.dateOfBirth == dateOfBirth &&
+          other.description == description &&
+          other.gender == gender &&
+          other.locale == locale &&
+          other.name == name &&
+          other.timezone == timezone;
 
+  @override
+  int get hashCode =>
+      (avatar == null ? 0 : avatar.hashCode) +
+      country.hashCode +
+      createdAt.hashCode +
+      (dateOfBirth == null ? 0 : dateOfBirth.hashCode) +
+      (description == null ? 0 : description.hashCode) +
+      (gender == null ? 0 : gender.hashCode) +
+      locale.hashCode +
+      name.hashCode +
+      timezone.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is Profile &&
-      other.avatar == avatar &&
-      other.country == country &&
-      other.createdAt == createdAt &&
-      other.dateOfBirth == dateOfBirth &&
-      other.description == description &&
-      other.gender == gender &&
-      other.locale == locale &&
-      other.name == name &&
-      other.timezone == timezone;
-
-    @override
-    int get hashCode =>
-        (avatar == null ? 0 : avatar.hashCode) +
-        country.hashCode +
-        createdAt.hashCode +
-        (dateOfBirth == null ? 0 : dateOfBirth.hashCode) +
-        (description == null ? 0 : description.hashCode) +
-        (gender == null ? 0 : gender.hashCode) +
-        locale.hashCode +
-        name.hashCode +
-        timezone.hashCode;
-
-  factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileToJson(this);
 
@@ -183,6 +101,4 @@ class Profile {
   String toString() {
     return toJson().toString();
   }
-
 }
-

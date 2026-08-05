@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'identity_verdict_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,68 +18,39 @@ part 'identity_verdict_request.g.dart';
 class IdentityVerdictRequest {
   /// Returns a new [IdentityVerdictRequest] instance.
   IdentityVerdictRequest({
+    this.expiresAt,
 
-     this.expiresAt,
+    this.rejectionReason,
 
-     this.rejectionReason,
-
-    required  this.status,
+    required this.status,
   });
 
-      /// When the document runs out.
-  @JsonKey(
-    
-    name: r'expires_at',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// When the document runs out.
+  @JsonKey(name: r'expires_at', required: false, includeIfNull: false)
   final DateTime? expiresAt;
 
-
-
-      /// Required when rejecting.
-  @JsonKey(
-    
-    name: r'rejection_reason',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Required when rejecting.
+  @JsonKey(name: r'rejection_reason', required: false, includeIfNull: false)
   final String? rejectionReason;
 
-
-
-      /// A verdict so pending is not a choice.
-  @JsonKey(
-    
-    name: r'status',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// A verdict so pending is not a choice.
+  @JsonKey(name: r'status', required: true, includeIfNull: false)
   final IdentityVerdictRequestStatusEnum status;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is IdentityVerdictRequest &&
+          other.expiresAt == expiresAt &&
+          other.rejectionReason == rejectionReason &&
+          other.status == status;
 
+  @override
+  int get hashCode =>
+      expiresAt.hashCode + rejectionReason.hashCode + status.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is IdentityVerdictRequest &&
-      other.expiresAt == expiresAt &&
-      other.rejectionReason == rejectionReason &&
-      other.status == status;
-
-    @override
-    int get hashCode =>
-        expiresAt.hashCode +
-        rejectionReason.hashCode +
-        status.hashCode;
-
-  factory IdentityVerdictRequest.fromJson(Map<String, dynamic> json) => _$IdentityVerdictRequestFromJson(json);
+  factory IdentityVerdictRequest.fromJson(Map<String, dynamic> json) =>
+      _$IdentityVerdictRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$IdentityVerdictRequestToJson(this);
 
@@ -88,24 +58,22 @@ class IdentityVerdictRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
 
 /// A verdict so pending is not a choice.
 enum IdentityVerdictRequestStatusEnum {
-    /// A verdict so pending is not a choice.
-@JsonValue(r'verified')
-verified(r'verified'),
-    /// A verdict so pending is not a choice.
-@JsonValue(r'rejected')
-rejected(r'rejected');
+  /// A verdict so pending is not a choice.
+  @JsonValue(r'verified')
+  verified(r'verified'),
 
-const IdentityVerdictRequestStatusEnum(this.value);
+  /// A verdict so pending is not a choice.
+  @JsonValue(r'rejected')
+  rejected(r'rejected');
 
-final String value;
+  const IdentityVerdictRequestStatusEnum(this.value);
 
-@override
-String toString() => value;
+  final String value;
+
+  @override
+  String toString() => value;
 }
-
-

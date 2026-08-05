@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'review_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'review_page.g.dart';
 )
 class ReviewPage {
   /// Returns a new [ReviewPage] instance.
-  ReviewPage({
+  ReviewPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Review> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final CursorMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ReviewPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is ReviewPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory ReviewPage.fromJson(Map<String, dynamic> json) => _$ReviewPageFromJson(json);
+  factory ReviewPage.fromJson(Map<String, dynamic> json) =>
+      _$ReviewPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ReviewPageToJson(this);
 
@@ -71,6 +44,4 @@ class ReviewPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

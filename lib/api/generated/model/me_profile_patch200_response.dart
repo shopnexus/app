@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'me_profile_patch200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,21 @@ part 'me_profile_patch200_response.g.dart';
 )
 class MeProfilePatch200Response {
   /// Returns a new [MeProfilePatch200Response] instance.
-  MeProfilePatch200Response({
+  MeProfilePatch200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final Profile data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MeProfilePatch200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is MeProfilePatch200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory MeProfilePatch200Response.fromJson(Map<String, dynamic> json) => _$MeProfilePatch200ResponseFromJson(json);
+  factory MeProfilePatch200Response.fromJson(Map<String, dynamic> json) =>
+      _$MeProfilePatch200ResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$MeProfilePatch200ResponseToJson(this);
 
@@ -54,6 +40,4 @@ class MeProfilePatch200Response {
   String toString() {
     return toJson().toString();
   }
-
 }
-

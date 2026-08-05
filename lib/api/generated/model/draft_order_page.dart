@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'draft_order_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'draft_order_page.g.dart';
 )
 class DraftOrderPage {
   /// Returns a new [DraftOrderPage] instance.
-  DraftOrderPage({
+  DraftOrderPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<DraftOrder> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final CursorMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DraftOrderPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is DraftOrderPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory DraftOrderPage.fromJson(Map<String, dynamic> json) => _$DraftOrderPageFromJson(json);
+  factory DraftOrderPage.fromJson(Map<String, dynamic> json) =>
+      _$DraftOrderPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$DraftOrderPageToJson(this);
 
@@ -71,6 +44,4 @@ class DraftOrderPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

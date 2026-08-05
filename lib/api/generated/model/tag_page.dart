@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'tag_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'tag_page.g.dart';
 )
 class TagPage {
   /// Returns a new [TagPage] instance.
-  TagPage({
+  TagPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Tag> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final PageMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TagPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is TagPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory TagPage.fromJson(Map<String, dynamic> json) => _$TagPageFromJson(json);
+  factory TagPage.fromJson(Map<String, dynamic> json) =>
+      _$TagPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$TagPageToJson(this);
 
@@ -71,6 +44,4 @@ class TagPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

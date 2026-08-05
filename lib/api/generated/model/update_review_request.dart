@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'update_review_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,68 +17,32 @@ part 'update_review_request.g.dart';
 )
 class UpdateReviewRequest {
   /// Returns a new [UpdateReviewRequest] instance.
-  UpdateReviewRequest({
+  UpdateReviewRequest({this.attachments, this.body, this.rating});
 
-     this.attachments,
-
-     this.body,
-
-     this.rating,
-  });
-
-  @JsonKey(
-    
-    name: r'attachments',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'attachments', required: false, includeIfNull: false)
   final List<String>? attachments;
 
-
-
-  @JsonKey(
-    
-    name: r'body',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'body', required: false, includeIfNull: false)
   final String? body;
 
-
-
-          // minimum: 1
-          // maximum: 5
-  @JsonKey(
-    
-    name: r'rating',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 1
+  // maximum: 5
+  @JsonKey(name: r'rating', required: false, includeIfNull: false)
   final int? rating;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UpdateReviewRequest &&
+          other.attachments == attachments &&
+          other.body == body &&
+          other.rating == rating;
 
+  @override
+  int get hashCode => attachments.hashCode + body.hashCode + rating.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is UpdateReviewRequest &&
-      other.attachments == attachments &&
-      other.body == body &&
-      other.rating == rating;
-
-    @override
-    int get hashCode =>
-        attachments.hashCode +
-        body.hashCode +
-        rating.hashCode;
-
-  factory UpdateReviewRequest.fromJson(Map<String, dynamic> json) => _$UpdateReviewRequestFromJson(json);
+  factory UpdateReviewRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateReviewRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$UpdateReviewRequestToJson(this);
 
@@ -87,6 +50,4 @@ class UpdateReviewRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

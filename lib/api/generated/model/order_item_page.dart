@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'order_item_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'order_item_page.g.dart';
 )
 class OrderItemPage {
   /// Returns a new [OrderItemPage] instance.
-  OrderItemPage({
+  OrderItemPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<OrderItem> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final CursorMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OrderItemPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is OrderItemPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory OrderItemPage.fromJson(Map<String, dynamic> json) => _$OrderItemPageFromJson(json);
+  factory OrderItemPage.fromJson(Map<String, dynamic> json) =>
+      _$OrderItemPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$OrderItemPageToJson(this);
 
@@ -71,6 +44,4 @@ class OrderItemPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

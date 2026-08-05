@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'create_contact_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,126 +19,62 @@ part 'create_contact_request.g.dart';
 class CreateContactRequest {
   /// Returns a new [CreateContactRequest] instance.
   CreateContactRequest({
+    required this.address,
 
-    required  this.address,
+    this.addressDetail,
 
-     this.addressDetail,
+    required this.addressType,
 
-    required  this.addressType,
+    required this.country,
 
-    required  this.country,
+    this.districtCode,
 
-     this.districtCode,
+    this.districtName,
 
-     this.districtName,
+    required this.fullName,
 
-    required  this.fullName,
+    this.isDefaultDelivery = false,
 
-     this.isDefaultDelivery = false,
+    this.isDefaultPickup = false,
 
-     this.isDefaultPickup = false,
+    this.latitude,
 
-     this.latitude,
+    this.longitude,
 
-     this.longitude,
+    required this.phone,
 
-    required  this.phone,
+    this.postalCode,
 
-     this.postalCode,
+    required this.provinceCode,
 
-    required  this.provinceCode,
+    required this.provinceName,
 
-    required  this.provinceName,
+    required this.wardCode,
 
-    required  this.wardCode,
-
-    required  this.wardName,
+    required this.wardName,
   });
 
-  @JsonKey(
-    
-    name: r'address',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'address', required: true, includeIfNull: false)
   final String address;
 
-
-
-  @JsonKey(
-    
-    name: r'address_detail',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'address_detail', required: false, includeIfNull: false)
   final String? addressDetail;
 
-
-
-  @JsonKey(
-    
-    name: r'address_type',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'address_type', required: true, includeIfNull: false)
   final ContactAddressType addressType;
 
-
-
-  @JsonKey(
-    
-    name: r'country',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'country', required: true, includeIfNull: false)
   final String country;
 
-
-
-      /// Send both district fields or neither.
-  @JsonKey(
-    
-    name: r'district_code',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Send both district fields or neither.
+  @JsonKey(name: r'district_code', required: false, includeIfNull: false)
   final String? districtCode;
 
-
-
-  @JsonKey(
-    
-    name: r'district_name',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'district_name', required: false, includeIfNull: false)
   final String? districtName;
 
-
-
-  @JsonKey(
-    
-    name: r'full_name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'full_name', required: true, includeIfNull: false)
   final String fullName;
-
-
 
   @JsonKey(
     defaultValue: false,
@@ -147,11 +82,7 @@ class CreateContactRequest {
     required: false,
     includeIfNull: false,
   )
-
-
   final bool? isDefaultDelivery;
-
-
 
   @JsonKey(
     defaultValue: false,
@@ -159,155 +90,80 @@ class CreateContactRequest {
     required: false,
     includeIfNull: false,
   )
-
-
   final bool? isDefaultPickup;
 
-
-
-          // minimum: -90
-          // maximum: 90
-  @JsonKey(
-    
-    name: r'latitude',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  // minimum: -90
+  // maximum: 90
+  @JsonKey(name: r'latitude', required: false, includeIfNull: false)
   final double? latitude;
 
-
-
-          // minimum: -180
-          // maximum: 180
-  @JsonKey(
-    
-    name: r'longitude',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  // minimum: -180
+  // maximum: 180
+  @JsonKey(name: r'longitude', required: false, includeIfNull: false)
   final double? longitude;
 
-
-
-  @JsonKey(
-    
-    name: r'phone',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'phone', required: true, includeIfNull: false)
   final String phone;
 
-
-
-  @JsonKey(
-    
-    name: r'postal_code',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'postal_code', required: false, includeIfNull: false)
   final String? postalCode;
 
-
-
-  @JsonKey(
-    
-    name: r'province_code',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'province_code', required: true, includeIfNull: false)
   final String provinceCode;
 
-
-
-  @JsonKey(
-    
-    name: r'province_name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'province_name', required: true, includeIfNull: false)
   final String provinceName;
 
-
-
-  @JsonKey(
-    
-    name: r'ward_code',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'ward_code', required: true, includeIfNull: false)
   final String wardCode;
 
-
-
-  @JsonKey(
-    
-    name: r'ward_name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'ward_name', required: true, includeIfNull: false)
   final String wardName;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CreateContactRequest &&
+          other.address == address &&
+          other.addressDetail == addressDetail &&
+          other.addressType == addressType &&
+          other.country == country &&
+          other.districtCode == districtCode &&
+          other.districtName == districtName &&
+          other.fullName == fullName &&
+          other.isDefaultDelivery == isDefaultDelivery &&
+          other.isDefaultPickup == isDefaultPickup &&
+          other.latitude == latitude &&
+          other.longitude == longitude &&
+          other.phone == phone &&
+          other.postalCode == postalCode &&
+          other.provinceCode == provinceCode &&
+          other.provinceName == provinceName &&
+          other.wardCode == wardCode &&
+          other.wardName == wardName;
 
+  @override
+  int get hashCode =>
+      address.hashCode +
+      addressDetail.hashCode +
+      addressType.hashCode +
+      country.hashCode +
+      districtCode.hashCode +
+      districtName.hashCode +
+      fullName.hashCode +
+      isDefaultDelivery.hashCode +
+      isDefaultPickup.hashCode +
+      latitude.hashCode +
+      longitude.hashCode +
+      phone.hashCode +
+      postalCode.hashCode +
+      provinceCode.hashCode +
+      provinceName.hashCode +
+      wardCode.hashCode +
+      wardName.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is CreateContactRequest &&
-      other.address == address &&
-      other.addressDetail == addressDetail &&
-      other.addressType == addressType &&
-      other.country == country &&
-      other.districtCode == districtCode &&
-      other.districtName == districtName &&
-      other.fullName == fullName &&
-      other.isDefaultDelivery == isDefaultDelivery &&
-      other.isDefaultPickup == isDefaultPickup &&
-      other.latitude == latitude &&
-      other.longitude == longitude &&
-      other.phone == phone &&
-      other.postalCode == postalCode &&
-      other.provinceCode == provinceCode &&
-      other.provinceName == provinceName &&
-      other.wardCode == wardCode &&
-      other.wardName == wardName;
-
-    @override
-    int get hashCode =>
-        address.hashCode +
-        addressDetail.hashCode +
-        addressType.hashCode +
-        country.hashCode +
-        districtCode.hashCode +
-        districtName.hashCode +
-        fullName.hashCode +
-        isDefaultDelivery.hashCode +
-        isDefaultPickup.hashCode +
-        latitude.hashCode +
-        longitude.hashCode +
-        phone.hashCode +
-        postalCode.hashCode +
-        provinceCode.hashCode +
-        provinceName.hashCode +
-        wardCode.hashCode +
-        wardName.hashCode;
-
-  factory CreateContactRequest.fromJson(Map<String, dynamic> json) => _$CreateContactRequestFromJson(json);
+  factory CreateContactRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateContactRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$CreateContactRequestToJson(this);
 
@@ -315,6 +171,4 @@ class CreateContactRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

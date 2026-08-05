@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'mark_conversation_read_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,35 +17,22 @@ part 'mark_conversation_read_request.g.dart';
 )
 class MarkConversationReadRequest {
   /// Returns a new [MarkConversationReadRequest] instance.
-  MarkConversationReadRequest({
+  MarkConversationReadRequest({this.before});
 
-     this.before,
-  });
-
-      /// Mark everything sent at or before this instant read. Omit to mark the whole thread read. 
-  @JsonKey(
-    
-    name: r'before',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Mark everything sent at or before this instant read. Omit to mark the whole thread read.
+  @JsonKey(name: r'before', required: false, includeIfNull: false)
   final DateTime? before;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MarkConversationReadRequest && other.before == before;
 
+  @override
+  int get hashCode => before.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is MarkConversationReadRequest &&
-      other.before == before;
-
-    @override
-    int get hashCode =>
-        before.hashCode;
-
-  factory MarkConversationReadRequest.fromJson(Map<String, dynamic> json) => _$MarkConversationReadRequestFromJson(json);
+  factory MarkConversationReadRequest.fromJson(Map<String, dynamic> json) =>
+      _$MarkConversationReadRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$MarkConversationReadRequestToJson(this);
 
@@ -54,6 +40,4 @@ class MarkConversationReadRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

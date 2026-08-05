@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'conversation.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -21,150 +20,78 @@ part 'conversation.g.dart';
 class Conversation {
   /// Returns a new [Conversation] instance.
   Conversation({
+    required this.counterparty,
 
-    required  this.counterparty,
+    this.counterpartyReadAt,
 
-     this.counterpartyReadAt,
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.id,
 
-    required  this.id,
+    this.lastMessage,
 
-     this.lastMessage,
+    required this.lastMessageAt,
 
-    required  this.lastMessageAt,
+    this.readAt,
 
-     this.readAt,
-
-    required  this.unread,
+    required this.unread,
   });
 
-  @JsonKey(
-    
-    name: r'counterparty',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'counterparty', required: true, includeIfNull: false)
   final AccountSummary counterparty;
 
-
-
-      /// How far the other side has read. This is the read receipt: a message the caller sent is seen when this is at or past its `created_at`, which is why no message carries a delivery status of its own. 
-  @JsonKey(
-    
-    name: r'counterparty_read_at',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// How far the other side has read. This is the read receipt: a message the caller sent is seen when this is at or past its `created_at`, which is why no message carries a delivery status of its own.
+  @JsonKey(name: r'counterparty_read_at', required: false, includeIfNull: false)
   final DateTime? counterpartyReadAt;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-  @JsonKey(
-    
-    name: r'last_message',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'last_message', required: false, includeIfNull: false)
   final Message? lastMessage;
 
-
-
-      /// Starts at the creation time so an empty thread still sorts predictably in the inbox. 
-  @JsonKey(
-    
-    name: r'last_message_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Starts at the creation time so an empty thread still sorts predictably in the inbox.
+  @JsonKey(name: r'last_message_at', required: true, includeIfNull: false)
   final DateTime lastMessageAt;
 
-
-
-      /// The caller's own read mark. Null while they have read nothing.
-  @JsonKey(
-    
-    name: r'read_at',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// The caller's own read mark. Null while they have read nothing.
+  @JsonKey(name: r'read_at', required: false, includeIfNull: false)
   final DateTime? readAt;
 
-
-
-      /// The counterparty's messages after the caller's read mark.
-          // minimum: 0
-  @JsonKey(
-    
-    name: r'unread',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// The counterparty's messages after the caller's read mark.
+  // minimum: 0
+  @JsonKey(name: r'unread', required: true, includeIfNull: false)
   final int unread;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Conversation &&
+          other.counterparty == counterparty &&
+          other.counterpartyReadAt == counterpartyReadAt &&
+          other.createdAt == createdAt &&
+          other.id == id &&
+          other.lastMessage == lastMessage &&
+          other.lastMessageAt == lastMessageAt &&
+          other.readAt == readAt &&
+          other.unread == unread;
 
+  @override
+  int get hashCode =>
+      counterparty.hashCode +
+      (counterpartyReadAt == null ? 0 : counterpartyReadAt.hashCode) +
+      createdAt.hashCode +
+      id.hashCode +
+      (lastMessage == null ? 0 : lastMessage.hashCode) +
+      lastMessageAt.hashCode +
+      (readAt == null ? 0 : readAt.hashCode) +
+      unread.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is Conversation &&
-      other.counterparty == counterparty &&
-      other.counterpartyReadAt == counterpartyReadAt &&
-      other.createdAt == createdAt &&
-      other.id == id &&
-      other.lastMessage == lastMessage &&
-      other.lastMessageAt == lastMessageAt &&
-      other.readAt == readAt &&
-      other.unread == unread;
-
-    @override
-    int get hashCode =>
-        counterparty.hashCode +
-        (counterpartyReadAt == null ? 0 : counterpartyReadAt.hashCode) +
-        createdAt.hashCode +
-        id.hashCode +
-        (lastMessage == null ? 0 : lastMessage.hashCode) +
-        lastMessageAt.hashCode +
-        (readAt == null ? 0 : readAt.hashCode) +
-        unread.hashCode;
-
-  factory Conversation.fromJson(Map<String, dynamic> json) => _$ConversationFromJson(json);
+  factory Conversation.fromJson(Map<String, dynamic> json) =>
+      _$ConversationFromJson(json);
 
   Map<String, dynamic> toJson() => _$ConversationToJson(this);
 
@@ -172,6 +99,4 @@ class Conversation {
   String toString() {
     return toJson().toString();
   }
-
 }
-

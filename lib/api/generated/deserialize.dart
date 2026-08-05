@@ -211,555 +211,735 @@ final _regList = RegExp(r'^List<(.*)>$');
 final _regSet = RegExp(r'^Set<(.*)>$');
 final _regMap = RegExp(r'^Map<String,(.*)>$');
 
-  ReturnType deserialize<ReturnType, BaseType>(dynamic value, String targetType, {bool growable= true}) {
-      switch (targetType) {
-        case 'String':
-          return '$value' as ReturnType;
-        case 'int':
-          return (value is int ? value : int.parse('$value')) as ReturnType;
-        case 'bool':
-          if (value is bool) {
-            return value as ReturnType;
-          }
-          final valueString = '$value'.toLowerCase();
-          return (valueString == 'true' || valueString == '1') as ReturnType;
-        case 'double':
-          return (value is double ? value : double.parse('$value')) as ReturnType;
-        case 'AccountCreateUploadRequest':
-          return AccountCreateUploadRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AccountRole':
-          
-          
-        case 'AccountStatus':
-          
-          
-        case 'AccountSummary':
-          return AccountSummary.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AccountSummaryPage':
-          return AccountSummaryPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AccountsAccountIDReputationGet200Response':
-          return AccountsAccountIDReputationGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AccountsIdGet200Response':
-          return AccountsIdGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AddAttachmentsRequest':
-          return AddAttachmentsRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AddCartItemRequest':
-          return AddCartItemRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminAccount':
-          return AdminAccount.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminAccountPage':
-          return AdminAccountPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminAccountsIdSuspensionPost200Response':
-          return AdminAccountsIdSuspensionPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminCategoriesPost201Response':
-          return AdminCategoriesPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminIdentityDocument':
-          return AdminIdentityDocument.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminIdentityDocumentsIdVerdictPost200Response':
-          return AdminIdentityDocumentsIdVerdictPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminListingsIdApprovalPost200Response':
-          return AdminListingsIdApprovalPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminRefundsIdVerdictPost200Response':
-          return AdminRefundsIdVerdictPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminTagsSlugPut200Response':
-          return AdminTagsSlugPut200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminTaxInfoAccountIDVerificationPost200Response':
-          return AdminTaxInfoAccountIDVerificationPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminTicket':
-          return AdminTicket.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminTicketPage':
-          return AdminTicketPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminTicketsIdClaimPost200Response':
-          return AdminTicketsIdClaimPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminTicketsIdGet200Response':
-          return AdminTicketsIdGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminWalletsAccountIDAdjustmentsPost200Response':
-          return AdminWalletsAccountIDAdjustmentsPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AdminWithdrawalsIdApprovalPost200Response':
-          return AdminWithdrawalsIdApprovalPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'AuthResult':
-          return AuthResult.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'BankAccount':
-          return BankAccount.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'BankAccountList':
-          return BankAccountList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'BankAccountsPost201Response':
-          return BankAccountsPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CartItem':
-          return CartItem.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CartItemsGet200Response':
-          return CartItemsGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CartItemsPost201Response':
-          return CartItemsPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Category':
-          return Category.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CategoryList':
-          return CategoryList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ChangePasswordRequest':
-          return ChangePasswordRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ChatUnreadCount':
-          return ChatUnreadCount.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CheckoutLine':
-          return CheckoutLine.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CheckoutOfferRequest':
-          return CheckoutOfferRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CheckoutRequest':
-          return CheckoutRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CheckoutResult':
-          return CheckoutResult.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ConfirmReceiptRequest':
-          return ConfirmReceiptRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Contact':
-          return Contact.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ContactAddressType':
-          
-          
-        case 'ContactList':
-          return ContactList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ContactsPost201Response':
-          return ContactsPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Conversation':
-          return Conversation.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ConversationPage':
-          return ConversationPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ConversationReadMark':
-          return ConversationReadMark.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ConversationsIdMessagesPost201Response':
-          return ConversationsIdMessagesPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ConversationsPost200Response':
-          return ConversationsPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ConversationsUnreadCountGet200Response':
-          return ConversationsUnreadCountGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ConversationsUploadsIdConfirmationPost200Response':
-          return ConversationsUploadsIdConfirmationPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ConversationsUploadsPost201Response':
-          return ConversationsUploadsPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateBankAccountRequest':
-          return CreateBankAccountRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateCategoryRequest':
-          return CreateCategoryRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateContactRequest':
-          return CreateContactRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateDraftRequest':
-          return CreateDraftRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateListingRequest':
-          return CreateListingRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateModeratorRequest':
-          return CreateModeratorRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateOfferRequest':
-          return CreateOfferRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateRefundRequest':
-          return CreateRefundRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateUploadRequest':
-          return CreateUploadRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateVariantRequest':
-          return CreateVariantRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateWebSocketTicket201Response':
-          return CreateWebSocketTicket201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateWithdrawalRequest':
-          return CreateWithdrawalRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CursorMeta':
-          return CursorMeta.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'DeletedMessageRef':
-          return DeletedMessageRef.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Device':
-          return Device.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'DeviceList':
-          return DeviceList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'DevicePlatform':
-          
-          
-        case 'DevicesPut200Response':
-          return DevicesPut200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'DraftOrder':
-          return DraftOrder.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'DraftOrderPage':
-          return DraftOrderPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'DraftVariantSnapshot':
-          return DraftVariantSnapshot.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'DraftsIdCheckoutPost201Response':
-          return DraftsIdCheckoutPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'DraftsPost201Response':
-          return DraftsPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'EmailVerificationRequest':
-          return EmailVerificationRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Error':
-          return Error.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ErrorError':
-          return ErrorError.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ErrorField':
-          return ErrorField.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Feedback':
-          return Feedback.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'FeedbackDirection':
-          
-          
-        case 'FeedbackPage':
-          return FeedbackPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'IdentityDocument':
-          return IdentityDocument.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'IdentityDocumentList':
-          return IdentityDocumentList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'IdentityDocumentPage':
-          return IdentityDocumentPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'IdentityDocumentType':
-          
-          
-        case 'IdentityDocumentsPost201Response':
-          return IdentityDocumentsPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'IdentityStatus':
-          
-          
-        case 'IdentityVerdictRequest':
-          return IdentityVerdictRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'IdentityVerificationTicket':
-          return IdentityVerificationTicket.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ItemsIdCancellationPost200Response':
-          return ItemsIdCancellationPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Listing':
-          return Listing.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ListingCondition':
-          
-          
-        case 'ListingDetail':
-          return ListingDetail.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ListingLocation':
-          return ListingLocation.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ListingPage':
-          return ListingPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ListingStatus':
-          
-          
-        case 'ListingSuggestion':
-          return ListingSuggestion.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ListingsListingIDReviewsPost201Response':
-          return ListingsListingIDReviewsPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ListingsSuggestionsPost200Response':
-          return ListingsSuggestionsPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'LoginPost200Response':
-          return LoginPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'LoginRequest':
-          return LoginRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'LogoutRequest':
-          return LogoutRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'MarkConversationReadRequest':
-          return MarkConversationReadRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'MarkNotificationsReadRequest':
-          return MarkNotificationsReadRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Me':
-          return Me.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'MeGet200Response':
-          return MeGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'MeProfilePatch200Response':
-          return MeProfilePatch200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Message':
-          return Message.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'MessagePage':
-          return MessagePage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'MessageType':
-          
-          
-        case 'ModerationNoteRequest':
-          return ModerationNoteRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Notification':
-          return Notification.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'NotificationCategory':
-          
-          
-        case 'NotificationChannel':
-          
-          
-        case 'NotificationPage':
-          return NotificationPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'NotificationPreference':
-          return NotificationPreference.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'NotificationPreferenceList':
-          return NotificationPreferenceList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'NotificationsReadPost200Response':
-          return NotificationsReadPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OAuthIdentity':
-          return OAuthIdentity.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OAuthIdentityList':
-          return OAuthIdentityList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OAuthLoginRequest':
-          return OAuthLoginRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Offer':
-          return Offer.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OfferPage':
-          return OfferPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OfferStatus':
-          
-          
-        case 'OffersPost201Response':
-          return OffersPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OpenTicketRequest':
-          return OpenTicketRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Order':
-          return Order.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrderAddressSnapshot':
-          return OrderAddressSnapshot.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrderFeedback':
-          return OrderFeedback.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrderItem':
-          return OrderItem.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrderItemPage':
-          return OrderItemPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrderPage':
-          return OrderPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrderRef':
-          return OrderRef.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrderState':
-          
-          
-        case 'OrdersIdGet200Response':
-          return OrdersIdGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrdersIdTransportGet200Response':
-          return OrdersIdTransportGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrdersOrderIDFeedbackGet200Response':
-          return OrdersOrderIDFeedbackGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'OrdersOrderIDFeedbackPost201Response':
-          return OrdersOrderIDFeedbackPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PageMeta':
-          return PageMeta.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PasswordResetConfirmRequest':
-          return PasswordResetConfirmRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PasswordResetRequest':
-          return PasswordResetRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PaymentSession':
-          return PaymentSession.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PaymentSessionKind':
-          
-          
-        case 'PaymentSessionPage':
-          return PaymentSessionPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PaymentSessionStatus':
-          
-          
-        case 'PaymentSessionsIdGet200Response':
-          return PaymentSessionsIdGet200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PaymentSessionsIdPaymentsPost201Response':
-          return PaymentSessionsIdPaymentsPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PendingEdit':
-          return PendingEdit.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PriceMode':
-          
-          
-        case 'Profile':
-          return Profile.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ProfileGender':
-          
-          
-        case 'PublicAccount':
-          return PublicAccount.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PublishListingRequest':
-          return PublishListingRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PutTagRequest':
-          return PutTagRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'RefreshRequest':
-          return RefreshRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Refund':
-          return Refund.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'RefundPage':
-          return RefundPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'RefundStatus':
-          
-          
-        case 'RefundVerdictRequest':
-          return RefundVerdictRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'RegisterDeviceRequest':
-          return RegisterDeviceRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'RegisterRequest':
-          return RegisterRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'RejectRefundRequest':
-          return RejectRefundRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Reputation':
-          return Reputation.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ReputationRole':
-          
-          
-        case 'ResolveTicketRequest':
-          return ResolveTicketRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Resource':
-          return Resource.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Review':
-          return Review.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ReviewPage':
-          return ReviewPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ReviewReply':
-          return ReviewReply.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ReviewVoteTally':
-          return ReviewVoteTally.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ReviewsIdRepliesPost201Response':
-          return ReviewsIdRepliesPost201Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ReviewsIdVotePut200Response':
-          return ReviewsIdVotePut200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'SendMessageRequest':
-          return SendMessageRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ShippingQuote':
-          return ShippingQuote.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ShippingQuotes':
-          return ShippingQuotes.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ShippingQuotesPost200Response':
-          return ShippingQuotesPost200Response.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ShippingQuotesRequest':
-          return ShippingQuotesRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'StartConversationRequest':
-          return StartConversationRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'StartIdentityVerificationRequest':
-          return StartIdentityVerificationRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'StartPaymentRequest':
-          return StartPaymentRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Stock':
-          return Stock.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'SubmitFeedbackRequest':
-          return SubmitFeedbackRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'SubmitReviewReplyRequest':
-          return SubmitReviewReplyRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'SubmitReviewRequest':
-          return SubmitReviewRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'SuggestListingRequest':
-          return SuggestListingRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'SuspendAccountRequest':
-          return SuspendAccountRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Tag':
-          return Tag.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TagPage':
-          return TagPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TakedownRequest':
-          return TakedownRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TaxCodeType':
-          
-          
-        case 'TaxInfo':
-          return TaxInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TaxVerificationRequest':
-          return TaxVerificationRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TaxVerificationStatus':
-          
-          
-        case 'Ticket':
-          return Ticket.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TicketAction':
-          
-          
-        case 'TicketKind':
-          
-          
-        case 'TicketPage':
-          return TicketPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TicketReason':
-          
-          
-        case 'TicketRefType':
-          
-          
-        case 'TicketStatus':
-          
-          
-        case 'Transaction':
-          return Transaction.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TransactionList':
-          return TransactionList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TransactionStatus':
-          
-          
-        case 'Transport':
-          return Transport.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TransportCheckpoint':
-          
-          
-        case 'TransportCheckpointRequest':
-          return TransportCheckpointRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'TransportStatus':
-          
-          
-        case 'UnreadCount':
-          return UnreadCount.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateAccountRequest':
-          return UpdateAccountRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateBankAccountRequest':
-          return UpdateBankAccountRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateCartItemRequest':
-          return UpdateCartItemRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateCategoryRequest':
-          return UpdateCategoryRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateContactRequest':
-          return UpdateContactRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateListingRequest':
-          return UpdateListingRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateMessageRequest':
-          return UpdateMessageRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateNotificationPreferencesRequest':
-          return UpdateNotificationPreferencesRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateNotificationPreferencesRequestItemsInner':
-          return UpdateNotificationPreferencesRequestItemsInner.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateOfferRequest':
-          return UpdateOfferRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateProfileRequest':
-          return UpdateProfileRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateReviewRequest':
-          return UpdateReviewRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpdateVariantRequest':
-          return UpdateVariantRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UploadSlot':
-          return UploadSlot.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'UpsertTaxInfoRequest':
-          return UpsertTaxInfoRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Variant':
-          return Variant.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'VerifyContactPhoneRequest':
-          return VerifyContactPhoneRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'VoteReviewRequest':
-          return VoteReviewRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Wallet':
-          return Wallet.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'WalletAdjustmentRequest':
-          return WalletAdjustmentRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'WalletList':
-          return WalletList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'WalletTransaction':
-          return WalletTransaction.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'WalletTransactionKind':
-          
-          
-        case 'WalletTransactionPage':
-          return WalletTransactionPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'WebSocketTicket':
-          return WebSocketTicket.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Withdrawal':
-          return Withdrawal.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'WithdrawalApprovalRequest':
-          return WithdrawalApprovalRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'WithdrawalOutcome':
-          
-          
-        case 'WithdrawalPage':
-          return WithdrawalPage.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'WithdrawalRejectionRequest':
-          return WithdrawalRejectionRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
-        default:
-          RegExpMatch? match;
+ReturnType deserialize<ReturnType, BaseType>(
+  dynamic value,
+  String targetType, {
+  bool growable = true,
+}) {
+  switch (targetType) {
+    case 'String':
+      return '$value' as ReturnType;
+    case 'int':
+      return (value is int ? value : int.parse('$value')) as ReturnType;
+    case 'bool':
+      if (value is bool) {
+        return value as ReturnType;
+      }
+      final valueString = '$value'.toLowerCase();
+      return (valueString == 'true' || valueString == '1') as ReturnType;
+    case 'double':
+      return (value is double ? value : double.parse('$value')) as ReturnType;
+    case 'AccountCreateUploadRequest':
+      return AccountCreateUploadRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AccountRole':
+    case 'AccountStatus':
+    case 'AccountSummary':
+      return AccountSummary.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AccountSummaryPage':
+      return AccountSummaryPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AccountsAccountIDReputationGet200Response':
+      return AccountsAccountIDReputationGet200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AccountsIdGet200Response':
+      return AccountsIdGet200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AddAttachmentsRequest':
+      return AddAttachmentsRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AddCartItemRequest':
+      return AddCartItemRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AdminAccount':
+      return AdminAccount.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'AdminAccountPage':
+      return AdminAccountPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AdminAccountsIdSuspensionPost200Response':
+      return AdminAccountsIdSuspensionPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminCategoriesPost201Response':
+      return AdminCategoriesPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminIdentityDocument':
+      return AdminIdentityDocument.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AdminIdentityDocumentsIdVerdictPost200Response':
+      return AdminIdentityDocumentsIdVerdictPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminListingsIdApprovalPost200Response':
+      return AdminListingsIdApprovalPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminRefundsIdVerdictPost200Response':
+      return AdminRefundsIdVerdictPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminTagsSlugPut200Response':
+      return AdminTagsSlugPut200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AdminTaxInfoAccountIDVerificationPost200Response':
+      return AdminTaxInfoAccountIDVerificationPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminTicket':
+      return AdminTicket.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'AdminTicketPage':
+      return AdminTicketPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AdminTicketsIdClaimPost200Response':
+      return AdminTicketsIdClaimPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminTicketsIdGet200Response':
+      return AdminTicketsIdGet200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminWalletsAccountIDAdjustmentsPost200Response':
+      return AdminWalletsAccountIDAdjustmentsPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AdminWithdrawalsIdApprovalPost200Response':
+      return AdminWithdrawalsIdApprovalPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AuthResult':
+      return AuthResult.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'BankAccount':
+      return BankAccount.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'BankAccountList':
+      return BankAccountList.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'BankAccountsPost201Response':
+      return BankAccountsPost201Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CartItem':
+      return CartItem.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'CartItemsGet200Response':
+      return CartItemsGet200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CartItemsPost201Response':
+      return CartItemsPost201Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Category':
+      return Category.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'CategoryList':
+      return CategoryList.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ChangePasswordRequest':
+      return ChangePasswordRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ChatUnreadCount':
+      return ChatUnreadCount.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CheckoutLine':
+      return CheckoutLine.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'CheckoutOfferRequest':
+      return CheckoutOfferRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CheckoutRequest':
+      return CheckoutRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CheckoutResult':
+      return CheckoutResult.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ConfirmReceiptRequest':
+      return ConfirmReceiptRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Contact':
+      return Contact.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ContactAddressType':
+    case 'ContactList':
+      return ContactList.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ContactsPost201Response':
+      return ContactsPost201Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Conversation':
+      return Conversation.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ConversationPage':
+      return ConversationPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ConversationReadMark':
+      return ConversationReadMark.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ConversationsIdMessagesPost201Response':
+      return ConversationsIdMessagesPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ConversationsPost200Response':
+      return ConversationsPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ConversationsUnreadCountGet200Response':
+      return ConversationsUnreadCountGet200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ConversationsUploadsIdConfirmationPost200Response':
+      return ConversationsUploadsIdConfirmationPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ConversationsUploadsPost201Response':
+      return ConversationsUploadsPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'CreateBankAccountRequest':
+      return CreateBankAccountRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateCategoryRequest':
+      return CreateCategoryRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateContactRequest':
+      return CreateContactRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateDraftRequest':
+      return CreateDraftRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateListingRequest':
+      return CreateListingRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateModeratorRequest':
+      return CreateModeratorRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateOfferRequest':
+      return CreateOfferRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateRefundRequest':
+      return CreateRefundRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateUploadRequest':
+      return CreateUploadRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateVariantRequest':
+      return CreateVariantRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CreateWebSocketTicket201Response':
+      return CreateWebSocketTicket201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'CreateWithdrawalRequest':
+      return CreateWithdrawalRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'CursorMeta':
+      return CursorMeta.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'DeletedMessageRef':
+      return DeletedMessageRef.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Device':
+      return Device.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'DeviceList':
+      return DeviceList.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'DevicePlatform':
+    case 'DevicesPut200Response':
+      return DevicesPut200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'DraftOrder':
+      return DraftOrder.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'DraftOrderPage':
+      return DraftOrderPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'DraftVariantSnapshot':
+      return DraftVariantSnapshot.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'DraftsIdCheckoutPost201Response':
+      return DraftsIdCheckoutPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'DraftsPost201Response':
+      return DraftsPost201Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'EmailVerificationRequest':
+      return EmailVerificationRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Error':
+      return Error.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ErrorError':
+      return ErrorError.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ErrorField':
+      return ErrorField.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'Feedback':
+      return Feedback.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'FeedbackDirection':
+    case 'FeedbackPage':
+      return FeedbackPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'IdentityDocument':
+      return IdentityDocument.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'IdentityDocumentList':
+      return IdentityDocumentList.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'IdentityDocumentPage':
+      return IdentityDocumentPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'IdentityDocumentType':
+    case 'IdentityDocumentsPost201Response':
+      return IdentityDocumentsPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'IdentityStatus':
+    case 'IdentityVerdictRequest':
+      return IdentityVerdictRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'IdentityVerificationTicket':
+      return IdentityVerificationTicket.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ItemsIdCancellationPost200Response':
+      return ItemsIdCancellationPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'Listing':
+      return Listing.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ListingCondition':
+    case 'ListingDetail':
+      return ListingDetail.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ListingLocation':
+      return ListingLocation.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ListingPage':
+      return ListingPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ListingStatus':
+    case 'ListingSuggestion':
+      return ListingSuggestion.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ListingsListingIDReviewsPost201Response':
+      return ListingsListingIDReviewsPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ListingsSuggestionsPost200Response':
+      return ListingsSuggestionsPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'LoginPost200Response':
+      return LoginPost200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'LoginRequest':
+      return LoginRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'LogoutRequest':
+      return LogoutRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'MarkConversationReadRequest':
+      return MarkConversationReadRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'MarkNotificationsReadRequest':
+      return MarkNotificationsReadRequest.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'Me':
+      return Me.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'MeGet200Response':
+      return MeGet200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'MeProfilePatch200Response':
+      return MeProfilePatch200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Message':
+      return Message.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'MessagePage':
+      return MessagePage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'MessageType':
+    case 'ModerationNoteRequest':
+      return ModerationNoteRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Notification':
+      return Notification.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'NotificationCategory':
+    case 'NotificationChannel':
+    case 'NotificationPage':
+      return NotificationPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'NotificationPreference':
+      return NotificationPreference.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'NotificationPreferenceList':
+      return NotificationPreferenceList.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'NotificationsReadPost200Response':
+      return NotificationsReadPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'OAuthIdentity':
+      return OAuthIdentity.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'OAuthIdentityList':
+      return OAuthIdentityList.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'OAuthLoginRequest':
+      return OAuthLoginRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Offer':
+      return Offer.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OfferPage':
+      return OfferPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OfferStatus':
+    case 'OffersPost201Response':
+      return OffersPost201Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'OpenTicketRequest':
+      return OpenTicketRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Order':
+      return Order.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OrderAddressSnapshot':
+      return OrderAddressSnapshot.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'OrderFeedback':
+      return OrderFeedback.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'OrderItem':
+      return OrderItem.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OrderItemPage':
+      return OrderItemPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'OrderPage':
+      return OrderPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OrderRef':
+      return OrderRef.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OrderState':
+    case 'OrdersIdGet200Response':
+      return OrdersIdGet200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'OrdersIdTransportGet200Response':
+      return OrdersIdTransportGet200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'OrdersOrderIDFeedbackGet200Response':
+      return OrdersOrderIDFeedbackGet200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'OrdersOrderIDFeedbackPost201Response':
+      return OrdersOrderIDFeedbackPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'PageMeta':
+      return PageMeta.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'PasswordResetConfirmRequest':
+      return PasswordResetConfirmRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'PasswordResetRequest':
+      return PasswordResetRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'PaymentSession':
+      return PaymentSession.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'PaymentSessionKind':
+    case 'PaymentSessionPage':
+      return PaymentSessionPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'PaymentSessionStatus':
+    case 'PaymentSessionsIdGet200Response':
+      return PaymentSessionsIdGet200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'PaymentSessionsIdPaymentsPost201Response':
+      return PaymentSessionsIdPaymentsPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'PendingEdit':
+      return PendingEdit.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'PriceMode':
+    case 'Profile':
+      return Profile.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ProfileGender':
+    case 'PublicAccount':
+      return PublicAccount.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'PublishListingRequest':
+      return PublishListingRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'PutTagRequest':
+      return PutTagRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'RefreshRequest':
+      return RefreshRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Refund':
+      return Refund.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'RefundPage':
+      return RefundPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'RefundStatus':
+    case 'RefundVerdictRequest':
+      return RefundVerdictRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'RegisterDeviceRequest':
+      return RegisterDeviceRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'RegisterRequest':
+      return RegisterRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'RejectRefundRequest':
+      return RejectRefundRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Reputation':
+      return Reputation.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ReputationRole':
+    case 'ResolveTicketRequest':
+      return ResolveTicketRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Resource':
+      return Resource.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'Review':
+      return Review.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ReviewPage':
+      return ReviewPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ReviewReply':
+      return ReviewReply.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ReviewVoteTally':
+      return ReviewVoteTally.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ReviewsIdRepliesPost201Response':
+      return ReviewsIdRepliesPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ReviewsIdVotePut200Response':
+      return ReviewsIdVotePut200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'SendMessageRequest':
+      return SendMessageRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ShippingQuote':
+      return ShippingQuote.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ShippingQuotes':
+      return ShippingQuotes.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ShippingQuotesPost200Response':
+      return ShippingQuotesPost200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ShippingQuotesRequest':
+      return ShippingQuotesRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'StartConversationRequest':
+      return StartConversationRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'StartIdentityVerificationRequest':
+      return StartIdentityVerificationRequest.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'StartPaymentRequest':
+      return StartPaymentRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Stock':
+      return Stock.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'SubmitFeedbackRequest':
+      return SubmitFeedbackRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'SubmitReviewReplyRequest':
+      return SubmitReviewReplyRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'SubmitReviewRequest':
+      return SubmitReviewRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'SuggestListingRequest':
+      return SuggestListingRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'SuspendAccountRequest':
+      return SuspendAccountRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Tag':
+      return Tag.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'TagPage':
+      return TagPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'TakedownRequest':
+      return TakedownRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'TaxCodeType':
+    case 'TaxInfo':
+      return TaxInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'TaxVerificationRequest':
+      return TaxVerificationRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'TaxVerificationStatus':
+    case 'Ticket':
+      return Ticket.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'TicketAction':
+    case 'TicketKind':
+    case 'TicketPage':
+      return TicketPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'TicketReason':
+    case 'TicketRefType':
+    case 'TicketStatus':
+    case 'Transaction':
+      return Transaction.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'TransactionList':
+      return TransactionList.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'TransactionStatus':
+    case 'Transport':
+      return Transport.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'TransportCheckpoint':
+    case 'TransportCheckpointRequest':
+      return TransportCheckpointRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'TransportStatus':
+    case 'UnreadCount':
+      return UnreadCount.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'UpdateAccountRequest':
+      return UpdateAccountRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateBankAccountRequest':
+      return UpdateBankAccountRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateCartItemRequest':
+      return UpdateCartItemRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateCategoryRequest':
+      return UpdateCategoryRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateContactRequest':
+      return UpdateContactRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateListingRequest':
+      return UpdateListingRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateMessageRequest':
+      return UpdateMessageRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateNotificationPreferencesRequest':
+      return UpdateNotificationPreferencesRequest.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'UpdateNotificationPreferencesRequestItemsInner':
+      return UpdateNotificationPreferencesRequestItemsInner.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'UpdateOfferRequest':
+      return UpdateOfferRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateProfileRequest':
+      return UpdateProfileRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateReviewRequest':
+      return UpdateReviewRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UpdateVariantRequest':
+      return UpdateVariantRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'UploadSlot':
+      return UploadSlot.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'UpsertTaxInfoRequest':
+      return UpsertTaxInfoRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Variant':
+      return Variant.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'VerifyContactPhoneRequest':
+      return VerifyContactPhoneRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'VoteReviewRequest':
+      return VoteReviewRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Wallet':
+      return Wallet.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'WalletAdjustmentRequest':
+      return WalletAdjustmentRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'WalletList':
+      return WalletList.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'WalletTransaction':
+      return WalletTransaction.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'WalletTransactionKind':
+    case 'WalletTransactionPage':
+      return WalletTransactionPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'WebSocketTicket':
+      return WebSocketTicket.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'Withdrawal':
+      return Withdrawal.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'WithdrawalApprovalRequest':
+      return WithdrawalApprovalRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'WithdrawalOutcome':
+    case 'WithdrawalPage':
+      return WithdrawalPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'WithdrawalRejectionRequest':
+      return WithdrawalRejectionRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    default:
+      RegExpMatch? match;
 
-          if (value is List && (match = _regList.firstMatch(targetType)) != null) {
-            targetType = match![1]!; // ignore: parameter_assignments
-            return value
-              .map<BaseType>((dynamic v) => deserialize<BaseType, BaseType>(v, targetType, growable: growable))
-              .toList(growable: growable) as ReturnType;
-          }
-          if (value is Set && (match = _regSet.firstMatch(targetType)) != null) {
-            targetType = match![1]!; // ignore: parameter_assignments
-            return value
-              .map<BaseType>((dynamic v) => deserialize<BaseType, BaseType>(v, targetType, growable: growable))
-              .toSet() as ReturnType;
-          }
-          if (value is Map && (match = _regMap.firstMatch(targetType)) != null) {
-            targetType = match![1]!.trim(); // ignore: parameter_assignments
-            return Map<String, BaseType>.fromIterables(
+      if (value is List && (match = _regList.firstMatch(targetType)) != null) {
+        targetType = match![1]!; // ignore: parameter_assignments
+        return value
+                .map<BaseType>(
+                  (dynamic v) => deserialize<BaseType, BaseType>(
+                    v,
+                    targetType,
+                    growable: growable,
+                  ),
+                )
+                .toList(growable: growable)
+            as ReturnType;
+      }
+      if (value is Set && (match = _regSet.firstMatch(targetType)) != null) {
+        targetType = match![1]!; // ignore: parameter_assignments
+        return value
+                .map<BaseType>(
+                  (dynamic v) => deserialize<BaseType, BaseType>(
+                    v,
+                    targetType,
+                    growable: growable,
+                  ),
+                )
+                .toSet()
+            as ReturnType;
+      }
+      if (value is Map && (match = _regMap.firstMatch(targetType)) != null) {
+        targetType = match![1]!.trim(); // ignore: parameter_assignments
+        return Map<String, BaseType>.fromIterables(
               value.keys as Iterable<String>,
-              value.values.map((dynamic v) => deserialize<BaseType, BaseType>(v, targetType, growable: growable)),
-            ) as ReturnType;
-          }
-          break;
-    }
-    throw Exception('Cannot deserialize');
+              value.values.map(
+                (dynamic v) => deserialize<BaseType, BaseType>(
+                  v,
+                  targetType,
+                  growable: growable,
+                ),
+              ),
+            )
+            as ReturnType;
+      }
+      break;
   }
+  throw Exception('Cannot deserialize');
+}

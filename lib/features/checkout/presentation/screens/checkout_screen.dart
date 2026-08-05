@@ -1254,7 +1254,10 @@ class CheckoutScreen extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    MoneyUtils.format(item.sku?.price ?? 0, currency: item.currency),
+                    MoneyUtils.format(
+                      item.sku?.price ?? 0,
+                      currency: item.currency,
+                    ),
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 13,

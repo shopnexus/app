@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'admin_identity_document.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,26 @@ part 'admin_identity_document.g.dart';
 )
 class AdminIdentityDocument {
   /// Returns a new [AdminIdentityDocument] instance.
-  AdminIdentityDocument({
+  AdminIdentityDocument({required this.account, required this.document});
 
-    required  this.account,
-
-    required  this.document,
-  });
-
-  @JsonKey(
-    
-    name: r'account',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'account', required: true, includeIfNull: false)
   final AccountSummary account;
 
-
-
-  @JsonKey(
-    
-    name: r'document',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'document', required: true, includeIfNull: false)
   final IdentityDocument document;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminIdentityDocument &&
+          other.account == account &&
+          other.document == document;
 
+  @override
+  int get hashCode => account.hashCode + document.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AdminIdentityDocument &&
-      other.account == account &&
-      other.document == document;
-
-    @override
-    int get hashCode =>
-        account.hashCode +
-        document.hashCode;
-
-  factory AdminIdentityDocument.fromJson(Map<String, dynamic> json) => _$AdminIdentityDocumentFromJson(json);
+  factory AdminIdentityDocument.fromJson(Map<String, dynamic> json) =>
+      _$AdminIdentityDocumentFromJson(json);
 
   Map<String, dynamic> toJson() => _$AdminIdentityDocumentToJson(this);
 
@@ -71,6 +46,4 @@ class AdminIdentityDocument {
   String toString() {
     return toJson().toString();
   }
-
 }
-

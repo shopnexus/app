@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'withdrawal_rejection_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,21 @@ part 'withdrawal_rejection_request.g.dart';
 )
 class WithdrawalRejectionRequest {
   /// Returns a new [WithdrawalRejectionRequest] instance.
-  WithdrawalRejectionRequest({
+  WithdrawalRejectionRequest({required this.reason});
 
-    required  this.reason,
-  });
-
-  @JsonKey(
-    
-    name: r'reason',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'reason', required: true, includeIfNull: false)
   final String reason;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WithdrawalRejectionRequest && other.reason == reason;
 
+  @override
+  int get hashCode => reason.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is WithdrawalRejectionRequest &&
-      other.reason == reason;
-
-    @override
-    int get hashCode =>
-        reason.hashCode;
-
-  factory WithdrawalRejectionRequest.fromJson(Map<String, dynamic> json) => _$WithdrawalRejectionRequestFromJson(json);
+  factory WithdrawalRejectionRequest.fromJson(Map<String, dynamic> json) =>
+      _$WithdrawalRejectionRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WithdrawalRejectionRequestToJson(this);
 
@@ -53,6 +39,4 @@ class WithdrawalRejectionRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

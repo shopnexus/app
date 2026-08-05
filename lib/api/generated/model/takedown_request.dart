@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'takedown_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,12 +17,7 @@ part 'takedown_request.g.dart';
 )
 class TakedownRequest {
   /// Returns a new [TakedownRequest] instance.
-  TakedownRequest({
-
-     this.notifySeller = true,
-
-    required  this.reason,
-  });
+  TakedownRequest({this.notifySeller = true, required this.reason});
 
   @JsonKey(
     defaultValue: true,
@@ -31,37 +25,23 @@ class TakedownRequest {
     required: false,
     includeIfNull: false,
   )
-
-
   final bool? notifySeller;
 
-
-
-  @JsonKey(
-    
-    name: r'reason',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'reason', required: true, includeIfNull: false)
   final String reason;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TakedownRequest &&
+          other.notifySeller == notifySeller &&
+          other.reason == reason;
 
+  @override
+  int get hashCode => notifySeller.hashCode + reason.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is TakedownRequest &&
-      other.notifySeller == notifySeller &&
-      other.reason == reason;
-
-    @override
-    int get hashCode =>
-        notifySeller.hashCode +
-        reason.hashCode;
-
-  factory TakedownRequest.fromJson(Map<String, dynamic> json) => _$TakedownRequestFromJson(json);
+  factory TakedownRequest.fromJson(Map<String, dynamic> json) =>
+      _$TakedownRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$TakedownRequestToJson(this);
 
@@ -69,6 +49,4 @@ class TakedownRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'unread_count.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,35 +17,21 @@ part 'unread_count.g.dart';
 )
 class UnreadCount {
   /// Returns a new [UnreadCount] instance.
-  UnreadCount({
+  UnreadCount({required this.unread});
 
-    required  this.unread,
-  });
-
-          // minimum: 0
-  @JsonKey(
-    
-    name: r'unread',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 0
+  @JsonKey(name: r'unread', required: true, includeIfNull: false)
   final int unread;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is UnreadCount && other.unread == unread;
 
+  @override
+  int get hashCode => unread.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is UnreadCount &&
-      other.unread == unread;
-
-    @override
-    int get hashCode =>
-        unread.hashCode;
-
-  factory UnreadCount.fromJson(Map<String, dynamic> json) => _$UnreadCountFromJson(json);
+  factory UnreadCount.fromJson(Map<String, dynamic> json) =>
+      _$UnreadCountFromJson(json);
 
   Map<String, dynamic> toJson() => _$UnreadCountToJson(this);
 
@@ -54,6 +39,4 @@ class UnreadCount {
   String toString() {
     return toJson().toString();
   }
-
 }
-

@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'notifications_read_post200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,41 +18,28 @@ part 'notifications_read_post200_response.g.dart';
 )
 class NotificationsReadPost200Response {
   /// Returns a new [NotificationsReadPost200Response] instance.
-  NotificationsReadPost200Response({
+  NotificationsReadPost200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final UnreadCount data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotificationsReadPost200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
+  factory NotificationsReadPost200Response.fromJson(
+    Map<String, dynamic> json,
+  ) => _$NotificationsReadPost200ResponseFromJson(json);
 
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is NotificationsReadPost200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory NotificationsReadPost200Response.fromJson(Map<String, dynamic> json) => _$NotificationsReadPost200ResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$NotificationsReadPost200ResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$NotificationsReadPost200ResponseToJson(this);
 
   @override
   String toString() {
     return toJson().toString();
   }
-
 }
-

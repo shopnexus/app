@@ -5,14 +5,13 @@
 // ignore_for_file: unused_element
 import 'package:json_annotation/json_annotation.dart';
 
-
 enum TaxCodeType {
-      @JsonValue(r'individual')
-      individual(r'individual'),
-      @JsonValue(r'business')
-      business(r'business'),
-      @JsonValue(r'household')
-      household(r'household');
+  @JsonValue(r'individual')
+  individual(r'individual'),
+  @JsonValue(r'business')
+  business(r'business'),
+  @JsonValue(r'household')
+  household(r'household');
 
   const TaxCodeType(this.value);
 

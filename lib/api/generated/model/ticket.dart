@@ -13,7 +13,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'ticket.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -24,210 +23,101 @@ part 'ticket.g.dart';
 class Ticket {
   /// Returns a new [Ticket] instance.
   Ticket({
+    this.actionTaken,
 
-     this.actionTaken,
+    this.conversationId,
 
-     this.conversationId,
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.id,
 
-    required  this.id,
+    required this.kind,
 
-    required  this.kind,
+    this.reason,
 
-     this.reason,
+    this.refId,
 
-     this.refId,
+    this.refType,
 
-     this.refType,
+    this.resolutionNote,
 
-     this.resolutionNote,
+    this.resolvedAt,
 
-     this.resolvedAt,
+    required this.status,
 
-    required  this.status,
-
-    required  this.subject,
+    required this.subject,
   });
 
-      /// Null until the ticket is resolved.
-  @JsonKey(
-    
-    name: r'action_taken',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Null until the ticket is resolved.
+  @JsonKey(name: r'action_taken', required: false, includeIfNull: false)
   final TicketAction? actionTaken;
 
-
-
-      /// The thread this ticket is discussed in — where the requester's own words went and where support answers. Null only between the row being written and the thread being opened; reading the ticket repairs it. 
-  @JsonKey(
-    
-    name: r'conversation_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// The thread this ticket is discussed in — where the requester's own words went and where support answers. Null only between the row being written and the thread being opened; reading the ticket repairs it.
+  @JsonKey(name: r'conversation_id', required: false, includeIfNull: false)
   final String? conversationId;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-  @JsonKey(
-    
-    name: r'kind',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'kind', required: true, includeIfNull: false)
   final TicketKind kind;
 
-
-
-  @JsonKey(
-    
-    name: r'reason',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'reason', required: false, includeIfNull: false)
   final TicketReason? reason;
 
-
-
-      /// Opaque id of what the ticket is about, kinded by `ref_type`. Null on a ticket about nothing in particular. 
-  @JsonKey(
-    
-    name: r'ref_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Opaque id of what the ticket is about, kinded by `ref_type`. Null on a ticket about nothing in particular.
+  @JsonKey(name: r'ref_id', required: false, includeIfNull: false)
   final String? refId;
 
-
-
-  @JsonKey(
-    
-    name: r'ref_type',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'ref_type', required: false, includeIfNull: false)
   final TicketRefType? refType;
 
-
-
-  @JsonKey(
-    
-    name: r'resolution_note',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'resolution_note', required: false, includeIfNull: false)
   final String? resolutionNote;
 
-
-
-  @JsonKey(
-    
-    name: r'resolved_at',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'resolved_at', required: false, includeIfNull: false)
   final DateTime? resolvedAt;
 
-
-
-  @JsonKey(
-    
-    name: r'status',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'status', required: true, includeIfNull: false)
   final TicketStatus status;
 
-
-
-  @JsonKey(
-    
-    name: r'subject',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'subject', required: true, includeIfNull: false)
   final String subject;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Ticket &&
+          other.actionTaken == actionTaken &&
+          other.conversationId == conversationId &&
+          other.createdAt == createdAt &&
+          other.id == id &&
+          other.kind == kind &&
+          other.reason == reason &&
+          other.refId == refId &&
+          other.refType == refType &&
+          other.resolutionNote == resolutionNote &&
+          other.resolvedAt == resolvedAt &&
+          other.status == status &&
+          other.subject == subject;
 
-
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is Ticket &&
-      other.actionTaken == actionTaken &&
-      other.conversationId == conversationId &&
-      other.createdAt == createdAt &&
-      other.id == id &&
-      other.kind == kind &&
-      other.reason == reason &&
-      other.refId == refId &&
-      other.refType == refType &&
-      other.resolutionNote == resolutionNote &&
-      other.resolvedAt == resolvedAt &&
-      other.status == status &&
-      other.subject == subject;
-
-    @override
-    int get hashCode =>
-        (actionTaken == null ? 0 : actionTaken.hashCode) +
-        (conversationId == null ? 0 : conversationId.hashCode) +
-        createdAt.hashCode +
-        id.hashCode +
-        kind.hashCode +
-        (reason == null ? 0 : reason.hashCode) +
-        (refId == null ? 0 : refId.hashCode) +
-        (refType == null ? 0 : refType.hashCode) +
-        (resolutionNote == null ? 0 : resolutionNote.hashCode) +
-        (resolvedAt == null ? 0 : resolvedAt.hashCode) +
-        status.hashCode +
-        subject.hashCode;
+  @override
+  int get hashCode =>
+      (actionTaken == null ? 0 : actionTaken.hashCode) +
+      (conversationId == null ? 0 : conversationId.hashCode) +
+      createdAt.hashCode +
+      id.hashCode +
+      kind.hashCode +
+      (reason == null ? 0 : reason.hashCode) +
+      (refId == null ? 0 : refId.hashCode) +
+      (refType == null ? 0 : refType.hashCode) +
+      (resolutionNote == null ? 0 : resolutionNote.hashCode) +
+      (resolvedAt == null ? 0 : resolvedAt.hashCode) +
+      status.hashCode +
+      subject.hashCode;
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);
 
@@ -237,6 +127,4 @@ class Ticket {
   String toString() {
     return toJson().toString();
   }
-
 }
-

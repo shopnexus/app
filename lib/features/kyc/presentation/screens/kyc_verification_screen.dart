@@ -101,7 +101,9 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
 
                       const SizedBox(height: 24),
 
-                      _buildSectionHeader('2. Tải lên ảnh chụp giấy tờ & Chân dung'),
+                      _buildSectionHeader(
+                        '2. Tải lên ảnh chụp giấy tờ & Chân dung',
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         'Vui lòng tải lên ảnh chụp rõ nét, không bị lóa hoặc mất góc',
@@ -360,16 +362,27 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
           _buildInfoRow('Loại giấy tờ', _getDocTypeName(doc.docType)),
           _buildInfoRow(
             'Trạng thái',
-            doc.status == IdentityStatus.verified ? 'Đã xác minh' : 'Đang chờ xử lý',
+            doc.status == IdentityStatus.verified
+                ? 'Đã xác minh'
+                : 'Đang chờ xử lý',
           ),
           if (doc.id.isNotEmpty) _buildInfoRow('Mã hồ sơ', doc.id),
           if (doc.provider.isNotEmpty)
             _buildInfoRow('Nhà cung cấp', doc.provider),
-          _buildInfoRow('Ngày nộp', _formatDateTime(doc.createdAt.toIso8601String())),
+          _buildInfoRow(
+            'Ngày nộp',
+            _formatDateTime(doc.createdAt.toIso8601String()),
+          ),
           if (doc.verifiedAt != null)
-            _buildInfoRow('Ngày duyệt', _formatDateTime(doc.verifiedAt?.toIso8601String())),
+            _buildInfoRow(
+              'Ngày duyệt',
+              _formatDateTime(doc.verifiedAt?.toIso8601String()),
+            ),
           if (doc.expiresAt != null)
-            _buildInfoRow('Ngày hết hạn', _formatDateTime(doc.expiresAt?.toIso8601String())),
+            _buildInfoRow(
+              'Ngày hết hạn',
+              _formatDateTime(doc.expiresAt?.toIso8601String()),
+            ),
           if (doc.rejectionReason != null && doc.rejectionReason!.isNotEmpty)
             _buildInfoRow('Lý do từ chối', doc.rejectionReason!, isError: true),
         ],
@@ -413,7 +426,10 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
     );
   }
 
-  Widget _buildDocTypeSelector(IdentityDocumentType selected, KycNotifier notifier) {
+  Widget _buildDocTypeSelector(
+    IdentityDocumentType selected,
+    KycNotifier notifier,
+  ) {
     return Column(
       children: [
         _buildDocTypeOption(
@@ -467,8 +483,8 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
             color: isSelected
                 ? theme.colorScheme.primary
                 : (isDarkMode
-                    ? AppColors.darkPrimary.withValues(alpha: 0.2)
-                    : const Color(0xFFE2E8F0)),
+                      ? AppColors.darkPrimary.withValues(alpha: 0.2)
+                      : const Color(0xFFE2E8F0)),
             width: isSelected ? 1.5 : 1,
           ),
         ),

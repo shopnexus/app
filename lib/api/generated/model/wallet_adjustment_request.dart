@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'wallet_adjustment_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,16 +18,15 @@ part 'wallet_adjustment_request.g.dart';
 class WalletAdjustmentRequest {
   /// Returns a new [WalletAdjustmentRequest] instance.
   WalletAdjustmentRequest({
+    this.availableDelta = 0,
 
-     this.availableDelta = 0,
+    required this.currency,
 
-    required  this.currency,
+    this.heldDelta = 0,
 
-     this.heldDelta = 0,
+    required this.idempotencyKey,
 
-    required  this.idempotencyKey,
-
-    required  this.reason,
+    required this.reason,
   });
 
   @JsonKey(
@@ -37,24 +35,11 @@ class WalletAdjustmentRequest {
     required: false,
     includeIfNull: false,
   )
-
-
   final int? availableDelta;
 
-
-
-      /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one. 
-  @JsonKey(
-    
-    name: r'currency',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one.
+  @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
-
-
 
   @JsonKey(
     defaultValue: 0,
@@ -62,56 +47,35 @@ class WalletAdjustmentRequest {
     required: false,
     includeIfNull: false,
   )
-
-
   final int? heldDelta;
 
-
-
-      /// Required. A retried correction that posts twice is money invented.
-  @JsonKey(
-    
-    name: r'idempotency_key',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Required. A retried correction that posts twice is money invented.
+  @JsonKey(name: r'idempotency_key', required: true, includeIfNull: false)
   final String idempotencyKey;
 
-
-
-  @JsonKey(
-    
-    name: r'reason',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'reason', required: true, includeIfNull: false)
   final String reason;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WalletAdjustmentRequest &&
+          other.availableDelta == availableDelta &&
+          other.currency == currency &&
+          other.heldDelta == heldDelta &&
+          other.idempotencyKey == idempotencyKey &&
+          other.reason == reason;
 
+  @override
+  int get hashCode =>
+      availableDelta.hashCode +
+      currency.hashCode +
+      heldDelta.hashCode +
+      idempotencyKey.hashCode +
+      reason.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is WalletAdjustmentRequest &&
-      other.availableDelta == availableDelta &&
-      other.currency == currency &&
-      other.heldDelta == heldDelta &&
-      other.idempotencyKey == idempotencyKey &&
-      other.reason == reason;
-
-    @override
-    int get hashCode =>
-        availableDelta.hashCode +
-        currency.hashCode +
-        heldDelta.hashCode +
-        idempotencyKey.hashCode +
-        reason.hashCode;
-
-  factory WalletAdjustmentRequest.fromJson(Map<String, dynamic> json) => _$WalletAdjustmentRequestFromJson(json);
+  factory WalletAdjustmentRequest.fromJson(Map<String, dynamic> json) =>
+      _$WalletAdjustmentRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WalletAdjustmentRequestToJson(this);
 
@@ -119,6 +83,4 @@ class WalletAdjustmentRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

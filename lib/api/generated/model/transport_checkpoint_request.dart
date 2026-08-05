@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'transport_checkpoint_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,21 @@ part 'transport_checkpoint_request.g.dart';
 )
 class TransportCheckpointRequest {
   /// Returns a new [TransportCheckpointRequest] instance.
-  TransportCheckpointRequest({
+  TransportCheckpointRequest({required this.status});
 
-    required  this.status,
-  });
-
-  @JsonKey(
-    
-    name: r'status',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'status', required: true, includeIfNull: false)
   final TransportCheckpoint status;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TransportCheckpointRequest && other.status == status;
 
+  @override
+  int get hashCode => status.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is TransportCheckpointRequest &&
-      other.status == status;
-
-    @override
-    int get hashCode =>
-        status.hashCode;
-
-  factory TransportCheckpointRequest.fromJson(Map<String, dynamic> json) => _$TransportCheckpointRequestFromJson(json);
+  factory TransportCheckpointRequest.fromJson(Map<String, dynamic> json) =>
+      _$TransportCheckpointRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransportCheckpointRequestToJson(this);
 
@@ -54,6 +40,4 @@ class TransportCheckpointRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

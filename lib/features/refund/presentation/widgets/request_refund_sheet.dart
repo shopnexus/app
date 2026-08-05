@@ -41,19 +41,21 @@ class _RequestRefundSheetState extends ConsumerState<RequestRefundSheet> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _submitting = true);
     try {
-      final refund = await ref.read(refundRepositoryProvider).request(
-        orderId: widget.orderId,
-        reason: _reasonController.text.trim(),
-      );
+      final refund = await ref
+          .read(refundRepositoryProvider)
+          .request(
+            orderId: widget.orderId,
+            reason: _reasonController.text.trim(),
+          );
       ref.invalidate(refundListProvider);
       if (!mounted) return;
       Navigator.of(context).pop(refund);
     } catch (e) {
       if (!mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(ErrorHandler.getErrorMessage(e))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(ErrorHandler.getErrorMessage(e))));
     }
   }
 

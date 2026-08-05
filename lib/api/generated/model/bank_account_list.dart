@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'bank_account_list.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,20 @@ part 'bank_account_list.g.dart';
 )
 class BankAccountList {
   /// Returns a new [BankAccountList] instance.
-  BankAccountList({
+  BankAccountList({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<BankAccount> data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is BankAccountList && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is BankAccountList &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory BankAccountList.fromJson(Map<String, dynamic> json) => _$BankAccountListFromJson(json);
+  factory BankAccountList.fromJson(Map<String, dynamic> json) =>
+      _$BankAccountListFromJson(json);
 
   Map<String, dynamic> toJson() => _$BankAccountListToJson(this);
 
@@ -54,6 +39,4 @@ class BankAccountList {
   String toString() {
     return toJson().toString();
   }
-
 }
-

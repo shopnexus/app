@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'identity_verification_ticket.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,66 +19,43 @@ part 'identity_verification_ticket.g.dart';
 class IdentityVerificationTicket {
   /// Returns a new [IdentityVerificationTicket] instance.
   IdentityVerificationTicket({
+    required this.document,
 
-    required  this.document,
+    this.vendorSessionExpiresAt,
 
-     this.vendorSessionExpiresAt,
-
-     this.vendorSessionUrl,
+    this.vendorSessionUrl,
   });
 
-  @JsonKey(
-    
-    name: r'document',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'document', required: true, includeIfNull: false)
   final IdentityDocument document;
 
-
-
   @JsonKey(
-    
     name: r'vendor_session_expires_at',
     required: false,
     includeIfNull: false,
   )
-
-
   final DateTime? vendorSessionExpiresAt;
 
-
-
-      /// Where the caller finishes the check with the vendor.
-  @JsonKey(
-    
-    name: r'vendor_session_url',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Where the caller finishes the check with the vendor.
+  @JsonKey(name: r'vendor_session_url', required: false, includeIfNull: false)
   final String? vendorSessionUrl;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is IdentityVerificationTicket &&
+          other.document == document &&
+          other.vendorSessionExpiresAt == vendorSessionExpiresAt &&
+          other.vendorSessionUrl == vendorSessionUrl;
 
+  @override
+  int get hashCode =>
+      document.hashCode +
+      (vendorSessionExpiresAt == null ? 0 : vendorSessionExpiresAt.hashCode) +
+      (vendorSessionUrl == null ? 0 : vendorSessionUrl.hashCode);
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is IdentityVerificationTicket &&
-      other.document == document &&
-      other.vendorSessionExpiresAt == vendorSessionExpiresAt &&
-      other.vendorSessionUrl == vendorSessionUrl;
-
-    @override
-    int get hashCode =>
-        document.hashCode +
-        (vendorSessionExpiresAt == null ? 0 : vendorSessionExpiresAt.hashCode) +
-        (vendorSessionUrl == null ? 0 : vendorSessionUrl.hashCode);
-
-  factory IdentityVerificationTicket.fromJson(Map<String, dynamic> json) => _$IdentityVerificationTicketFromJson(json);
+  factory IdentityVerificationTicket.fromJson(Map<String, dynamic> json) =>
+      _$IdentityVerificationTicketFromJson(json);
 
   Map<String, dynamic> toJson() => _$IdentityVerificationTicketToJson(this);
 
@@ -87,6 +63,4 @@ class IdentityVerificationTicket {
   String toString() {
     return toJson().toString();
   }
-
 }
-

@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'submit_feedback_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,52 +17,28 @@ part 'submit_feedback_request.g.dart';
 )
 class SubmitFeedbackRequest {
   /// Returns a new [SubmitFeedbackRequest] instance.
-  SubmitFeedbackRequest({
+  SubmitFeedbackRequest({this.comment, required this.rating});
 
-     this.comment,
-
-    required  this.rating,
-  });
-
-  @JsonKey(
-    
-    name: r'comment',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'comment', required: false, includeIfNull: false)
   final String? comment;
 
-
-
-          // minimum: 1
-          // maximum: 5
-  @JsonKey(
-    
-    name: r'rating',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 1
+  // maximum: 5
+  @JsonKey(name: r'rating', required: true, includeIfNull: false)
   final int rating;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SubmitFeedbackRequest &&
+          other.comment == comment &&
+          other.rating == rating;
 
+  @override
+  int get hashCode => comment.hashCode + rating.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is SubmitFeedbackRequest &&
-      other.comment == comment &&
-      other.rating == rating;
-
-    @override
-    int get hashCode =>
-        comment.hashCode +
-        rating.hashCode;
-
-  factory SubmitFeedbackRequest.fromJson(Map<String, dynamic> json) => _$SubmitFeedbackRequestFromJson(json);
+  factory SubmitFeedbackRequest.fromJson(Map<String, dynamic> json) =>
+      _$SubmitFeedbackRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$SubmitFeedbackRequestToJson(this);
 
@@ -71,6 +46,4 @@ class SubmitFeedbackRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

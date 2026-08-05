@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'admin_wallets_account_id_adjustments_post200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,41 +18,29 @@ part 'admin_wallets_account_id_adjustments_post200_response.g.dart';
 )
 class AdminWalletsAccountIDAdjustmentsPost200Response {
   /// Returns a new [AdminWalletsAccountIDAdjustmentsPost200Response] instance.
-  AdminWalletsAccountIDAdjustmentsPost200Response({
+  AdminWalletsAccountIDAdjustmentsPost200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final Wallet data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminWalletsAccountIDAdjustmentsPost200Response &&
+          other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
+  factory AdminWalletsAccountIDAdjustmentsPost200Response.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AdminWalletsAccountIDAdjustmentsPost200ResponseFromJson(json);
 
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AdminWalletsAccountIDAdjustmentsPost200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory AdminWalletsAccountIDAdjustmentsPost200Response.fromJson(Map<String, dynamic> json) => _$AdminWalletsAccountIDAdjustmentsPost200ResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AdminWalletsAccountIDAdjustmentsPost200ResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$AdminWalletsAccountIDAdjustmentsPost200ResponseToJson(this);
 
   @override
   String toString() {
     return toJson().toString();
   }
-
 }
-

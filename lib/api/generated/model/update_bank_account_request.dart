@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'update_bank_account_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,35 +17,22 @@ part 'update_bank_account_request.g.dart';
 )
 class UpdateBankAccountRequest {
   /// Returns a new [UpdateBankAccountRequest] instance.
-  UpdateBankAccountRequest({
+  UpdateBankAccountRequest({required this.isDefault});
 
-    required  this.isDefault,
-  });
-
-      /// The only mutable field
-  @JsonKey(
-    
-    name: r'is_default',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// The only mutable field
+  @JsonKey(name: r'is_default', required: true, includeIfNull: false)
   final bool isDefault;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UpdateBankAccountRequest && other.isDefault == isDefault;
 
+  @override
+  int get hashCode => isDefault.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is UpdateBankAccountRequest &&
-      other.isDefault == isDefault;
-
-    @override
-    int get hashCode =>
-        isDefault.hashCode;
-
-  factory UpdateBankAccountRequest.fromJson(Map<String, dynamic> json) => _$UpdateBankAccountRequestFromJson(json);
+  factory UpdateBankAccountRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateBankAccountRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$UpdateBankAccountRequestToJson(this);
 
@@ -54,6 +40,4 @@ class UpdateBankAccountRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

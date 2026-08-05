@@ -814,12 +814,14 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
     if (ticket == null || !mounted) return;
     await ref.read(helpCenterProvider.notifier).refresh();
     if (!mounted) return;
-    context.push('/account/help-center/${ticket.id}');
+    // This State's own context, which the mounted check above covers.
+    this.context.push('/account/help-center/${ticket.id}');
   }
 
   String _formatDate(DateTime at) {
     final local = at.toLocal();
-    final two = (int n) => n.toString().padLeft(2, '0');
-    return '${two(local.day)}/${two(local.month)}/${local.year} ${two(local.hour)}:${two(local.minute)}';
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${two(local.day)}/${two(local.month)}/${local.year} '
+        '${two(local.hour)}:${two(local.minute)}';
   }
 }

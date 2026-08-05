@@ -46,14 +46,11 @@ void main() {
   });
 
   test('the self-serve list is exactly the kinds needing no ref', () {
-    expect(
-      TicketKindInfo.selfServe.map((info) => info.kind),
-      [
-        TicketKind.payment,
-        TicketKind.account,
-        TicketKind.featureRequest,
-        TicketKind.other,
-      ],
-    );
+    expect(TicketKindInfo.selfServe.map((info) => info.kind), [
+      TicketKind.payment,
+      TicketKind.account,
+      TicketKind.featureRequest,
+      TicketKind.other,
+    ]);
   });
 }

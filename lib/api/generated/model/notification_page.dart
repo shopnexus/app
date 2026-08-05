@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'notification_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'notification_page.g.dart';
 )
 class NotificationPage {
   /// Returns a new [NotificationPage] instance.
-  NotificationPage({
+  NotificationPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Notification> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final CursorMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotificationPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is NotificationPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory NotificationPage.fromJson(Map<String, dynamic> json) => _$NotificationPageFromJson(json);
+  factory NotificationPage.fromJson(Map<String, dynamic> json) =>
+      _$NotificationPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$NotificationPageToJson(this);
 
@@ -71,6 +44,4 @@ class NotificationPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

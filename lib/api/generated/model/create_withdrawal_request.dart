@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'create_withdrawal_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,67 +18,38 @@ part 'create_withdrawal_request.g.dart';
 class CreateWithdrawalRequest {
   /// Returns a new [CreateWithdrawalRequest] instance.
   CreateWithdrawalRequest({
+    required this.amount,
 
-    required  this.amount,
+    required this.bankAccountId,
 
-    required  this.bankAccountId,
-
-    required  this.currency,
+    required this.currency,
   });
 
-          // minimum: 1
-  @JsonKey(
-    
-    name: r'amount',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 1
+  @JsonKey(name: r'amount', required: true, includeIfNull: false)
   final int amount;
 
-
-
-  @JsonKey(
-    
-    name: r'bank_account_id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'bank_account_id', required: true, includeIfNull: false)
   final String bankAccountId;
 
-
-
-      /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one. 
-  @JsonKey(
-    
-    name: r'currency',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one.
+  @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CreateWithdrawalRequest &&
+          other.amount == amount &&
+          other.bankAccountId == bankAccountId &&
+          other.currency == currency;
 
+  @override
+  int get hashCode =>
+      amount.hashCode + bankAccountId.hashCode + currency.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is CreateWithdrawalRequest &&
-      other.amount == amount &&
-      other.bankAccountId == bankAccountId &&
-      other.currency == currency;
-
-    @override
-    int get hashCode =>
-        amount.hashCode +
-        bankAccountId.hashCode +
-        currency.hashCode;
-
-  factory CreateWithdrawalRequest.fromJson(Map<String, dynamic> json) => _$CreateWithdrawalRequestFromJson(json);
+  factory CreateWithdrawalRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateWithdrawalRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$CreateWithdrawalRequestToJson(this);
 
@@ -87,6 +57,4 @@ class CreateWithdrawalRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

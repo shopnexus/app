@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'add_attachments_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,21 @@ part 'add_attachments_request.g.dart';
 )
 class AddAttachmentsRequest {
   /// Returns a new [AddAttachmentsRequest] instance.
-  AddAttachmentsRequest({
+  AddAttachmentsRequest({required this.attachments});
 
-    required  this.attachments,
-  });
-
-  @JsonKey(
-    
-    name: r'attachments',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'attachments', required: true, includeIfNull: false)
   final List<String> attachments;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AddAttachmentsRequest && other.attachments == attachments;
 
+  @override
+  int get hashCode => attachments.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AddAttachmentsRequest &&
-      other.attachments == attachments;
-
-    @override
-    int get hashCode =>
-        attachments.hashCode;
-
-  factory AddAttachmentsRequest.fromJson(Map<String, dynamic> json) => _$AddAttachmentsRequestFromJson(json);
+  factory AddAttachmentsRequest.fromJson(Map<String, dynamic> json) =>
+      _$AddAttachmentsRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$AddAttachmentsRequestToJson(this);
 
@@ -53,6 +39,4 @@ class AddAttachmentsRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

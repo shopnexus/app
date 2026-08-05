@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'order_address_snapshot.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,133 +18,70 @@ part 'order_address_snapshot.g.dart';
 class OrderAddressSnapshot {
   /// Returns a new [OrderAddressSnapshot] instance.
   OrderAddressSnapshot({
+    this.addressDetail,
 
-     this.addressDetail,
+    required this.country,
 
-    required  this.country,
+    this.districtCode,
 
-     this.districtCode,
+    required this.fullName,
 
-    required  this.fullName,
+    required this.phone,
 
-    required  this.phone,
+    this.provinceCode,
 
-     this.provinceCode,
-
-     this.wardCode,
+    this.wardCode,
   });
 
-      /// The street line and anything below it
-  @JsonKey(
-    
-    name: r'address_detail',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// The street line and anything below it
+  @JsonKey(name: r'address_detail', required: false, includeIfNull: false)
   final String? addressDetail;
 
-
-
-      /// ISO 3166-1 alpha-2
-  @JsonKey(
-    
-    name: r'country',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// ISO 3166-1 alpha-2
+  @JsonKey(name: r'country', required: true, includeIfNull: false)
   final String country;
 
-
-
-      /// Null where the country has no district tier
-  @JsonKey(
-    
-    name: r'district_code',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Null where the country has no district tier
+  @JsonKey(name: r'district_code', required: false, includeIfNull: false)
   final String? districtCode;
 
-
-
-  @JsonKey(
-    
-    name: r'full_name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'full_name', required: true, includeIfNull: false)
   final String fullName;
 
-
-
-      /// E.164
-  @JsonKey(
-    
-    name: r'phone',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// E.164
+  @JsonKey(name: r'phone', required: true, includeIfNull: false)
   final String phone;
 
-
-
-  @JsonKey(
-    
-    name: r'province_code',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'province_code', required: false, includeIfNull: false)
   final String? provinceCode;
 
-
-
-  @JsonKey(
-    
-    name: r'ward_code',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'ward_code', required: false, includeIfNull: false)
   final String? wardCode;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OrderAddressSnapshot &&
+          other.addressDetail == addressDetail &&
+          other.country == country &&
+          other.districtCode == districtCode &&
+          other.fullName == fullName &&
+          other.phone == phone &&
+          other.provinceCode == provinceCode &&
+          other.wardCode == wardCode;
 
+  @override
+  int get hashCode =>
+      (addressDetail == null ? 0 : addressDetail.hashCode) +
+      country.hashCode +
+      (districtCode == null ? 0 : districtCode.hashCode) +
+      fullName.hashCode +
+      phone.hashCode +
+      provinceCode.hashCode +
+      wardCode.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is OrderAddressSnapshot &&
-      other.addressDetail == addressDetail &&
-      other.country == country &&
-      other.districtCode == districtCode &&
-      other.fullName == fullName &&
-      other.phone == phone &&
-      other.provinceCode == provinceCode &&
-      other.wardCode == wardCode;
-
-    @override
-    int get hashCode =>
-        (addressDetail == null ? 0 : addressDetail.hashCode) +
-        country.hashCode +
-        (districtCode == null ? 0 : districtCode.hashCode) +
-        fullName.hashCode +
-        phone.hashCode +
-        provinceCode.hashCode +
-        wardCode.hashCode;
-
-  factory OrderAddressSnapshot.fromJson(Map<String, dynamic> json) => _$OrderAddressSnapshotFromJson(json);
+  factory OrderAddressSnapshot.fromJson(Map<String, dynamic> json) =>
+      _$OrderAddressSnapshotFromJson(json);
 
   Map<String, dynamic> toJson() => _$OrderAddressSnapshotToJson(this);
 
@@ -153,6 +89,4 @@ class OrderAddressSnapshot {
   String toString() {
     return toJson().toString();
   }
-
 }
-

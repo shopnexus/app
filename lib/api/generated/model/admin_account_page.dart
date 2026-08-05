@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'admin_account_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'admin_account_page.g.dart';
 )
 class AdminAccountPage {
   /// Returns a new [AdminAccountPage] instance.
-  AdminAccountPage({
+  AdminAccountPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<AdminAccount> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final PageMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminAccountPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AdminAccountPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory AdminAccountPage.fromJson(Map<String, dynamic> json) => _$AdminAccountPageFromJson(json);
+  factory AdminAccountPage.fromJson(Map<String, dynamic> json) =>
+      _$AdminAccountPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$AdminAccountPageToJson(this);
 
@@ -71,6 +44,4 @@ class AdminAccountPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

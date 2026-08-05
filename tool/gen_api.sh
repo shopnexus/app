@@ -45,6 +45,10 @@ grep -rl 'package:shopnexus_api/' "$OUT" \
       -e "s#package:shopnexus_api/src/#package:$PKG/api/generated/#g" \
       -e "s#package:shopnexus_api/shopnexus_api.dart#package:$PKG/api/generated/shopnexus_api.dart#g"
 
+# The project formats all of lib/, so format the output here too — otherwise the
+# next `dart format` reports 250 files changed and the diff hides the real one.
+dart format "$OUT" > /dev/null
+
 echo "generated $(find "$OUT" -name '*.dart' | wc -l) files into lib/api/generated"
 
 if [ "${1:-}" != "--no-build" ]; then

@@ -262,9 +262,7 @@ class CartScreen extends ConsumerWidget {
       item.sku?.price ?? 0,
       originalCurrency: item.currency,
       preferredCurrency: preferredCurrency,
-      exchangeRate:
-          convertedPrice /
-          (itemPriceVal == 0 ? 1.0 : itemPriceVal),
+      exchangeRate: convertedPrice / (itemPriceVal == 0 ? 1.0 : itemPriceVal),
     );
 
     final itemBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;

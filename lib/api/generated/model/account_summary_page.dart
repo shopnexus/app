@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'account_summary_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'account_summary_page.g.dart';
 )
 class AccountSummaryPage {
   /// Returns a new [AccountSummaryPage] instance.
-  AccountSummaryPage({
+  AccountSummaryPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<AccountSummary> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final PageMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AccountSummaryPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AccountSummaryPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory AccountSummaryPage.fromJson(Map<String, dynamic> json) => _$AccountSummaryPageFromJson(json);
+  factory AccountSummaryPage.fromJson(Map<String, dynamic> json) =>
+      _$AccountSummaryPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$AccountSummaryPageToJson(this);
 
@@ -71,6 +44,4 @@ class AccountSummaryPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

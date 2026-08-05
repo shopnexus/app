@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'conversations_unread_count_get200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,41 +18,28 @@ part 'conversations_unread_count_get200_response.g.dart';
 )
 class ConversationsUnreadCountGet200Response {
   /// Returns a new [ConversationsUnreadCountGet200Response] instance.
-  ConversationsUnreadCountGet200Response({
+  ConversationsUnreadCountGet200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final ChatUnreadCount data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ConversationsUnreadCountGet200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
+  factory ConversationsUnreadCountGet200Response.fromJson(
+    Map<String, dynamic> json,
+  ) => _$ConversationsUnreadCountGet200ResponseFromJson(json);
 
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is ConversationsUnreadCountGet200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory ConversationsUnreadCountGet200Response.fromJson(Map<String, dynamic> json) => _$ConversationsUnreadCountGet200ResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ConversationsUnreadCountGet200ResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$ConversationsUnreadCountGet200ResponseToJson(this);
 
   @override
   String toString() {
     return toJson().toString();
   }
-
 }
-

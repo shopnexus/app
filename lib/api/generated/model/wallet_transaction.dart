@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'wallet_transaction.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,219 +19,111 @@ part 'wallet_transaction.g.dart';
 class WalletTransaction {
   /// Returns a new [WalletTransaction] instance.
   WalletTransaction({
+    required this.availableAfter,
 
-    required  this.availableAfter,
+    required this.availableDelta,
 
-    required  this.availableDelta,
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.currency,
 
-    required  this.currency,
+    this.groupId,
 
-     this.groupId,
+    required this.heldAfter,
 
-    required  this.heldAfter,
+    required this.heldDelta,
 
-    required  this.heldDelta,
+    required this.kind,
 
-    required  this.kind,
+    required this.note,
 
-    required  this.note,
+    this.refId,
 
-     this.refId,
+    this.refType,
 
-     this.refType,
-
-    required  this.seq,
+    required this.seq,
   });
 
-          // minimum: 0
-  @JsonKey(
-    
-    name: r'available_after',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 0
+  @JsonKey(name: r'available_after', required: true, includeIfNull: false)
   final int availableAfter;
 
-
-
-      /// Signed change to the available balance
-  @JsonKey(
-    
-    name: r'available_delta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Signed change to the available balance
+  @JsonKey(name: r'available_delta', required: true, includeIfNull: false)
   final int availableDelta;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-      /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one. 
-  @JsonKey(
-    
-    name: r'currency',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one.
+  @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
 
-
-
-      /// Shared by every leg of one logical movement — a checkout is a debit plus an escrow hold plus a fee. An opaque token for grouping rows in a response, not an address: nothing accepts it as input and no endpoint resolves it. 
-  @JsonKey(
-    
-    name: r'group_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Shared by every leg of one logical movement — a checkout is a debit plus an escrow hold plus a fee. An opaque token for grouping rows in a response, not an address: nothing accepts it as input and no endpoint resolves it.
+  @JsonKey(name: r'group_id', required: false, includeIfNull: false)
   final String? groupId;
 
-
-
-          // minimum: 0
-  @JsonKey(
-    
-    name: r'held_after',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 0
+  @JsonKey(name: r'held_after', required: true, includeIfNull: false)
   final int heldAfter;
 
-
-
-      /// Signed change to the held balance
-  @JsonKey(
-    
-    name: r'held_delta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Signed change to the held balance
+  @JsonKey(name: r'held_delta', required: true, includeIfNull: false)
   final int heldDelta;
 
-
-
-  @JsonKey(
-    
-    name: r'kind',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'kind', required: true, includeIfNull: false)
   final WalletTransactionKind kind;
 
-
-
-  @JsonKey(
-    
-    name: r'note',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'note', required: true, includeIfNull: false)
   final String note;
 
-
-
-      /// Opaque id of the referenced entity, its prefix given by `ref_type`.
-  @JsonKey(
-    
-    name: r'ref_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Opaque id of the referenced entity, its prefix given by `ref_type`.
+  @JsonKey(name: r'ref_id', required: false, includeIfNull: false)
   final String? refId;
 
-
-
-      /// What this movement was for. Null on an adjustment.
-  @JsonKey(
-    
-    name: r'ref_type',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// What this movement was for. Null on an adjustment.
+  @JsonKey(name: r'ref_type', required: false, includeIfNull: false)
   final WalletTransactionRefTypeEnum? refType;
 
-
-
-      /// Position in this wallet's ledger, from 1. Identifies the row and orders it; a gap means a missing movement. Per wallet, so each currency counts from 1 again. 
-          // minimum: 1
-  @JsonKey(
-    
-    name: r'seq',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Position in this wallet's ledger, from 1. Identifies the row and orders it; a gap means a missing movement. Per wallet, so each currency counts from 1 again.
+  // minimum: 1
+  @JsonKey(name: r'seq', required: true, includeIfNull: false)
   final int seq;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WalletTransaction &&
+          other.availableAfter == availableAfter &&
+          other.availableDelta == availableDelta &&
+          other.createdAt == createdAt &&
+          other.currency == currency &&
+          other.groupId == groupId &&
+          other.heldAfter == heldAfter &&
+          other.heldDelta == heldDelta &&
+          other.kind == kind &&
+          other.note == note &&
+          other.refId == refId &&
+          other.refType == refType &&
+          other.seq == seq;
 
+  @override
+  int get hashCode =>
+      availableAfter.hashCode +
+      availableDelta.hashCode +
+      createdAt.hashCode +
+      currency.hashCode +
+      (groupId == null ? 0 : groupId.hashCode) +
+      heldAfter.hashCode +
+      heldDelta.hashCode +
+      kind.hashCode +
+      note.hashCode +
+      (refId == null ? 0 : refId.hashCode) +
+      (refType == null ? 0 : refType.hashCode) +
+      seq.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is WalletTransaction &&
-      other.availableAfter == availableAfter &&
-      other.availableDelta == availableDelta &&
-      other.createdAt == createdAt &&
-      other.currency == currency &&
-      other.groupId == groupId &&
-      other.heldAfter == heldAfter &&
-      other.heldDelta == heldDelta &&
-      other.kind == kind &&
-      other.note == note &&
-      other.refId == refId &&
-      other.refType == refType &&
-      other.seq == seq;
-
-    @override
-    int get hashCode =>
-        availableAfter.hashCode +
-        availableDelta.hashCode +
-        createdAt.hashCode +
-        currency.hashCode +
-        (groupId == null ? 0 : groupId.hashCode) +
-        heldAfter.hashCode +
-        heldDelta.hashCode +
-        kind.hashCode +
-        note.hashCode +
-        (refId == null ? 0 : refId.hashCode) +
-        (refType == null ? 0 : refType.hashCode) +
-        seq.hashCode;
-
-  factory WalletTransaction.fromJson(Map<String, dynamic> json) => _$WalletTransactionFromJson(json);
+  factory WalletTransaction.fromJson(Map<String, dynamic> json) =>
+      _$WalletTransactionFromJson(json);
 
   Map<String, dynamic> toJson() => _$WalletTransactionToJson(this);
 
@@ -240,24 +131,22 @@ class WalletTransaction {
   String toString() {
     return toJson().toString();
   }
-
 }
 
 /// What this movement was for. Null on an adjustment.
 enum WalletTransactionRefTypeEnum {
-    /// What this movement was for. Null on an adjustment.
-@JsonValue(r'order')
-order(r'order'),
-    /// What this movement was for. Null on an adjustment.
-@JsonValue(r'payment-session')
-paymentSession(r'payment-session');
+  /// What this movement was for. Null on an adjustment.
+  @JsonValue(r'order')
+  order(r'order'),
 
-const WalletTransactionRefTypeEnum(this.value);
+  /// What this movement was for. Null on an adjustment.
+  @JsonValue(r'payment-session')
+  paymentSession(r'payment-session');
 
-final String value;
+  const WalletTransactionRefTypeEnum(this.value);
 
-@override
-String toString() => value;
+  final String value;
+
+  @override
+  String toString() => value;
 }
-
-

@@ -24,12 +24,18 @@ class RefundStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final (Color background, Color foreground) = switch (status) {
-      RefundStatus.accepted => (scheme.primaryContainer, scheme.onPrimaryContainer),
+      RefundStatus.accepted => (
+        scheme.primaryContainer,
+        scheme.onPrimaryContainer,
+      ),
       RefundStatus.rejected || RefundStatus.cancelled => (
         scheme.errorContainer,
         scheme.onErrorContainer,
       ),
-      RefundStatus.disputed => (scheme.tertiaryContainer, scheme.onTertiaryContainer),
+      RefundStatus.disputed => (
+        scheme.tertiaryContainer,
+        scheme.onTertiaryContainer,
+      ),
       _ => (scheme.secondaryContainer, scheme.onSecondaryContainer),
     };
 

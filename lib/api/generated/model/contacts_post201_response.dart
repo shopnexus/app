@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'contacts_post201_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,21 @@ part 'contacts_post201_response.g.dart';
 )
 class ContactsPost201Response {
   /// Returns a new [ContactsPost201Response] instance.
-  ContactsPost201Response({
+  ContactsPost201Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final Contact data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ContactsPost201Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is ContactsPost201Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory ContactsPost201Response.fromJson(Map<String, dynamic> json) => _$ContactsPost201ResponseFromJson(json);
+  factory ContactsPost201Response.fromJson(Map<String, dynamic> json) =>
+      _$ContactsPost201ResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ContactsPost201ResponseToJson(this);
 
@@ -54,6 +40,4 @@ class ContactsPost201Response {
   String toString() {
     return toJson().toString();
   }
-
 }
-

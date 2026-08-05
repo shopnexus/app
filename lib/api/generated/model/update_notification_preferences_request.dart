@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'update_notification_preferences_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,41 +18,28 @@ part 'update_notification_preferences_request.g.dart';
 )
 class UpdateNotificationPreferencesRequest {
   /// Returns a new [UpdateNotificationPreferencesRequest] instance.
-  UpdateNotificationPreferencesRequest({
+  UpdateNotificationPreferencesRequest({required this.items});
 
-    required  this.items,
-  });
-
-  @JsonKey(
-    
-    name: r'items',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'items', required: true, includeIfNull: false)
   final List<UpdateNotificationPreferencesRequestItemsInner> items;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UpdateNotificationPreferencesRequest && other.items == items;
 
+  @override
+  int get hashCode => items.hashCode;
 
+  factory UpdateNotificationPreferencesRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$UpdateNotificationPreferencesRequestFromJson(json);
 
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is UpdateNotificationPreferencesRequest &&
-      other.items == items;
-
-    @override
-    int get hashCode =>
-        items.hashCode;
-
-  factory UpdateNotificationPreferencesRequest.fromJson(Map<String, dynamic> json) => _$UpdateNotificationPreferencesRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$UpdateNotificationPreferencesRequestToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$UpdateNotificationPreferencesRequestToJson(this);
 
   @override
   String toString() {
     return toJson().toString();
   }
-
 }
-

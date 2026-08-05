@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'review_reply.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,98 +19,53 @@ part 'review_reply.g.dart';
 class ReviewReply {
   /// Returns a new [ReviewReply] instance.
   ReviewReply({
+    required this.author,
 
-    required  this.author,
+    required this.body,
 
-    required  this.body,
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.id,
 
-    required  this.id,
-
-    required  this.isSeller,
+    required this.isSeller,
   });
 
-  @JsonKey(
-    
-    name: r'author',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'author', required: true, includeIfNull: false)
   final AccountSummary author;
 
-
-
-  @JsonKey(
-    
-    name: r'body',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'body', required: true, includeIfNull: false)
   final String body;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-      /// Whether the author owns the listing.
-  @JsonKey(
-    
-    name: r'is_seller',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Whether the author owns the listing.
+  @JsonKey(name: r'is_seller', required: true, includeIfNull: false)
   final bool isSeller;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ReviewReply &&
+          other.author == author &&
+          other.body == body &&
+          other.createdAt == createdAt &&
+          other.id == id &&
+          other.isSeller == isSeller;
 
+  @override
+  int get hashCode =>
+      author.hashCode +
+      body.hashCode +
+      createdAt.hashCode +
+      id.hashCode +
+      isSeller.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is ReviewReply &&
-      other.author == author &&
-      other.body == body &&
-      other.createdAt == createdAt &&
-      other.id == id &&
-      other.isSeller == isSeller;
-
-    @override
-    int get hashCode =>
-        author.hashCode +
-        body.hashCode +
-        createdAt.hashCode +
-        id.hashCode +
-        isSeller.hashCode;
-
-  factory ReviewReply.fromJson(Map<String, dynamic> json) => _$ReviewReplyFromJson(json);
+  factory ReviewReply.fromJson(Map<String, dynamic> json) =>
+      _$ReviewReplyFromJson(json);
 
   Map<String, dynamic> toJson() => _$ReviewReplyToJson(this);
 
@@ -119,6 +73,4 @@ class ReviewReply {
   String toString() {
     return toJson().toString();
   }
-
 }
-

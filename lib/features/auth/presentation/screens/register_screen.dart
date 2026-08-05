@@ -172,7 +172,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           style: TextStyle(fontSize: 14, color: labelColor),
                         ),
                         const SizedBox(height: 36),
-  
+
                         // Country Selection
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,30 +215,43 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               decoration: InputDecoration(
                                 fillColor: backgroundColor,
                                 filled: true,
-                                prefixIcon: Icon(Icons.public, color: labelColor),
+                                prefixIcon: Icon(
+                                  Icons.public,
+                                  color: labelColor,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: BorderSide(
-                                    color: isDarkMode ? const Color(0xFF3E4947) : const Color(0xFFE0E3E4),
+                                    color: isDarkMode
+                                        ? const Color(0xFF3E4947)
+                                        : const Color(0xFFE0E3E4),
                                   ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: BorderSide(
-                                    color: isDarkMode ? const Color(0xFF3E4947) : const Color(0xFFE0E3E4),
+                                    color: isDarkMode
+                                        ? const Color(0xFF3E4947)
+                                        : const Color(0xFFE0E3E4),
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(color: primaryColor, width: 1.5),
+                                  borderSide: BorderSide(
+                                    color: primaryColor,
+                                    width: 1.5,
+                                  ),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 14,
+                                ),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 16),
-  
+
                         // Full Name
                         CustomTextField(
                           label: 'HỌ VÀ TÊN',
@@ -257,14 +270,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           enabled: !isLoading,
                         ),
                         const SizedBox(height: 16),
-  
+
                         // Email Address
                         CustomTextField(
                           label: 'ĐỊA CHỈ EMAIL',
                           hintText: 'john@example.com',
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
-                          prefixIcon: Icon(Icons.mail_outline, color: labelColor),
+                          prefixIcon: Icon(
+                            Icons.mail_outline,
+                            color: labelColor,
+                          ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return 'Vui lòng nhập địa chỉ email';
@@ -280,14 +296,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           enabled: !isLoading,
                         ),
                         const SizedBox(height: 16),
-  
+
                         // Password
                         CustomTextField(
                           label: 'MẬT KHẨU',
                           hintText: '••••••••',
                           controller: _passwordController,
                           isPassword: true,
-                          prefixIcon: Icon(Icons.lock_outline, color: labelColor),
+                          prefixIcon: Icon(
+                            Icons.lock_outline,
+                            color: labelColor,
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Vui lòng nhập mật khẩu';
@@ -300,14 +319,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           enabled: !isLoading,
                         ),
                         const SizedBox(height: 16),
-  
+
                         // Confirm Password
                         CustomTextField(
                           label: 'NHẬP LẠI MẬT KHẨU',
                           hintText: '••••••••',
                           controller: _confirmPasswordController,
                           isPassword: true,
-                          prefixIcon: Icon(Icons.lock_outline, color: labelColor),
+                          prefixIcon: Icon(
+                            Icons.lock_outline,
+                            color: labelColor,
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Vui lòng nhập lại mật khẩu';
@@ -320,7 +342,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           enabled: !isLoading,
                         ),
                         const SizedBox(height: 16),
-  
+
                         // Terms and Conditions checkbox
                         Row(
                           children: [
@@ -350,7 +372,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ],
                         ),
                         const SizedBox(height: 24),
-  
+
                         // Register Button
                         CustomButton(
                           text: 'Đăng ký tài khoản',
@@ -358,7 +380,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           isLoading: isLoading,
                         ),
                         const SizedBox(height: 24),
-  
+
                         // Back to Login Link
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,

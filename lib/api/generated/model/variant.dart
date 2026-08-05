@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'variant.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -21,151 +20,79 @@ part 'variant.g.dart';
 class Variant {
   /// Returns a new [Variant] instance.
   Variant({
+    required this.attributes,
 
-    required  this.attributes,
+    required this.createdAt,
 
-    required  this.createdAt,
+    required this.id,
 
-    required  this.id,
+    required this.images,
 
-    required  this.images,
+    required this.isFeatured,
 
-    required  this.isFeatured,
+    required this.packageDetails,
 
-    required  this.packageDetails,
+    required this.price,
 
-    required  this.price,
-
-    required  this.stock,
+    required this.stock,
   });
 
-      /// Variant attributes such as size and colour.
-  @JsonKey(
-    
-    name: r'attributes',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Variant attributes such as size and colour.
+  @JsonKey(name: r'attributes', required: true, includeIfNull: false)
   final Map<String, Object> attributes;
 
-
-
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-      /// Empty means fall back to the listing gallery.
-  @JsonKey(
-    
-    name: r'images',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Empty means fall back to the listing gallery.
+  @JsonKey(name: r'images', required: true, includeIfNull: false)
   final List<Resource> images;
 
-
-
-      /// The variant the card and search results show. At most one per listing.
-  @JsonKey(
-    
-    name: r'is_featured',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// The variant the card and search results show. At most one per listing.
+  @JsonKey(name: r'is_featured', required: true, includeIfNull: false)
   final bool isFeatured;
 
-
-
-      /// Weight and dimensions. A shipping quote is computed from these.
-  @JsonKey(
-    
-    name: r'package_details',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Weight and dimensions. A shipping quote is computed from these.
+  @JsonKey(name: r'package_details', required: true, includeIfNull: false)
   final Map<String, Object> packageDetails;
 
-
-
-      /// Smallest unit of the listing's currency.
-          // minimum: 1
-  @JsonKey(
-    
-    name: r'price',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Smallest unit of the listing's currency.
+  // minimum: 1
+  @JsonKey(name: r'price', required: true, includeIfNull: false)
   final int price;
 
-
-
-  @JsonKey(
-    
-    name: r'stock',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'stock', required: true, includeIfNull: false)
   final Stock stock;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Variant &&
+          other.attributes == attributes &&
+          other.createdAt == createdAt &&
+          other.id == id &&
+          other.images == images &&
+          other.isFeatured == isFeatured &&
+          other.packageDetails == packageDetails &&
+          other.price == price &&
+          other.stock == stock;
 
+  @override
+  int get hashCode =>
+      attributes.hashCode +
+      createdAt.hashCode +
+      id.hashCode +
+      images.hashCode +
+      isFeatured.hashCode +
+      packageDetails.hashCode +
+      price.hashCode +
+      stock.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is Variant &&
-      other.attributes == attributes &&
-      other.createdAt == createdAt &&
-      other.id == id &&
-      other.images == images &&
-      other.isFeatured == isFeatured &&
-      other.packageDetails == packageDetails &&
-      other.price == price &&
-      other.stock == stock;
-
-    @override
-    int get hashCode =>
-        attributes.hashCode +
-        createdAt.hashCode +
-        id.hashCode +
-        images.hashCode +
-        isFeatured.hashCode +
-        packageDetails.hashCode +
-        price.hashCode +
-        stock.hashCode;
-
-  factory Variant.fromJson(Map<String, dynamic> json) => _$VariantFromJson(json);
+  factory Variant.fromJson(Map<String, dynamic> json) =>
+      _$VariantFromJson(json);
 
   Map<String, dynamic> toJson() => _$VariantToJson(this);
 
@@ -173,6 +100,4 @@ class Variant {
   String toString() {
     return toJson().toString();
   }
-
 }
-

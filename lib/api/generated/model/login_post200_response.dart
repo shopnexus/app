@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'login_post200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,21 @@ part 'login_post200_response.g.dart';
 )
 class LoginPost200Response {
   /// Returns a new [LoginPost200Response] instance.
-  LoginPost200Response({
+  LoginPost200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final AuthResult data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LoginPost200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is LoginPost200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory LoginPost200Response.fromJson(Map<String, dynamic> json) => _$LoginPost200ResponseFromJson(json);
+  factory LoginPost200Response.fromJson(Map<String, dynamic> json) =>
+      _$LoginPost200ResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$LoginPost200ResponseToJson(this);
 
@@ -54,6 +40,4 @@ class LoginPost200Response {
   String toString() {
     return toJson().toString();
   }
-
 }
-

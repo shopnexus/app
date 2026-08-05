@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'withdrawal_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'withdrawal_page.g.dart';
 )
 class WithdrawalPage {
   /// Returns a new [WithdrawalPage] instance.
-  WithdrawalPage({
+  WithdrawalPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Withdrawal> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final PageMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WithdrawalPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is WithdrawalPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory WithdrawalPage.fromJson(Map<String, dynamic> json) => _$WithdrawalPageFromJson(json);
+  factory WithdrawalPage.fromJson(Map<String, dynamic> json) =>
+      _$WithdrawalPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$WithdrawalPageToJson(this);
 
@@ -71,6 +44,4 @@ class WithdrawalPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'identity_documents_post201_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,41 +18,28 @@ part 'identity_documents_post201_response.g.dart';
 )
 class IdentityDocumentsPost201Response {
   /// Returns a new [IdentityDocumentsPost201Response] instance.
-  IdentityDocumentsPost201Response({
+  IdentityDocumentsPost201Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final IdentityVerificationTicket data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is IdentityDocumentsPost201Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
+  factory IdentityDocumentsPost201Response.fromJson(
+    Map<String, dynamic> json,
+  ) => _$IdentityDocumentsPost201ResponseFromJson(json);
 
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is IdentityDocumentsPost201Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory IdentityDocumentsPost201Response.fromJson(Map<String, dynamic> json) => _$IdentityDocumentsPost201ResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$IdentityDocumentsPost201ResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$IdentityDocumentsPost201ResponseToJson(this);
 
   @override
   String toString() {
     return toJson().toString();
   }
-
 }
-

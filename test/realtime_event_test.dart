@@ -57,7 +57,10 @@ void main() {
       });
 
       expect(event, isA<ConversationReadEvent>());
-      expect((event! as ConversationReadEvent).mark.readerId, 'acc_4mfx7bd32h9qk');
+      expect(
+        (event! as ConversationReadEvent).mark.readerId,
+        'acc_4mfx7bd32h9qk',
+      );
     });
 
     test('decodes account.notification_created with its whole payload', () {

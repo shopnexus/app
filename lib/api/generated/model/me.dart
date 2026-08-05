@@ -11,7 +11,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'me.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -22,193 +21,93 @@ part 'me.g.dart';
 class Me {
   /// Returns a new [Me] instance.
   Me({
+    required this.createdAt,
 
-    required  this.createdAt,
+    this.email,
 
-     this.email,
+    required this.emailVerified,
 
-    required  this.emailVerified,
+    required this.hasPassword,
 
-    required  this.hasPassword,
+    required this.id,
 
-    required  this.id,
+    required this.identityVerified,
 
-    required  this.identityVerified,
+    this.phone,
 
-     this.phone,
+    required this.profile,
 
-    required  this.profile,
+    required this.role,
 
-    required  this.role,
+    required this.status,
 
-    required  this.status,
-
-     this.username,
+    this.username,
   });
 
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'email',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'email', required: false, includeIfNull: false)
   final String? email;
 
-
-
-  @JsonKey(
-    
-    name: r'email_verified',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'email_verified', required: true, includeIfNull: false)
   final bool emailVerified;
 
-
-
-      /// False on a provider-only account. Unlinking the last provider is refused when this is false.
-  @JsonKey(
-    
-    name: r'has_password',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// False on a provider-only account. Unlinking the last provider is refused when this is false.
+  @JsonKey(name: r'has_password', required: true, includeIfNull: false)
   final bool hasPassword;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-      /// Whether a live verified identity document exists. The payout gate reads this.
-  @JsonKey(
-    
-    name: r'identity_verified',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Whether a live verified identity document exists. The payout gate reads this.
+  @JsonKey(name: r'identity_verified', required: true, includeIfNull: false)
   final bool identityVerified;
 
-
-
-  @JsonKey(
-    
-    name: r'phone',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'phone', required: false, includeIfNull: false)
   final String? phone;
 
-
-
-  @JsonKey(
-    
-    name: r'profile',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'profile', required: true, includeIfNull: false)
   final Profile profile;
 
-
-
-  @JsonKey(
-    
-    name: r'role',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'role', required: true, includeIfNull: false)
   final AccountRole role;
 
-
-
-  @JsonKey(
-    
-    name: r'status',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'status', required: true, includeIfNull: false)
   final AccountStatus status;
 
-
-
-  @JsonKey(
-    
-    name: r'username',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'username', required: false, includeIfNull: false)
   final String? username;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Me &&
+          other.createdAt == createdAt &&
+          other.email == email &&
+          other.emailVerified == emailVerified &&
+          other.hasPassword == hasPassword &&
+          other.id == id &&
+          other.identityVerified == identityVerified &&
+          other.phone == phone &&
+          other.profile == profile &&
+          other.role == role &&
+          other.status == status &&
+          other.username == username;
 
-
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is Me &&
-      other.createdAt == createdAt &&
-      other.email == email &&
-      other.emailVerified == emailVerified &&
-      other.hasPassword == hasPassword &&
-      other.id == id &&
-      other.identityVerified == identityVerified &&
-      other.phone == phone &&
-      other.profile == profile &&
-      other.role == role &&
-      other.status == status &&
-      other.username == username;
-
-    @override
-    int get hashCode =>
-        createdAt.hashCode +
-        (email == null ? 0 : email.hashCode) +
-        emailVerified.hashCode +
-        hasPassword.hashCode +
-        id.hashCode +
-        identityVerified.hashCode +
-        (phone == null ? 0 : phone.hashCode) +
-        profile.hashCode +
-        role.hashCode +
-        status.hashCode +
-        (username == null ? 0 : username.hashCode);
+  @override
+  int get hashCode =>
+      createdAt.hashCode +
+      (email == null ? 0 : email.hashCode) +
+      emailVerified.hashCode +
+      hasPassword.hashCode +
+      id.hashCode +
+      identityVerified.hashCode +
+      (phone == null ? 0 : phone.hashCode) +
+      profile.hashCode +
+      role.hashCode +
+      status.hashCode +
+      (username == null ? 0 : username.hashCode);
 
   factory Me.fromJson(Map<String, dynamic> json) => _$MeFromJson(json);
 
@@ -218,6 +117,4 @@ class Me {
   String toString() {
     return toJson().toString();
   }
-
 }
-

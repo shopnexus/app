@@ -214,10 +214,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     try {
       final checkoutRepo = ref.read(checkoutRepositoryProvider);
       final lines = state.resolvedItems.map((item) {
-        return CheckoutLine(
-          variantId: item.variantId,
-          quantity: item.quantity,
-        );
+        return CheckoutLine(variantId: item.variantId, quantity: item.quantity);
       }).toList();
 
       final quotes = await checkoutRepo.getShippingQuotes(
@@ -278,7 +275,8 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     try {
       final checkoutRepo = ref.read(checkoutRepositoryProvider);
       final contactId = state.selectedContact!.id;
-      final listingId = state.resolvedItems.firstOrNull?.listingId ??
+      final listingId =
+          state.resolvedItems.firstOrNull?.listingId ??
           state.resolvedItems.firstOrNull?.spuId ??
           'spu_1';
 
@@ -289,10 +287,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
       // 2. Chuyển đổi các items sang CheckoutLine (variant_id & quantity)
       final lines = state.resolvedItems.map((item) {
-        return CheckoutLine(
-          variantId: item.variantId,
-          quantity: item.quantity,
-        );
+        return CheckoutLine(variantId: item.variantId, quantity: item.quantity);
       }).toList();
 
       // 3. Thực hiện Checkout Draft Order

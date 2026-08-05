@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'open_ticket_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -21,117 +20,63 @@ part 'open_ticket_request.g.dart';
 class OpenTicketRequest {
   /// Returns a new [OpenTicketRequest] instance.
   OpenTicketRequest({
+    this.attachments,
 
-     this.attachments,
+    this.body,
 
-     this.body,
+    required this.kind,
 
-    required  this.kind,
+    this.reason,
 
-     this.reason,
+    this.refId,
 
-     this.refId,
-
-    required  this.subject,
+    required this.subject,
   });
 
-      /// Confirmed uploads, posted as the opening message's images.
-  @JsonKey(
-    
-    name: r'attachments',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Confirmed uploads, posted as the opening message's images.
+  @JsonKey(name: r'attachments', required: false, includeIfNull: false)
   final List<String>? attachments;
 
-
-
-      /// The first message of the thread, not a column on the ticket.
-  @JsonKey(
-    
-    name: r'body',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// The first message of the thread, not a column on the ticket.
+  @JsonKey(name: r'body', required: false, includeIfNull: false)
   final String? body;
 
-
-
-  @JsonKey(
-    
-    name: r'kind',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'kind', required: true, includeIfNull: false)
   final TicketKind kind;
 
-
-
-      /// Report kinds only.
-  @JsonKey(
-    
-    name: r'reason',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Report kinds only.
+  @JsonKey(name: r'reason', required: false, includeIfNull: false)
   final TicketReason? reason;
 
-
-
-      /// Required for the kinds that are about something, refused for the others.
-  @JsonKey(
-    
-    name: r'ref_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Required for the kinds that are about something, refused for the others.
+  @JsonKey(name: r'ref_id', required: false, includeIfNull: false)
   final String? refId;
 
-
-
-  @JsonKey(
-    
-    name: r'subject',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'subject', required: true, includeIfNull: false)
   final String subject;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OpenTicketRequest &&
+          other.attachments == attachments &&
+          other.body == body &&
+          other.kind == kind &&
+          other.reason == reason &&
+          other.refId == refId &&
+          other.subject == subject;
 
+  @override
+  int get hashCode =>
+      attachments.hashCode +
+      body.hashCode +
+      kind.hashCode +
+      reason.hashCode +
+      refId.hashCode +
+      subject.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is OpenTicketRequest &&
-      other.attachments == attachments &&
-      other.body == body &&
-      other.kind == kind &&
-      other.reason == reason &&
-      other.refId == refId &&
-      other.subject == subject;
-
-    @override
-    int get hashCode =>
-        attachments.hashCode +
-        body.hashCode +
-        kind.hashCode +
-        reason.hashCode +
-        refId.hashCode +
-        subject.hashCode;
-
-  factory OpenTicketRequest.fromJson(Map<String, dynamic> json) => _$OpenTicketRequestFromJson(json);
+  factory OpenTicketRequest.fromJson(Map<String, dynamic> json) =>
+      _$OpenTicketRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$OpenTicketRequestToJson(this);
 
@@ -139,6 +84,4 @@ class OpenTicketRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

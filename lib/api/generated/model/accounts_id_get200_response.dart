@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'accounts_id_get200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,21 @@ part 'accounts_id_get200_response.g.dart';
 )
 class AccountsIdGet200Response {
   /// Returns a new [AccountsIdGet200Response] instance.
-  AccountsIdGet200Response({
+  AccountsIdGet200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final PublicAccount data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AccountsIdGet200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AccountsIdGet200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory AccountsIdGet200Response.fromJson(Map<String, dynamic> json) => _$AccountsIdGet200ResponseFromJson(json);
+  factory AccountsIdGet200Response.fromJson(Map<String, dynamic> json) =>
+      _$AccountsIdGet200ResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$AccountsIdGet200ResponseToJson(this);
 
@@ -54,6 +40,4 @@ class AccountsIdGet200Response {
   String toString() {
     return toJson().toString();
   }
-
 }
-

@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'wallet_list.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,20 @@ part 'wallet_list.g.dart';
 )
 class WalletList {
   /// Returns a new [WalletList] instance.
-  WalletList({
+  WalletList({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Wallet> data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is WalletList && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is WalletList &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory WalletList.fromJson(Map<String, dynamic> json) => _$WalletListFromJson(json);
+  factory WalletList.fromJson(Map<String, dynamic> json) =>
+      _$WalletListFromJson(json);
 
   Map<String, dynamic> toJson() => _$WalletListToJson(this);
 
@@ -54,6 +39,4 @@ class WalletList {
   String toString() {
     return toJson().toString();
   }
-
 }
-

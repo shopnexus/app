@@ -2,6 +2,7 @@
 class ApiEndpoints {
   // Base URLs & WebSocket
   static const String baseUrl = 'https://shopnexus.hopto.org/api/v1/';
+
   /// The one per-account event stream (asyncapi `userStream`). Authorised by a
   /// single-use ticket from `POST /ws/tickets`, never by a token in the URL.
   static const String webSocketUrl = 'wss://shopnexus.hopto.org/api/v1/ws';
@@ -209,6 +210,7 @@ class ApiEndpoints {
   static const String productSpuDetailTemplate = 'catalog/product-spu/{id}';
   static String productSpuDetail(String id) => 'catalog/product-spu/$id';
   static const String productSku = 'catalog/product-sku';
+
   /// AI-assisted posting. Reads photos and what the seller said and answers a
   /// filled-in form; it writes nothing, so `listings` is still the only way a
   /// listing comes into existence.
@@ -247,8 +249,7 @@ class ApiEndpoints {
   static String conversationDetail(String id) => 'conversations/$id';
   static const String conversationMessagesTemplate =
       'conversations/{id}/messages';
-  static String conversationMessages(String id) =>
-      'conversations/$id/messages';
+  static String conversationMessages(String id) => 'conversations/$id/messages';
   static const String conversationReadTemplate = 'conversations/{id}/read';
   static String conversationRead(String id) => 'conversations/$id/read';
   static const String chatUnreadCount = 'conversations/unread-count';

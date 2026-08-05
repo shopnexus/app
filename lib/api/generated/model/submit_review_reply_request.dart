@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'submit_review_reply_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,21 @@ part 'submit_review_reply_request.g.dart';
 )
 class SubmitReviewReplyRequest {
   /// Returns a new [SubmitReviewReplyRequest] instance.
-  SubmitReviewReplyRequest({
+  SubmitReviewReplyRequest({required this.body});
 
-    required  this.body,
-  });
-
-  @JsonKey(
-    
-    name: r'body',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'body', required: true, includeIfNull: false)
   final String body;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SubmitReviewReplyRequest && other.body == body;
 
+  @override
+  int get hashCode => body.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is SubmitReviewReplyRequest &&
-      other.body == body;
-
-    @override
-    int get hashCode =>
-        body.hashCode;
-
-  factory SubmitReviewReplyRequest.fromJson(Map<String, dynamic> json) => _$SubmitReviewReplyRequestFromJson(json);
+  factory SubmitReviewReplyRequest.fromJson(Map<String, dynamic> json) =>
+      _$SubmitReviewReplyRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$SubmitReviewReplyRequestToJson(this);
 
@@ -53,6 +39,4 @@ class SubmitReviewReplyRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

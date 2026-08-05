@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'refund_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'refund_page.g.dart';
 )
 class RefundPage {
   /// Returns a new [RefundPage] instance.
-  RefundPage({
+  RefundPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Refund> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final CursorMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RefundPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is RefundPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory RefundPage.fromJson(Map<String, dynamic> json) => _$RefundPageFromJson(json);
+  factory RefundPage.fromJson(Map<String, dynamic> json) =>
+      _$RefundPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$RefundPageToJson(this);
 
@@ -71,6 +44,4 @@ class RefundPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

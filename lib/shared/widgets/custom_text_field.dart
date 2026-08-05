@@ -41,7 +41,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
     final hintColor = isDarkMode
         ? theme.colorScheme.onSurfaceVariant.withAlpha(128)
         : const Color(0xFF94A3B8);
-    final borderOutlineColor = isDarkMode ? const Color(0xFF3E4949) : const Color(0xFFE0E3E4);
+    final borderOutlineColor = isDarkMode
+        ? const Color(0xFF3E4949)
+        : const Color(0xFFE0E3E4);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,11 +66,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           keyboardType: widget.keyboardType,
           validator: widget.validator,
           enabled: widget.enabled,
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 16,
-            color: textColor,
-          ),
+          style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: textColor),
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: TextStyle(

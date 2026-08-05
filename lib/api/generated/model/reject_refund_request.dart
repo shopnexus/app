@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'reject_refund_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,21 @@ part 'reject_refund_request.g.dart';
 )
 class RejectRefundRequest {
   /// Returns a new [RejectRefundRequest] instance.
-  RejectRefundRequest({
+  RejectRefundRequest({required this.reason});
 
-    required  this.reason,
-  });
-
-  @JsonKey(
-    
-    name: r'reason',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'reason', required: true, includeIfNull: false)
   final String reason;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RejectRefundRequest && other.reason == reason;
 
+  @override
+  int get hashCode => reason.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is RejectRefundRequest &&
-      other.reason == reason;
-
-    @override
-    int get hashCode =>
-        reason.hashCode;
-
-  factory RejectRefundRequest.fromJson(Map<String, dynamic> json) => _$RejectRefundRequestFromJson(json);
+  factory RejectRefundRequest.fromJson(Map<String, dynamic> json) =>
+      _$RejectRefundRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$RejectRefundRequestToJson(this);
 
@@ -53,6 +39,4 @@ class RejectRefundRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

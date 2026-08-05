@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'public_account.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,132 +19,69 @@ part 'public_account.g.dart';
 class PublicAccount {
   /// Returns a new [PublicAccount] instance.
   PublicAccount({
+    this.avatar,
 
-     this.avatar,
+    required this.createdAt,
 
-    required  this.createdAt,
+    this.description,
 
-     this.description,
+    required this.followerCount,
 
-    required  this.followerCount,
+    required this.id,
 
-    required  this.id,
+    required this.identityVerified,
 
-    required  this.identityVerified,
-
-    required  this.name,
+    required this.name,
   });
 
-  @JsonKey(
-    
-    name: r'avatar',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'avatar', required: false, includeIfNull: false)
   final Resource? avatar;
 
-
-
-      /// Member since.
-  @JsonKey(
-    
-    name: r'created_at',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Member since.
+  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-
-
-  @JsonKey(
-    
-    name: r'description',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'description', required: false, includeIfNull: false)
   final String? description;
 
-
-
-          // minimum: 0
-  @JsonKey(
-    
-    name: r'follower_count',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 0
+  @JsonKey(name: r'follower_count', required: true, includeIfNull: false)
   final int followerCount;
 
-
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-
-
-      /// Shown as a trust signal.
-  @JsonKey(
-    
-    name: r'identity_verified',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Shown as a trust signal.
+  @JsonKey(name: r'identity_verified', required: true, includeIfNull: false)
   final bool identityVerified;
 
-
-
-  @JsonKey(
-    
-    name: r'name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'name', required: true, includeIfNull: false)
   final String name;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PublicAccount &&
+          other.avatar == avatar &&
+          other.createdAt == createdAt &&
+          other.description == description &&
+          other.followerCount == followerCount &&
+          other.id == id &&
+          other.identityVerified == identityVerified &&
+          other.name == name;
 
+  @override
+  int get hashCode =>
+      (avatar == null ? 0 : avatar.hashCode) +
+      createdAt.hashCode +
+      (description == null ? 0 : description.hashCode) +
+      followerCount.hashCode +
+      id.hashCode +
+      identityVerified.hashCode +
+      name.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is PublicAccount &&
-      other.avatar == avatar &&
-      other.createdAt == createdAt &&
-      other.description == description &&
-      other.followerCount == followerCount &&
-      other.id == id &&
-      other.identityVerified == identityVerified &&
-      other.name == name;
-
-    @override
-    int get hashCode =>
-        (avatar == null ? 0 : avatar.hashCode) +
-        createdAt.hashCode +
-        (description == null ? 0 : description.hashCode) +
-        followerCount.hashCode +
-        id.hashCode +
-        identityVerified.hashCode +
-        name.hashCode;
-
-  factory PublicAccount.fromJson(Map<String, dynamic> json) => _$PublicAccountFromJson(json);
+  factory PublicAccount.fromJson(Map<String, dynamic> json) =>
+      _$PublicAccountFromJson(json);
 
   Map<String, dynamic> toJson() => _$PublicAccountToJson(this);
 
@@ -153,6 +89,4 @@ class PublicAccount {
   String toString() {
     return toJson().toString();
   }
-
 }
-

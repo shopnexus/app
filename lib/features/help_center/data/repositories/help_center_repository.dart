@@ -82,7 +82,6 @@ class HelpCenterRepository {
       return matchesCategory && matchesQuery;
     }).toList();
   }
-
 }
 
 @riverpod

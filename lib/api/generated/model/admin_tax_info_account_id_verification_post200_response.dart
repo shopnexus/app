@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'admin_tax_info_account_id_verification_post200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,41 +18,29 @@ part 'admin_tax_info_account_id_verification_post200_response.g.dart';
 )
 class AdminTaxInfoAccountIDVerificationPost200Response {
   /// Returns a new [AdminTaxInfoAccountIDVerificationPost200Response] instance.
-  AdminTaxInfoAccountIDVerificationPost200Response({
+  AdminTaxInfoAccountIDVerificationPost200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final TaxInfo data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminTaxInfoAccountIDVerificationPost200Response &&
+          other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
+  factory AdminTaxInfoAccountIDVerificationPost200Response.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AdminTaxInfoAccountIDVerificationPost200ResponseFromJson(json);
 
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AdminTaxInfoAccountIDVerificationPost200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory AdminTaxInfoAccountIDVerificationPost200Response.fromJson(Map<String, dynamic> json) => _$AdminTaxInfoAccountIDVerificationPost200ResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AdminTaxInfoAccountIDVerificationPost200ResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$AdminTaxInfoAccountIDVerificationPost200ResponseToJson(this);
 
   @override
   String toString() {
     return toJson().toString();
   }
-
 }
-

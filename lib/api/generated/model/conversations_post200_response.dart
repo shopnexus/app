@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'conversations_post200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,21 @@ part 'conversations_post200_response.g.dart';
 )
 class ConversationsPost200Response {
   /// Returns a new [ConversationsPost200Response] instance.
-  ConversationsPost200Response({
+  ConversationsPost200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final Conversation data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ConversationsPost200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is ConversationsPost200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory ConversationsPost200Response.fromJson(Map<String, dynamic> json) => _$ConversationsPost200ResponseFromJson(json);
+  factory ConversationsPost200Response.fromJson(Map<String, dynamic> json) =>
+      _$ConversationsPost200ResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ConversationsPost200ResponseToJson(this);
 
@@ -54,6 +40,4 @@ class ConversationsPost200Response {
   String toString() {
     return toJson().toString();
   }
-
 }
-

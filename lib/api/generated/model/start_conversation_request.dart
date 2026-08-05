@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'start_conversation_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,21 @@ part 'start_conversation_request.g.dart';
 )
 class StartConversationRequest {
   /// Returns a new [StartConversationRequest] instance.
-  StartConversationRequest({
+  StartConversationRequest({required this.accountId});
 
-    required  this.accountId,
-  });
-
-  @JsonKey(
-    
-    name: r'account_id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'account_id', required: true, includeIfNull: false)
   final String accountId;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StartConversationRequest && other.accountId == accountId;
 
+  @override
+  int get hashCode => accountId.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is StartConversationRequest &&
-      other.accountId == accountId;
-
-    @override
-    int get hashCode =>
-        accountId.hashCode;
-
-  factory StartConversationRequest.fromJson(Map<String, dynamic> json) => _$StartConversationRequestFromJson(json);
+  factory StartConversationRequest.fromJson(Map<String, dynamic> json) =>
+      _$StartConversationRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$StartConversationRequestToJson(this);
 
@@ -53,6 +39,4 @@ class StartConversationRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

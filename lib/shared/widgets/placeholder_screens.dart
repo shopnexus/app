@@ -8,7 +8,10 @@ class SellerPlaceholderScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F7),
       appBar: AppBar(
-        title: const Text('Đăng bán', style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Đăng bán',
+          style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -16,15 +19,19 @@ class SellerPlaceholderScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.storefront_rounded, size: 64, color: Color(0xFF6E7977)),
+            const Icon(
+              Icons.storefront_rounded,
+              size: 64,
+              color: Color(0xFF6E7977),
+            ),
             const SizedBox(height: 16.0),
             Text(
               'Kênh người bán (Seller Center)',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontFamily: 'Manrope',
-                    color: const Color(0xFF1A1C1B),
-                    fontWeight: FontWeight.bold,
-                  ),
+                fontFamily: 'Manrope',
+                color: const Color(0xFF1A1C1B),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8.0),
             const Text(
@@ -46,7 +53,10 @@ class ChatPlaceholderScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F7),
       appBar: AppBar(
-        title: const Text('Tin nhắn', style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Tin nhắn',
+          style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -59,10 +69,10 @@ class ChatPlaceholderScreen extends StatelessWidget {
             Text(
               'Hộp thư tin nhắn (Inbox)',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontFamily: 'Manrope',
-                    color: const Color(0xFF1A1C1B),
-                    fontWeight: FontWeight.bold,
-                  ),
+                fontFamily: 'Manrope',
+                color: const Color(0xFF1A1C1B),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8.0),
             const Text(
@@ -84,7 +94,10 @@ class AccountPlaceholderScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F7),
       appBar: AppBar(
-        title: const Text('Cá nhân', style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Cá nhân',
+          style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -92,15 +105,19 @@ class AccountPlaceholderScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.person_rounded, size: 64, color: Color(0xFF6E7977)),
+            const Icon(
+              Icons.person_rounded,
+              size: 64,
+              color: Color(0xFF6E7977),
+            ),
             const SizedBox(height: 16.0),
             Text(
               'Trang cá nhân (Profile)',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontFamily: 'Manrope',
-                    color: const Color(0xFF1A1C1B),
-                    fontWeight: FontWeight.bold,
-                  ),
+                fontFamily: 'Manrope',
+                color: const Color(0xFF1A1C1B),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8.0),
             const Text(

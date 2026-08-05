@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'notification_preference_list.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,34 +18,21 @@ part 'notification_preference_list.g.dart';
 )
 class NotificationPreferenceList {
   /// Returns a new [NotificationPreferenceList] instance.
-  NotificationPreferenceList({
+  NotificationPreferenceList({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<NotificationPreference> data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotificationPreferenceList && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is NotificationPreferenceList &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory NotificationPreferenceList.fromJson(Map<String, dynamic> json) => _$NotificationPreferenceListFromJson(json);
+  factory NotificationPreferenceList.fromJson(Map<String, dynamic> json) =>
+      _$NotificationPreferenceListFromJson(json);
 
   Map<String, dynamic> toJson() => _$NotificationPreferenceListToJson(this);
 
@@ -54,6 +40,4 @@ class NotificationPreferenceList {
   String toString() {
     return toJson().toString();
   }
-
 }
-

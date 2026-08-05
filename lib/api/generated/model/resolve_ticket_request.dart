@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'resolve_ticket_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,51 +18,27 @@ part 'resolve_ticket_request.g.dart';
 )
 class ResolveTicketRequest {
   /// Returns a new [ResolveTicketRequest] instance.
-  ResolveTicketRequest({
+  ResolveTicketRequest({required this.actionTaken, this.note});
 
-    required  this.actionTaken,
-
-     this.note,
-  });
-
-      /// Required. `none` is the turn-down; anything else names what was done. The two `refund-*` values are what order's verdict records on the ticket it closes. 
-  @JsonKey(
-    
-    name: r'action_taken',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Required. `none` is the turn-down; anything else names what was done. The two `refund-*` values are what order's verdict records on the ticket it closes.
+  @JsonKey(name: r'action_taken', required: true, includeIfNull: false)
   final TicketAction actionTaken;
 
-
-
-  @JsonKey(
-    
-    name: r'note',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'note', required: false, includeIfNull: false)
   final String? note;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ResolveTicketRequest &&
+          other.actionTaken == actionTaken &&
+          other.note == note;
 
+  @override
+  int get hashCode => actionTaken.hashCode + note.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is ResolveTicketRequest &&
-      other.actionTaken == actionTaken &&
-      other.note == note;
-
-    @override
-    int get hashCode =>
-        actionTaken.hashCode +
-        note.hashCode;
-
-  factory ResolveTicketRequest.fromJson(Map<String, dynamic> json) => _$ResolveTicketRequestFromJson(json);
+  factory ResolveTicketRequest.fromJson(Map<String, dynamic> json) =>
+      _$ResolveTicketRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$ResolveTicketRequestToJson(this);
 
@@ -71,6 +46,4 @@ class ResolveTicketRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

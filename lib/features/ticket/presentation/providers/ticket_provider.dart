@@ -59,14 +59,16 @@ class RaiseTicket extends _$RaiseTicket {
   }) async {
     state = const AsyncValue.loading();
     try {
-      final ticket = await ref.read(ticketRepositoryProvider).open(
-        kind: kind,
-        subject: subject,
-        body: body,
-        attachments: attachments,
-        refId: refId,
-        reason: reason,
-      );
+      final ticket = await ref
+          .read(ticketRepositoryProvider)
+          .open(
+            kind: kind,
+            subject: subject,
+            body: body,
+            attachments: attachments,
+            refId: refId,
+            reason: reason,
+          );
       state = AsyncValue.data(ticket);
       ref.invalidate(ticketListProvider);
       return ticket;

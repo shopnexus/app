@@ -43,7 +43,10 @@ sealed class RealtimeEvent {
       case RealtimeEventCode.messageUpdated:
         return MessageUpdatedEvent(at: at, message: Message.fromJson(data));
       case RealtimeEventCode.messageDeleted:
-        return MessageDeletedEvent(at: at, ref: DeletedMessageRef.fromJson(data));
+        return MessageDeletedEvent(
+          at: at,
+          ref: DeletedMessageRef.fromJson(data),
+        );
       case RealtimeEventCode.conversationRead:
         return ConversationReadEvent(
           at: at,
@@ -91,8 +94,10 @@ class ConversationReadEvent extends RealtimeEvent {
 }
 
 class NotificationCreatedEvent extends RealtimeEvent {
-  const NotificationCreatedEvent({required super.at, required this.notification})
-    : super(code: RealtimeEventCode.notificationCreated);
+  const NotificationCreatedEvent({
+    required super.at,
+    required this.notification,
+  }) : super(code: RealtimeEventCode.notificationCreated);
   final api.Notification notification;
 }
 

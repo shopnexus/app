@@ -5,14 +5,13 @@
 // ignore_for_file: unused_element
 import 'package:json_annotation/json_annotation.dart';
 
-
 enum IdentityStatus {
-      @JsonValue(r'pending')
-      pending(r'pending'),
-      @JsonValue(r'verified')
-      verified(r'verified'),
-      @JsonValue(r'rejected')
-      rejected(r'rejected');
+  @JsonValue(r'pending')
+  pending(r'pending'),
+  @JsonValue(r'verified')
+  verified(r'verified'),
+  @JsonValue(r'rejected')
+  rejected(r'rejected');
 
   const IdentityStatus(this.value);
 

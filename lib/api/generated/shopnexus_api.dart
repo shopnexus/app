@@ -8,7 +8,6 @@ export 'package:shopnexus_flutter_app/api/generated/auth/basic_auth.dart';
 export 'package:shopnexus_flutter_app/api/generated/auth/bearer_auth.dart';
 export 'package:shopnexus_flutter_app/api/generated/auth/oauth.dart';
 
-
 export 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
 export 'package:shopnexus_flutter_app/api/generated/api/admin_api.dart';
 export 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
@@ -257,4 +256,3 @@ export 'package:shopnexus_flutter_app/api/generated/model/withdrawal_approval_re
 export 'package:shopnexus_flutter_app/api/generated/model/withdrawal_outcome.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/withdrawal_page.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/withdrawal_rejection_request.dart';
-

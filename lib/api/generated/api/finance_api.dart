@@ -32,7 +32,6 @@ import 'package:shopnexus_flutter_app/api/generated/model/wallet_transaction_pag
 import 'package:shopnexus_flutter_app/api/generated/model/withdrawal_page.dart';
 
 class FinanceApi {
-
   final Dio _dio;
 
   const FinanceApi(this._dio);
@@ -50,7 +49,7 @@ class FinanceApi {
   ///
   /// Returns a [Future] containing a [Response] with a [BankAccountList] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<BankAccountList>> bankAccountsGet({ 
+  Future<Response<BankAccountList>> bankAccountsGet({
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -61,16 +60,10 @@ class FinanceApi {
     final _path = r'/bank-accounts';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -88,9 +81,14 @@ class FinanceApi {
     BankAccountList? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<BankAccountList, BankAccountList>(rawData, 'BankAccountList', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<BankAccountList, BankAccountList>(
+              rawData,
+              'BankAccountList',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -117,7 +115,7 @@ _responseData = rawData == null ? null : deserialize<BankAccountList, BankAccoun
   /// Soft delete. A completed withdrawal names this row as the place real money went, so financial history cannot lose its payee.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -127,7 +125,7 @@ _responseData = rawData == null ? null : deserialize<BankAccountList, BankAccoun
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> bankAccountsIdDelete({ 
+  Future<Response<void>> bankAccountsIdDelete({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -136,19 +134,18 @@ _responseData = rawData == null ? null : deserialize<BankAccountList, BankAccoun
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/bank-accounts/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/bank-accounts/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -170,8 +167,8 @@ _responseData = rawData == null ? null : deserialize<BankAccountList, BankAccoun
   /// At most one default per account, so this clears the previous one. Bank details themselves are not editable — register another destination and remove this one, so a completed withdrawal never names a row whose details have since changed.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [updateBankAccountRequest] 
+  /// * [id]
+  /// * [updateBankAccountRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -181,7 +178,7 @@ _responseData = rawData == null ? null : deserialize<BankAccountList, BankAccoun
   ///
   /// Returns a [Future] containing a [Response] with a [BankAccountsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<BankAccountsPost201Response>> bankAccountsIdPatch({ 
+  Future<Response<BankAccountsPost201Response>> bankAccountsIdPatch({
     required String id,
     required UpdateBankAccountRequest updateBankAccountRequest,
     CancelToken? cancelToken,
@@ -191,19 +188,18 @@ _responseData = rawData == null ? null : deserialize<BankAccountList, BankAccoun
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/bank-accounts/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/bank-accounts/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'PATCH',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -215,13 +211,9 @@ _responseData = rawData == null ? null : deserialize<BankAccountList, BankAccoun
 
     try {
       _bodyData = jsonEncode(updateBankAccountRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -240,9 +232,13 @@ _responseData = rawData == null ? null : deserialize<BankAccountList, BankAccoun
     BankAccountsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<BankAccountsPost201Response, BankAccountsPost201Response>(rawData, 'BankAccountsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              BankAccountsPost201Response,
+              BankAccountsPost201Response
+            >(rawData, 'BankAccountsPost201Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -266,10 +262,10 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
   }
 
   /// Register a payout destination
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [createBankAccountRequest] 
+  /// * [createBankAccountRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -279,7 +275,7 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
   ///
   /// Returns a [Future] containing a [Response] with a [BankAccountsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<BankAccountsPost201Response>> bankAccountsPost({ 
+  Future<Response<BankAccountsPost201Response>> bankAccountsPost({
     required CreateBankAccountRequest createBankAccountRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -291,16 +287,10 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
     final _path = r'/bank-accounts';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -312,13 +302,9 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
 
     try {
       _bodyData = jsonEncode(createBankAccountRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -337,9 +323,13 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
     BankAccountsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<BankAccountsPost201Response, BankAccountsPost201Response>(rawData, 'BankAccountsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              BankAccountsPost201Response,
+              BankAccountsPost201Response
+            >(rawData, 'BankAccountsPost201Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -367,10 +357,10 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
   ///
   /// Parameters:
   /// * [role] - Omit for both sides.
-  /// * [kind] 
-  /// * [status] 
+  /// * [kind]
+  /// * [status]
   /// * [page] - 1-based page number.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -380,7 +370,7 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
   ///
   /// Returns a [Future] containing a [Response] with a [PaymentSessionPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PaymentSessionPage>> paymentSessionsGet({ 
+  Future<Response<PaymentSessionPage>> paymentSessionsGet({
     String? role,
     PaymentSessionKind? kind,
     PaymentSessionStatus? status,
@@ -396,16 +386,10 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
     final _path = r'/payment-sessions';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -432,9 +416,14 @@ _responseData = rawData == null ? null : deserialize<BankAccountsPost201Response
     PaymentSessionPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<PaymentSessionPage, PaymentSessionPage>(rawData, 'PaymentSessionPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<PaymentSessionPage, PaymentSessionPage>(
+              rawData,
+              'PaymentSessionPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -461,7 +450,7 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionPage, Payment
   /// Only while nothing has settled. A session with a settled leg is closed by refunding, not by cancelling.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -471,7 +460,8 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionPage, Payment
   ///
   /// Returns a [Future] containing a [Response] with a [PaymentSessionsIdGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PaymentSessionsIdGet200Response>> paymentSessionsIdCancellationPost({ 
+  Future<Response<PaymentSessionsIdGet200Response>>
+  paymentSessionsIdCancellationPost({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -480,19 +470,18 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionPage, Payment
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/payment-sessions/{id}/cancellation'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/payment-sessions/{id}/cancellation'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -510,9 +499,13 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionPage, Payment
     PaymentSessionsIdGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Response, PaymentSessionsIdGet200Response>(rawData, 'PaymentSessionsIdGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              PaymentSessionsIdGet200Response,
+              PaymentSessionsIdGet200Response
+            >(rawData, 'PaymentSessionsIdGet200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -536,10 +529,10 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
   }
 
   /// Read a payment session
-  /// &#x60;outstanding&#x60; is the total less what has already settled on a rail, so a client can tell a partly-tendered session from an unpaid one without fetching the legs. 
+  /// &#x60;outstanding&#x60; is the total less what has already settled on a rail, so a client can tell a partly-tendered session from an unpaid one without fetching the legs.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -549,7 +542,7 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
   ///
   /// Returns a [Future] containing a [Response] with a [PaymentSessionsIdGet200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PaymentSessionsIdGet200Response>> paymentSessionsIdGet({ 
+  Future<Response<PaymentSessionsIdGet200Response>> paymentSessionsIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -558,19 +551,18 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/payment-sessions/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/payment-sessions/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -588,9 +580,13 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
     PaymentSessionsIdGet200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Response, PaymentSessionsIdGet200Response>(rawData, 'PaymentSessionsIdGet200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              PaymentSessionsIdGet200Response,
+              PaymentSessionsIdGet200Response
+            >(rawData, 'PaymentSessionsIdGet200Response', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -614,11 +610,11 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
   }
 
   /// Pay a session through one rail
-  /// Creates a ledger leg on the chosen rail and returns it with the gateway redirect in &#x60;checkout_url&#x60;. Omit &#x60;amount&#x60; to tender the whole outstanding balance; pass it to split the session across several rails, calling this again per rail until the total is covered.  The leg starts &#x60;pending&#x60; and only the provider&#39;s webhook settles it — this response is not a receipt. Poll the session or the leg for the outcome. 
+  /// Creates a ledger leg on the chosen rail and returns it with the gateway redirect in &#x60;checkout_url&#x60;. Omit &#x60;amount&#x60; to tender the whole outstanding balance; pass it to split the session across several rails, calling this again per rail until the total is covered.  The leg starts &#x60;pending&#x60; and only the provider&#39;s webhook settles it — this response is not a receipt. Poll the session or the leg for the outcome.
   ///
   /// Parameters:
-  /// * [id] 
-  /// * [startPaymentRequest] 
+  /// * [id]
+  /// * [startPaymentRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -628,7 +624,8 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
   ///
   /// Returns a [Future] containing a [Response] with a [PaymentSessionsIdPaymentsPost201Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PaymentSessionsIdPaymentsPost201Response>> paymentSessionsIdPaymentsPost({ 
+  Future<Response<PaymentSessionsIdPaymentsPost201Response>>
+  paymentSessionsIdPaymentsPost({
     required String id,
     required StartPaymentRequest startPaymentRequest,
     CancelToken? cancelToken,
@@ -638,19 +635,18 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/payment-sessions/{id}/payments'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/payment-sessions/{id}/payments'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -662,13 +658,9 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
 
     try {
       _bodyData = jsonEncode(startPaymentRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -687,9 +679,17 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdGet200Resp
     PaymentSessionsIdPaymentsPost201Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<PaymentSessionsIdPaymentsPost201Response, PaymentSessionsIdPaymentsPost201Response>(rawData, 'PaymentSessionsIdPaymentsPost201Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              PaymentSessionsIdPaymentsPost201Response,
+              PaymentSessionsIdPaymentsPost201Response
+            >(
+              rawData,
+              'PaymentSessionsIdPaymentsPost201Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -716,7 +716,7 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdPaymentsPo
   /// Append-only. A reversal is a new leg with a negative amount pointing at the leg it reverses, never an edit of the original.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -726,7 +726,7 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdPaymentsPo
   ///
   /// Returns a [Future] containing a [Response] with a [TransactionList] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<TransactionList>> paymentSessionsIdTransactionsGet({ 
+  Future<Response<TransactionList>> paymentSessionsIdTransactionsGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -735,19 +735,18 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdPaymentsPo
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/payment-sessions/{id}/transactions'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/payment-sessions/{id}/transactions'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -765,9 +764,14 @@ _responseData = rawData == null ? null : deserialize<PaymentSessionsIdPaymentsPo
     TransactionList? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<TransactionList, TransactionList>(rawData, 'TransactionList', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<TransactionList, TransactionList>(
+              rawData,
+              'TransactionList',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -791,7 +795,7 @@ _responseData = rawData == null ? null : deserialize<TransactionList, Transactio
   }
 
   /// Read the caller&#39;s tax registration
-  /// 
+  ///
   ///
   /// Parameters:
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -803,7 +807,8 @@ _responseData = rawData == null ? null : deserialize<TransactionList, Transactio
   ///
   /// Returns a [Future] containing a [Response] with a [AdminTaxInfoAccountIDVerificationPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminTaxInfoAccountIDVerificationPost200Response>> taxInfoGet({ 
+  Future<Response<AdminTaxInfoAccountIDVerificationPost200Response>>
+  taxInfoGet({
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -814,16 +819,10 @@ _responseData = rawData == null ? null : deserialize<TransactionList, Transactio
     final _path = r'/tax-info';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -841,9 +840,17 @@ _responseData = rawData == null ? null : deserialize<TransactionList, Transactio
     AdminTaxInfoAccountIDVerificationPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerificationPost200Response, AdminTaxInfoAccountIDVerificationPost200Response>(rawData, 'AdminTaxInfoAccountIDVerificationPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminTaxInfoAccountIDVerificationPost200Response,
+              AdminTaxInfoAccountIDVerificationPost200Response
+            >(
+              rawData,
+              'AdminTaxInfoAccountIDVerificationPost200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -867,10 +874,10 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
   }
 
   /// Register or replace the caller&#39;s tax registration
-  /// One registration per account, so this is an upsert rather than a create. Replacing it resets verification to &#x60;pending&#x60;: the previous verdict was about the previous tax code. A code already verified under another account is rejected. 
+  /// One registration per account, so this is an upsert rather than a create. Replacing it resets verification to &#x60;pending&#x60;: the previous verdict was about the previous tax code. A code already verified under another account is rejected.
   ///
   /// Parameters:
-  /// * [upsertTaxInfoRequest] 
+  /// * [upsertTaxInfoRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -880,7 +887,8 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
   ///
   /// Returns a [Future] containing a [Response] with a [AdminTaxInfoAccountIDVerificationPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminTaxInfoAccountIDVerificationPost200Response>> taxInfoPut({ 
+  Future<Response<AdminTaxInfoAccountIDVerificationPost200Response>>
+  taxInfoPut({
     required UpsertTaxInfoRequest upsertTaxInfoRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -892,16 +900,10 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
     final _path = r'/tax-info';
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -913,13 +915,9 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
 
     try {
       _bodyData = jsonEncode(upsertTaxInfoRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -938,9 +936,17 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
     AdminTaxInfoAccountIDVerificationPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerificationPost200Response, AdminTaxInfoAccountIDVerificationPost200Response>(rawData, 'AdminTaxInfoAccountIDVerificationPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminTaxInfoAccountIDVerificationPost200Response,
+              AdminTaxInfoAccountIDVerificationPost200Response
+            >(
+              rawData,
+              'AdminTaxInfoAccountIDVerificationPost200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -964,10 +970,10 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
   }
 
   /// Read one currency balance
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [currency] 
+  /// * [currency]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -977,7 +983,8 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
   ///
   /// Returns a [Future] containing a [Response] with a [AdminWalletsAccountIDAdjustmentsPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminWalletsAccountIDAdjustmentsPost200Response>> walletsCurrencyGet({ 
+  Future<Response<AdminWalletsAccountIDAdjustmentsPost200Response>>
+  walletsCurrencyGet({
     required String currency,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -986,19 +993,18 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/wallets/{currency}'.replaceAll('{' r'currency' '}', currency.toString());
+    final _path = r'/wallets/{currency}'.replaceAll(
+      '{'
+      r'currency'
+      '}',
+      currency.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1016,9 +1022,17 @@ _responseData = rawData == null ? null : deserialize<AdminTaxInfoAccountIDVerifi
     AdminWalletsAccountIDAdjustmentsPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminWalletsAccountIDAdjustmentsPost200Response, AdminWalletsAccountIDAdjustmentsPost200Response>(rawData, 'AdminWalletsAccountIDAdjustmentsPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminWalletsAccountIDAdjustmentsPost200Response,
+              AdminWalletsAccountIDAdjustmentsPost200Response
+            >(
+              rawData,
+              'AdminWalletsAccountIDAdjustmentsPost200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1042,13 +1056,13 @@ _responseData = rawData == null ? null : deserialize<AdminWalletsAccountIDAdjust
   }
 
   /// Read one wallet&#39;s ledger
-  /// Every balance change with its before/after snapshot, newest first. Ordered by &#x60;seq&#x60;, not by time: two movements can share a timestamp, and a ledger that cannot be totally ordered cannot be replayed or shown to be complete. A gap in &#x60;seq&#x60; means a missing row.  Legs of one logical movement share a &#x60;group_id&#x60; — a checkout is a debit plus an escrow hold plus a fee — which is what makes \&quot;does this add up\&quot; answerable. 
+  /// Every balance change with its before/after snapshot, newest first. Ordered by &#x60;seq&#x60;, not by time: two movements can share a timestamp, and a ledger that cannot be totally ordered cannot be replayed or shown to be complete. A gap in &#x60;seq&#x60; means a missing row.  Legs of one logical movement share a &#x60;group_id&#x60; — a checkout is a debit plus an escrow hold plus a fee — which is what makes \&quot;does this add up\&quot; answerable.
   ///
   /// Parameters:
-  /// * [currency] 
-  /// * [kind] 
+  /// * [currency]
+  /// * [kind]
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1058,7 +1072,7 @@ _responseData = rawData == null ? null : deserialize<AdminWalletsAccountIDAdjust
   ///
   /// Returns a [Future] containing a [Response] with a [WalletTransactionPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<WalletTransactionPage>> walletsCurrencyTransactionsGet({ 
+  Future<Response<WalletTransactionPage>> walletsCurrencyTransactionsGet({
     required String currency,
     WalletTransactionKind? kind,
     String? cursor,
@@ -1070,19 +1084,18 @@ _responseData = rawData == null ? null : deserialize<AdminWalletsAccountIDAdjust
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/wallets/{currency}/transactions'.replaceAll('{' r'currency' '}', currency.toString());
+    final _path = r'/wallets/{currency}/transactions'.replaceAll(
+      '{'
+      r'currency'
+      '}',
+      currency.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1107,9 +1120,14 @@ _responseData = rawData == null ? null : deserialize<AdminWalletsAccountIDAdjust
     WalletTransactionPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<WalletTransactionPage, WalletTransactionPage>(rawData, 'WalletTransactionPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<WalletTransactionPage, WalletTransactionPage>(
+              rawData,
+              'WalletTransactionPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1133,7 +1151,7 @@ _responseData = rawData == null ? null : deserialize<WalletTransactionPage, Wall
   }
 
   /// List the caller&#39;s wallet balances
-  /// One wallet per currency, so this is a list rather than a single object. It is short and unpaginated: a balance is opened by receiving money in that currency, not by browsing. 
+  /// One wallet per currency, so this is a list rather than a single object. It is short and unpaginated: a balance is opened by receiving money in that currency, not by browsing.
   ///
   /// Parameters:
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1145,7 +1163,7 @@ _responseData = rawData == null ? null : deserialize<WalletTransactionPage, Wall
   ///
   /// Returns a [Future] containing a [Response] with a [WalletList] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<WalletList>> walletsGet({ 
+  Future<Response<WalletList>> walletsGet({
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -1156,16 +1174,10 @@ _responseData = rawData == null ? null : deserialize<WalletTransactionPage, Wall
     final _path = r'/wallets';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1183,9 +1195,14 @@ _responseData = rawData == null ? null : deserialize<WalletTransactionPage, Wall
     WalletList? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<WalletList, WalletList>(rawData, 'WalletList', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<WalletList, WalletList>(
+              rawData,
+              'WalletList',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1209,12 +1226,12 @@ _responseData = rawData == null ? null : deserialize<WalletList, WalletList>(raw
   }
 
   /// List the caller&#39;s withdrawals
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [status] 
+  /// * [status]
   /// * [page] - 1-based page number.
-  /// * [limit] 
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1224,7 +1241,7 @@ _responseData = rawData == null ? null : deserialize<WalletList, WalletList>(raw
   ///
   /// Returns a [Future] containing a [Response] with a [WithdrawalPage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<WithdrawalPage>> withdrawalsGet({ 
+  Future<Response<WithdrawalPage>> withdrawalsGet({
     PaymentSessionStatus? status,
     int? page = 1,
     int? limit = 20,
@@ -1238,16 +1255,10 @@ _responseData = rawData == null ? null : deserialize<WalletList, WalletList>(raw
     final _path = r'/withdrawals';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1272,9 +1283,14 @@ _responseData = rawData == null ? null : deserialize<WalletList, WalletList>(raw
     WithdrawalPage? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<WithdrawalPage, WithdrawalPage>(rawData, 'WithdrawalPage', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<WithdrawalPage, WithdrawalPage>(
+              rawData,
+              'WithdrawalPage',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1298,10 +1314,10 @@ _responseData = rawData == null ? null : deserialize<WithdrawalPage, WithdrawalP
   }
 
   /// Withdraw the request and return the money to the balance
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1311,7 +1327,7 @@ _responseData = rawData == null ? null : deserialize<WithdrawalPage, WithdrawalP
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> withdrawalsIdDelete({ 
+  Future<Response<void>> withdrawalsIdDelete({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1320,19 +1336,18 @@ _responseData = rawData == null ? null : deserialize<WithdrawalPage, WithdrawalP
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/withdrawals/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/withdrawals/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1354,7 +1369,7 @@ _responseData = rawData == null ? null : deserialize<WithdrawalPage, WithdrawalP
   /// A withdrawal is a payment session of kind &#x60;withdrawal&#x60;, so its id carries the session prefix.
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1364,7 +1379,7 @@ _responseData = rawData == null ? null : deserialize<WithdrawalPage, WithdrawalP
   ///
   /// Returns a [Future] containing a [Response] with a [AdminWithdrawalsIdApprovalPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminWithdrawalsIdApprovalPost200Response>> withdrawalsIdGet({ 
+  Future<Response<AdminWithdrawalsIdApprovalPost200Response>> withdrawalsIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1373,19 +1388,18 @@ _responseData = rawData == null ? null : deserialize<WithdrawalPage, WithdrawalP
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/withdrawals/{id}'.replaceAll('{' r'id' '}', id.toString());
+    final _path = r'/withdrawals/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1403,9 +1417,17 @@ _responseData = rawData == null ? null : deserialize<WithdrawalPage, WithdrawalP
     AdminWithdrawalsIdApprovalPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminWithdrawalsIdApprovalPost200Response, AdminWithdrawalsIdApprovalPost200Response>(rawData, 'AdminWithdrawalsIdApprovalPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminWithdrawalsIdApprovalPost200Response,
+              AdminWithdrawalsIdApprovalPost200Response
+            >(
+              rawData,
+              'AdminWithdrawalsIdApprovalPost200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1429,10 +1451,10 @@ _responseData = rawData == null ? null : deserialize<AdminWithdrawalsIdApprovalP
   }
 
   /// Request a cash-out to a bank account
-  /// Debits the available balance and opens a withdrawal for review; an admin resolves it before money leaves the platform. Only the available balance can be drawn — money still held in escrow is not the caller&#39;s yet. 
+  /// Debits the available balance and opens a withdrawal for review; an admin resolves it before money leaves the platform. Only the available balance can be drawn — money still held in escrow is not the caller&#39;s yet.
   ///
   /// Parameters:
-  /// * [createWithdrawalRequest] 
+  /// * [createWithdrawalRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1442,7 +1464,7 @@ _responseData = rawData == null ? null : deserialize<AdminWithdrawalsIdApprovalP
   ///
   /// Returns a [Future] containing a [Response] with a [AdminWithdrawalsIdApprovalPost200Response] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminWithdrawalsIdApprovalPost200Response>> withdrawalsPost({ 
+  Future<Response<AdminWithdrawalsIdApprovalPost200Response>> withdrawalsPost({
     required CreateWithdrawalRequest createWithdrawalRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1454,16 +1476,10 @@ _responseData = rawData == null ? null : deserialize<AdminWithdrawalsIdApprovalP
     final _path = r'/withdrawals';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'name': 'bearerAuth',
-          },
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
         ],
         ...?extra,
       },
@@ -1475,13 +1491,9 @@ _responseData = rawData == null ? null : deserialize<AdminWithdrawalsIdApprovalP
 
     try {
       _bodyData = jsonEncode(createWithdrawalRequest);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -1500,9 +1512,17 @@ _responseData = rawData == null ? null : deserialize<AdminWithdrawalsIdApprovalP
     AdminWithdrawalsIdApprovalPost200Response? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<AdminWithdrawalsIdApprovalPost200Response, AdminWithdrawalsIdApprovalPost200Response>(rawData, 'AdminWithdrawalsIdApprovalPost200Response', growable: true);
-
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              AdminWithdrawalsIdApprovalPost200Response,
+              AdminWithdrawalsIdApprovalPost200Response
+            >(
+              rawData,
+              'AdminWithdrawalsIdApprovalPost200Response',
+              growable: true,
+            );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1524,5 +1544,4 @@ _responseData = rawData == null ? null : deserialize<AdminWithdrawalsIdApprovalP
       extra: _response.extra,
     );
   }
-
 }

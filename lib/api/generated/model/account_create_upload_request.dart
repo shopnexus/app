@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'account_create_upload_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,84 +18,45 @@ part 'account_create_upload_request.g.dart';
 class AccountCreateUploadRequest {
   /// Returns a new [AccountCreateUploadRequest] instance.
   AccountCreateUploadRequest({
+    required this.filename,
 
-    required  this.filename,
+    required this.kind,
 
-    required  this.kind,
+    required this.mime,
 
-    required  this.mime,
-
-    required  this.size,
+    required this.size,
   });
 
-      /// Kept only for its extension. The stored key is generated — a path a client chose is a directory traversal waiting for a backend that resolves one. 
-  @JsonKey(
-    
-    name: r'filename',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// Kept only for its extension. The stored key is generated — a path a client chose is a directory traversal waiting for a backend that resolves one.
+  @JsonKey(name: r'filename', required: true, includeIfNull: false)
   final String filename;
 
-
-
-  @JsonKey(
-    
-    name: r'kind',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'kind', required: true, includeIfNull: false)
   final AccountCreateUploadRequestKindEnum kind;
 
-
-
-  @JsonKey(
-    
-    name: r'mime',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'mime', required: true, includeIfNull: false)
   final String mime;
 
-
-
-          // minimum: 1
-          // maximum: 10485760
-  @JsonKey(
-    
-    name: r'size',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  // minimum: 1
+  // maximum: 10485760
+  @JsonKey(name: r'size', required: true, includeIfNull: false)
   final int size;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AccountCreateUploadRequest &&
+          other.filename == filename &&
+          other.kind == kind &&
+          other.mime == mime &&
+          other.size == size;
 
+  @override
+  int get hashCode =>
+      filename.hashCode + kind.hashCode + mime.hashCode + size.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AccountCreateUploadRequest &&
-      other.filename == filename &&
-      other.kind == kind &&
-      other.mime == mime &&
-      other.size == size;
-
-    @override
-    int get hashCode =>
-        filename.hashCode +
-        kind.hashCode +
-        mime.hashCode +
-        size.hashCode;
-
-  factory AccountCreateUploadRequest.fromJson(Map<String, dynamic> json) => _$AccountCreateUploadRequestFromJson(json);
+  factory AccountCreateUploadRequest.fromJson(Map<String, dynamic> json) =>
+      _$AccountCreateUploadRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$AccountCreateUploadRequestToJson(this);
 
@@ -104,22 +64,18 @@ class AccountCreateUploadRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-
 
 enum AccountCreateUploadRequestKindEnum {
-@JsonValue(r'avatar')
-avatar(r'avatar'),
-@JsonValue(r'identity')
-identity(r'identity');
+  @JsonValue(r'avatar')
+  avatar(r'avatar'),
+  @JsonValue(r'identity')
+  identity(r'identity');
 
-const AccountCreateUploadRequestKindEnum(this.value);
+  const AccountCreateUploadRequestKindEnum(this.value);
 
-final String value;
+  final String value;
 
-@override
-String toString() => value;
+  @override
+  String toString() => value;
 }
-
-

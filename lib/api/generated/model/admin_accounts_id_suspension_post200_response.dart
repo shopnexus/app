@@ -9,7 +9,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'admin_accounts_id_suspension_post200_response.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -19,41 +18,28 @@ part 'admin_accounts_id_suspension_post200_response.g.dart';
 )
 class AdminAccountsIdSuspensionPost200Response {
   /// Returns a new [AdminAccountsIdSuspensionPost200Response] instance.
-  AdminAccountsIdSuspensionPost200Response({
+  AdminAccountsIdSuspensionPost200Response({required this.data});
 
-    required  this.data,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final AdminAccount data;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminAccountsIdSuspensionPost200Response && other.data == data;
 
+  @override
+  int get hashCode => data.hashCode;
 
+  factory AdminAccountsIdSuspensionPost200Response.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AdminAccountsIdSuspensionPost200ResponseFromJson(json);
 
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is AdminAccountsIdSuspensionPost200Response &&
-      other.data == data;
-
-    @override
-    int get hashCode =>
-        data.hashCode;
-
-  factory AdminAccountsIdSuspensionPost200Response.fromJson(Map<String, dynamic> json) => _$AdminAccountsIdSuspensionPost200ResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AdminAccountsIdSuspensionPost200ResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$AdminAccountsIdSuspensionPost200ResponseToJson(this);
 
   @override
   String toString() {
     return toJson().toString();
   }
-
 }
-

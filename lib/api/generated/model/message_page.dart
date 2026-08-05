@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'message_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'message_page.g.dart';
 )
 class MessagePage {
   /// Returns a new [MessagePage] instance.
-  MessagePage({
+  MessagePage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Message> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final CursorMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MessagePage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is MessagePage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory MessagePage.fromJson(Map<String, dynamic> json) => _$MessagePageFromJson(json);
+  factory MessagePage.fromJson(Map<String, dynamic> json) =>
+      _$MessagePageFromJson(json);
 
   Map<String, dynamic> toJson() => _$MessagePageToJson(this);
 
@@ -71,6 +44,4 @@ class MessagePage {
   String toString() {
     return toJson().toString();
   }
-
 }
-

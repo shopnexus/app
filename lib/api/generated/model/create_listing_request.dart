@@ -11,7 +11,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'create_listing_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -22,180 +21,90 @@ part 'create_listing_request.g.dart';
 class CreateListingRequest {
   /// Returns a new [CreateListingRequest] instance.
   CreateListingRequest({
+    this.attachments,
 
-     this.attachments,
+    required this.categoryId,
 
-    required  this.categoryId,
+    required this.condition,
 
-    required  this.condition,
+    required this.currency,
 
-    required  this.currency,
+    this.description,
 
-     this.description,
+    required this.name,
 
-    required  this.name,
+    required this.priceMode,
 
-    required  this.priceMode,
+    this.specifications,
 
-     this.specifications,
+    this.tags,
 
-     this.tags,
-
-    required  this.variants,
+    required this.variants,
   });
 
-      /// Ordered. The first becomes the cover.
-  @JsonKey(
-    
-    name: r'attachments',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Ordered. The first becomes the cover.
+  @JsonKey(name: r'attachments', required: false, includeIfNull: false)
   final List<String>? attachments;
 
-
-
-  @JsonKey(
-    
-    name: r'category_id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'category_id', required: true, includeIfNull: false)
   final String categoryId;
 
-
-
-  @JsonKey(
-    
-    name: r'condition',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'condition', required: true, includeIfNull: false)
   final ListingCondition condition;
 
-
-
-      /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one. 
-  @JsonKey(
-    
-    name: r'currency',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one.
+  @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
 
-
-
-  @JsonKey(
-    
-    name: r'description',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'description', required: false, includeIfNull: false)
   final String? description;
 
-
-
-  @JsonKey(
-    
-    name: r'name',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'name', required: true, includeIfNull: false)
   final String name;
 
-
-
-  @JsonKey(
-    
-    name: r'price_mode',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'price_mode', required: true, includeIfNull: false)
   final PriceMode priceMode;
 
-
-
-  @JsonKey(
-    
-    name: r'specifications',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'specifications', required: false, includeIfNull: false)
   final Map<String, Object>? specifications;
 
-
-
-  @JsonKey(
-    
-    name: r'tags',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'tags', required: false, includeIfNull: false)
   final List<String>? tags;
 
-
-
-      /// At least one. Price and shipping weight live on the variant.
-  @JsonKey(
-    
-    name: r'variants',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  /// At least one. Price and shipping weight live on the variant.
+  @JsonKey(name: r'variants', required: true, includeIfNull: false)
   final List<CreateVariantRequest> variants;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CreateListingRequest &&
+          other.attachments == attachments &&
+          other.categoryId == categoryId &&
+          other.condition == condition &&
+          other.currency == currency &&
+          other.description == description &&
+          other.name == name &&
+          other.priceMode == priceMode &&
+          other.specifications == specifications &&
+          other.tags == tags &&
+          other.variants == variants;
 
+  @override
+  int get hashCode =>
+      attachments.hashCode +
+      categoryId.hashCode +
+      condition.hashCode +
+      currency.hashCode +
+      description.hashCode +
+      name.hashCode +
+      priceMode.hashCode +
+      specifications.hashCode +
+      tags.hashCode +
+      variants.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is CreateListingRequest &&
-      other.attachments == attachments &&
-      other.categoryId == categoryId &&
-      other.condition == condition &&
-      other.currency == currency &&
-      other.description == description &&
-      other.name == name &&
-      other.priceMode == priceMode &&
-      other.specifications == specifications &&
-      other.tags == tags &&
-      other.variants == variants;
-
-    @override
-    int get hashCode =>
-        attachments.hashCode +
-        categoryId.hashCode +
-        condition.hashCode +
-        currency.hashCode +
-        description.hashCode +
-        name.hashCode +
-        priceMode.hashCode +
-        specifications.hashCode +
-        tags.hashCode +
-        variants.hashCode;
-
-  factory CreateListingRequest.fromJson(Map<String, dynamic> json) => _$CreateListingRequestFromJson(json);
+  factory CreateListingRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateListingRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$CreateListingRequestToJson(this);
 
@@ -203,6 +112,4 @@ class CreateListingRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

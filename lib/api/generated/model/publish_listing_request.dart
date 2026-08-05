@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'publish_listing_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,22 @@ part 'publish_listing_request.g.dart';
 )
 class PublishListingRequest {
   /// Returns a new [PublishListingRequest] instance.
-  PublishListingRequest({
+  PublishListingRequest({this.pickupContactId});
 
-     this.pickupContactId,
-  });
-
-  @JsonKey(
-    
-    name: r'pickup_contact_id',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'pickup_contact_id', required: false, includeIfNull: false)
   final String? pickupContactId;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PublishListingRequest &&
+          other.pickupContactId == pickupContactId;
 
+  @override
+  int get hashCode => pickupContactId.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is PublishListingRequest &&
-      other.pickupContactId == pickupContactId;
-
-    @override
-    int get hashCode =>
-        pickupContactId.hashCode;
-
-  factory PublishListingRequest.fromJson(Map<String, dynamic> json) => _$PublishListingRequestFromJson(json);
+  factory PublishListingRequest.fromJson(Map<String, dynamic> json) =>
+      _$PublishListingRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$PublishListingRequestToJson(this);
 
@@ -53,6 +40,4 @@ class PublishListingRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

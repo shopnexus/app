@@ -4,6 +4,8 @@
 /// There used to be a hand-written freezed twin of every request here, each the
 /// same fields under the same json keys. A drift between the two was a runtime
 /// 400 nobody saw until a user hit it.
+library;
+
 export '../../../../api/generated/model/auth_result.dart';
 export '../../../../api/generated/model/change_password_request.dart';
 export '../../../../api/generated/model/email_verification_request.dart';

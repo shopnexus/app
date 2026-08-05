@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'mark_notifications_read_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,35 +17,22 @@ part 'mark_notifications_read_request.g.dart';
 )
 class MarkNotificationsReadRequest {
   /// Returns a new [MarkNotificationsReadRequest] instance.
-  MarkNotificationsReadRequest({
+  MarkNotificationsReadRequest({this.before});
 
-     this.before,
-  });
-
-      /// Mark everything created at or before this instant read. Omit to mark the whole feed read. 
-  @JsonKey(
-    
-    name: r'before',
-    required: false,
-    includeIfNull: false,
-  )
-
-
+  /// Mark everything created at or before this instant read. Omit to mark the whole feed read.
+  @JsonKey(name: r'before', required: false, includeIfNull: false)
   final DateTime? before;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MarkNotificationsReadRequest && other.before == before;
 
+  @override
+  int get hashCode => before.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is MarkNotificationsReadRequest &&
-      other.before == before;
-
-    @override
-    int get hashCode =>
-        before.hashCode;
-
-  factory MarkNotificationsReadRequest.fromJson(Map<String, dynamic> json) => _$MarkNotificationsReadRequestFromJson(json);
+  factory MarkNotificationsReadRequest.fromJson(Map<String, dynamic> json) =>
+      _$MarkNotificationsReadRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$MarkNotificationsReadRequestToJson(this);
 
@@ -54,6 +40,4 @@ class MarkNotificationsReadRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

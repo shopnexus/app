@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'create_draft_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,21 @@ part 'create_draft_request.g.dart';
 )
 class CreateDraftRequest {
   /// Returns a new [CreateDraftRequest] instance.
-  CreateDraftRequest({
+  CreateDraftRequest({required this.listingId});
 
-    required  this.listingId,
-  });
-
-  @JsonKey(
-    
-    name: r'listing_id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'listing_id', required: true, includeIfNull: false)
   final String listingId;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CreateDraftRequest && other.listingId == listingId;
 
+  @override
+  int get hashCode => listingId.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is CreateDraftRequest &&
-      other.listingId == listingId;
-
-    @override
-    int get hashCode =>
-        listingId.hashCode;
-
-  factory CreateDraftRequest.fromJson(Map<String, dynamic> json) => _$CreateDraftRequestFromJson(json);
+  factory CreateDraftRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateDraftRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$CreateDraftRequestToJson(this);
 
@@ -53,6 +39,4 @@ class CreateDraftRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

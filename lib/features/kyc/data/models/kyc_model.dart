@@ -5,6 +5,8 @@
 /// `rejected`. There is no `unverified`: an account with nothing on file has no
 /// document, which the repository answers as null. A fourth enum value for "no
 /// row" made every reader handle absence twice.
+library;
+
 export '../../../../api/generated/model/account_create_upload_request.dart';
 export '../../../../api/generated/model/identity_document.dart';
 export '../../../../api/generated/model/identity_document_type.dart';

@@ -36,7 +36,11 @@ class TicketRepository {
   /// through chat's upload route — there is no ticket-specific one.
   final ChatApi _chatApi;
 
-  Future<TicketPageResult> list({TicketStatus? status, String? cursor, int? limit}) async {
+  Future<TicketPageResult> list({
+    TicketStatus? status,
+    String? cursor,
+    int? limit,
+  }) async {
     final response = await _api.ticketsGet(
       status: status,
       cursor: cursor,
@@ -73,7 +77,9 @@ class TicketRepository {
         kind: kind,
         subject: subject,
         body: body?.isEmpty ?? true ? null : body,
-        attachments: attachments == null || attachments.isEmpty ? null : attachments,
+        attachments: attachments == null || attachments.isEmpty
+            ? null
+            : attachments,
         refId: refId,
         reason: reason,
       ),
@@ -111,7 +117,9 @@ class TicketRepository {
       ),
     );
 
-    await _chatApi.conversationsUploadsIdConfirmationPost(id: reserved.resourceId);
+    await _chatApi.conversationsUploadsIdConfirmationPost(
+      id: reserved.resourceId,
+    );
     return reserved.resourceId;
   }
 }

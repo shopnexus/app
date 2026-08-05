@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'update_message_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,21 @@ part 'update_message_request.g.dart';
 )
 class UpdateMessageRequest {
   /// Returns a new [UpdateMessageRequest] instance.
-  UpdateMessageRequest({
+  UpdateMessageRequest({required this.body});
 
-    required  this.body,
-  });
-
-  @JsonKey(
-    
-    name: r'body',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'body', required: true, includeIfNull: false)
   final String body;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UpdateMessageRequest && other.body == body;
 
+  @override
+  int get hashCode => body.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is UpdateMessageRequest &&
-      other.body == body;
-
-    @override
-    int get hashCode =>
-        body.hashCode;
-
-  factory UpdateMessageRequest.fromJson(Map<String, dynamic> json) => _$UpdateMessageRequestFromJson(json);
+  factory UpdateMessageRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateMessageRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$UpdateMessageRequestToJson(this);
 
@@ -53,6 +39,4 @@ class UpdateMessageRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

@@ -158,8 +158,16 @@ class CartNotifier extends _$CartNotifier {
       final repository = ref.read(cartRepositoryProvider);
 
       final currentItem = state.items.firstWhere(
-        (item) => item.id == idOrVariantId || item.variantId == idOrVariantId || item.sku?.id == idOrVariantId,
-        orElse: () => CartItem(id: idOrVariantId, listingId: '', variantId: idOrVariantId, quantity: 0),
+        (item) =>
+            item.id == idOrVariantId ||
+            item.variantId == idOrVariantId ||
+            item.sku?.id == idOrVariantId,
+        orElse: () => CartItem(
+          id: idOrVariantId,
+          listingId: '',
+          variantId: idOrVariantId,
+          quantity: 0,
+        ),
       );
 
       await repository.deleteCartItem(currentItem.id);
@@ -183,7 +191,10 @@ class CartNotifier extends _$CartNotifier {
       final repository = ref.read(cartRepositoryProvider);
 
       final currentItem = state.items.firstWhere(
-        (item) => item.id == idOrVariantId || item.variantId == idOrVariantId || item.sku?.id == idOrVariantId,
+        (item) =>
+            item.id == idOrVariantId ||
+            item.variantId == idOrVariantId ||
+            item.sku?.id == idOrVariantId,
         orElse: () => throw Exception('Item not found in cart'),
       );
 

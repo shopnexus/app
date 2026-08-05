@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'order_ref.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,20 @@ part 'order_ref.g.dart';
 )
 class OrderRef {
   /// Returns a new [OrderRef] instance.
-  OrderRef({
+  OrderRef({required this.id});
 
-    required  this.id,
-  });
-
-  @JsonKey(
-    
-    name: r'id',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is OrderRef && other.id == id;
 
+  @override
+  int get hashCode => id.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is OrderRef &&
-      other.id == id;
-
-    @override
-    int get hashCode =>
-        id.hashCode;
-
-  factory OrderRef.fromJson(Map<String, dynamic> json) => _$OrderRefFromJson(json);
+  factory OrderRef.fromJson(Map<String, dynamic> json) =>
+      _$OrderRefFromJson(json);
 
   Map<String, dynamic> toJson() => _$OrderRefToJson(this);
 
@@ -53,6 +38,4 @@ class OrderRef {
   String toString() {
     return toJson().toString();
   }
-
 }
-

@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'email_verification_request.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,34 +17,21 @@ part 'email_verification_request.g.dart';
 )
 class EmailVerificationRequest {
   /// Returns a new [EmailVerificationRequest] instance.
-  EmailVerificationRequest({
+  EmailVerificationRequest({required this.token});
 
-    required  this.token,
-  });
-
-  @JsonKey(
-    
-    name: r'token',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'token', required: true, includeIfNull: false)
   final String token;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EmailVerificationRequest && other.token == token;
 
+  @override
+  int get hashCode => token.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is EmailVerificationRequest &&
-      other.token == token;
-
-    @override
-    int get hashCode =>
-        token.hashCode;
-
-  factory EmailVerificationRequest.fromJson(Map<String, dynamic> json) => _$EmailVerificationRequestFromJson(json);
+  factory EmailVerificationRequest.fromJson(Map<String, dynamic> json) =>
+      _$EmailVerificationRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$EmailVerificationRequestToJson(this);
 
@@ -53,6 +39,4 @@ class EmailVerificationRequest {
   String toString() {
     return toJson().toString();
   }
-
 }
-

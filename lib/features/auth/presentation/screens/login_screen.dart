@@ -202,8 +202,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             onPressed: isLoading
                                 ? null
                                 : () => context.push(
-                                      '/forgot-password?from=${Uri.encodeComponent(from ?? '/home')}&target=${Uri.encodeComponent(target ?? '/home')}',
-                                    ),
+                                    '/forgot-password?from=${Uri.encodeComponent(from ?? '/home')}&target=${Uri.encodeComponent(target ?? '/home')}',
+                                  ),
                             child: Text(
                               'Quên mật khẩu?',
                               style: TextStyle(
@@ -239,8 +239,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               onTap: isLoading
                                   ? null
                                   : () => context.push(
-                                        '/register?from=${Uri.encodeComponent(from ?? '/home')}&target=${Uri.encodeComponent(target ?? '/home')}',
-                                      ),
+                                      '/register?from=${Uri.encodeComponent(from ?? '/home')}&target=${Uri.encodeComponent(target ?? '/home')}',
+                                    ),
                               child: Text(
                                 'Đăng ký ngay',
                                 style: TextStyle(

@@ -129,10 +129,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                 color: textColor,
                               ) ??
                               TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: textColor,
-                                ),
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -140,14 +140,17 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           style: TextStyle(fontSize: 14, color: labelColor),
                         ),
                         const SizedBox(height: 36),
-  
+
                         // Email Input
                         CustomTextField(
                           label: 'ĐỊA CHỈ EMAIL',
                           hintText: 'Nhập địa chỉ email của bạn',
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
-                          prefixIcon: Icon(Icons.mail_outline, color: labelColor),
+                          prefixIcon: Icon(
+                            Icons.mail_outline,
+                            color: labelColor,
+                          ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return 'Vui lòng nhập địa chỉ email';
@@ -163,7 +166,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           enabled: !isLoading,
                         ),
                         const SizedBox(height: 32),
-  
+
                         // Submit Button
                         CustomButton(
                           text: 'Gửi yêu cầu khôi phục',

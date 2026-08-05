@@ -8,7 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'cursor_meta.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -18,35 +17,22 @@ part 'cursor_meta.g.dart';
 )
 class CursorMeta {
   /// Returns a new [CursorMeta] instance.
-  CursorMeta({
+  CursorMeta({required this.nextCursor});
 
-    required  this.nextCursor,
-  });
-
-      /// Pass as `cursor` to get the next page. Null on the last one. Always present so \"no more pages\" is a value rather than a missing key. 
-  @JsonKey(
-    
-    name: r'next_cursor',
-    required: true,
-    includeIfNull: true,
-  )
-
-
+  /// Pass as `cursor` to get the next page. Null on the last one. Always present so \"no more pages\" is a value rather than a missing key.
+  @JsonKey(name: r'next_cursor', required: true, includeIfNull: true)
   final String? nextCursor;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CursorMeta && other.nextCursor == nextCursor;
 
+  @override
+  int get hashCode => (nextCursor == null ? 0 : nextCursor.hashCode);
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is CursorMeta &&
-      other.nextCursor == nextCursor;
-
-    @override
-    int get hashCode =>
-        (nextCursor == null ? 0 : nextCursor.hashCode);
-
-  factory CursorMeta.fromJson(Map<String, dynamic> json) => _$CursorMetaFromJson(json);
+  factory CursorMeta.fromJson(Map<String, dynamic> json) =>
+      _$CursorMetaFromJson(json);
 
   Map<String, dynamic> toJson() => _$CursorMetaToJson(this);
 
@@ -54,6 +40,4 @@ class CursorMeta {
   String toString() {
     return toJson().toString();
   }
-
 }
-

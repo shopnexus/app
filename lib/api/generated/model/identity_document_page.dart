@@ -10,7 +10,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'identity_document_page.g.dart';
 
-
 @CopyWith()
 @JsonSerializable(
   checked: true,
@@ -20,50 +19,24 @@ part 'identity_document_page.g.dart';
 )
 class IdentityDocumentPage {
   /// Returns a new [IdentityDocumentPage] instance.
-  IdentityDocumentPage({
+  IdentityDocumentPage({required this.data, required this.meta});
 
-    required  this.data,
-
-    required  this.meta,
-  });
-
-  @JsonKey(
-    
-    name: r'data',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<AdminIdentityDocument> data;
 
-
-
-  @JsonKey(
-    
-    name: r'meta',
-    required: true,
-    includeIfNull: false,
-  )
-
-
+  @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final PageMeta meta;
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is IdentityDocumentPage && other.data == data && other.meta == meta;
 
+  @override
+  int get hashCode => data.hashCode + meta.hashCode;
 
-
-
-    @override
-    bool operator ==(Object other) => identical(this, other) || other is IdentityDocumentPage &&
-      other.data == data &&
-      other.meta == meta;
-
-    @override
-    int get hashCode =>
-        data.hashCode +
-        meta.hashCode;
-
-  factory IdentityDocumentPage.fromJson(Map<String, dynamic> json) => _$IdentityDocumentPageFromJson(json);
+  factory IdentityDocumentPage.fromJson(Map<String, dynamic> json) =>
+      _$IdentityDocumentPageFromJson(json);
 
   Map<String, dynamic> toJson() => _$IdentityDocumentPageToJson(this);
 
@@ -71,6 +44,4 @@ class IdentityDocumentPage {
   String toString() {
     return toJson().toString();
   }
-
 }
-
