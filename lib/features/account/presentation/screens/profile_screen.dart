@@ -232,7 +232,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 color: theme.colorScheme.onSurfaceVariant,
                 size: 24,
               ),
-              onPressed: () => context.push('/account/notifications'),
+              onPressed: () => context.push('/chat?tab=notifications'),
             ),
             if (unread > 0)
               Positioned(

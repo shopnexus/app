@@ -125,8 +125,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                 color: theme.colorScheme.onSurface,
                                 size: 24,
                               ),
+                              // Thông báo giờ là một tab của Hộp thư.
                               onPressed: () =>
-                                  context.push('/account/notifications'),
+                                  context.push('/chat?tab=notifications'),
                             ),
                           ],
                         ),
