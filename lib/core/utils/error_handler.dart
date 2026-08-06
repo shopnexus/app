@@ -1,6 +1,17 @@
 import 'package:dio/dio.dart';
 
 class ErrorHandler {
+  /// Những mã lỗi app có câu tiếng Việt riêng, tra theo `error.code` — cái phần
+  /// ổn định của envelope, không phải câu chữ.
+  ///
+  /// `identity_required` từng lọt tới người dùng đúng nguyên văn tiếng Anh của
+  /// server, sau khi họ đã chụp ảnh, tải lên và đợi model chạy.
+  static const _messages = <String, String>{
+    'identity_required':
+        'Bạn cần định danh trước khi đăng bán. Mọi người bán trên ShopNexus '
+            'đều đã định danh — đó là lý do người mua dám mua.',
+  };
+
   static String getErrorMessage(dynamic error) {
     if (error is DioException) {
       switch (error.type) {
@@ -20,8 +31,15 @@ class ErrorHandler {
               // used to be read as a flat string too, and `.toString()` on the map printed Dart
               // syntax at the user: `{code: payment_option_unknown, message: ...}`.
               final envelope = data['error'];
-              if (envelope is Map && envelope['message'] != null) {
-                return envelope['message'].toString();
+              if (envelope is Map) {
+                // Câu tiếng Việt của app thắng câu tiếng Anh của server, nhưng
+                // chỉ cho những mã app thật sự có bản dịch: một map bắt-tất-cả
+                // sẽ đổi mọi lỗi lạ thành một câu chung vô nghĩa.
+                final translated = _messages[envelope['code']?.toString()];
+                if (translated != null) return translated;
+                if (envelope['message'] != null) {
+                  return envelope['message'].toString();
+                }
               }
               // A body that is not this API's — a proxy's error page, say.
               if (data['message'] != null) return data['message'].toString();

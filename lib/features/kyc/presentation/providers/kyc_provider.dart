@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
 import 'package:shopnexus_flutter_app/features/kyc/data/repositories/kyc_repository.dart';
+import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/selling_gate_provider.dart';
 
 part 'kyc_provider.g.dart';
 
@@ -271,6 +272,9 @@ class KycNotifier extends _$KycNotifier {
         isSubmitting: false,
         successMessage: 'Gửi hồ sơ xác minh danh tính thành công!',
       );
+      // Bước 0 của luồng đăng bán đọc hồ sơ này, và người bán quay lại đó ngay
+      // sau đây — một giá trị cache lại sẽ vẫn mời họ nộp hồ sơ vừa nộp.
+      ref.invalidate(sellingEligibilityProvider);
       return true;
     } catch (e) {
       state = state.copyWith(

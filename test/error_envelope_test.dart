@@ -38,6 +38,23 @@ void main() {
     expect(message, 'Bad Gateway');
   });
 
+  /// Cái mã này từng tới người dùng đúng nguyên văn tiếng Anh của server —
+  /// "identity verification is required before selling" — sau khi họ đã chụp
+  /// ảnh, tải lên và đợi model chạy.
+  test('a code the app has words for reads in Vietnamese', () {
+    final message = ErrorHandler.getErrorMessage(
+      failWith({
+        'error': {
+          'code': 'identity_required',
+          'message': 'identity verification is required before selling',
+        },
+      }, 422),
+    );
+
+    expect(message, contains('định danh'));
+    expect(message, isNot(contains('identity verification')));
+  });
+
   test('an unrecognised body still yields a status-based sentence', () {
     final message = ErrorHandler.getErrorMessage(failWith({}, 500));
 

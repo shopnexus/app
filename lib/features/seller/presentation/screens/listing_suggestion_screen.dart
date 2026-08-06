@@ -15,6 +15,7 @@ import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/models/listing_draft.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/listing_suggestion_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
+import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/selling_gate_provider.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/condition_badge.dart';
 
 /// "Photo in, listing out": the seller snaps the item, says a sentence about it,
@@ -72,6 +73,16 @@ class _ListingSuggestionScreenState
       if (next != null && next != previous) _applySuggestion(next);
     });
 
+    // Bước 0: server chặn `POST /listings` nếu chưa định danh, nên form chỉ mở
+    // khi đã qua. Đọc lỗi thì *cho qua* — server vẫn là cái chặn thật, và một
+    // lần mất mạng không được biến người bán đã định danh thành người không.
+    final eligibility = ref.watch(sellingEligibilityProvider);
+    if (eligibility.isLoading) return _gateShell(const _GateLoading());
+    final gate = eligibility.value;
+    if (gate != null && !gate.allowed) {
+      return _gateShell(_IdentityGate(eligibility: gate));
+    }
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
@@ -127,6 +138,30 @@ class _ListingSuggestionScreenState
         ),
       ),
       bottomNavigationBar: _bottomBar(state, notifier),
+    );
+  }
+
+  /// Bước 0 dùng chung khung của luồng đăng bán — cùng AppBar, cùng tiêu đề —
+  /// vì định danh *là* một bước của việc đăng tin, không phải một đích khác mà
+  /// người bán bị đá sang.
+  Widget _gateShell(Widget body) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          'Đăng sản phẩm',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+      ),
+      body: SafeArea(child: body),
     );
   }
 
@@ -1202,4 +1237,116 @@ class _PickupChoice {
   const _PickupChoice(this.contactId);
 
   final String? contactId;
+}
+
+class _GateLoading extends StatelessWidget {
+  const _GateLoading();
+
+  @override
+  Widget build(BuildContext context) =>
+      const Center(child: CircularProgressIndicator());
+}
+
+/// Bước 0 của việc đăng tin: định danh.
+///
+/// Cùng một cái chặn, hai cảm giác trái ngược — "Bạn chưa được phép đăng tin"
+/// đọc là bị loại, "Bước 1/2 của việc đăng tin" đọc là còn một việc phải làm.
+/// Chỉ khác cách nói, nên chọn cách nói đúng là miễn phí.
+class _IdentityGate extends StatelessWidget {
+  const _IdentityGate({required this.eligibility});
+
+  final SellingEligibility eligibility;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final (icon, title, body) = switch (eligibility.gate) {
+      SellingGate.pending => (
+        Icons.hourglass_top_rounded,
+        'Hồ sơ định danh đang được duyệt',
+        'Chúng tôi đang xem hồ sơ của bạn. Xong là bạn đăng tin được ngay, '
+            'không cần nộp lại gì.',
+      ),
+      SellingGate.rejected => (
+        Icons.error_outline_rounded,
+        'Hồ sơ định danh chưa được chấp nhận',
+        eligibility.rejectionReason?.isNotEmpty ?? false
+            ? '${eligibility.rejectionReason}\n\nBạn nộp lại được ngay bây giờ.'
+            : 'Bạn nộp lại được ngay bây giờ.',
+      ),
+      // notStarted, và cả `allowed` cho đủ nhánh — widget này không được dựng
+      // cho người đã qua cửa.
+      _ => (
+        Icons.badge_outlined,
+        'Bước 1/2 của việc đăng tin',
+        'Mọi người bán trên ShopNexus đều đã định danh — đó là lý do người mua '
+            'dám mua. Mất khoảng hai phút: ảnh giấy tờ và một ảnh chân dung.',
+      ),
+    };
+
+    final action = switch (eligibility.gate) {
+      SellingGate.pending => null,
+      SellingGate.rejected => 'Nộp lại hồ sơ',
+      _ => 'Định danh ngay',
+    };
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withAlpha(25),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 40, color: theme.colorScheme.primary),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              body,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                height: 1.5,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            if (action != null)
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  // Định danh xong quay lại đúng đây, nên `push` chứ không `go`.
+                  onPressed: () => context.push('/account/kyc'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    action,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }
