@@ -147,6 +147,7 @@ export 'package:shopnexus_flutter_app/api/generated/model/o_auth_identity.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/o_auth_identity_list.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/o_auth_login_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/offer_listing.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/offer_page.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/offer_status.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/offers_post201_response.dart';

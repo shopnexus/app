@@ -8,9 +8,12 @@ part of 'refund_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
 
 @ProviderFor(refundList)
-const refundListProvider = RefundListFamily._();
+const refundListProvider = RefundListProvider._();
+
+/// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
 
 final class RefundListProvider
     extends
@@ -20,26 +23,20 @@ final class RefundListProvider
           FutureOr<List<Refund>>
         >
     with $FutureModifier<List<Refund>>, $FutureProvider<List<Refund>> {
-  const RefundListProvider._({
-    required RefundListFamily super.from,
-    required RefundRole super.argument,
-  }) : super(
-         retry: null,
-         name: r'refundListProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+  /// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
+  const RefundListProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'refundListProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$refundListHash();
-
-  @override
-  String toString() {
-    return r'refundListProvider'
-        ''
-        '($argument)';
-  }
 
   @$internal
   @override
@@ -49,40 +46,11 @@ final class RefundListProvider
 
   @override
   FutureOr<List<Refund>> create(Ref ref) {
-    final argument = this.argument as RefundRole;
-    return refundList(ref, role: argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is RefundListProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
+    return refundList(ref);
   }
 }
 
-String _$refundListHash() => r'9942e056a8f73c3f2caf960254c0800e03e71cbc';
-
-final class RefundListFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<Refund>>, RefundRole> {
-  const RefundListFamily._()
-    : super(
-        retry: null,
-        name: r'refundListProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  RefundListProvider call({required RefundRole role}) =>
-      RefundListProvider._(argument: role, from: this);
-
-  @override
-  String toString() => r'refundListProvider';
-}
+String _$refundListHash() => r'31f634536a5f103d39a28dadb9af30f49b399ecd';
 
 @ProviderFor(refundDetail)
 const refundDetailProvider = RefundDetailFamily._();

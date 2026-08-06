@@ -22,13 +22,6 @@ enum RefundRole {
   final String value;
 }
 
-/// Vai đọc từ query string. Một giá trị lạ rơi về `buyer` thay vì ném: một link
-/// cũ hay gõ sai phải mở ra một màn hình dùng được, không phải một màn hình lỗi.
-RefundRole roleFromQuery(String? value) => switch (value) {
-  'seller' => RefundRole.seller,
-  _ => RefundRole.buyer,
-};
-
 class RefundPageResult {
   const RefundPageResult({required this.refunds, this.nextCursor});
 
@@ -46,13 +39,15 @@ class RefundRepository {
 
   final OrderApi _api;
 
+  /// [role] để trống là cả hai chiều: vụ mình đòi và vụ bị đòi trên đơn mình bán
+  /// là cùng một hàng đợi việc phải trả lời.
   Future<RefundPageResult> list({
-    required RefundRole role,
+    RefundRole? role,
     RefundStatus? status,
     String? cursor,
   }) async {
     final response = await _api.refundsGet(
-      role: role.value,
+      role: role?.value,
       status: status,
       cursor: cursor,
     );

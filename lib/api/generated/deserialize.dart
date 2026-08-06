@@ -116,6 +116,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/o_auth_identity.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/o_auth_identity_list.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/o_auth_login_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/offer_listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offer_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offers_post201_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/open_ticket_request.dart';
@@ -628,6 +629,8 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'Offer':
       return Offer.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'OfferListing':
+      return OfferListing.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'OfferPage':
       return OfferPage.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'OfferStatus':

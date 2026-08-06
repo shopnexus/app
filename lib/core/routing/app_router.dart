@@ -17,7 +17,6 @@ import 'package:shopnexus_flutter_app/features/account/presentation/screens/noti
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/payment_history_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/offers_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/profile_screen.dart';
-import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/orders_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/order_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/addresses_screen.dart';
@@ -36,7 +35,6 @@ import 'package:shopnexus_flutter_app/features/seller/presentation/screens/selle
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/inbox_screen.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/chat_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/help_center/presentation/screens/help_center_screen.dart';
-import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_list_screen.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/screens/ticket_detail_screen.dart';
@@ -222,17 +220,13 @@ GoRouter appRouter(Ref ref) {
             name: 'account',
             builder: (context, state) => const ProfileScreen(),
             routes: [
-              // `?role=buyer|seller`. Không có tham số nghĩa là để màn tự chọn
-              // theo việc đang chờ; `?tab=N` của bản cũ rơi vào đúng nhánh đó.
+              // Không còn `?role=`: danh sách gộp cả hai chiều và xếp theo lượt,
+              // nên không có vai nào để mở sẵn. Link cũ mang `?role=` hay `?tab=`
+              // vẫn mở đúng màn này, tham số chỉ bị bỏ qua.
               GoRoute(
                 path: 'orders',
                 name: 'buyer_orders',
-                builder: (context, state) {
-                  final role = state.uri.queryParameters['role'];
-                  return OrdersScreen(
-                    initialRole: role == null ? null : orderRoleFromQuery(role),
-                  );
-                },
+                builder: (context, state) => const OrdersScreen(),
               ),
               GoRoute(
                 path: 'order-detail/:id',
@@ -296,9 +290,9 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: 'refunds',
                 name: 'refund_list',
-                builder: (context, state) => RefundListScreen(
-                  initialRole: roleFromQuery(state.uri.queryParameters['role']),
-                ),
+                // Không còn `?role=`: một danh sách gộp cả hai chiều, xếp theo
+                // lượt. Link cũ mang `?role=` vẫn mở đúng màn này.
+                builder: (context, state) => const RefundListScreen(),
                 routes: [
                   GoRoute(
                     path: ':id',

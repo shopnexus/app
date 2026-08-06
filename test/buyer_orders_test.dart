@@ -137,7 +137,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(ordersProvider(OrderRole.buyer).future);
+      await container.read(ordersProvider.future);
 
       final orderCalls = backend.calls.where((c) => c.path == '/orders');
       expect(orderCalls.length, 1);
@@ -160,7 +160,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final feed = await container.read(ordersProvider(OrderRole.buyer).future);
+      final feed = await container.read(ordersProvider.future);
 
       final view = feed.ongoing.single;
       expect(view.isAwaitingConfirmation, isTrue);

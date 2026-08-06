@@ -57,6 +57,10 @@ class ActionInbox {
   ///
   /// Xác nhận đơn đứng đầu: đó là việc duy nhất ở đây đang giữ tiền của người
   /// khác và có hạn treo lên đầu.
+  ///
+  /// Route không mang `?role=seller` nữa. Nó từng cần thiết để mở đúng tab; giờ cả
+  /// hai danh sách gộp hai chiều và tự đẩy việc-cần-mình lên nhóm đầu, nên tham số
+  /// đó chỉ còn là một lời hứa mà trang đích không giữ.
   List<ActionInboxEntry> get entries => [
     if (ordersToConfirm > 0)
       ActionInboxEntry(
@@ -65,19 +69,19 @@ class ActionInbox {
           _ => 'đơn chờ bạn xác nhận',
         },
         count: ordersToConfirm,
-        route: '/account/orders?role=seller',
+        route: '/account/orders',
       ),
     if (ordersToShip > 0)
       ActionInboxEntry(
         label: 'đơn chờ giao',
         count: ordersToShip,
-        route: '/account/orders?role=seller',
+        route: '/account/orders',
       ),
     if (refundsAsSeller > 0)
       ActionInboxEntry(
         label: 'yêu cầu hoàn tiền chờ bạn duyệt',
         count: refundsAsSeller,
-        route: '/account/refunds?role=seller',
+        route: '/account/refunds',
       ),
     if (unreadMessages > 0)
       ActionInboxEntry(

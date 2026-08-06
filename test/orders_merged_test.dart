@@ -53,42 +53,31 @@ void main() {
   /// Giữ provider sống qua nhiều lần đọc. Không có ai lắng nghe thì một provider
   /// autoDispose bị bỏ đi ngay sau mỗi `read`, nên trang đã nạp biến mất trước
   /// khi câu hỏi tiếp theo kịp hỏi — đúng thứ mà `loadMore` phải nối vào.
-  void keepAlive(ProviderContainer container, OrderRole role) {
+  void keepAlive(ProviderContainer container) {
     final subscription = container.listen(
-      ordersProvider(role),
+      ordersProvider,
       (_, _) {},
       fireImmediately: true,
     );
     addTearDown(subscription.close);
   }
 
-  group('GET /orders cho một vai', () {
-    test('gửi role và không gửi state — chia nhóm là việc của client', () async {
+  group('GET /orders, cả hai chiều', () {
+    test('không gửi role và không gửi state', () async {
       final backend = RecordingBackend(serves([]));
       final container = containerOn(backend);
 
-      await container.read(ordersProvider(OrderRole.seller).future);
+      await container.read(ordersProvider.future);
 
       final call = backend.calls.firstWhere((c) => c.path == '/orders');
-      expect(call.queryParameters['role'], 'seller');
+      // Không có `role`: một danh sách gộp hai chiều. Gửi nó là quay lại cái
+      // segment "Tôi mua | Tôi bán", mà vai chưa bao giờ là câu hỏi người dùng có.
+      expect(call.queryParameters.containsKey('role'), isFalse);
       // `state` là optional của route. Năm provider lọc theo tab là năm lượt gọi
       // cho cùng một danh sách.
       expect(call.queryParameters.containsKey('state'), isFalse);
       // Cursor route: `page` bị bỏ qua, nên xin nó là tự giới hạn ở trang đầu.
       expect(call.queryParameters.containsKey('page'), isFalse);
-    });
-
-    test('mỗi vai đi vòng qua query và về nguyên vẹn', () {
-      for (final role in OrderRole.values) {
-        expect(orderRoleFromQuery(role.value), role);
-      }
-    });
-
-    test('?tab=2 cũ và giá trị lạ rơi về buyer, không ném', () {
-      expect(orderRoleFromQuery(null), OrderRole.buyer);
-      expect(orderRoleFromQuery(''), OrderRole.buyer);
-      expect(orderRoleFromQuery('2'), OrderRole.buyer);
-      expect(orderRoleFromQuery('người-bán'), OrderRole.buyer);
     });
   });
 
@@ -104,7 +93,7 @@ void main() {
       );
       final container = containerOn(backend);
 
-      final feed = await container.read(ordersProvider(OrderRole.buyer).future);
+      final feed = await container.read(ordersProvider.future);
 
       expect(feed.ongoing.map((v) => v.order.id), [
         'ord_cho_xac_nhan',
@@ -126,7 +115,7 @@ void main() {
       );
       final container = containerOn(backend);
 
-      final feed = await container.read(ordersProvider(OrderRole.buyer).future);
+      final feed = await container.read(ordersProvider.future);
 
       expect(feed.ongoing.single.isAwaitingConfirmation, isTrue);
       expect(feed.finished, isEmpty);
@@ -140,7 +129,7 @@ void main() {
       );
       final container = containerOn(backend);
 
-      final feed = await container.read(ordersProvider(OrderRole.buyer).future);
+      final feed = await container.read(ordersProvider.future);
 
       expect(feed.hasMore, isTrue);
     });
@@ -149,7 +138,7 @@ void main() {
       final backend = RecordingBackend(serves([orderIn('completed')]));
       final container = containerOn(backend);
 
-      final feed = await container.read(ordersProvider(OrderRole.buyer).future);
+      final feed = await container.read(ordersProvider.future);
 
       expect(feed.hasMore, isFalse);
     });
@@ -176,12 +165,12 @@ void main() {
         };
       });
       final container = containerOn(backend);
-      keepAlive(container, OrderRole.buyer);
+      keepAlive(container);
 
-      await container.read(ordersProvider(OrderRole.buyer).future);
-      await container.read(ordersProvider(OrderRole.buyer).notifier).loadMore();
+      await container.read(ordersProvider.future);
+      await container.read(ordersProvider.notifier).loadMore();
 
-      final feed = container.read(ordersProvider(OrderRole.buyer)).value!;
+      final feed = container.read(ordersProvider).value!;
       // Đơn thứ 21 vô hình là lỗi của một `limit: 20` gọi một lần.
       expect(feed.orders.map((v) => v.order.id), ['ord_trang1', 'ord_trang2']);
       expect(feed.hasMore, isFalse);
@@ -216,12 +205,12 @@ void main() {
         };
       });
       final container = containerOn(backend);
-      keepAlive(container, OrderRole.buyer);
+      keepAlive(container);
 
-      await container.read(ordersProvider(OrderRole.buyer).future);
-      await container.read(ordersProvider(OrderRole.buyer).notifier).loadMore();
+      await container.read(ordersProvider.future);
+      await container.read(ordersProvider.notifier).loadMore();
 
-      final feed = container.read(ordersProvider(OrderRole.buyer)).value!;
+      final feed = container.read(ordersProvider).value!;
       expect(feed.orders.map((v) => v.order.id), ['ord_trang1']);
       expect(feed.loadMoreError, isNotNull);
       expect(feed.isLoadingMore, isFalse);
@@ -229,14 +218,17 @@ void main() {
   });
 
   group('dòng chờ gom tiền', () {
-    test('là một endpoint khác, hỏi theo vai đang xem', () async {
+    test('là một endpoint khác, và cũng hỏi cả hai chiều', () async {
       final backend = RecordingBackend(serves([]));
       final container = containerOn(backend);
 
-      await container.read(unsettledItemsProvider(OrderRole.seller).future);
+      await container.read(unsettledItemsProvider.future);
 
       final call = backend.calls.firstWhere((c) => c.path == '/items');
-      expect(call.queryParameters['role'], 'seller');
+      // Cũng không có vai: một dòng đã trả tiền chưa thành đơn có thể là dòng mình
+      // mua (còn bỏ được) hay dòng mình bán (chỉ để biết), và khối hiển thị chia
+      // chúng ra theo `item.seller_id` chứ không hỏi hai lần.
+      expect(call.queryParameters.containsKey('role'), isFalse);
       expect(call.queryParameters['pending'], true);
     });
   });

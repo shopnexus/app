@@ -8,23 +8,24 @@ import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart'
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
-import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_actions_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/confirm_receipt_sheet.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/waiting_group.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/rate_order_sheet.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/transport_journey_sheet.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 
-/// Đơn của một vai, hai nhóm, không tab.
+/// Đơn của cả hai chiều, ba nhóm theo lượt, không tab và không segment vai.
 ///
-/// Chín cái tab trước đây lọc trung bình năm dòng dữ liệu — bộ máy lọc lớn hơn
-/// thứ nó lọc. Cái người dùng thật sự hỏi chỉ có hai: "còn gì phải trông" và
-/// "cái xong rồi đâu", và cả hai nằm trong một lượt đọc.
+/// Chín cái tab trước đây lọc trung bình năm dòng dữ liệu, rồi một segment
+/// "Tôi mua | Tôi bán" chia đôi cái còn lại. Nhưng vai chưa bao giờ là câu hỏi —
+/// nó nằm sẵn trong câu mô tả việc ("Xác nhận đơn của Minh" chỉ có thể là mình
+/// bán) — còn câu hỏi thật là "cái gì đang chờ tôi", và nó vắt qua cả hai vai.
+/// Xem [WaitingSide].
 class OrdersList extends ConsumerStatefulWidget {
-  const OrdersList({super.key, required this.role});
-
-  final OrderRole role;
+  const OrdersList({super.key});
 
   @override
   ConsumerState<OrdersList> createState() => _OrdersListState();
@@ -39,65 +40,91 @@ class _OrdersListState extends ConsumerState<OrdersList> {
 
   @override
   Widget build(BuildContext context) {
-    final feed = ref.watch(ordersProvider(widget.role));
-    final unsettled = ref.watch(unsettledItemsProvider(widget.role));
+    final feed = ref.watch(ordersProvider);
+    final unsettled = ref.watch(unsettledItemsProvider);
+    // Mọi câu "lượt của ai" so với id này, nên nó phải có trước khi chia nhóm.
+    final me = ref.watch(profileProvider).value?.id;
 
     return RefreshIndicator(
       color: Theme.of(context).colorScheme.primary,
       onRefresh: () async {
         setState(() => _finishedShown = _pageSize);
-        ref.invalidate(ordersProvider(widget.role));
-        ref.invalidate(unsettledItemsProvider(widget.role));
+        ref.invalidate(ordersProvider);
+        ref.invalidate(unsettledItemsProvider);
       },
       child: switch (feed) {
         AsyncError(:final error) => _Retry(
           error: error,
-          onRetry: () => ref.invalidate(ordersProvider(widget.role)),
+          onRetry: () => ref.invalidate(ordersProvider),
         ),
         // `unsettled` không được chặn danh sách: nó là một endpoint khác, và một
         // dòng chờ gom hỏng không đáng để giấu hết đơn hàng.
-        AsyncValue(:final value?) => _body(value, unsettled.value ?? const []),
+        AsyncValue(:final value?) => _body(
+          value,
+          unsettled.value ?? const [],
+          me,
+        ),
         _ => const _OrdersShimmer(),
       },
     );
   }
 
-  Widget _body(OrdersFeed feed, List<OrderLineView> unsettled) {
-    final ongoing = feed.ongoing;
+  Widget _body(
+    OrdersFeed feed,
+    List<OrderLineView> unsettled,
+    String? me,
+  ) {
     final finished = feed.finished;
+    if (feed.orders.isEmpty && unsettled.isEmpty) return const _Empty();
 
-    if (ongoing.isEmpty && finished.isEmpty && unsettled.isEmpty) {
-      return const _Empty();
+    // Ba nhóm theo lượt. Đơn chưa xong chia làm hai: cái có đồng hồ chỉ vào mình,
+    // và cái đang chờ bên kia / đơn vị vận chuyển.
+    final needsYou = <OrderView>[];
+    final waiting = <OrderView>[];
+    for (final view in feed.ongoing) {
+      (_needsMe(view, me) ? needsYou : waiting).add(view);
     }
+    // Hạn gần nhất lên trước — đó là cả lý do nhóm này tồn tại.
+    needsYou.sort((a, b) => _deadlineOf(a).compareTo(_deadlineOf(b)));
 
     final shown = finished.take(_finishedShown).toList();
     // Một nút, một nghĩa: "cho tôi xem thêm đơn đã xong". Còn dòng đã nạp thì
     // hiện thêm, hết rồi thì mới đi xin trang sau — người dùng không cần biết
     // ranh giới đó ở đâu.
     final hasMore = finished.length > shown.length || feed.hasMore;
+    // Câu về vận chuyển chỉ có nghĩa với người bán, và chỉ cần nói một lần: nó
+    // giải thích vì sao họ không tự sửa được vị trí kiện hàng.
+    final selling = feed.ongoing.any((view) => view.order.seller.id == me);
 
     return ListView(
       padding: const EdgeInsets.all(16),
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         if (unsettled.isNotEmpty) ...[
-          _UnsettledBlock(role: widget.role, lines: unsettled),
+          _UnsettledBlock(lines: unsettled, me: me),
           const SizedBox(height: 20),
         ],
-        if (ongoing.isNotEmpty) ...[
-          const _SectionHeader('ĐANG DIỄN RA'),
-          // Một lần cho cả nhóm, không một lần mỗi dòng: câu này giải thích vì
-          // sao người bán không tự sửa được vị trí kiện hàng, và nó không đổi
-          // theo từng đơn.
-          if (widget.role == OrderRole.seller) const _CarrierNote(),
-          for (final view in ongoing)
-            _OrderRow(view: view, role: widget.role, isFinished: false),
-          const SizedBox(height: 20),
+        // Trên mọi nhóm, một lần: câu này nói vị trí kiện hàng do ai cập nhật, và nó
+        // đúng cho cả đơn đang chờ mình xác nhận lẫn đơn đã lên đường — mà hai thứ
+        // đó giờ ở hai nhóm khác nhau. Treo vào một nhóm là để nó biến mất đúng
+        // lúc kiện hàng bắt đầu đi.
+        if (selling) const _CarrierNote(),
+        if (needsYou.isNotEmpty) ...[
+          WaitingGroupHeader(side: WaitingSide.you, count: needsYou.length),
+          for (final view in needsYou)
+            _OrderRow(view: view, me: me, isFinished: false),
+          const SizedBox(height: 12),
+        ],
+        if (waiting.isNotEmpty) ...[
+          WaitingGroupHeader(side: WaitingSide.other, count: waiting.length),
+          for (final view in waiting)
+            _OrderRow(view: view, me: me, isFinished: false),
+          const SizedBox(height: 12),
         ],
         if (finished.isNotEmpty) ...[
-          const _SectionHeader('ĐÃ XONG'),
+          WaitingGroupHeader(side: WaitingSide.done, count: finished.length),
           for (final view in shown)
-            _OrderRow(view: view, role: widget.role, isFinished: true),
+            _OrderRow(view: view, me: me, isFinished: true),
           if (hasMore)
             _LoadMoreButton(
               isLoading: feed.isLoadingMore,
@@ -106,7 +133,7 @@ class _OrdersListState extends ConsumerState<OrdersList> {
                 if (finished.length > _finishedShown) {
                   setState(() => _finishedShown += _pageSize);
                 } else {
-                  ref.read(ordersProvider(widget.role).notifier).loadMore();
+                  ref.read(ordersProvider.notifier).loadMore();
                 }
               },
             ),
@@ -114,22 +141,45 @@ class _OrdersListState extends ConsumerState<OrdersList> {
       ],
     );
   }
+
+  /// Có đồng hồ chỉ vào mình trên đơn này chưa.
+  ///
+  /// Hai trường hợp, và cả hai đều làm ai đó mất tiền nếu bỏ qua: người bán chưa
+  /// xác nhận (48 giờ, hết hạn thì lên bàn moderator), và người mua chưa xác nhận
+  /// đã nhận hàng trong khi kiện đã tới — `received_at` là điều kiện của câu truy
+  /// vấn payout, nên tới lúc họ chạm thì tiền người bán vẫn nằm trong escrow.
+  static bool _needsMe(OrderView view, String? me) {
+    if (view.order.seller.id == me && view.isAwaitingConfirmation) return true;
+    return view.order.buyer.id == me && view.canConfirmReceipt;
+  }
+
+  /// Hạn để sắp thứ tự. Không có hạn thì xuống cuối nhóm chứ không lên đầu.
+  static DateTime _deadlineOf(OrderView view) =>
+      view.order.confirmationDeadlineAt ??
+      view.order.payoutDeadlineAt ??
+      DateTime.now().add(const Duration(days: 3650));
 }
 
 /// Một đơn, một dòng: ảnh, tên, chuyện đang xảy ra, số tiền.
 ///
-/// Chuyện đang xảy ra được viết theo vai đang xem. Cùng một đơn chờ xác nhận,
-/// bên bán đọc "cần bạn xác nhận" còn bên mua đọc ai đang giữ tiền của mình —
-/// một cái nhãn trung tính cho cả hai thì không nói được cả hai điều đó.
+/// Chuyện đang xảy ra được viết theo vai đang xem, và vai đọc trên chính dòng —
+/// `order.seller.id == me`. Cùng một đơn chờ xác nhận, bên bán đọc "cần bạn xác
+/// nhận" còn bên mua đọc ai đang giữ tiền của mình; một cái nhãn trung tính cho
+/// cả hai thì không nói được cả hai điều đó. Ở một danh sách gộp hai chiều thì
+/// vai phải là thuộc tính của dòng, không của màn hình.
 class _OrderRow extends ConsumerWidget {
   const _OrderRow({
     required this.view,
-    required this.role,
+    required this.me,
     required this.isFinished,
   });
 
   final OrderView view;
-  final OrderRole role;
+  final String? me;
+
+  /// Mình là bên bán của đơn này. Một đơn tự mua tự bán thì `true` — bên bán có
+  /// nhiều việc hơn, nên hiện nó là phía đúng để nghiêng về.
+  bool get _selling => view.order.seller.id == me;
   final bool isFinished;
 
   @override
@@ -141,7 +191,7 @@ class _OrderRow extends ConsumerWidget {
 
     // Tiền của mỗi bên là số khác nhau: người mua trả cả phí giao, người bán
     // không bao giờ nhận phí đó — nó là tiền của đơn vị vận chuyển.
-    final amount = role == OrderRole.seller ? view.goodsTotal : order.total;
+    final amount = _selling ? view.goodsTotal : order.total;
     final actions = _actions(context, ref);
 
     return Opacity(
@@ -197,7 +247,7 @@ class _OrderRow extends ConsumerWidget {
                             ),
                           const SizedBox(height: 4),
                           Text(
-                            orderStatusLine(view, role),
+                            orderStatusLine(view, selling: _selling),
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 12,
@@ -250,7 +300,7 @@ class _OrderRow extends ConsumerWidget {
     // đây chứ không ở một màn "Đánh giá của tôi" riêng, vì việc thật của người
     // dùng không phải "xem lại những gì tôi từng viết" mà là "đơn này tôi đánh
     // giá chưa" — câu đó chỉ trả lời được cạnh chính cái đơn.
-    if (view.order.state == OrderState.completed && role == OrderRole.buyer) {
+    if (view.order.state == OrderState.completed && !_selling) {
       return [
         Expanded(
           child: OutlinedButton(
@@ -271,7 +321,7 @@ class _OrderRow extends ConsumerWidget {
         (order.transport?.status ?? TransportStatus.pending) !=
         TransportStatus.pending;
 
-    if (role == OrderRole.buyer) {
+    if (!_selling) {
       return [
         if (moving)
           Expanded(
@@ -473,8 +523,8 @@ class _OrderRow extends ConsumerWidget {
     if (confirmed != true) return;
     // Sheet đã báo lỗi của chính nó, nên ở đây chỉ còn việc nạp lại — cùng hai
     // provider mà `_run` nạp, vì dòng vừa đổi trạng thái.
-    ref.invalidate(ordersProvider(role));
-    ref.invalidate(unsettledItemsProvider(role));
+    ref.invalidate(ordersProvider);
+    ref.invalidate(unsettledItemsProvider);
   }
 
   /// Một nút, một biểu mẫu hai phần. Đánh giá sản phẩm chỉ được hỏi khi đơn có
@@ -490,7 +540,7 @@ class _OrderRow extends ConsumerWidget {
       listingName: single?.name,
     );
     if (sent != true) return;
-    ref.invalidate(ordersProvider(role));
+    ref.invalidate(ordersProvider);
   }
 
   Future<void> _reportIssue(BuildContext context) async {
@@ -516,8 +566,8 @@ class _OrderRow extends ConsumerWidget {
   ) async {
     final ok = await action(ref.read(ordersActionsProvider.notifier));
     if (ok) {
-      ref.invalidate(ordersProvider(role));
-      ref.invalidate(unsettledItemsProvider(role));
+      ref.invalidate(ordersProvider);
+      ref.invalidate(unsettledItemsProvider);
     }
     if (!context.mounted) return;
 
@@ -564,11 +614,11 @@ class _CarrierNote extends StatelessWidget {
 /// Với bên mua ở cửa sổ chờ xác nhận, câu này thay cho cả khối EscrowNotice: nó
 /// nói đúng một điều đáng nói — tiền chưa sang tay người bán — và nói được trong
 /// một dòng của một danh sách.
-String orderStatusLine(OrderView view, OrderRole role) {
+String orderStatusLine(OrderView view, {required bool selling}) {
   if (!view.isAwaitingConfirmation) return view.statusLabel;
 
   final left = view.confirmationRemaining;
-  if (role == OrderRole.seller) {
+  if (selling) {
     return left == null ? 'Cần bạn xác nhận' : 'Cần bạn xác nhận · còn $left';
   }
   final held = MoneyUtils.format(
@@ -584,49 +634,80 @@ String orderStatusLine(OrderView view, OrderRole role) {
 /// làm — đây là hàng đợi thử lại của hệ thống, nên nó là một câu thông báo chứ
 /// không phải một hộp thư việc.
 class _UnsettledBlock extends ConsumerWidget {
-  const _UnsettledBlock({required this.role, required this.lines});
+  const _UnsettledBlock({required this.lines, required this.me});
 
-  final OrderRole role;
   final List<OrderLineView> lines;
+  final String? me;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    if (role == OrderRole.seller) {
-      return Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF422006) : const Color(0xFFFEF3C7),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.hourglass_top, size: 18, color: Color(0xFFD97706)),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '${lines.length} sản phẩm đã thanh toán đang chờ hệ thống tạo '
-                'đơn. Bạn không cần làm gì.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  height: 1.4,
-                  color: isDark
-                      ? const Color(0xFFFDE68A)
-                      : const Color(0xFF92400E),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+    // Chia theo dòng, không theo màn: một danh sách gộp hai chiều có thể chứa cả
+    // dòng mình mua lẫn dòng mình bán, và hai bên có hai việc khác nhau.
+    final selling = [
+      for (final line in lines)
+        if (line.item.sellerId == me) line,
+    ];
+    final buying = [
+      for (final line in lines)
+        if (line.item.sellerId != me) line,
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (selling.isNotEmpty)
+          Container(
+            margin: EdgeInsets.only(bottom: buying.isEmpty ? 0 : 12),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF422006) : const Color(0xFFFEF3C7),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.hourglass_top,
+                  size: 18,
+                  color: Color(0xFFD97706),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${selling.length} sản phẩm bạn bán đã được thanh toán và '
+                    'đang chờ hệ thống tạo đơn. Bạn không cần làm gì.',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      height: 1.4,
+                      color: isDark
+                          ? const Color(0xFFFDE68A)
+                          : const Color(0xFF92400E),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (buying.isNotEmpty) ..._buyerLines(context, ref, theme, isDark),
+      ],
+    );
+  }
+
+  /// Dòng mình đã trả tiền mà chưa thành đơn — cái duy nhất còn bỏ được.
+  List<Widget> _buyerLines(
+    BuildContext context,
+    WidgetRef ref,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    final lines = [
+      for (final line in this.lines)
+        if (line.item.sellerId != me) line,
+    ];
+    return [
         const _SectionHeader('CHỜ THANH TOÁN'),
         for (final line in lines)
           Container(
@@ -683,8 +764,7 @@ class _UnsettledBlock extends ConsumerWidget {
               ],
             ),
           ),
-      ],
-    );
+    ];
   }
 
   Future<void> _confirmCancel(
@@ -717,7 +797,7 @@ class _UnsettledBlock extends ConsumerWidget {
     final ok = await ref
         .read(ordersActionsProvider.notifier)
         .cancelItem(line.item.id);
-    if (ok) ref.invalidate(unsettledItemsProvider(role));
+    if (ok) ref.invalidate(unsettledItemsProvider);
     if (!context.mounted) return;
 
     final message = ok

@@ -15,10 +15,12 @@ Offer _$OfferFromJson(Map<String, dynamic> json) => $checkedCreate(
       requiredKeys: const [
         'author_id',
         'buyer_id',
+        'counterparty',
         'created_at',
         'currency',
         'expires_at',
         'id',
+        'listing',
         'listing_id',
         'quantity',
         'reason',
@@ -31,6 +33,10 @@ Offer _$OfferFromJson(Map<String, dynamic> json) => $checkedCreate(
     final val = Offer(
       authorId: $checkedConvert('author_id', (v) => v as String),
       buyerId: $checkedConvert('buyer_id', (v) => v as String),
+      counterparty: $checkedConvert(
+        'counterparty',
+        (v) => AccountSummary.fromJson(v as Map<String, dynamic>),
+      ),
       createdAt: $checkedConvert(
         'created_at',
         (v) => DateTime.parse(v as String),
@@ -41,6 +47,10 @@ Offer _$OfferFromJson(Map<String, dynamic> json) => $checkedCreate(
         (v) => DateTime.parse(v as String),
       ),
       id: $checkedConvert('id', (v) => v as String),
+      listing: $checkedConvert(
+        'listing',
+        (v) => OfferListing.fromJson(v as Map<String, dynamic>),
+      ),
       listingId: $checkedConvert('listing_id', (v) => v as String),
       quantity: $checkedConvert('quantity', (v) => (v as num).toInt()),
       reason: $checkedConvert('reason', (v) => v as String),
@@ -68,10 +78,12 @@ Offer _$OfferFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$OfferToJson(Offer instance) => <String, dynamic>{
   'author_id': instance.authorId,
   'buyer_id': instance.buyerId,
+  'counterparty': instance.counterparty.toJson(),
   'created_at': instance.createdAt.toIso8601String(),
   'currency': instance.currency,
   'expires_at': instance.expiresAt.toIso8601String(),
   'id': instance.id,
+  'listing': instance.listing.toJson(),
   'listing_id': instance.listingId,
   'quantity': instance.quantity,
   'reason': instance.reason,

@@ -4,6 +4,8 @@
 
 // ignore_for_file: unused_element
 import 'package:shopnexus_flutter_app/api/generated/model/offer_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/offer_listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -23,6 +25,8 @@ class Offer {
 
     required this.buyerId,
 
+    required this.counterparty,
+
     required this.createdAt,
 
     required this.currency,
@@ -30,6 +34,8 @@ class Offer {
     required this.expiresAt,
 
     required this.id,
+
+    required this.listing,
 
     required this.listingId,
 
@@ -52,6 +58,10 @@ class Offer {
   @JsonKey(name: r'buyer_id', required: true, includeIfNull: false)
   final String buyerId;
 
+  /// The other side of the negotiation, whichever that is for the caller. This route only ever answers a party to the row, so the viewer is one of `buyer_id`/`seller_id` and this is the one they need named.
+  @JsonKey(name: r'counterparty', required: true, includeIfNull: false)
+  final AccountSummary counterparty;
+
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
@@ -64,6 +74,9 @@ class Offer {
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
+
+  @JsonKey(name: r'listing', required: true, includeIfNull: false)
+  final OfferListing listing;
 
   /// The listing whose card the offer is shown on.
   @JsonKey(name: r'listing_id', required: true, includeIfNull: false)
@@ -97,10 +110,12 @@ class Offer {
       other is Offer &&
           other.authorId == authorId &&
           other.buyerId == buyerId &&
+          other.counterparty == counterparty &&
           other.createdAt == createdAt &&
           other.currency == currency &&
           other.expiresAt == expiresAt &&
           other.id == id &&
+          other.listing == listing &&
           other.listingId == listingId &&
           other.quantity == quantity &&
           other.reason == reason &&
@@ -113,10 +128,12 @@ class Offer {
   int get hashCode =>
       authorId.hashCode +
       buyerId.hashCode +
+      counterparty.hashCode +
       createdAt.hashCode +
       currency.hashCode +
       expiresAt.hashCode +
       id.hashCode +
+      listing.hashCode +
       listingId.hashCode +
       quantity.hashCode +
       reason.hashCode +

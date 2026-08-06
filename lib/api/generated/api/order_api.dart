@@ -950,11 +950,10 @@ class OrderApi {
     );
   }
 
-  /// List negotiations, as buyer or as seller
-  ///
+  /// List the caller&#39;s negotiations, both sides at once
+  /// Both sides in one list, and there is no &#x60;role&#x60; to pick: an account haggles as a buyer on one listing and as a seller on another, and \&quot;which of these is waiting on me\&quot; spans the two — &#x60;author_id&#x60; answers that per row, since whoever owns the standing proposal is whose turn it is *not*. A required &#x60;role&#x60; was documented here for a while and never read by the service, so both values answered the same list.
   ///
   /// Parameters:
-  /// * [role]
   /// * [status]
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
   /// * [limit]
@@ -968,7 +967,6 @@ class OrderApi {
   /// Returns a [Future] containing a [Response] with a [OfferPage] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<OfferPage>> offersGet({
-    required String role,
     OfferStatus? status,
     String? cursor,
     int? limit = 20,
@@ -993,7 +991,6 @@ class OrderApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'role': role,
       if (status != null) r'status': status,
       if (cursor != null) r'cursor': cursor,
       if (limit != null) r'limit': limit,
@@ -1546,11 +1543,11 @@ class OrderApi {
     );
   }
 
-  /// List orders, as buyer or as seller
+  /// List the caller&#39;s orders, both sides by default
   ///
   ///
   /// Parameters:
-  /// * [role]
+  /// * [role] - Which side to answer for. Omit for both, which is what a C2C account usually wants: it buys and sells at once, so \"what is waiting on me\" spans the two.
   /// * [state]
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
   /// * [limit]
@@ -1564,7 +1561,7 @@ class OrderApi {
   /// Returns a [Future] containing a [Response] with a [OrderPage] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<OrderPage>> ordersGet({
-    required String role,
+    String? role,
     OrderState? state,
     String? cursor,
     int? limit = 20,
@@ -1589,7 +1586,7 @@ class OrderApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'role': role,
+      if (role != null) r'role': role,
       if (state != null) r'state': state,
       if (cursor != null) r'cursor': cursor,
       if (limit != null) r'limit': limit,
@@ -2626,8 +2623,8 @@ class OrderApi {
     );
   }
 
-  /// List refunds, as buyer or as seller
-  /// &#x60;role&#x3D;seller&#x60; resolves through the order&#39;s seller; a refund row itself only records the buyer.
+  /// List the caller&#39;s refunds, both sides by default
+  /// Omit &#x60;role&#x60; for both sides, which is what \&quot;what is waiting on me\&quot; needs: a buyer&#39;s own claims and the ones raised against their sales are the same queue of things to answer. &#x60;role&#x3D;seller&#x60; resolves through the order&#39;s seller, because a refund row itself only records the buyer.
   ///
   /// Parameters:
   /// * [role]
@@ -2644,7 +2641,7 @@ class OrderApi {
   /// Returns a [Future] containing a [Response] with a [RefundPage] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<RefundPage>> refundsGet({
-    required String role,
+    String? role,
     RefundStatus? status,
     String? cursor,
     int? limit = 20,
@@ -2669,7 +2666,7 @@ class OrderApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'role': role,
+      if (role != null) r'role': role,
       if (status != null) r'status': status,
       if (cursor != null) r'cursor': cursor,
       if (limit != null) r'limit': limit,

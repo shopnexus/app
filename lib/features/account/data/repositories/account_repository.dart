@@ -231,14 +231,16 @@ class AccountRepository {
   /// Những cuộc mặc cả của một vai. Trước đây chúng chỉ tới được qua một thẻ trong
   /// chat, nên một đề nghị đang chờ mình trả lời sẽ mất tăm khi cuộc trò chuyện bị
   /// đẩy xuống dưới — mà nó có hạn 12 giờ.
+  ///
+  /// Không có `role`: route trả cả hai chiều trong một danh sách. Tham số đó từng
+  /// có ở đây và server chưa bao giờ đọc nó — hai giá trị cho ra đúng một kết quả,
+  /// nên cái segment "Tôi mua | Tôi bán" dựng trên nó chỉ là hình vẽ.
   Future<List<Offer>> offers({
-    required String role,
     OfferStatus? status,
     String? cursor,
     int limit = 20,
   }) async =>
       (await _orderApi.offersGet(
-        role: role,
         status: status,
         cursor: cursor,
         limit: limit,
@@ -321,19 +323,17 @@ class AccountRepository {
 
   // --- Buyer Orders & Checkout Lines ---
 
-  /// `role` is required and `state` is what tells the tabs apart — without it
-  /// every tab asked for the same list.
-  /// Đơn của một vai, không lọc trạng thái: màn Đơn hàng chia nhóm ở client, nên
-  /// một lượt đọc phục vụ cả "đang diễn ra" lẫn "đã xong". Trả cursor ra ngoài —
-  /// `/orders` phân trang bằng cursor, và một danh sách bỏ cursor đi là một danh
-  /// sách dừng ở đơn thứ 20 mà không nói gì.
+  /// Đơn của **cả hai chiều** khi [role] để trống, không lọc trạng thái: màn Đơn
+  /// hàng chia nhóm ở client, nên một lượt đọc phục vụ cả "cần bạn", "đang chờ" và
+  /// "xong". Trả cursor ra ngoài — `/orders` phân trang bằng cursor, và một danh
+  /// sách bỏ cursor đi là một danh sách dừng ở đơn thứ 20 mà không nói gì.
   Future<OrderPageResult> orders({
-    required OrderRole role,
+    OrderRole? role,
     String? cursor,
     int limit = 20,
   }) async {
     final page = (await _orderApi.ordersGet(
-      role: role.value,
+      role: role?.value,
       cursor: cursor,
       limit: limit,
     )).data;
@@ -369,15 +369,16 @@ class AccountRepository {
   /// order for. Everything else is one list, so "cancelled" is a read of
   /// `cancelled_at` rather than a filter the route does not have.
   ///
-  /// Nhận [role] vì cả hai bên đều có câu hỏi này, và câu trả lời khác nhau: bên
-  /// mua còn hủy được dòng chưa gom, bên bán thì không có gì phải làm với nó.
+  /// [role] để trống là cả hai chiều. Bên mua còn hủy được dòng chưa gom, bên bán
+  /// thì không có gì phải làm với nó — nên cái quyết định là dòng thuộc về ai, đọc
+  /// trên từng dòng chứ không chọn trước cho cả danh sách.
   Future<List<OrderLineView>> items({
-    required OrderRole role,
+    OrderRole? role,
     required bool pending,
     int limit = 50,
   }) async {
     final page = (await _orderApi.itemsGet(
-      role: role.value,
+      role: role?.value,
       pending: pending,
       limit: limit,
     )).data;
@@ -427,14 +428,6 @@ enum OrderRole {
 
   final String value;
 }
-
-/// Vai đọc từ query string. Một giá trị lạ rơi về `buyer` thay vì ném: một link
-/// cũ hay gõ sai phải mở ra một màn hình dùng được, không phải một màn hình lỗi.
-/// `?tab=2` của màn Đơn mua cũ rơi vào đúng nhánh này.
-OrderRole orderRoleFromQuery(String? value) => switch (value) {
-  'seller' => OrderRole.seller,
-  _ => OrderRole.buyer,
-};
 
 class OrderPageResult {
   const OrderPageResult({required this.orders, this.nextCursor});

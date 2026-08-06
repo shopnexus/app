@@ -5,9 +5,10 @@ import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_r
 
 part 'refund_provider.g.dart';
 
+/// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
 @riverpod
-Future<List<Refund>> refundList(Ref ref, {required RefundRole role}) async {
-  final page = await ref.watch(refundRepositoryProvider).list(role: role);
+Future<List<Refund>> refundList(Ref ref) async {
+  final page = await ref.watch(refundRepositoryProvider).list();
   return page.refunds;
 }
 

@@ -99,6 +99,15 @@ void main() {
           'buyer_id': 'acc_62mxefynht57b',
           'seller_id': 'acc_4mfx7bd32h9qk',
           'author_id': 'acc_62mxefynht57b',
+          // Cả hai là `required` trong contract: một sự kiện realtime đi vào đúng
+          // hàng của cùng danh sách, nên nó phải mang đủ thứ để vẽ hàng đó — thiếu
+          // là dòng vừa đổi thành một dòng không hiển thị được.
+          'listing': {'name': 'Áo khoác denim size M', 'cover': null},
+          'counterparty': {
+            'id': 'acc_4mfx7bd32h9qk',
+            'name': 'Dave Goods',
+            'avatar': null,
+          },
           'status': 'accepted',
           'quantity': 2,
           'total': 598000,
@@ -113,6 +122,8 @@ void main() {
       final offer = (event! as OfferUpdatedEvent).offer;
       expect(offer.total, 598000);
       expect(offer.status.value, 'accepted');
+      expect(offer.listing.name, 'Áo khoác denim size M');
+      expect(offer.counterparty.name, 'Dave Goods');
     });
 
     test('decodes order.placed and order.settled as an order id alone', () {

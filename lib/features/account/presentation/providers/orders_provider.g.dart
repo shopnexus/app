@@ -14,7 +14,7 @@ part of 'orders_provider.dart';
 /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
 
 @ProviderFor(unsettledItems)
-const unsettledItemsProvider = UnsettledItemsFamily._();
+const unsettledItemsProvider = UnsettledItemsProvider._();
 
 /// Dòng đã trả tiền mà chưa thành đơn — cửa sổ duy nhất còn bỏ được.
 ///
@@ -35,26 +35,19 @@ final class UnsettledItemsProvider
   ///
   /// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
   /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
-  const UnsettledItemsProvider._({
-    required UnsettledItemsFamily super.from,
-    required OrderRole super.argument,
-  }) : super(
-         retry: null,
-         name: r'unsettledItemsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+  const UnsettledItemsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'unsettledItemsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$unsettledItemsHash();
-
-  @override
-  String toString() {
-    return r'unsettledItemsProvider'
-        ''
-        '($argument)';
-  }
 
   @$internal
   @override
@@ -64,143 +57,53 @@ final class UnsettledItemsProvider
 
   @override
   FutureOr<List<OrderLineView>> create(Ref ref) {
-    final argument = this.argument as OrderRole;
-    return unsettledItems(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is UnsettledItemsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
+    return unsettledItems(ref);
   }
 }
 
-String _$unsettledItemsHash() => r'89033adf8546c6a32e396c4b0eddc57c6ca5aefd';
+String _$unsettledItemsHash() => r'faca7c951210529836df9c145b32d697214904e4';
 
-/// Dòng đã trả tiền mà chưa thành đơn — cửa sổ duy nhất còn bỏ được.
-///
-/// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
-/// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
-
-final class UnsettledItemsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<OrderLineView>>, OrderRole> {
-  const UnsettledItemsFamily._()
-    : super(
-        retry: null,
-        name: r'unsettledItemsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Dòng đã trả tiền mà chưa thành đơn — cửa sổ duy nhất còn bỏ được.
-  ///
-  /// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
-  /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
-
-  UnsettledItemsProvider call(OrderRole role) =>
-      UnsettledItemsProvider._(argument: role, from: this);
-
-  @override
-  String toString() => r'unsettledItemsProvider';
-}
-
-/// Một provider cho mỗi vai, thay cho năm provider lọc theo tab. Chỉ hai vai
-/// tồn tại, nên family này có đúng hai thành viên.
+/// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
+/// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
 
 @ProviderFor(Orders)
-const ordersProvider = OrdersFamily._();
+const ordersProvider = OrdersProvider._();
 
-/// Một provider cho mỗi vai, thay cho năm provider lọc theo tab. Chỉ hai vai
-/// tồn tại, nên family này có đúng hai thành viên.
+/// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
+/// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
 final class OrdersProvider extends $AsyncNotifierProvider<Orders, OrdersFeed> {
-  /// Một provider cho mỗi vai, thay cho năm provider lọc theo tab. Chỉ hai vai
-  /// tồn tại, nên family này có đúng hai thành viên.
-  const OrdersProvider._({
-    required OrdersFamily super.from,
-    required OrderRole super.argument,
-  }) : super(
-         retry: null,
-         name: r'ordersProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+  /// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
+  /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
+  const OrdersProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'ordersProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$ordersHash();
 
-  @override
-  String toString() {
-    return r'ordersProvider'
-        ''
-        '($argument)';
-  }
-
   @$internal
   @override
   Orders create() => Orders();
-
-  @override
-  bool operator ==(Object other) {
-    return other is OrdersProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
 }
 
-String _$ordersHash() => r'859d50f0fe209503bcf51c5a73d1850efd1a9699';
+String _$ordersHash() => r'51ae073ba6d24eccafb4bd331e168deac09c3e2b';
 
-/// Một provider cho mỗi vai, thay cho năm provider lọc theo tab. Chỉ hai vai
-/// tồn tại, nên family này có đúng hai thành viên.
-
-final class OrdersFamily extends $Family
-    with
-        $ClassFamilyOverride<
-          Orders,
-          AsyncValue<OrdersFeed>,
-          OrdersFeed,
-          FutureOr<OrdersFeed>,
-          OrderRole
-        > {
-  const OrdersFamily._()
-    : super(
-        retry: null,
-        name: r'ordersProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Một provider cho mỗi vai, thay cho năm provider lọc theo tab. Chỉ hai vai
-  /// tồn tại, nên family này có đúng hai thành viên.
-
-  OrdersProvider call(OrderRole role) =>
-      OrdersProvider._(argument: role, from: this);
-
-  @override
-  String toString() => r'ordersProvider';
-}
-
-/// Một provider cho mỗi vai, thay cho năm provider lọc theo tab. Chỉ hai vai
-/// tồn tại, nên family này có đúng hai thành viên.
+/// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
+/// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
 
 abstract class _$Orders extends $AsyncNotifier<OrdersFeed> {
-  late final _$args = ref.$arg as OrderRole;
-  OrderRole get role => _$args;
-
-  FutureOr<OrdersFeed> build(OrderRole role);
+  FutureOr<OrdersFeed> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build(_$args);
+    final created = build();
     final ref = this.ref as $Ref<AsyncValue<OrdersFeed>, OrdersFeed>;
     final element =
         ref.element

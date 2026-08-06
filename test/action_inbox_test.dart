@@ -82,8 +82,8 @@ void main() {
 
       expect(inbox.entries.map((e) => e.route), [
         // Đơn bán không còn là màn riêng: nó là vai "Tôi bán" của màn Đơn hàng.
-        '/account/orders?role=seller',
-        '/account/refunds?role=seller',
+        '/account/orders',
+        '/account/refunds',
         '/chat',
       ]);
     });
@@ -96,13 +96,13 @@ void main() {
 
       final routes = inbox.entries.map((e) => e.route).toList();
 
-      expect(routes, ['/account/refunds?role=seller']);
+      expect(routes, ['/account/refunds']);
     });
 
     test('chỉ vai có việc mới xuất hiện', () {
       const sellerOnly = ActionInbox(refundsAsSeller: 2);
 
-      expect(sellerOnly.entries.single.route, '/account/refunds?role=seller');
+      expect(sellerOnly.entries.single.route, '/account/refunds');
       expect(sellerOnly.entries.single.count, 2);
     });
   });

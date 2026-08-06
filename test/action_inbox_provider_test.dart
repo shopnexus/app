@@ -229,10 +229,13 @@ class _FakeRefundRepository extends RefundRepository {
 
   @override
   Future<RefundPageResult> list({
-    required RefundRole role,
+    RefundRole? role,
     RefundStatus? status,
     String? cursor,
   }) async {
+    // Khối việc-cần-làm vẫn hỏi theo vai: nó đếm riêng "vụ chờ *tôi* trả lời ở vai
+    // bán", không đếm mọi vụ. Chỉ màn danh sách là gộp hai chiều.
+    role!;
     statusAsked[role] = status;
     final index = _served[role] ?? 0;
     _served[role] = index + 1;

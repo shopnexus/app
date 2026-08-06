@@ -4,12 +4,12 @@ import 'package:shopnexus_flutter_app/features/account/data/repositories/account
 
 part 'orders_provider.g.dart';
 
-/// Những đơn đã nạp của một vai, cộng chỗ để nạp tiếp.
+/// Những đơn đã nạp, cộng chỗ để nạp tiếp.
 ///
-/// Chia nhóm ở client, không bằng `state`: một lượt đọc `/orders?role=X` trả về
-/// cả bốn trạng thái, nên năm provider lọc theo tab trước đây là năm lượt gọi
-/// cho cùng một danh sách. `state` vẫn là tham số optional của route — nó chỉ
-/// không còn ai cần đến.
+/// Chia nhóm ở client, không bằng `state` và không bằng vai: một lượt đọc
+/// `/orders` trả về cả hai chiều và cả bốn trạng thái, nên năm provider lọc theo
+/// tab trước đây là năm lượt gọi cho cùng một danh sách. `role` và `state` vẫn là
+/// tham số optional của route — chỉ là không còn ai cần đến.
 class OrdersFeed {
   const OrdersFeed({
     this.orders = const [],
@@ -27,7 +27,8 @@ class OrdersFeed {
 
   bool get hasMore => nextCursor != null && nextCursor!.isNotEmpty;
 
-  /// Việc còn phải trông: đơn chờ xác nhận và đơn đang đi.
+  /// Việc còn phải trông: đơn chờ xác nhận và đơn đang đi. Nhóm theo lượt là việc
+  /// của màn hình, vì nó cần biết `me` mới nói được lượt thuộc về ai.
   List<OrderView> get ongoing => [
     for (final view in orders)
       if (!view.isFinished) view,
@@ -58,16 +59,16 @@ class OrdersFeed {
 /// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
 /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
 @riverpod
-Future<List<OrderLineView>> unsettledItems(Ref ref, OrderRole role) =>
-    ref.watch(accountRepositoryProvider).items(role: role, pending: true);
+Future<List<OrderLineView>> unsettledItems(Ref ref) =>
+    ref.watch(accountRepositoryProvider).items(pending: true);
 
-/// Một provider cho mỗi vai, thay cho năm provider lọc theo tab. Chỉ hai vai
-/// tồn tại, nên family này có đúng hai thành viên.
+/// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
+/// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
 @riverpod
 class Orders extends _$Orders {
   @override
-  Future<OrdersFeed> build(OrderRole role) async {
-    final page = await ref.watch(accountRepositoryProvider).orders(role: role);
+  Future<OrdersFeed> build() async {
+    final page = await ref.watch(accountRepositoryProvider).orders();
     return OrdersFeed(orders: page.orders, nextCursor: page.nextCursor);
   }
 
@@ -81,7 +82,7 @@ class Orders extends _$Orders {
     try {
       final page = await ref
           .read(accountRepositoryProvider)
-          .orders(role: role, cursor: feed.nextCursor);
+          .orders(cursor: feed.nextCursor);
       state = AsyncData(
         OrdersFeed(
           orders: [...feed.orders, ...page.orders],

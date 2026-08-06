@@ -52,7 +52,7 @@ void main() {
       await tester.pump();
 
       // Kèm vai, nếu không RefundListScreen mở tab "Tôi mua" rỗng.
-      expect(tapped, '/account/refunds?role=seller');
+      expect(tapped, '/account/refunds');
     });
 
     testWidgets('số quá 99 rút gọn', (tester) async {
