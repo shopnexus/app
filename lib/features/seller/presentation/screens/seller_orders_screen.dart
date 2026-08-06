@@ -296,6 +296,30 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
               ),
             ],
           ),
+          // Cái hạn 48 giờ, đếm ra chữ. Người bán bỏ qua nó thì đơn không tự
+          // huỷ — hệ thống mở ticket cho mod — nên "đã quá hạn" vẫn phải hiện.
+          if (view.isAwaitingConfirmation &&
+              view.confirmationRemaining != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.schedule_rounded,
+                  size: 14,
+                  color: theme.colorScheme.error,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Xác nhận trong ${view.confirmationRemaining}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 8),
           Text(
             'Khách hàng: ${order.buyer.name}',

@@ -7,9 +7,24 @@ part 'buyer_orders_provider.g.dart';
 
 /// One provider per tab, told apart by `state` — the three order tabs used to
 /// call the same path with no filter and render the same list three times.
+///
+/// "Đang xử lý" is both in-flight states, because `open` alone means *confirmed*
+/// by the seller: a buyer who had just paid found this tab empty, "Chờ thanh
+/// toán" empty too (that tab is lines the money has not settled), and their
+/// order only under "Tất cả". Two calls rather than one — `state` takes a value,
+/// not a list — and the whole tab fails if either does, since a list quietly
+/// missing the newest order is the bug being fixed here.
 @riverpod
-Future<List<OrderView>> buyerOpenOrders(Ref ref) =>
-    ref.watch(accountRepositoryProvider).buyerOrders(state: OrderState.open);
+Future<List<OrderView>> buyerOpenOrders(Ref ref) async {
+  final repository = ref.watch(accountRepositoryProvider);
+  final lists = await Future.wait([
+    repository.buyerOrders(state: OrderState.awaitingConfirmation),
+    repository.buyerOrders(state: OrderState.open),
+  ]);
+  // Awaiting confirmation first: those are the newest, and the only ones with a
+  // clock running on somebody else.
+  return [...lists.first, ...lists.last];
+}
 
 @riverpod
 Future<List<OrderView>> buyerCompletedOrders(Ref ref) => ref

@@ -4,6 +4,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
+import 'package:shopnexus_flutter_app/core/utils/deadline_utils.dart';
 
 part 'order_view.freezed.dart';
 
@@ -52,6 +53,9 @@ abstract class OrderView with _$OrderView {
   String get statusLabel {
     if (order.state == OrderState.cancelled) return 'Đã hủy';
     if (order.state == OrderState.completed) return 'Hoàn thành';
+    // Before the transport exists at all. Worded for neither side, because both
+    // draw this badge: who is waiting on whom is said by the card around it.
+    if (order.state == OrderState.awaitingConfirmation) return 'Chờ xác nhận';
     return switch (order.transport?.status) {
       null => 'Đang xử lý',
       TransportStatus.pending => 'Chờ lấy hàng',
@@ -78,4 +82,15 @@ abstract class OrderView with _$OrderView {
   /// record of what was charged.
   int get goodsTotal =>
       lines.fold(0, (total, line) => total + line.item.totalAmount);
+
+  /// True while the money is in escrow and nothing has been handed to a carrier —
+  /// the one window in which a refusal or a silence returns every đồng paid,
+  /// carriage included.
+  bool get isAwaitingConfirmation =>
+      order.state == OrderState.awaitingConfirmation;
+
+  /// "còn 31 giờ" until the seller's 48 hours run out, or null once they have
+  /// answered — the server drops the deadline at that point.
+  String? get confirmationRemaining =>
+      DeadlineUtils.remaining(order.confirmationDeadlineAt);
 }

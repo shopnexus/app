@@ -10,20 +10,20 @@ part of 'action_inbox_provider.dart';
 // ignore_for_file: type=lint, type=warning
 /// Số việc đang chờ chính người dùng này, gom từ cả hai vai.
 ///
-/// Đây là bản tạm cho phần đơn hàng: `summary.open` đếm mọi đơn còn mở trong cửa
-/// sổ thời gian của dashboard, nên nó vừa rộng hơn "chờ tôi giao" vừa bỏ sót đơn
-/// cũ hơn cửa sổ đó. Khi `OrderStatus` lên (kế hoạch riêng), đổi nguồn sang
-/// `?action_required=true` là con số thành đúng nghĩa và hết phụ thuộc cửa sổ.
+/// Mỗi con số hỏi đúng cái nó nói. `summary.open` từng là nguồn cho phần đơn
+/// hàng và sai hai lần: `open` là đơn *đã* được xác nhận — nên việc gấp nhất,
+/// đơn chờ xác nhận, không nằm trong đó — và summary chỉ tính trong cửa sổ thời
+/// gian của nó, nên một đơn cũ hơn cửa sổ đơn giản là biến mất khỏi badge.
 
 @ProviderFor(actionInbox)
 const actionInboxProvider = ActionInboxProvider._();
 
 /// Số việc đang chờ chính người dùng này, gom từ cả hai vai.
 ///
-/// Đây là bản tạm cho phần đơn hàng: `summary.open` đếm mọi đơn còn mở trong cửa
-/// sổ thời gian của dashboard, nên nó vừa rộng hơn "chờ tôi giao" vừa bỏ sót đơn
-/// cũ hơn cửa sổ đó. Khi `OrderStatus` lên (kế hoạch riêng), đổi nguồn sang
-/// `?action_required=true` là con số thành đúng nghĩa và hết phụ thuộc cửa sổ.
+/// Mỗi con số hỏi đúng cái nó nói. `summary.open` từng là nguồn cho phần đơn
+/// hàng và sai hai lần: `open` là đơn *đã* được xác nhận — nên việc gấp nhất,
+/// đơn chờ xác nhận, không nằm trong đó — và summary chỉ tính trong cửa sổ thời
+/// gian của nó, nên một đơn cũ hơn cửa sổ đơn giản là biến mất khỏi badge.
 
 final class ActionInboxProvider
     extends
@@ -35,10 +35,10 @@ final class ActionInboxProvider
     with $FutureModifier<ActionInbox>, $FutureProvider<ActionInbox> {
   /// Số việc đang chờ chính người dùng này, gom từ cả hai vai.
   ///
-  /// Đây là bản tạm cho phần đơn hàng: `summary.open` đếm mọi đơn còn mở trong cửa
-  /// sổ thời gian của dashboard, nên nó vừa rộng hơn "chờ tôi giao" vừa bỏ sót đơn
-  /// cũ hơn cửa sổ đó. Khi `OrderStatus` lên (kế hoạch riêng), đổi nguồn sang
-  /// `?action_required=true` là con số thành đúng nghĩa và hết phụ thuộc cửa sổ.
+  /// Mỗi con số hỏi đúng cái nó nói. `summary.open` từng là nguồn cho phần đơn
+  /// hàng và sai hai lần: `open` là đơn *đã* được xác nhận — nên việc gấp nhất,
+  /// đơn chờ xác nhận, không nằm trong đó — và summary chỉ tính trong cửa sổ thời
+  /// gian của nó, nên một đơn cũ hơn cửa sổ đơn giản là biến mất khỏi badge.
   const ActionInboxProvider._()
     : super(
         from: null,
@@ -65,4 +65,4 @@ final class ActionInboxProvider
   }
 }
 
-String _$actionInboxHash() => r'dfd76c86285dbe668b16ca0248d5027f29b0354f';
+String _$actionInboxHash() => r'e1e06d40811a945dd8c4ac6ad23ccea2ba41c956';

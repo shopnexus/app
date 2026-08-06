@@ -10,12 +10,26 @@ part of 'buyer_orders_provider.dart';
 // ignore_for_file: type=lint, type=warning
 /// One provider per tab, told apart by `state` — the three order tabs used to
 /// call the same path with no filter and render the same list three times.
+///
+/// "Đang xử lý" is both in-flight states, because `open` alone means *confirmed*
+/// by the seller: a buyer who had just paid found this tab empty, "Chờ thanh
+/// toán" empty too (that tab is lines the money has not settled), and their
+/// order only under "Tất cả". Two calls rather than one — `state` takes a value,
+/// not a list — and the whole tab fails if either does, since a list quietly
+/// missing the newest order is the bug being fixed here.
 
 @ProviderFor(buyerOpenOrders)
 const buyerOpenOrdersProvider = BuyerOpenOrdersProvider._();
 
 /// One provider per tab, told apart by `state` — the three order tabs used to
 /// call the same path with no filter and render the same list three times.
+///
+/// "Đang xử lý" is both in-flight states, because `open` alone means *confirmed*
+/// by the seller: a buyer who had just paid found this tab empty, "Chờ thanh
+/// toán" empty too (that tab is lines the money has not settled), and their
+/// order only under "Tất cả". Two calls rather than one — `state` takes a value,
+/// not a list — and the whole tab fails if either does, since a list quietly
+/// missing the newest order is the bug being fixed here.
 
 final class BuyerOpenOrdersProvider
     extends
@@ -27,6 +41,13 @@ final class BuyerOpenOrdersProvider
     with $FutureModifier<List<OrderView>>, $FutureProvider<List<OrderView>> {
   /// One provider per tab, told apart by `state` — the three order tabs used to
   /// call the same path with no filter and render the same list three times.
+  ///
+  /// "Đang xử lý" is both in-flight states, because `open` alone means *confirmed*
+  /// by the seller: a buyer who had just paid found this tab empty, "Chờ thanh
+  /// toán" empty too (that tab is lines the money has not settled), and their
+  /// order only under "Tất cả". Two calls rather than one — `state` takes a value,
+  /// not a list — and the whole tab fails if either does, since a list quietly
+  /// missing the newest order is the bug being fixed here.
   const BuyerOpenOrdersProvider._()
     : super(
         from: null,
@@ -53,7 +74,7 @@ final class BuyerOpenOrdersProvider
   }
 }
 
-String _$buyerOpenOrdersHash() => r'72eb0594749629d761c3b669357548bdddadc95b';
+String _$buyerOpenOrdersHash() => r'd8e3b410ae2ffb9d90c5838114755f36e186fc27';
 
 @ProviderFor(buyerCompletedOrders)
 const buyerCompletedOrdersProvider = BuyerCompletedOrdersProvider._();

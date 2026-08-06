@@ -9,6 +9,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/ad
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
 import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/escrow_notice.dart';
 
 class CheckoutScreen extends ConsumerWidget {
   const CheckoutScreen({super.key});
@@ -1532,7 +1533,9 @@ class CheckoutScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Order Placed Successfully!',
+              // Không phải "đặt hàng thành công" nữa: tiền đã vào escrow và đơn
+              // đang chờ người bán xác nhận, nên đây là "đã thanh toán".
+              'Đã thanh toán',
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 22,
@@ -1550,6 +1553,15 @@ class CheckoutScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
+            // Ngay tại đây, không phải trong FAQ: người mua vừa chuyển tiền cho
+            // một người lạ và đây là câu nói tiền đang ở đâu.
+            if (session != null) ...[
+              EscrowNotice(
+                amount: session.totalAmount,
+                currency: session.currency,
+              ),
+              const SizedBox(height: 16),
+            ],
             if (session != null)
               Container(
                 padding: const EdgeInsets.all(16),
@@ -1568,7 +1580,7 @@ class CheckoutScreen extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Amount Paid',
+                          'Số tiền đã trả',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 13,
@@ -1608,7 +1620,7 @@ class CheckoutScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Back to Home'),
+                child: const Text('Về trang chủ'),
               ),
             ),
           ],

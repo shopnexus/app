@@ -17,12 +17,19 @@ class ActionInboxEntry {
 /// refresh, không phải một thực thể trên dây cần `fromJson` hay `copyWith`.
 class ActionInbox {
   const ActionInbox({
+    this.ordersToConfirm = 0,
     this.ordersToShip = 0,
     this.refundsAsSeller = 0,
     this.unreadMessages = 0,
   });
 
-  /// Đơn người khác đã trả tiền mà mình chưa giao.
+  /// Đơn khách đã trả tiền và đang chờ **chính mình** xác nhận — việc gấp nhất
+  /// trên sàn này, vì tiền của người mua đang bị giữ và đồng hồ 48 giờ đang
+  /// chạy. Đếm bằng `state=awaiting-confirmation`, không bằng `summary.open`:
+  /// `open` là đơn đã xác nhận rồi, tức đúng phần việc này *không* có trong đó.
+  final int ordersToConfirm;
+
+  /// Đơn mình đã xác nhận mà chưa giao xong.
   final int ordersToShip;
 
   /// Yêu cầu hoàn tiền đang chờ chính mình duyệt, ở vai người bán.
@@ -36,10 +43,20 @@ class ActionInbox {
 
   bool get isEmpty => total == 0;
 
-  int get total => ordersToShip + refundsAsSeller + unreadMessages;
+  int get total =>
+      ordersToConfirm + ordersToShip + refundsAsSeller + unreadMessages;
 
   /// Chỉ những loại thật sự có việc. Một mục với số 0 không được chiếm chỗ.
+  ///
+  /// Xác nhận đơn đứng đầu: đó là việc duy nhất ở đây đang giữ tiền của người
+  /// khác và có hạn treo lên đầu.
   List<ActionInboxEntry> get entries => [
+    if (ordersToConfirm > 0)
+      ActionInboxEntry(
+        label: 'đơn chờ bạn xác nhận',
+        count: ordersToConfirm,
+        route: '/seller/orders',
+      ),
     if (ordersToShip > 0)
       ActionInboxEntry(
         label: 'đơn chờ giao',

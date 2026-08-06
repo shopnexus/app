@@ -105,6 +105,38 @@ class SellerRepository {
     ];
   }
 
+  /// Đếm đơn ở một trạng thái. Route trả cursor và không trả tổng, nên con số
+  /// duy nhất đúng là đi hết các trang; chặn ở [maxPages] để một hàng đợi bất
+  /// thường không giữ màn hình tài khoản mãi không vẽ.
+  ///
+  /// Không dùng `summary.open`: `open` là đơn *đã* được xác nhận (nên việc gấp
+  /// nhất không nằm trong đó), và summary bị giới hạn theo cửa sổ thời gian của
+  /// nó nên bỏ sót đơn cũ hơn cửa sổ — đúng hai lỗi mà một con số trên badge
+  /// không cách nào để lộ ra.
+  Future<int> countOrders({
+    required OrderState state,
+    int limit = 50,
+    int maxPages = 5,
+  }) async {
+    var total = 0;
+    String? cursor;
+
+    for (var page = 0; page < maxPages; page++) {
+      final result = (await _orderApi.ordersGet(
+        role: orderRoleSeller,
+        state: state,
+        cursor: cursor,
+        limit: limit,
+      )).data;
+      final orders = result?.data ?? const <Order>[];
+      total += orders.length;
+      cursor = result?.meta.nextCursor;
+      if (cursor == null || orders.isEmpty) break;
+    }
+
+    return total;
+  }
+
   /// Paid lines the money has not produced an order for yet — a retry list, not
   /// an inbox: nothing here is waiting on the seller, and there is no route that
   /// would let them approve or refuse it.

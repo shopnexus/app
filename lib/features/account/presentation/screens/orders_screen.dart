@@ -6,6 +6,7 @@ import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/escrow_notice.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
   final int initialTab;
@@ -717,6 +718,17 @@ Widget _buildOrderCard(BuildContext context, OrderView view) {
             const SizedBox(height: 12),
             Divider(height: 1, color: dividerColor),
             const SizedBox(height: 12),
+
+            // Chỉ ở cửa sổ chờ xác nhận: tiền đã đi khỏi ví người mua mà chưa
+            // tới người bán, và đó là lúc câu "ai đang giữ tiền" đáng giá nhất.
+            if (view.isAwaitingConfirmation) ...[
+              EscrowNotice(
+                amount: order.total,
+                currency: order.currency,
+                remaining: view.confirmationRemaining,
+              ),
+              const SizedBox(height: 12),
+            ],
 
             // Item Details
             if (firstLine != null)

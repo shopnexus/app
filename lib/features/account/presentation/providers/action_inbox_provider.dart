@@ -1,9 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/action_inbox.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
 import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
-import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
 part 'action_inbox_provider.g.dart';
 
@@ -22,20 +23,21 @@ Future<int> countOrZero(Future<int> Function() read) async {
 
 /// Số việc đang chờ chính người dùng này, gom từ cả hai vai.
 ///
-/// Đây là bản tạm cho phần đơn hàng: `summary.open` đếm mọi đơn còn mở trong cửa
-/// sổ thời gian của dashboard, nên nó vừa rộng hơn "chờ tôi giao" vừa bỏ sót đơn
-/// cũ hơn cửa sổ đó. Khi `OrderStatus` lên (kế hoạch riêng), đổi nguồn sang
-/// `?action_required=true` là con số thành đúng nghĩa và hết phụ thuộc cửa sổ.
+/// Mỗi con số hỏi đúng cái nó nói. `summary.open` từng là nguồn cho phần đơn
+/// hàng và sai hai lần: `open` là đơn *đã* được xác nhận — nên việc gấp nhất,
+/// đơn chờ xác nhận, không nằm trong đó — và summary chỉ tính trong cửa sổ thời
+/// gian của nó, nên một đơn cũ hơn cửa sổ đơn giản là biến mất khỏi badge.
 @riverpod
 Future<ActionInbox> actionInbox(Ref ref) async {
   final repository = ref.watch(refundRepositoryProvider);
+  final seller = ref.watch(sellerRepositoryProvider);
 
-  final (ordersToShip, refundsAsSeller, unreadMessages) =
+  final (ordersToConfirm, ordersToShip, refundsAsSeller, unreadMessages) =
       await (
-        countOrZero(() async {
-          final dashboard = await ref.watch(sellerDashboardProvider.future);
-          return dashboard.summary.open;
-        }),
+        countOrZero(
+          () => seller.countOrders(state: OrderState.awaitingConfirmation),
+        ),
+        countOrZero(() => seller.countOrders(state: OrderState.open)),
         // Lọc phía server: `/refunds` phân trang bằng cursor, nên đếm trên trang
         // đầu sẽ báo 0 cho một người bán vừa đóng 20 vụ và còn 3 vụ chờ duyệt.
         countOrZero(
@@ -52,6 +54,7 @@ Future<ActionInbox> actionInbox(Ref ref) async {
       ).wait;
 
   return ActionInbox(
+    ordersToConfirm: ordersToConfirm,
     ordersToShip: ordersToShip,
     refundsAsSeller: refundsAsSeller,
     unreadMessages: unreadMessages,

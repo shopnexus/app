@@ -7,10 +7,12 @@ import 'package:shopnexus_flutter_app/api/generated/model/chat_unread_count.dart
 import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
 import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
-import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
 /// Bốn nguồn số độc lập nhau. Gộp chúng bằng một `Future.wait` trần có nghĩa là
 /// hộp thư chat hỏng thì người bán mất luôn cảnh báo hoàn tiền chờ duyệt — đúng
@@ -32,10 +34,10 @@ void main() {
   });
 
   group('actionInboxProvider', () {
-    /// `null` cho [openOrders] hoặc [unread] nghĩa là nguồn đó ném lỗi.
+    /// `null` cho một nguồn nghĩa là nguồn đó ném lỗi.
     ProviderContainer containerWith({
       required Map<RefundRole, List<_Page>> refunds,
-      int? openOrders,
+      Map<OrderState, int?> orders = const {},
       int? unread,
     }) => ProviderContainer(
       overrides: [
@@ -43,9 +45,7 @@ void main() {
           _FakeRefundRepository(refunds),
         ),
         chatRepositoryProvider.overrideWithValue(_FakeChatRepository(unread)),
-        sellerDashboardProvider.overrideWith(
-          () => _FakeDashboardNotifier(openOrders),
-        ),
+        sellerRepositoryProvider.overrideWithValue(_FakeSellerRepository(orders)),
       ],
     );
 
@@ -59,20 +59,54 @@ void main() {
             _Page(count: 1, nextCursor: null),
           ],
         },
-        openOrders: 7,
+        orders: {OrderState.awaitingConfirmation: 2, OrderState.open: 7},
         unread: 5,
       );
       addTearDown(container.dispose);
 
       final inbox = await container.read(actionInboxProvider.future);
 
+      expect(inbox.ordersToConfirm, 2);
       expect(inbox.ordersToShip, 7);
       expect(inbox.refundsAsSeller, 3);
       expect(inbox.unreadMessages, 5);
     });
 
-    test('một nguồn hỏng chỉ về 0, ba nguồn kia vẫn tới', () async {
-      // Dashboard hỏng (không có mạng) và chat hỏng; hoàn tiền vẫn phải đếm.
+    /// Cái lỗi cụ thể đã sửa: nguồn cũ là `summary.open`, mà `open` là đơn đã
+    /// được xác nhận — nên việc gấp nhất, đơn đang giữ tiền người mua và có hạn
+    /// 48 giờ, đếm ra 0 và không bao giờ lên badge.
+    test('đơn chờ xác nhận hỏi đúng state của nó, không đọc từ open', () async {
+      final seller = _FakeSellerRepository({
+        OrderState.awaitingConfirmation: 3,
+        OrderState.open: 0,
+      });
+      final container = ProviderContainer(
+        overrides: [
+          refundRepositoryProvider.overrideWithValue(
+            _FakeRefundRepository({
+              RefundRole.seller: [
+                _Page(count: 0, nextCursor: null),
+              ],
+            }),
+          ),
+          chatRepositoryProvider.overrideWithValue(_FakeChatRepository(0)),
+          sellerRepositoryProvider.overrideWithValue(seller),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final inbox = await container.read(actionInboxProvider.future);
+
+      expect(inbox.ordersToConfirm, 3);
+      expect(inbox.ordersToShip, 0);
+      expect(seller.statesAsked, contains(OrderState.awaitingConfirmation));
+      // Và nó phải đứng đầu danh sách việc: đó là việc duy nhất có đồng hồ chạy.
+      expect(inbox.entries.first.label, 'đơn chờ bạn xác nhận');
+      expect(inbox.entries.first.count, 3);
+    });
+
+    test('một nguồn hỏng chỉ về 0, các nguồn kia vẫn tới', () async {
+      // Đơn hàng hỏng (không có mạng) và chat hỏng; hoàn tiền vẫn phải đếm.
       final container = containerWith(
         refunds: {
           RefundRole.seller: [
@@ -82,14 +116,18 @@ void main() {
             _Page(count: 0, nextCursor: null),
           ],
         },
-        openOrders: null, // null = ném lỗi
+        orders: {
+          OrderState.awaitingConfirmation: null, // null = ném lỗi
+          OrderState.open: null,
+        },
         unread: null,
       );
       addTearDown(container.dispose);
 
       final inbox = await container.read(actionInboxProvider.future);
 
-      expect(inbox.ordersToShip, 0, reason: 'dashboard hỏng');
+      expect(inbox.ordersToConfirm, 0, reason: 'đọc đơn hỏng');
+      expect(inbox.ordersToShip, 0, reason: 'đọc đơn hỏng');
       expect(inbox.unreadMessages, 0, reason: 'chat hỏng');
       expect(inbox.refundsAsSeller, 2, reason: 'nguồn lành vẫn phải tới');
       expect(inbox.isEmpty, isFalse);
@@ -108,7 +146,7 @@ void main() {
             _Page(count: 0, nextCursor: null),
           ],
         },
-        openOrders: 0,
+        orders: {OrderState.awaitingConfirmation: 0, OrderState.open: 0},
         unread: 0,
       );
       addTearDown(container.dispose);
@@ -131,7 +169,12 @@ void main() {
         overrides: [
           refundRepositoryProvider.overrideWithValue(repository),
           chatRepositoryProvider.overrideWithValue(_FakeChatRepository(0)),
-          sellerDashboardProvider.overrideWith(() => _FakeDashboardNotifier(0)),
+          sellerRepositoryProvider.overrideWithValue(
+            _FakeSellerRepository(const {
+              OrderState.awaitingConfirmation: 0,
+              OrderState.open: 0,
+            }),
+          ),
         ],
       );
       addTearDown(container.dispose);
@@ -157,7 +200,7 @@ void main() {
             _Page(count: 0, nextCursor: null),
           ],
         },
-        openOrders: 0,
+        orders: {OrderState.awaitingConfirmation: 0, OrderState.open: 0},
         unread: 0,
       );
       addTearDown(container.dispose);
@@ -234,27 +277,23 @@ final _stubRefund = Refund(
   returnedAt: null,
 );
 
-class _FakeDashboardNotifier extends SellerDashboardNotifier {
-  _FakeDashboardNotifier(this.open);
+class _FakeSellerRepository extends SellerRepository {
+  _FakeSellerRepository(this.counts)
+    : super(OrderApi(Dio()), CatalogApi(Dio()), FinanceApi(Dio()));
 
-  /// Null nghĩa là lời gọi ném lỗi.
-  final int? open;
+  /// Số đơn mỗi trạng thái; null nghĩa là lời gọi ném lỗi.
+  final Map<OrderState, int?> counts;
+  final List<OrderState> statesAsked = [];
 
   @override
-  Future<SellerDashboard> build() async {
-    final value = open;
-    if (value == null) throw StateError('dashboard hỏng');
-    return SellerDashboard(
-      summary: OrderSummary(
-        cancelled: 0,
-        completed: 0,
-        daily: const [],
-        from: DateTime.utc(2026),
-        open: value,
-        to: DateTime.utc(2026, 2),
-        totals: const [],
-      ),
-      listings: const {},
-    );
+  Future<int> countOrders({
+    required OrderState state,
+    int limit = 50,
+    int maxPages = 5,
+  }) async {
+    statesAsked.add(state);
+    final value = counts[state];
+    if (value == null) throw StateError('đọc đơn hỏng');
+    return value;
   }
 }

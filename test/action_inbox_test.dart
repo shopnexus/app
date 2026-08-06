@@ -31,14 +31,26 @@ void main() {
       expect(inbox.entries.map((e) => e.count), [2, 3]);
     });
 
-    test('total cộng cả ba loại', () {
+    test('total cộng mọi loại', () {
       const inbox = ActionInbox(
+        ordersToConfirm: 1,
         ordersToShip: 2,
         refundsAsSeller: 3,
         unreadMessages: 5,
       );
 
-      expect(inbox.total, 10);
+      expect(inbox.total, 11);
+    });
+
+    /// Xác nhận đơn phải đứng trên đơn chờ giao: đó là việc duy nhất đang giữ
+    /// tiền của người mua và có hạn 48 giờ treo lên đầu.
+    test('đơn chờ xác nhận là dòng đầu', () {
+      const inbox = ActionInbox(ordersToConfirm: 1, ordersToShip: 4);
+
+      expect(inbox.entries.map((e) => e.label), [
+        'đơn chờ bạn xác nhận',
+        'đơn chờ giao',
+      ]);
     });
   });
 

@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
 
 import 'support/fixtures.dart';
 import 'support/recording_backend.dart';
@@ -117,6 +120,84 @@ void main() {
 
       expect(views.single.lines.single.name, isNull);
       expect(views.single.goodsTotal, 98000);
+    });
+  });
+
+  /// The worst thing an escrow marketplace can do: a buyer who has just paid
+  /// found 'Đang xử lý' empty, because `open` means *the seller has confirmed*.
+  group('the buyer sees an order they just paid for', () {
+    test('"Đang xử lý" asks for both in-flight states', () async {
+      final backend = RecordingBackend(pages());
+      final container = ProviderContainer(
+        overrides: [
+          accountRepositoryProvider.overrideWithValue(backend.repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(buyerOpenOrdersProvider.future);
+
+      expect(
+        backend.calls
+            .where((c) => c.path == '/orders')
+            .map((c) => c.queryParameters['state']),
+        containsAll([OrderState.awaitingConfirmation, OrderState.open]),
+      );
+    });
+
+    test('awaiting confirmation comes first — it is the one with a clock', () async {
+      final awaiting = {
+        ...orderJson,
+        'id': 'ord_awaiting',
+        'state': 'awaiting-confirmation',
+        'confirmed_at': null,
+        'confirmation_deadline_at': '2026-08-07T02:47:38Z',
+      };
+      // Both reads answer the same envelope, so the ordering under test is the
+      // provider's, not the route's.
+      final backend = RecordingBackend(pages(orders: [awaiting]));
+      final container = ProviderContainer(
+        overrides: [
+          accountRepositoryProvider.overrideWithValue(backend.repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final views = await container.read(buyerOpenOrdersProvider.future);
+
+      expect(views.length, 2);
+      expect(views.first.isAwaitingConfirmation, isTrue);
+      // Neither side's badge says who is waiting; the card around it does.
+      expect(views.first.statusLabel, 'Chờ xác nhận');
+      expect(views.first.confirmationRemaining, isNotNull);
+    });
+  });
+
+  group('counting the seller work that has a deadline on it', () {
+    test('asks for awaiting-confirmation and walks every page', () async {
+      var served = 0;
+      final backend = RecordingBackend((request) {
+        served++;
+        return {
+          'data': List.filled(served == 1 ? 2 : 1, orderJson),
+          'meta': {'next_cursor': served == 1 ? 'p2' : null},
+        };
+      });
+
+      final count = await backend.seller.countOrders(
+        state: OrderState.awaitingConfirmation,
+      );
+
+      // A page count would have said 2 and stopped — `/orders` sends no total,
+      // so the only right answer is to walk to the last page.
+      expect(count, 3);
+      final orderCalls = backend.calls.where((c) => c.path == '/orders');
+      expect(
+        orderCalls.map((c) => c.queryParameters['state']),
+        everyElement(OrderState.awaitingConfirmation),
+      );
+      expect(orderCalls.map((c) => c.queryParameters['role']), everyElement('seller'));
+      expect(orderCalls.last.queryParameters['cursor'], 'p2');
     });
   });
 
