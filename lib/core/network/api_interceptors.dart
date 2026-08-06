@@ -176,3 +176,36 @@ class LoggingInterceptor extends Interceptor {
     super.onError(err, handler);
   }
 }
+
+/// Renders `DateTime` query parameters as RFC 3339, which is what the API asks for.
+///
+/// Dio stringifies a query value with `toString()`, and Dart's `DateTime.toString()` separates the
+/// date from the time with a **space** — `2026-08-06 16:00:00.000Z`. That is not RFC 3339, so every
+/// route taking an instant in the query answered 400 `must be an RFC 3339 timestamp`: the seller's
+/// sales summary (`from`/`to`) and editing or deleting a chat message (`created_at`, which those
+/// routes need because the message table is a hypertable whose key includes its partitioning
+/// column).
+///
+/// Fixed here rather than at each call site because the generated client hands dio the `DateTime`
+/// itself — a caller has nothing to format — and because one transport-level conversion covers
+/// every route, including the ones a future contract change adds.
+class DateTimeQueryInterceptor extends Interceptor {
+  @override
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) {
+    options.queryParameters = options.queryParameters.map(
+      (key, value) => MapEntry(key, _iso(value)),
+    );
+    handler.next(options);
+  }
+
+  /// Lists are converted element-wise: a repeated query parameter is as likely to carry instants
+  /// as a single one.
+  static Object? _iso(Object? value) => switch (value) {
+    DateTime() => value.toUtc().toIso8601String(),
+    Iterable() => value.map(_iso).toList(),
+    _ => value,
+  };
+}

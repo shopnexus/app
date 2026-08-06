@@ -21,7 +21,13 @@ Dio dio(Ref ref) {
   );
 
   // Thêm interceptors vào Dio instance
-  dio.interceptors.addAll([AuthInterceptor(ref, dio), LoggingInterceptor()]);
+  // DateTimeQueryInterceptor comes first: it rewrites the request before anything logs it, so the
+  // logged URL is the one that actually goes out.
+  dio.interceptors.addAll([
+    DateTimeQueryInterceptor(),
+    AuthInterceptor(ref, dio),
+    LoggingInterceptor(),
+  ]);
 
   return dio;
 }
