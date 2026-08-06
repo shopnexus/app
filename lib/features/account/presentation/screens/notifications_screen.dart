@@ -22,20 +22,30 @@ extension on wire.Notification {
   String? get redirectUrl => payload['redirect_url']?.toString();
 }
 
-class NotificationsScreen extends ConsumerStatefulWidget {
-  const NotificationsScreen({super.key});
+/// Dòng thời gian thông báo, không có `Scaffold` và không có `AppBar`: nó là một
+/// tab của Hộp thư (`InboxScreen`).
+///
+/// Feed không còn tự chia `[Tin nhắn | Hoạt động]` như khi nó là một màn hình
+/// riêng. Hộp thư đã có đúng cái phân đôi đó ở ngoài, nên tab trong tên "Tin
+/// nhắn" sẽ là chữ "Tin nhắn" thứ hai, cách chữ thứ nhất một lần chạm và có
+/// nghĩa khác: một cái là cuộc trò chuyện, một cái là thông báo *về* cuộc trò
+/// chuyện. Một danh sách không lọc không mất dòng nào.
+class NotificationsTab extends ConsumerStatefulWidget {
+  /// Một thông báo hạng `chat` không có id nào để mở thì việc đúng là chuyển
+  /// sang tab Tin nhắn, chứ không phải `push('/chat')` — đẩy như thế xếp thêm
+  /// một Hộp thư nữa lên trên chính Hộp thư đang mở.
+  final VoidCallback onOpenMessages;
+
+  const NotificationsTab({super.key, required this.onOpenMessages});
 
   @override
-  ConsumerState<NotificationsScreen> createState() =>
-      _NotificationsScreenState();
+  ConsumerState<NotificationsTab> createState() => NotificationsTabState();
 }
 
-class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
-  /// Chat on one side, everything else on the other. The route can filter by
-  /// `category`, but the feed is one cursor walk, so the split is done here.
-  bool _showingChat = false;
-
-  Future<void> _markAllAsRead() =>
+class NotificationsTabState extends ConsumerState<NotificationsTab> {
+  /// Đánh dấu đã đọc cả feed. Public vì nút "Đọc tất cả" nằm trên `AppBar` của
+  /// Hộp thư, ngoài tab này.
+  Future<void> markAllAsRead() =>
       ref.read(notificationsControllerProvider.notifier).markRead();
 
   /// The route takes a bound, never an id, so a tap marks this row and everything
@@ -67,7 +77,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     } else if (ticketId != null && ticketId.isNotEmpty) {
       context.push('/account/help-center/$ticketId');
     } else if (item.category == NotificationCategory.chat) {
-      context.push('/chat');
+      widget.onOpenMessages();
     } else if (item.category == NotificationCategory.order) {
       context.push('/account/orders');
     }
@@ -76,99 +86,29 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
     final feedAsync = ref.watch(notificationsControllerProvider);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: theme.colorScheme.onSurface,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          'Thông báo',
-          style: TextStyle(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Manrope',
-            fontSize: 18,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: _markAllAsRead,
-            child: Text(
-              'Đọc tất cả',
-              style: TextStyle(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Inter',
-                fontSize: 13,
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Container(
-            color: theme.colorScheme.surface,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                _buildTabButton(title: 'Tin nhắn', chat: true),
-                _buildTabButton(title: 'Hoạt động', chat: false),
-              ],
-            ),
-          ),
-          Divider(
-            height: 1,
-            thickness: 1,
-            color: isDarkMode
-                ? AppColors.darkPrimary.withAlpha(30)
-                : const Color(0xFFE1E3E1),
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              color: theme.colorScheme.primary,
-              onRefresh: () async {
-                ref.invalidate(notificationsControllerProvider);
-                await ref.read(notificationsControllerProvider.future);
-              },
-              child: feedAsync.when(
-                data: (feed) {
-                  final items = feed.items
-                      .where(
-                        (item) =>
-                            (item.category == NotificationCategory.chat) ==
-                            _showingChat,
-                      )
-                      .toList();
-                  if (items.isEmpty) return const _EmptyNotifications();
+    return RefreshIndicator(
+      color: theme.colorScheme.primary,
+      onRefresh: () async {
+        ref.invalidate(notificationsControllerProvider);
+        await ref.read(notificationsControllerProvider.future);
+      },
+      child: feedAsync.when(
+        data: (feed) {
+          final items = feed.items;
+          if (items.isEmpty) return const _EmptyNotifications();
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: items.length + (feed.nextCursor == null ? 0 : 1),
-                    itemBuilder: (context, index) => index == items.length
-                        ? _buildLoadMore(feed.loadingMore)
-                        : _buildNotificationCard(context, items[index]),
-                  );
-                },
-                loading: () => _buildShimmerList(),
-                error: (err, _) => _buildError(err),
-              ),
-            ),
-          ),
-        ],
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: items.length + (feed.nextCursor == null ? 0 : 1),
+            itemBuilder: (context, index) => index == items.length
+                ? _buildLoadMore(feed.loadingMore)
+                : _buildNotificationCard(context, items[index]),
+          );
+        },
+        loading: () => _buildShimmerList(),
+        error: (err, _) => _buildError(err),
       ),
     );
   }
@@ -215,43 +155,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTabButton({required String title, required bool chat}) {
-    final theme = Theme.of(context);
-    final isSelected = _showingChat == chat;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _showingChat = chat),
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.only(top: 14, bottom: 12),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : Colors.transparent,
-                width: 3,
-              ),
-            ),
-          ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontFamily: 'Inter',
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
         ),
       ),
     );
@@ -412,6 +315,71 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             borderRadius: BorderRadius.circular(16),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Đường vào cũ của Thông báo, `/account/notifications`. Hộp thư đã là nhà mới
+/// của feed này; màn hình rời vẫn còn ở đây cho tới khi mọi caller đã chuyển
+/// sang `/chat?tab=notifications` — xoá route cùng lúc đổi caller là cách làm
+/// vỡ một cái nút mà `dart analyze` không hề nhìn thấy.
+class NotificationsScreen extends ConsumerStatefulWidget {
+  const NotificationsScreen({super.key});
+
+  @override
+  ConsumerState<NotificationsScreen> createState() =>
+      _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
+  final _tab = GlobalKey<NotificationsTabState>();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: theme.colorScheme.onSurface,
+            size: 20,
+          ),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(
+          'Thông báo',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Manrope',
+            fontSize: 18,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => _tab.currentState?.markAllAsRead(),
+            child: Text(
+              'Đọc tất cả',
+              style: TextStyle(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Inter',
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: NotificationsTab(
+        key: _tab,
+        onOpenMessages: () => context.push('/chat'),
       ),
     );
   }
