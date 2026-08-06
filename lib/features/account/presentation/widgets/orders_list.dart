@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
@@ -11,6 +12,7 @@ import 'package:shopnexus_flutter_app/features/account/data/repositories/account
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_actions_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/confirm_receipt_sheet.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/rate_order_sheet.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 
 /// Đơn của một vai, hai nhóm, không tab.
@@ -243,6 +245,20 @@ class _OrderRow extends ConsumerWidget {
   /// tới khi họ chạm thì **tiền của người bán vẫn nằm trong escrow**. Chôn nó sau
   /// một menu là để một khoản tiền chờ một người không biết mình đang giữ nó.
   List<Widget> _actions(BuildContext context, WidgetRef ref) {
+    // Đơn đã xong vẫn còn đúng một việc, và chỉ của người mua: chấm điểm. Nó ở
+    // đây chứ không ở một màn "Đánh giá của tôi" riêng, vì việc thật của người
+    // dùng không phải "xem lại những gì tôi từng viết" mà là "đơn này tôi đánh
+    // giá chưa" — câu đó chỉ trả lời được cạnh chính cái đơn.
+    if (view.order.state == OrderState.completed && role == OrderRole.buyer) {
+      return [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () => _rate(context, ref),
+            child: const Text('Đánh giá'),
+          ),
+        ),
+      ];
+    }
     if (isFinished) return const [];
 
     final isActing = ref.watch(ordersActionsProvider).isLoading;
@@ -440,6 +456,22 @@ class _OrderRow extends ConsumerWidget {
     // provider mà `_run` nạp, vì dòng vừa đổi trạng thái.
     ref.invalidate(ordersProvider(role));
     ref.invalidate(unsettledItemsProvider(role));
+  }
+
+  /// Một nút, một biểu mẫu hai phần. Đánh giá sản phẩm chỉ được hỏi khi đơn có
+  /// đúng một tin: nó gắn với **một** tin, và với đơn nhiều dòng thì bắt người
+  /// dùng chọn hộ là hỏi một câu họ không có lý do trả lời.
+  Future<void> _rate(BuildContext context, WidgetRef ref) async {
+    final single = view.lines.length == 1 ? view.lines.first : null;
+    final sent = await RateOrderSheet.show(
+      context,
+      orderId: view.order.id,
+      sellerName: view.order.seller.name,
+      listingId: single?.listing?.id,
+      listingName: single?.name,
+    );
+    if (sent != true) return;
+    ref.invalidate(ordersProvider(role));
   }
 
   Future<void> _reportIssue(BuildContext context) async {
