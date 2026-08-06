@@ -5,6 +5,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_contact_request.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact_address_type.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
@@ -349,13 +350,50 @@ class AddressesScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      contact.phone,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontFamily: 'Inter',
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          contact.phone,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        // Số này là số đơn vị giao hàng sẽ gọi, nên "đã xác thực"
+                        // là một tính chất của *địa chỉ*, không của account. Ở chế
+                        // độ chọn thì chỉ hiện, không cho làm — người mua đang giữa
+                        // một lần thanh toán, không phải đang dọn hồ sơ.
+                        if (contact.phoneVerified)
+                          Icon(
+                            Icons.verified_rounded,
+                            size: 14,
+                            color: theme.colorScheme.primary,
+                          )
+                        else if (!selectMode)
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              minimumSize: const Size(0, 28),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                            onPressed: () =>
+                                _verifyPhone(context, ref, contact),
+                            child: const Text(
+                              'Xác thực',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          )
+                        else
+                          Text(
+                            'chưa xác thực',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                      ],
                     ),
                     // Sửa, xóa và đặt mặc định vắng mặt ở chế độ chọn: người mua
                     // không được xóa mất chính địa chỉ họ đang chọn cho đơn hàng.
@@ -457,6 +495,79 @@ class AddressesScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Gửi mã rồi hỏi mã, trong một mạch. Tách thành hai bước ở hai chỗ là mời người
+  /// dùng đóng app giữa lúc một mã có TTL đang chạy.
+  Future<void> _verifyPhone(
+    BuildContext context,
+    WidgetRef ref,
+    Contact contact,
+  ) async {
+    final repository = ref.read(accountRepositoryProvider);
+    try {
+      await repository.requestPhoneCode(contact.id);
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không gửi được mã, thử lại sau')),
+      );
+      return;
+    }
+    if (!context.mounted) return;
+
+    final controller = TextEditingController();
+    final code = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Nhập mã xác thực'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Chúng tôi vừa gửi mã tới ${contact.phone}.'),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: 'Mã 6 số',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Để sau'),
+          ),
+          ElevatedButton(
+            onPressed: () =>
+                Navigator.pop(dialogContext, controller.text.trim()),
+            child: const Text('Xác thực'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (code == null || code.isEmpty || !context.mounted) return;
+
+    try {
+      await repository.verifyPhone(contact.id, code);
+      ref.invalidate(buyerContactsProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Đã xác thực số điện thoại')));
+    } catch (_) {
+      if (!context.mounted) return;
+      // Mã được đọc một lần rồi mất, nên sai mã là phải gửi lại — nói ra điều đó
+      // thay vì để người dùng nhập lại vào một mã đã không còn tồn tại.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mã không đúng hoặc đã hết hạn')),
+      );
+    }
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref, String id) {

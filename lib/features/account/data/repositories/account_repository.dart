@@ -6,6 +6,7 @@ import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/verify_contact_phone_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/confirm_receipt_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
@@ -169,6 +170,20 @@ class AccountRepository {
   /// to be refused outright.
   Future<void> updateContact(String contactId, UpdateContactRequest request) =>
       _api.contactsIdPatch(id: contactId, updateContactRequest: request);
+
+  /// Gửi mã tới số của một địa chỉ. Mã sống trong Redis với TTL, không phải một
+  /// hàng trong bảng — nó được đọc một lần rồi phải biến mất.
+  Future<void> requestPhoneCode(String contactId) =>
+      _api.contactsIdPhoneVerificationRequestsPost(id: contactId);
+
+  /// Nhập mã. Server đối chiếu rồi bật `phone_verified` trên chính địa chỉ đó —
+  /// xác thực gắn với *số của địa chỉ này*, không phải với account, vì đó là số
+  /// mà đơn vị giao hàng sẽ gọi.
+  Future<void> verifyPhone(String contactId, String code) =>
+      _api.contactsIdPhoneVerificationsPost(
+        id: contactId,
+        verifyContactPhoneRequest: VerifyContactPhoneRequest(code: code),
+      );
 
   Future<void> deleteContact(String contactId) =>
       _api.contactsIdDelete(id: contactId);
