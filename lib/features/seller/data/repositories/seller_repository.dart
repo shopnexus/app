@@ -5,6 +5,7 @@ import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/bank_account.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_bank_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_bank_account_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_withdrawal_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
@@ -254,11 +255,36 @@ class SellerRepository {
     return withdrawal;
   }
 
+  /// Một lệnh rút cụ thể — `outcome` ở đây là thứ khách hàng đọc, còn `status` là
+  /// của payment session bên dưới.
+  Future<Withdrawal> withdrawal(String id) async {
+    final withdrawal = (await _financeApi.withdrawalsIdGet(id: id)).data?.data;
+    if (withdrawal == null) throw StateError('empty withdrawal');
+    return withdrawal;
+  }
+
+  /// Huỷ một lệnh rút chưa được duyệt, và tiền quay lại ví ngay.
+  ///
+  /// Đây là đường thoát duy nhất của một lần bấm sai: số tiền bị **trừ khỏi số dư
+  /// khả dụng ngay lúc tạo lệnh** — cố ý, để cùng một khoản không rút được hai lần
+  /// trong lúc người thật đang xét — nên không có nút này thì tiền nằm ngoài tầm
+  /// với cho tới khi một admin xử.
+  Future<void> cancelWithdrawal(String id) =>
+      _financeApi.withdrawalsIdDelete(id: id);
+
   Future<List<BankAccount>> bankAccounts() async =>
       (await _financeApi.bankAccountsGet()).data?.data ?? const [];
 
   Future<void> addBankAccount(CreateBankAccountRequest request) =>
       _financeApi.bankAccountsPost(createBankAccountRequest: request);
+
+  /// Đặt một tài khoản làm mặc định. Chỉ có `is_default` đổi được: số tài khoản và
+  /// tên thụ hưởng là thứ một lệnh rút đã settle trỏ tới, nên sửa chúng sẽ viết lại
+  /// nơi mà tiền cũ đã đi — muốn đổi thì thêm tài khoản mới.
+  Future<void> setDefaultBankAccount(String id) => _financeApi.bankAccountsIdPatch(
+    id: id,
+    updateBankAccountRequest: UpdateBankAccountRequest(isDefault: true),
+  );
 
   Future<void> deleteBankAccount(String id) =>
       _financeApi.bankAccountsIdDelete(id: id);

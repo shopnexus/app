@@ -233,6 +233,20 @@ class _SellerEarningsScreenState extends ConsumerState<SellerEarningsScreen> {
               ],
             ),
           ),
+          // Chỉ hiện trên tài khoản chưa phải mặc định: một ngôi sao đã sáng mà
+          // bấm được nữa là mời người ta bấm để không có gì xảy ra.
+          if (!account.isDefault)
+            IconButton(
+              tooltip: 'Đặt làm mặc định',
+              icon: Icon(
+                Icons.star_outline_rounded,
+                size: 20,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              onPressed: () => ref
+                  .read(sellerEarningsProvider.notifier)
+                  .setDefaultBankAccount(account.id),
+            ),
           IconButton(
             icon: const Icon(
               Icons.delete_outline,
@@ -680,15 +694,82 @@ class _SellerEarningsScreenState extends ConsumerState<SellerEarningsScreen> {
               ],
             ),
           ),
-          Text(
-            MoneyUtils.format(withdrawal.amount, currency: withdrawal.currency),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                MoneyUtils.format(
+                  withdrawal.amount,
+                  currency: withdrawal.currency,
+                ),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              // Chỉ khi chưa ai duyệt: sau đó tiền đã đi (hoặc đã quay về) và
+              // không còn gì để huỷ.
+              if (withdrawal.outcome == WithdrawalOutcome.awaitingReview)
+                TextButton(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: const Size(0, 32),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  onPressed: () => _confirmCancelWithdrawal(context, withdrawal),
+                  child: const Text(
+                    'Huỷ lệnh',
+                    style: TextStyle(fontSize: 12, color: Color(0xFFEF4444)),
+                  ),
+                ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+
+  /// Huỷ trả tiền về ví ngay, nên hộp thoại nói ra điều đó — người bán đang nhìn
+  /// một số dư thiếu đúng số tiền này và cần biết nó quay lại.
+  Future<void> _confirmCancelWithdrawal(
+    BuildContext context,
+    Withdrawal withdrawal,
+  ) async {
+    final amount = MoneyUtils.format(
+      withdrawal.amount,
+      currency: withdrawal.currency,
+    );
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Huỷ lệnh rút?'),
+        content: Text('$amount sẽ quay lại số dư khả dụng của bạn ngay.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Không'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Huỷ lệnh'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final ok = await ref
+        .read(sellerEarningsProvider.notifier)
+        .cancelWithdrawal(withdrawal.id);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok
+              ? 'Đã huỷ lệnh rút, $amount đã về ví'
+              : 'Không huỷ được — lệnh này vừa được xử lý',
+        ),
       ),
     );
   }

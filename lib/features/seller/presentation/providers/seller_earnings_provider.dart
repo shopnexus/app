@@ -156,4 +156,24 @@ class SellerEarningsNotifier extends _$SellerEarningsNotifier {
     await ref.read(sellerRepositoryProvider).deleteBankAccount(id);
     await refresh();
   }
+
+  /// Huỷ một lệnh rút chưa duyệt. `refresh()` sau đó không phải để cho gọn: số dư
+  /// khả dụng vừa đổi, và đó là con số người bán đang nhìn.
+  Future<bool> cancelWithdrawal(String id) async {
+    try {
+      await ref.read(sellerRepositoryProvider).cancelWithdrawal(id);
+      await refresh();
+      return true;
+    } catch (_) {
+      // Server từ chối khi admin đã xử xong trong lúc đó — 409. Không phải lỗi
+      // của người bán, và câu trả lời đúng là hiện trạng thái mới.
+      await refresh();
+      return false;
+    }
+  }
+
+  Future<void> setDefaultBankAccount(String id) async {
+    await ref.read(sellerRepositoryProvider).setDefaultBankAccount(id);
+    await refresh();
+  }
 }
