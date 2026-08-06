@@ -42,7 +42,7 @@ final class SellerOrdersNotifierProvider
 }
 
 String _$sellerOrdersNotifierHash() =>
-    r'eb88bbeb3acef8c28359eda6e744a6a8b98346f0';
+    r'5b607e8728087013103fee4f4179857678b438ee';
 
 abstract class _$SellerOrdersNotifier extends $Notifier<SellerOrdersState> {
   SellerOrdersState build();
