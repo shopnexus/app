@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
@@ -12,6 +13,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/ac
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_menu_tile.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/action_inbox_card.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_earnings_provider.dart';
 
 /// Trang tài khoản: ba nhóm và một khối việc-cần-làm.
 ///
@@ -122,7 +124,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () {
+          // `actionInboxProvider` phải ở lại: badge sống ở `main_layout`, ngoài
+          // shell của trang này, nên không có ai khác làm mới nó.
           ref.invalidate(actionInboxProvider);
+          ref.invalidate(sellerWalletProvider);
           return ref.refresh(profileProvider.future);
         },
         child: profileAsync.when(
@@ -142,12 +147,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 // Tự ẩn khi không có việc nào đang chờ.
                 const ActionInboxCard(),
 
-                const AccountSectionHeader(title: 'GIAO DỊCH'),
+                const AccountSectionHeader(title: 'MUA BÁN'),
                 _buildGroup(context, [
                   AccountMenuTile(
-                    icon: Icons.local_mall_outlined,
-                    title: 'Đơn mua',
+                    icon: Icons.receipt_long_outlined,
+                    // "Đơn hàng", không "Đơn mua": một dòng cho cả hai vai, và
+                    // màn hình tự mở vai đang có việc chờ.
+                    title: 'Đơn hàng',
                     onTap: () => context.push('/account/orders'),
+                  ),
+                  // Hai dòng này thay cho "Kênh người bán". Một cái cửa dẫn tới
+                  // một trang toàn số liệu là một lần chạm thêm để tới đúng hai
+                  // thứ người bán thật sự vào xem: tin của mình và tiền của mình.
+                  AccountMenuTile(
+                    icon: Icons.sell_outlined,
+                    title: 'Tin của tôi',
+                    onTap: () => context.push('/seller/products'),
+                  ),
+                  AccountMenuTile(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: 'Số dư',
+                    subtitle: _balanceLine(),
+                    onTap: () => context.push('/seller/earnings'),
                   ),
                   AccountMenuTile(
                     icon: Icons.assignment_return_outlined,
@@ -162,22 +183,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 const AccountSectionHeader(title: 'HỒ SƠ'),
                 _buildGroup(context, [
                   AccountMenuTile(
-                    icon: Icons.location_on_outlined,
-                    title: 'Địa chỉ',
-                    onTap: () => context.push('/account/addresses'),
-                  ),
-                  AccountMenuTile(
                     icon: Icons.bookmark_border_rounded,
                     // "Đã lưu", không "Yêu thích": danh sách này là chỗ để dành
                     // một tin đăng để quay lại xem, không phải một bảng cảm xúc.
                     title: 'Đã lưu',
                     onTap: () => context.push('/account/wishlist'),
                   ),
-                  // Lối vào khu người bán, không phải bản sao thứ hai của nó.
                   AccountMenuTile(
-                    icon: Icons.sell_outlined,
-                    title: 'Kênh người bán',
-                    onTap: () => context.push('/seller'),
+                    icon: Icons.location_on_outlined,
+                    title: 'Địa chỉ',
+                    onTap: () => context.push('/account/addresses'),
                   ),
                 ]),
 
@@ -211,6 +226,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  /// Khả dụng và đang tạm giữ, cạnh nhau.
+  ///
+  /// Hai con số vì một con số trả lời sai: escrow của một đơn đã trả tiền chưa
+  /// phải tiền rút được, và "₫0" một mình là câu trả lời cho người bán vừa bán
+  /// xong và đang đi tìm tiền của họ. Vắng khi chưa đọc xong hoặc đọc hỏng — dòng
+  /// menu vẫn vào được, và trang Tài khoản không được vỡ vì một cái ví.
+  String? _balanceLine() {
+    final wallet = ref.watch(sellerWalletProvider).value;
+    if (wallet == null) return null;
+
+    final available = MoneyUtils.format(
+      wallet.availableBalance,
+      currency: wallet.currency,
+    );
+    if (wallet.heldBalance == 0) return 'Khả dụng $available';
+
+    final held = MoneyUtils.format(
+      wallet.heldBalance,
+      currency: wallet.currency,
+    );
+    return 'Khả dụng $available · đang giữ $held';
   }
 
   Widget _buildHeader(BuildContext context, Me profile) {
@@ -376,7 +414,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       indent: 56,
     );
 
-    return Container(
+    // `Material`, không `Container(color:)`: một `ListTile` vẽ nền và vệt mực của
+    // nó lên `Material` gần nhất, nên một hộp màu chen vào giữa sẽ che hết —
+    // chín dòng menu không có phản hồi khi chạm, và framework assert đúng chỗ đó.
+    return Material(
       color: isDarkMode ? AppColors.darkSurface : Colors.white,
       child: Column(
         children: [

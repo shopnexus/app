@@ -37,12 +37,18 @@ class AccountMenuTile extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    this.subtitle,
     this.tint,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
+
+  /// Một câu trả lời sẵn cho dòng này, khi nó có. "Số dư" mang hai con số ở đây
+  /// vì thấy được tiền của mình là cái người bán mở trang này để xem — vắng khi
+  /// chưa đọc xong, chứ không phải một chỗ trống có kích thước.
+  final String? subtitle;
 
   /// Màu chữ và icon. Chỉ đặt cho dòng phá vỡ nhịp — hiện chỉ có Đăng xuất.
   final Color? tint;
@@ -78,6 +84,16 @@ class AccountMenuTile extends StatelessWidget {
           color: foreground,
         ),
       ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+              subtitle!,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
       trailing: Icon(
         Icons.chevron_right_rounded,
         color: theme.colorScheme.onSurfaceVariant,

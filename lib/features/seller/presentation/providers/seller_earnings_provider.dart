@@ -56,6 +56,18 @@ abstract class SellerEarningsState with _$SellerEarningsState {
   );
 }
 
+/// Chỉ cái ví, một lượt đọc.
+///
+/// Dòng "Số dư" ở trang Tài khoản cần đúng hai con số, và [SellerEarningsNotifier]
+/// đọc bốn thứ để dựng cả màn Thu nhập — mở trang Tài khoản không nên trả giá đó.
+/// `null` khi sàn chưa ghi khoản nào cho tài khoản này: một dòng ví được tạo bởi
+/// lần chuyển tiền đầu tiên, không bởi việc đăng ký.
+@riverpod
+Future<Wallet?> sellerWallet(Ref ref) async {
+  final wallets = await ref.watch(sellerRepositoryProvider).wallets();
+  return wallets.isEmpty ? null : wallets.first;
+}
+
 @riverpod
 class SellerEarningsNotifier extends _$SellerEarningsNotifier {
   @override

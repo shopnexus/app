@@ -8,6 +8,58 @@ part of 'seller_earnings_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Chỉ cái ví, một lượt đọc.
+///
+/// Dòng "Số dư" ở trang Tài khoản cần đúng hai con số, và [SellerEarningsNotifier]
+/// đọc bốn thứ để dựng cả màn Thu nhập — mở trang Tài khoản không nên trả giá đó.
+/// `null` khi sàn chưa ghi khoản nào cho tài khoản này: một dòng ví được tạo bởi
+/// lần chuyển tiền đầu tiên, không bởi việc đăng ký.
+
+@ProviderFor(sellerWallet)
+const sellerWalletProvider = SellerWalletProvider._();
+
+/// Chỉ cái ví, một lượt đọc.
+///
+/// Dòng "Số dư" ở trang Tài khoản cần đúng hai con số, và [SellerEarningsNotifier]
+/// đọc bốn thứ để dựng cả màn Thu nhập — mở trang Tài khoản không nên trả giá đó.
+/// `null` khi sàn chưa ghi khoản nào cho tài khoản này: một dòng ví được tạo bởi
+/// lần chuyển tiền đầu tiên, không bởi việc đăng ký.
+
+final class SellerWalletProvider
+    extends $FunctionalProvider<AsyncValue<Wallet?>, Wallet?, FutureOr<Wallet?>>
+    with $FutureModifier<Wallet?>, $FutureProvider<Wallet?> {
+  /// Chỉ cái ví, một lượt đọc.
+  ///
+  /// Dòng "Số dư" ở trang Tài khoản cần đúng hai con số, và [SellerEarningsNotifier]
+  /// đọc bốn thứ để dựng cả màn Thu nhập — mở trang Tài khoản không nên trả giá đó.
+  /// `null` khi sàn chưa ghi khoản nào cho tài khoản này: một dòng ví được tạo bởi
+  /// lần chuyển tiền đầu tiên, không bởi việc đăng ký.
+  const SellerWalletProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sellerWalletProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$sellerWalletHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Wallet?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Wallet?> create(Ref ref) {
+    return sellerWallet(ref);
+  }
+}
+
+String _$sellerWalletHash() => r'c4747f966dc59b9c2e1f81df42302bdc19a1336e';
 
 @ProviderFor(SellerEarningsNotifier)
 const sellerEarningsProvider = SellerEarningsNotifierProvider._();
