@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HelpCenterState {
 
- List<Ticket> get tickets; List<FaqItem> get faqs; String get selectedCategory; String get searchQuery; bool get isLoading; String? get errorMessage;
+ List<Ticket> get tickets; List<FaqItem> get faqs; bool get isLoading; String? get errorMessage;
 /// Create a copy of HelpCenterState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $HelpCenterStateCopyWith<HelpCenterState> get copyWith => _$HelpCenterStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HelpCenterState&&const DeepCollectionEquality().equals(other.tickets, tickets)&&const DeepCollectionEquality().equals(other.faqs, faqs)&&(identical(other.selectedCategory, selectedCategory) || other.selectedCategory == selectedCategory)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HelpCenterState&&const DeepCollectionEquality().equals(other.tickets, tickets)&&const DeepCollectionEquality().equals(other.faqs, faqs)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(tickets),const DeepCollectionEquality().hash(faqs),selectedCategory,searchQuery,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(tickets),const DeepCollectionEquality().hash(faqs),isLoading,errorMessage);
 
 @override
 String toString() {
-  return 'HelpCenterState(tickets: $tickets, faqs: $faqs, selectedCategory: $selectedCategory, searchQuery: $searchQuery, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'HelpCenterState(tickets: $tickets, faqs: $faqs, isLoading: $isLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $HelpCenterStateCopyWith<$Res>  {
   factory $HelpCenterStateCopyWith(HelpCenterState value, $Res Function(HelpCenterState) _then) = _$HelpCenterStateCopyWithImpl;
 @useResult
 $Res call({
- List<Ticket> tickets, List<FaqItem> faqs, String selectedCategory, String searchQuery, bool isLoading, String? errorMessage
+ List<Ticket> tickets, List<FaqItem> faqs, bool isLoading, String? errorMessage
 });
 
 
@@ -62,13 +62,11 @@ class _$HelpCenterStateCopyWithImpl<$Res>
 
 /// Create a copy of HelpCenterState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? tickets = null,Object? faqs = null,Object? selectedCategory = null,Object? searchQuery = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? tickets = null,Object? faqs = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
 tickets: null == tickets ? _self.tickets : tickets // ignore: cast_nullable_to_non_nullable
 as List<Ticket>,faqs: null == faqs ? _self.faqs : faqs // ignore: cast_nullable_to_non_nullable
-as List<FaqItem>,selectedCategory: null == selectedCategory ? _self.selectedCategory : selectedCategory // ignore: cast_nullable_to_non_nullable
-as String,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as List<FaqItem>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -155,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Ticket> tickets,  List<FaqItem> faqs,  String selectedCategory,  String searchQuery,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Ticket> tickets,  List<FaqItem> faqs,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HelpCenterState() when $default != null:
-return $default(_that.tickets,_that.faqs,_that.selectedCategory,_that.searchQuery,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.tickets,_that.faqs,_that.isLoading,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -176,10 +174,10 @@ return $default(_that.tickets,_that.faqs,_that.selectedCategory,_that.searchQuer
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Ticket> tickets,  List<FaqItem> faqs,  String selectedCategory,  String searchQuery,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Ticket> tickets,  List<FaqItem> faqs,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _HelpCenterState():
-return $default(_that.tickets,_that.faqs,_that.selectedCategory,_that.searchQuery,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.tickets,_that.faqs,_that.isLoading,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +194,10 @@ return $default(_that.tickets,_that.faqs,_that.selectedCategory,_that.searchQuer
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Ticket> tickets,  List<FaqItem> faqs,  String selectedCategory,  String searchQuery,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Ticket> tickets,  List<FaqItem> faqs,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _HelpCenterState() when $default != null:
-return $default(_that.tickets,_that.faqs,_that.selectedCategory,_that.searchQuery,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.tickets,_that.faqs,_that.isLoading,_that.errorMessage);case _:
   return null;
 
 }
@@ -211,7 +209,7 @@ return $default(_that.tickets,_that.faqs,_that.selectedCategory,_that.searchQuer
 
 
 class _HelpCenterState extends HelpCenterState {
-  const _HelpCenterState({final  List<Ticket> tickets = const [], final  List<FaqItem> faqs = const [], this.selectedCategory = 'Tất cả', this.searchQuery = '', this.isLoading = false, this.errorMessage}): _tickets = tickets,_faqs = faqs,super._();
+  const _HelpCenterState({final  List<Ticket> tickets = const [], final  List<FaqItem> faqs = const [], this.isLoading = false, this.errorMessage}): _tickets = tickets,_faqs = faqs,super._();
   
 
  final  List<Ticket> _tickets;
@@ -228,8 +226,6 @@ class _HelpCenterState extends HelpCenterState {
   return EqualUnmodifiableListView(_faqs);
 }
 
-@override@JsonKey() final  String selectedCategory;
-@override@JsonKey() final  String searchQuery;
 @override@JsonKey() final  bool isLoading;
 @override final  String? errorMessage;
 
@@ -243,16 +239,16 @@ _$HelpCenterStateCopyWith<_HelpCenterState> get copyWith => __$HelpCenterStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HelpCenterState&&const DeepCollectionEquality().equals(other._tickets, _tickets)&&const DeepCollectionEquality().equals(other._faqs, _faqs)&&(identical(other.selectedCategory, selectedCategory) || other.selectedCategory == selectedCategory)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HelpCenterState&&const DeepCollectionEquality().equals(other._tickets, _tickets)&&const DeepCollectionEquality().equals(other._faqs, _faqs)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tickets),const DeepCollectionEquality().hash(_faqs),selectedCategory,searchQuery,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tickets),const DeepCollectionEquality().hash(_faqs),isLoading,errorMessage);
 
 @override
 String toString() {
-  return 'HelpCenterState(tickets: $tickets, faqs: $faqs, selectedCategory: $selectedCategory, searchQuery: $searchQuery, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'HelpCenterState(tickets: $tickets, faqs: $faqs, isLoading: $isLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -263,7 +259,7 @@ abstract mixin class _$HelpCenterStateCopyWith<$Res> implements $HelpCenterState
   factory _$HelpCenterStateCopyWith(_HelpCenterState value, $Res Function(_HelpCenterState) _then) = __$HelpCenterStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<Ticket> tickets, List<FaqItem> faqs, String selectedCategory, String searchQuery, bool isLoading, String? errorMessage
+ List<Ticket> tickets, List<FaqItem> faqs, bool isLoading, String? errorMessage
 });
 
 
@@ -280,13 +276,11 @@ class __$HelpCenterStateCopyWithImpl<$Res>
 
 /// Create a copy of HelpCenterState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? tickets = null,Object? faqs = null,Object? selectedCategory = null,Object? searchQuery = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? tickets = null,Object? faqs = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
   return _then(_HelpCenterState(
 tickets: null == tickets ? _self._tickets : tickets // ignore: cast_nullable_to_non_nullable
 as List<Ticket>,faqs: null == faqs ? _self._faqs : faqs // ignore: cast_nullable_to_non_nullable
-as List<FaqItem>,selectedCategory: null == selectedCategory ? _self.selectedCategory : selectedCategory // ignore: cast_nullable_to_non_nullable
-as String,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as List<FaqItem>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));

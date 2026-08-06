@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 
 import 'support/fixtures.dart';
@@ -20,14 +19,12 @@ import 'support/recording_backend.dart';
 ///    has variants.
 void main() {
   Map<String, dynamic> Function(RequestOptions) pages({
-    Map<String, dynamic>? summary,
     List<Map<String, dynamic>> orders = const [],
     List<Map<String, dynamic>> items = const [],
     List<Map<String, dynamic>> listings = const [],
     int listingTotal = 0,
   }) =>
       (request) => switch (request.path) {
-        '/orders/summary' => {'data': summary ?? orderSummaryJson},
         '/orders' => {
           'data': orders,
           'meta': const {'next_cursor': null},
@@ -43,62 +40,11 @@ void main() {
         _ => const {'data': <String, dynamic>{}},
       };
 
-  group('the dashboard reads GET /orders/summary', () {
-    test('the whole payload round-trips', () {
-      final summary = OrderSummary.fromJson(orderSummaryJson);
-
-      expect(summary.open, 1);
-      expect(summary.completed, 0);
-      expect(summary.cancelled, 0);
-      expect(summary.from, DateTime.parse('2026-07-06T03:31:32.663583553Z'));
-      // Empty until a sale completes, so a dashboard must not read totals.first.
-      expect(summary.totals, isEmpty);
-      // A local date, not an instant: a bucket is a day in the requested zone.
-      expect(summary.daily.single.date, '2026-08-05');
-      expect(summary.daily.single.placed, 1);
-    });
-
-    test('totals are per currency, never summed', () {
-      // The contract's own shape — the seeded data has no completed sale to copy.
-      final summary = OrderSummary.fromJson({
-        ...orderSummaryJson,
-        'completed': 2,
-        'totals': [
-          {'currency': 'VND', 'amount': 1250000},
-          {'currency': 'USD', 'amount': 4200},
-        ],
-      });
-
-      expect(summary.totals.map((t) => t.currency), ['VND', 'USD']);
-      expect(summary.totals.map((t) => t.amount), [1250000, 4200]);
-    });
-
-    test('role and the device zone always go with it', () async {
-      final backend = RecordingBackend(pages());
-
-      await backend.seller.salesSummary(tz: 'Asia/Ho_Chi_Minh');
-
-      expect(backend.paths.single, 'orders/summary');
-      expect(backend.only.queryParameters['role'], 'seller');
-      // UTC buckets would put a Vietnamese seller's evening sales on the next day.
-      expect(backend.only.queryParameters['tz'], 'Asia/Ho_Chi_Minh');
-      // Absent bounds mean the last 30 days; sending nulls is not the same request.
-      expect(backend.only.queryParameters.containsKey('from'), isFalse);
-    });
-
-    test('a window is sent as the two bounds it is', () async {
-      final backend = RecordingBackend(pages());
-
-      await backend.seller.salesSummary(
-        tz: 'Asia/Ho_Chi_Minh',
-        from: DateTime.utc(2026, 7, 1),
-        to: DateTime.utc(2026, 8, 1),
-      );
-
-      expect(backend.only.queryParameters['from'], DateTime.utc(2026, 7, 1));
-      expect(backend.only.queryParameters['to'], DateTime.utc(2026, 8, 1));
-    });
-
+  /// `GET /orders/summary` không còn ai đọc: bảng số liệu người bán đã bị xoá,
+  /// vì nó cần sáu request thành công mới vẽ nổi tám con số và một biểu đồ doanh
+  /// thu 90 ngày không phải câu hỏi của ai ở C2C. Còn lại đúng con số vẫn có
+  /// người hỏi: có bao nhiêu tin ở mỗi trạng thái, dùng cho màn "Tin của tôi".
+  group('đếm tin đăng theo trạng thái', () {
     test('the listing counts are one total_count read per status', () async {
       final backend = RecordingBackend(pages(listingTotal: 200));
 

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FaqItem {
 
- String get id; String get question; String get answer; String get category;
+ String get id; String get question; String get answer;
 /// Create a copy of FaqItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FaqItemCopyWith<FaqItem> get copyWith => _$FaqItemCopyWithImpl<FaqItem>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FaqItem&&(identical(other.id, id) || other.id == id)&&(identical(other.question, question) || other.question == question)&&(identical(other.answer, answer) || other.answer == answer)&&(identical(other.category, category) || other.category == category));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FaqItem&&(identical(other.id, id) || other.id == id)&&(identical(other.question, question) || other.question == question)&&(identical(other.answer, answer) || other.answer == answer));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,question,answer,category);
+int get hashCode => Object.hash(runtimeType,id,question,answer);
 
 @override
 String toString() {
-  return 'FaqItem(id: $id, question: $question, answer: $answer, category: $category)';
+  return 'FaqItem(id: $id, question: $question, answer: $answer)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $FaqItemCopyWith<$Res>  {
   factory $FaqItemCopyWith(FaqItem value, $Res Function(FaqItem) _then) = _$FaqItemCopyWithImpl;
 @useResult
 $Res call({
- String id, String question, String answer, String category
+ String id, String question, String answer
 });
 
 
@@ -65,12 +65,11 @@ class _$FaqItemCopyWithImpl<$Res>
 
 /// Create a copy of FaqItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? question = null,Object? answer = null,Object? category = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? question = null,Object? answer = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,question: null == question ? _self.question : question // ignore: cast_nullable_to_non_nullable
 as String,answer: null == answer ? _self.answer : answer // ignore: cast_nullable_to_non_nullable
-as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -156,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String question,  String answer,  String category)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String question,  String answer)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FaqItem() when $default != null:
-return $default(_that.id,_that.question,_that.answer,_that.category);case _:
+return $default(_that.id,_that.question,_that.answer);case _:
   return orElse();
 
 }
@@ -177,10 +176,10 @@ return $default(_that.id,_that.question,_that.answer,_that.category);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String question,  String answer,  String category)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String question,  String answer)  $default,) {final _that = this;
 switch (_that) {
 case _FaqItem():
-return $default(_that.id,_that.question,_that.answer,_that.category);case _:
+return $default(_that.id,_that.question,_that.answer);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +196,10 @@ return $default(_that.id,_that.question,_that.answer,_that.category);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String question,  String answer,  String category)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String question,  String answer)?  $default,) {final _that = this;
 switch (_that) {
 case _FaqItem() when $default != null:
-return $default(_that.id,_that.question,_that.answer,_that.category);case _:
+return $default(_that.id,_that.question,_that.answer);case _:
   return null;
 
 }
@@ -212,13 +211,12 @@ return $default(_that.id,_that.question,_that.answer,_that.category);case _:
 @JsonSerializable()
 
 class _FaqItem implements FaqItem {
-  const _FaqItem({required this.id, required this.question, required this.answer, required this.category});
+  const _FaqItem({required this.id, required this.question, required this.answer});
   factory _FaqItem.fromJson(Map<String, dynamic> json) => _$FaqItemFromJson(json);
 
 @override final  String id;
 @override final  String question;
 @override final  String answer;
-@override final  String category;
 
 /// Create a copy of FaqItem
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FaqItem&&(identical(other.id, id) || other.id == id)&&(identical(other.question, question) || other.question == question)&&(identical(other.answer, answer) || other.answer == answer)&&(identical(other.category, category) || other.category == category));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FaqItem&&(identical(other.id, id) || other.id == id)&&(identical(other.question, question) || other.question == question)&&(identical(other.answer, answer) || other.answer == answer));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,question,answer,category);
+int get hashCode => Object.hash(runtimeType,id,question,answer);
 
 @override
 String toString() {
-  return 'FaqItem(id: $id, question: $question, answer: $answer, category: $category)';
+  return 'FaqItem(id: $id, question: $question, answer: $answer)';
 }
 
 
@@ -253,7 +251,7 @@ abstract mixin class _$FaqItemCopyWith<$Res> implements $FaqItemCopyWith<$Res> {
   factory _$FaqItemCopyWith(_FaqItem value, $Res Function(_FaqItem) _then) = __$FaqItemCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String question, String answer, String category
+ String id, String question, String answer
 });
 
 
@@ -270,12 +268,11 @@ class __$FaqItemCopyWithImpl<$Res>
 
 /// Create a copy of FaqItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? question = null,Object? answer = null,Object? category = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? question = null,Object? answer = null,}) {
   return _then(_FaqItem(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,question: null == question ? _self.question : question // ignore: cast_nullable_to_non_nullable
 as String,answer: null == answer ? _self.answer : answer // ignore: cast_nullable_to_non_nullable
-as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

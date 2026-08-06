@@ -123,17 +123,6 @@ const orderJson = <String, dynamic>{
 /// `GET /orders/summary?role=seller&tz=Asia/Ho_Chi_Minh` as `bob_store` — the one
 /// seeded shop with a sale. `totals` is empty because that sale has not completed:
 /// the goods are only counted once the escrow is released.
-const orderSummaryJson = <String, dynamic>{
-  'from': '2026-07-06T03:31:32.663583553Z',
-  'to': '2026-08-05T03:31:32.663583553Z',
-  'open': 1,
-  'completed': 0,
-  'cancelled': 0,
-  'totals': <Map<String, dynamic>>[],
-  'daily': [
-    {'date': '2026-08-05', 'placed': 1, 'completed': 0},
-  ],
-};
 
 const notificationJson = <String, dynamic>{
   'category': 'order',

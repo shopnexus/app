@@ -16,15 +16,7 @@ class HelpCenterScreen extends ConsumerStatefulWidget {
 }
 
 class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
-  final TextEditingController _searchController = TextEditingController();
   bool _showAllTickets = false;
-  bool _isSearching = false;
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 
   Widget _buildStatusChip(TicketStatus status, bool isDarkMode) {
     final label = ticketStatusLabel(status);
@@ -112,23 +104,9 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
             ),
           ),
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(
-                _isSearching ? Icons.close_rounded : Icons.search_rounded,
-                color: theme.colorScheme.onSurface,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isSearching = !_isSearching;
-                  if (!_isSearching) {
-                    _searchController.clear();
-                    notifier.setSearchQuery('');
-                  }
-                });
-              },
-            ),
-          ],
+          // Không còn ô tìm kiếm: nó lọc tám câu hỏi viết cứng trong app và một
+          // danh sách yêu cầu mà người dùng thường có 0–2 cái. Tám dòng accordion
+          // đọc hết nhanh hơn là nghĩ ra từ khóa để gõ.
         ),
         body: helpState.isLoading
             ? Center(
@@ -145,54 +123,6 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Search Field
-                      if (_isSearching) ...[
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: cardBgColor,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: cardBorderColor),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(
-                                  alpha: isDarkMode ? 0.2 : 0.04,
-                                ),
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _searchController,
-                            autofocus: true,
-                            onChanged: (val) => notifier.setSearchQuery(val),
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 14,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                            decoration: InputDecoration(
-                              hintText:
-                                  'Tìm kiếm câu hỏi, vấn đề, mã Ticket...',
-                              hintStyle: TextStyle(
-                                color: theme.colorScheme.onSurfaceVariant,
-                                fontSize: 14,
-                              ),
-                              prefixIcon: Icon(
-                                Icons.search_rounded,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-
                       const SizedBox(height: 8),
 
                       // OVERVIEW STATS SECTION
@@ -387,7 +317,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      if (helpState.filteredTickets.isEmpty) ...[
+                      if (helpState.tickets.isEmpty) ...[
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(24),
@@ -421,14 +351,14 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: _showAllTickets
-                              ? helpState.filteredTickets.length
-                              : (helpState.filteredTickets.length > 2
+                              ? helpState.tickets.length
+                              : (helpState.tickets.length > 2
                                     ? 2
-                                    : helpState.filteredTickets.length),
+                                    : helpState.tickets.length),
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 10),
                           itemBuilder: (context, index) {
-                            final ticket = helpState.filteredTickets[index];
+                            final ticket = helpState.tickets[index];
                             return _buildTicketCard(
                               context,
                               ticket,
@@ -436,7 +366,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                             );
                           },
                         ),
-                        if (helpState.filteredTickets.length > 2) ...[
+                        if (helpState.tickets.length > 2) ...[
                           const SizedBox(height: 8),
                           GestureDetector(
                             onTap: () {
@@ -451,7 +381,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                                   Text(
                                     _showAllTickets
                                         ? 'Thu gọn danh sách'
-                                        : 'Xem tất cả Ticket (${helpState.filteredTickets.length})',
+                                        : 'Xem tất cả Ticket (${helpState.tickets.length})',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 13,
@@ -487,7 +417,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      if (helpState.filteredFaqs.isEmpty) ...[
+                      if (helpState.faqs.isEmpty) ...[
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(24),
@@ -537,11 +467,11 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
                             child: ListView.separated(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: helpState.filteredFaqs.length,
+                              itemCount: helpState.faqs.length,
                               separatorBuilder: (context, index) =>
                                   Divider(height: 1, color: dividerColor),
                               itemBuilder: (context, index) {
-                                final faq = helpState.filteredFaqs[index];
+                                final faq = helpState.faqs[index];
                                 return Theme(
                                   data: theme.copyWith(
                                     dividerColor: Colors.transparent,

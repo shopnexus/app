@@ -12,7 +12,6 @@ abstract class FaqItem with _$FaqItem {
     required String id,
     required String question,
     required String answer,
-    required String category,
   }) = _FaqItem;
 
   factory FaqItem.fromJson(Map<String, dynamic> json) =>

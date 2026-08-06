@@ -1223,7 +1223,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
               return Column(
                 children: [
-                  _buildRatingBreakdown(detail, reviews, accentStarColor),
+                  _buildRatingLine(detail, accentStarColor),
                   const SizedBox(height: 16.0),
                   ListView.separated(
                     shrinkWrap: true,
@@ -1278,119 +1278,39 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
-  /// Thanh phân phối sao chỉ tính trên các đánh giá đã tải — nhãn nói rõ như vậy.
-  Widget _buildRatingBreakdown(
-    ListingDetail detail,
-    List<Review> loaded,
-    Color accentStarColor,
-  ) {
+  /// Một dòng, không phải histogram năm sao.
+  ///
+  /// Form đăng bán mặc định số lượng là 1, nên một tin hàng cũ độc bản thường có
+  /// 0–1 đánh giá: cái biểu đồ phân phối trước đây vẽ "100% năm sao" trên đúng một
+  /// điểm dữ liệu, và nó chỉ tính trên trang đánh giá *đã tải* nên con số còn đổi
+  /// khi người đọc bấm xem thêm. Điểm trung bình và số lượt là hai con số server
+  /// tính trên toàn bộ, và là tất cả những gì một dòng cần nói.
+  Widget _buildRatingLine(ListingDetail detail, Color accentStarColor) {
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
 
-    return Container(
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: isDarkMode
-            ? theme.colorScheme.surfaceContainerHighest
-            : const Color(0xFFF9F9F7),
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Row(
-        children: [
-          Column(
-            children: [
-              Text(
-                detail.rating.toStringAsFixed(1),
-                style: TextStyle(
-                  fontFamily: 'Manrope',
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: accentStarColor,
-                ),
-              ),
-              Row(
-                children: List.generate(5, (index) {
-                  return Icon(
-                    index < detail.rating.floor()
-                        ? Icons.star_rounded
-                        : Icons.star_border_rounded,
-                    color: accentStarColor,
-                    size: 14,
-                  );
-                }),
-              ),
-              const SizedBox(height: 4.0),
-              Text(
-                '${detail.reviewCount} đánh giá',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 11,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
+    return Row(
+      children: [
+        Icon(Icons.star_rounded, size: 18, color: accentStarColor),
+        const SizedBox(width: 6),
+        Text(
+          detail.rating.toStringAsFixed(1),
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onSurface,
           ),
-          const SizedBox(width: 24.0),
-          Expanded(
-            child: Column(
-              children: List.generate(5, (starIdx) {
-                final int starVal = 5 - starIdx;
-                final int count = loaded
-                    .where((r) => r.rating == starVal)
-                    .length;
-                final double pct = loaded.isEmpty ? 0 : count / loaded.length;
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 1.0),
-                  child: Row(
-                    children: [
-                      Text(
-                        '$starVal',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(width: 4.0),
-                      Icon(
-                        Icons.star_rounded,
-                        size: 10,
-                        color: accentStarColor,
-                      ),
-                      const SizedBox(width: 6.0),
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(999),
-                          child: LinearProgressIndicator(
-                            value: pct,
-                            backgroundColor: isDarkMode
-                                ? AppColors.darkSurface
-                                : const Color(0xFFEEEEEB),
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              accentStarColor,
-                            ),
-                            minHeight: 4,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      Text(
-                        '${(pct * 100).round()}%',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          '· ${detail.reviewCount} đánh giá',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

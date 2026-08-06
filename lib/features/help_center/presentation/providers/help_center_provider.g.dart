@@ -42,7 +42,7 @@ final class HelpCenterNotifierProvider
 }
 
 String _$helpCenterNotifierHash() =>
-    r'5ca84838fe40ed40491dcc90df5a9f97ca812f84';
+    r'ac8b312bf80c38bf9a7afcd289f27b55a69a42c1';
 
 abstract class _$HelpCenterNotifier extends $Notifier<HelpCenterState> {
   HelpCenterState build();
