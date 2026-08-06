@@ -8,7 +8,6 @@ import 'package:shopnexus_flutter_app/api/generated/model/admin_refunds_id_verdi
 import 'package:shopnexus_flutter_app/api/generated/model/create_refund_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/reject_refund_request.dart';
 
 part 'refund_repository.g.dart';
 
@@ -89,14 +88,6 @@ class RefundRepository {
   Future<Refund> accept(String id) =>
       _unwrap(_api.refundsIdAcceptancePost(id: id));
 
-  Future<Refund> reject(String id, String reason) {
-    return _unwrap(
-      _api.refundsIdRejectionPost(
-        id: id,
-        rejectRefundRequest: RejectRefundRequest(reason: reason),
-      ),
-    );
-  }
 
   /// The buyer's evidence, topped up until the case closes.
   Future<Refund> addAttachments(String id, List<String> resourceIds) {

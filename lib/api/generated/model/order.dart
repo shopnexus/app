@@ -32,9 +32,15 @@ class Order {
 
     this.completedAt,
 
+    this.confirmationDeadlineAt,
+
+    this.confirmedAt,
+
     required this.createdAt,
 
     required this.currency,
+
+    this.declineReason,
 
     this.draftId,
 
@@ -76,12 +82,28 @@ class Order {
   @JsonKey(name: r'completed_at', required: false, includeIfNull: false)
   final DateTime? completedAt;
 
+  /// `created_at` + 48h, computed rather than stored. Staff are asked to chase the seller past this point; the sale is not voided, because neither the money nor the goods are the platform's to dispose of. Null once the seller has accepted.
+  @JsonKey(
+    name: r'confirmation_deadline_at',
+    required: false,
+    includeIfNull: false,
+  )
+  final DateTime? confirmationDeadlineAt;
+
+  /// When the seller accepted the sale. Null means the parcel has not been booked and will not be — a buyer reading this knows what they are waiting on.
+  @JsonKey(name: r'confirmed_at', required: false, includeIfNull: false)
+  final DateTime? confirmedAt;
+
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
   /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one.
   @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
+
+  /// Why the seller refused, set only on an order they refused outright. A refusal is a cancellation that says who ended the sale, where `cancelled_at` alone says only that it did not happen.
+  @JsonKey(name: r'decline_reason', required: false, includeIfNull: false)
+  final String? declineReason;
 
   /// The checkout this came from. Exactly one of `draft_id` and `offer_id` is set: a fixed-price sale is checked out from a draft, a negotiated one from the offer both sides accepted.
   @JsonKey(name: r'draft_id', required: false, includeIfNull: false)
@@ -139,8 +161,11 @@ class Order {
           other.buyer == buyer &&
           other.cancelledAt == cancelledAt &&
           other.completedAt == completedAt &&
+          other.confirmationDeadlineAt == confirmationDeadlineAt &&
+          other.confirmedAt == confirmedAt &&
           other.createdAt == createdAt &&
           other.currency == currency &&
+          other.declineReason == declineReason &&
           other.draftId == draftId &&
           other.id == id &&
           other.items == items &&
@@ -161,8 +186,11 @@ class Order {
       buyer.hashCode +
       (cancelledAt == null ? 0 : cancelledAt.hashCode) +
       (completedAt == null ? 0 : completedAt.hashCode) +
+      (confirmationDeadlineAt == null ? 0 : confirmationDeadlineAt.hashCode) +
+      (confirmedAt == null ? 0 : confirmedAt.hashCode) +
       createdAt.hashCode +
       currency.hashCode +
+      (declineReason == null ? 0 : declineReason.hashCode) +
       (draftId == null ? 0 : draftId.hashCode) +
       id.hashCode +
       items.hashCode +

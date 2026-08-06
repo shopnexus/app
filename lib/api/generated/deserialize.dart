@@ -65,6 +65,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/create_variant_request
 import 'package:shopnexus_flutter_app/api/generated/model/create_web_socket_ticket201_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_withdrawal_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/cursor_meta.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/decline_order_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/deleted_message_ref.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/device.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/device_list.dart';
@@ -152,7 +153,6 @@ import 'package:shopnexus_flutter_app/api/generated/model/refund_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_verdict_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/register_device_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/register_request.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/reject_refund_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reputation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/resolve_ticket_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
@@ -468,6 +468,9 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'CursorMeta':
       return CursorMeta.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'DeclineOrderRequest':
+      return DeclineOrderRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'DeletedMessageRef':
       return DeletedMessageRef.fromJson(value as Map<String, dynamic>)
           as ReturnType;
@@ -740,9 +743,6 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'RegisterRequest':
       return RegisterRequest.fromJson(value as Map<String, dynamic>)
-          as ReturnType;
-    case 'RejectRefundRequest':
-      return RejectRefundRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;
     case 'Reputation':
       return Reputation.fromJson(value as Map<String, dynamic>) as ReturnType;

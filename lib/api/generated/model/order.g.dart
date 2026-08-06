@@ -42,11 +42,20 @@ Order _$OrderFromJson(Map<String, dynamic> json) => $checkedCreate(
         'completed_at',
         (v) => v == null ? null : DateTime.parse(v as String),
       ),
+      confirmationDeadlineAt: $checkedConvert(
+        'confirmation_deadline_at',
+        (v) => v == null ? null : DateTime.parse(v as String),
+      ),
+      confirmedAt: $checkedConvert(
+        'confirmed_at',
+        (v) => v == null ? null : DateTime.parse(v as String),
+      ),
       createdAt: $checkedConvert(
         'created_at',
         (v) => DateTime.parse(v as String),
       ),
       currency: $checkedConvert('currency', (v) => v as String),
+      declineReason: $checkedConvert('decline_reason', (v) => v as String?),
       draftId: $checkedConvert('draft_id', (v) => v as String?),
       id: $checkedConvert('id', (v) => v as String),
       items: $checkedConvert(
@@ -97,7 +106,10 @@ Order _$OrderFromJson(Map<String, dynamic> json) => $checkedCreate(
   fieldKeyMap: const {
     'cancelledAt': 'cancelled_at',
     'completedAt': 'completed_at',
+    'confirmationDeadlineAt': 'confirmation_deadline_at',
+    'confirmedAt': 'confirmed_at',
     'createdAt': 'created_at',
+    'declineReason': 'decline_reason',
     'draftId': 'draft_id',
     'offerId': 'offer_id',
     'payoutDeadlineAt': 'payout_deadline_at',
@@ -113,8 +125,12 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'buyer': instance.buyer.toJson(),
   'cancelled_at': ?instance.cancelledAt?.toIso8601String(),
   'completed_at': ?instance.completedAt?.toIso8601String(),
+  'confirmation_deadline_at': ?instance.confirmationDeadlineAt
+      ?.toIso8601String(),
+  'confirmed_at': ?instance.confirmedAt?.toIso8601String(),
   'created_at': instance.createdAt.toIso8601String(),
   'currency': instance.currency,
+  'decline_reason': ?instance.declineReason,
   'draft_id': ?instance.draftId,
   'id': instance.id,
   'items': ?instance.items?.map((e) => e.toJson()).toList(),
@@ -133,6 +149,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
 };
 
 const _$OrderStateEnumMap = {
+  OrderState.awaitingConfirmation: 'awaiting-confirmation',
   OrderState.open: 'open',
   OrderState.completed: 'completed',
   OrderState.cancelled: 'cancelled',

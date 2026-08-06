@@ -19,7 +19,6 @@ class ActionInbox {
   const ActionInbox({
     this.ordersToShip = 0,
     this.refundsAsSeller = 0,
-    this.refundsAsBuyer = 0,
     this.unreadMessages = 0,
   });
 
@@ -27,23 +26,19 @@ class ActionInbox {
   final int ordersToShip;
 
   /// Yêu cầu hoàn tiền đang chờ chính mình duyệt, ở vai người bán.
+  ///
+  /// Không có dòng tương ứng cho vai người mua: người bán không được phép từ chối
+  /// hoàn tiền, nên người mua không bao giờ phải phản hồi lại một vụ họ đã mở —
+  /// im lặng của người bán sẽ tự chuyển vụ đó sang cho ShopNexus xử lý.
   final int refundsAsSeller;
-
-  /// Yêu cầu hoàn tiền đang chờ chính mình phản hồi, ở vai người mua.
-  final int refundsAsBuyer;
 
   final int unreadMessages;
 
   bool get isEmpty => total == 0;
 
-  int get total =>
-      ordersToShip + refundsAsSeller + refundsAsBuyer + unreadMessages;
+  int get total => ordersToShip + refundsAsSeller + unreadMessages;
 
   /// Chỉ những loại thật sự có việc. Một mục với số 0 không được chiếm chỗ.
-  ///
-  /// Hai vai hoàn tiền là hai dòng riêng chứ không gộp: `RefundListScreen` mở ra
-  /// một trong hai tab, và một dòng gộp buộc phải chọn bừa một tab — nửa số
-  /// người chạm vào sẽ rơi vào tab rỗng.
   List<ActionInboxEntry> get entries => [
     if (ordersToShip > 0)
       ActionInboxEntry(
@@ -56,12 +51,6 @@ class ActionInbox {
         label: 'yêu cầu hoàn tiền chờ bạn duyệt',
         count: refundsAsSeller,
         route: '/account/refunds?role=seller',
-      ),
-    if (refundsAsBuyer > 0)
-      ActionInboxEntry(
-        label: 'yêu cầu hoàn tiền chờ bạn phản hồi',
-        count: refundsAsBuyer,
-        route: '/account/refunds?role=buyer',
       ),
     if (unreadMessages > 0)
       ActionInboxEntry(

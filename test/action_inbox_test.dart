@@ -31,15 +31,14 @@ void main() {
       expect(inbox.entries.map((e) => e.count), [2, 3]);
     });
 
-    test('total cộng cả bốn loại', () {
+    test('total cộng cả ba loại', () {
       const inbox = ActionInbox(
         ordersToShip: 2,
         refundsAsSeller: 3,
-        refundsAsBuyer: 4,
         unreadMessages: 5,
       );
 
-      expect(inbox.total, 14);
+      expect(inbox.total, 10);
     });
   });
 
@@ -48,29 +47,25 @@ void main() {
       const inbox = ActionInbox(
         ordersToShip: 1,
         refundsAsSeller: 1,
-        refundsAsBuyer: 1,
         unreadMessages: 1,
       );
 
       expect(inbox.entries.map((e) => e.route), [
         '/seller/orders',
         '/account/refunds?role=seller',
-        '/account/refunds?role=buyer',
         '/chat',
       ]);
     });
 
-    /// Hai vai hoàn tiền phải là hai dòng riêng mang hai route riêng.
-    /// `RefundListScreen` mở đúng một trong hai tab, nên một dòng gộp buộc phải
-    /// chọn bừa — và người bán có việc chờ duyệt sẽ rơi vào tab "Tôi mua" rỗng.
-    test('hai vai hoàn tiền không bao giờ trỏ cùng một chỗ', () {
-      const inbox = ActionInbox(refundsAsSeller: 2, refundsAsBuyer: 3);
+    /// Chỉ còn một vai hoàn tiền có việc: người bán không được từ chối hoàn tiền,
+    /// nên người mua không bao giờ phải phản hồi lại vụ họ đã mở — im lặng của
+    /// người bán tự đẩy vụ đó sang ShopNexus.
+    test('hoàn tiền chỉ còn dòng của người bán, và nó mở đúng tab', () {
+      const inbox = ActionInbox(refundsAsSeller: 2);
 
       final routes = inbox.entries.map((e) => e.route).toList();
 
-      expect(routes, hasLength(2));
-      expect(routes.toSet(), hasLength(2));
-      expect(routes.every((r) => r.contains('role=')), isTrue);
+      expect(routes, ['/account/refunds?role=seller']);
     });
 
     test('chỉ vai có việc mới xuất hiện', () {

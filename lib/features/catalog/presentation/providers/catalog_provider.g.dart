@@ -252,7 +252,7 @@ final class ProductDetailProvider
   }
 }
 
-String _$productDetailHash() => r'c88476f89efd351d22756ef8de45dad8051135c7';
+String _$productDetailHash() => r'3294526819909b4400afac89936d07159019638e';
 
 final class ProductDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ListingDetail>, String> {

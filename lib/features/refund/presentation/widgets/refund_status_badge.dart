@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
 
-/// Every live status names the party the case is waiting on, and each of those
-/// carries a deadline that party can miss. The three terminals are what closed it.
+/// Every live status names the party the case is waiting on, and each of those carries a deadline
+/// that party can miss. There is no "waiting on the buyer" any more: a seller cannot refuse a
+/// refund, so the buyer is never asked to chase a case they already opened.
 String refundStatusLabel(RefundStatus status) => switch (status) {
   RefundStatus.awaitingSellerReview => 'Chờ người bán phản hồi',
-  RefundStatus.awaitingBuyerAction => 'Chờ bạn phản hồi',
   RefundStatus.disputed => 'Đang chờ ShopNexus xử lý',
   RefundStatus.returning => 'Đang trả hàng',
   RefundStatus.returned => 'Người bán đang kiểm tra hàng trả',

@@ -41,7 +41,6 @@ Refund _$RefundFromJson(Map<String, dynamic> json) => $checkedCreate(
       id: $checkedConvert('id', (v) => v as String),
       orderId: $checkedConvert('order_id', (v) => v as String),
       reason: $checkedConvert('reason', (v) => v as String),
-      rejectionReason: $checkedConvert('rejection_reason', (v) => v as String?),
       returnedAt: $checkedConvert(
         'returned_at',
         (v) => v == null ? null : DateTime.parse(v as String),
@@ -62,7 +61,6 @@ Refund _$RefundFromJson(Map<String, dynamic> json) => $checkedCreate(
     'createdAt': 'created_at',
     'deadlineAt': 'deadline_at',
     'orderId': 'order_id',
-    'rejectionReason': 'rejection_reason',
     'returnedAt': 'returned_at',
     'sellerDecidedAt': 'seller_decided_at',
   },
@@ -76,7 +74,6 @@ Map<String, dynamic> _$RefundToJson(Refund instance) => <String, dynamic>{
   'id': instance.id,
   'order_id': instance.orderId,
   'reason': instance.reason,
-  'rejection_reason': ?instance.rejectionReason,
   'returned_at': ?instance.returnedAt?.toIso8601String(),
   'seller_decided_at': ?instance.sellerDecidedAt?.toIso8601String(),
   'status': _$RefundStatusEnumMap[instance.status]!,
@@ -84,7 +81,6 @@ Map<String, dynamic> _$RefundToJson(Refund instance) => <String, dynamic>{
 
 const _$RefundStatusEnumMap = {
   RefundStatus.awaitingSellerReview: 'awaiting-seller-review',
-  RefundStatus.awaitingBuyerAction: 'awaiting-buyer-action',
   RefundStatus.disputed: 'disputed',
   RefundStatus.returning: 'returning',
   RefundStatus.returned: 'returned',

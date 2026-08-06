@@ -27,12 +27,16 @@ class MainLayout extends StatelessWidget {
         context.go('/search');
         break;
       case 2:
-        // The seller's home, not straight to "post a listing". This tab already
-        // *highlights* for any `/seller` route, but nothing navigated to the
-        // dashboard itself, so the screen holding the order and product
-        // management was reachable from nowhere. `go`, like every other tab:
-        // a tab is a destination, not something pushed on top of one.
-        context.go('/seller');
+        // The one place in the app that starts a listing, which is what a "+"
+        // between the tabs promises. Sending it to the seller dashboard instead
+        // made the plus open a wall of figures, and the posting form reachable
+        // only from inside the seller area — the dashboard has its own door on
+        // the account screen, and the two are not the same destination.
+        //
+        // `push`, unlike the tabs: the form closes itself with `context.pop()`
+        // once the listing is saved, which needs the screen the seller came
+        // from still underneath it.
+        context.push('/seller/new-listing');
         break;
       case 3:
         context.go('/chat');

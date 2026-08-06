@@ -87,6 +87,7 @@ export 'package:shopnexus_flutter_app/api/generated/model/create_variant_request
 export 'package:shopnexus_flutter_app/api/generated/model/create_web_socket_ticket201_response.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/create_withdrawal_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/cursor_meta.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/decline_order_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/deleted_message_ref.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/device.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/device_list.dart';
@@ -191,7 +192,6 @@ export 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/refund_verdict_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/register_device_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/register_request.dart';
-export 'package:shopnexus_flutter_app/api/generated/model/reject_refund_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/reputation.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/reputation_role.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/resolve_ticket_request.dart';

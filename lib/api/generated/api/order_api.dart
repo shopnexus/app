@@ -23,6 +23,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/create_draft_request.d
 import 'package:shopnexus_flutter_app/api/generated/model/create_offer_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_refund_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/decline_order_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/draft_order_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/drafts_id_checkout_post201_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/drafts_post201_response.dart';
@@ -39,7 +40,6 @@ import 'package:shopnexus_flutter_app/api/generated/model/orders_id_transport_ge
 import 'package:shopnexus_flutter_app/api/generated/model/orders_summary_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/reject_refund_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint_request.dart';
@@ -1719,6 +1719,187 @@ class OrderApi {
     );
   }
 
+  /// Accept a paid order (seller)
+  /// The seller agreeing to the sale, and the only thing that hands the parcel to the carrier. Everything before it — the order row, the escrow, the frozen carrier and fee — is the buyer&#39;s side of the transaction and obliges the seller to post nothing. Not re-runnable: a second confirmation would book a second parcel for one sale.
+  ///
+  /// Parameters:
+  /// * [id]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [OrdersIdGet200Response] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<OrdersIdGet200Response>> ordersIdConfirmationPost({
+    required String id,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/orders/{id}/confirmation'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    OrdersIdGet200Response? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OrdersIdGet200Response, OrdersIdGet200Response>(
+              rawData,
+              'OrdersIdGet200Response',
+              growable: true,
+            );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<OrdersIdGet200Response>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Refuse a paid order (seller)
+  /// Out of stock, mispriced, whatever they say. The escrow goes back in full, delivery included, because the parcel never left. Same destination as letting the confirmation window pass, reached without making the buyer wait out a clock for an answer the seller already has — which is why the reason is required and kept.
+  ///
+  /// Parameters:
+  /// * [id]
+  /// * [declineOrderRequest]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [OrdersIdGet200Response] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<OrdersIdGet200Response>> ordersIdDeclinePost({
+    required String id,
+    required DeclineOrderRequest declineOrderRequest,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/orders/{id}/decline'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      _bodyData = jsonEncode(declineOrderRequest);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    OrdersIdGet200Response? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<OrdersIdGet200Response, OrdersIdGet200Response>(
+              rawData,
+              'OrdersIdGet200Response',
+              growable: true,
+            );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<OrdersIdGet200Response>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// Read an order
   ///
   ///
@@ -2812,105 +2993,6 @@ class OrderApi {
 
     final _response = await _dio.request<Object>(
       _path,
-      options: _options,
-      cancelToken: cancelToken,
-      onSendProgress: onSendProgress,
-      onReceiveProgress: onReceiveProgress,
-    );
-
-    AdminRefundsIdVerdictPost200Response? _responseData;
-
-    try {
-      final rawData = _response.data;
-      _responseData = rawData == null
-          ? null
-          : deserialize<
-              AdminRefundsIdVerdictPost200Response,
-              AdminRefundsIdVerdictPost200Response
-            >(rawData, 'AdminRefundsIdVerdictPost200Response', growable: true);
-    } catch (error, stackTrace) {
-      throw DioException(
-        requestOptions: _response.requestOptions,
-        response: _response,
-        type: DioExceptionType.unknown,
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
-
-    return Response<AdminRefundsIdVerdictPost200Response>(
-      data: _responseData,
-      headers: _response.headers,
-      isRedirect: _response.isRedirect,
-      requestOptions: _response.requestOptions,
-      redirects: _response.redirects,
-      statusCode: _response.statusCode,
-      statusMessage: _response.statusMessage,
-      extra: _response.extra,
-    );
-  }
-
-  /// Reject a refund (seller)
-  /// Refusing costs a reason, and it does not close the case: the next move is the buyer&#39;s, who may escalate to staff until the refund lapses. A seller who simply lets the review window pass ends up in the same place without one.
-  ///
-  /// Parameters:
-  /// * [id]
-  /// * [rejectRefundRequest]
-  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
-  /// * [headers] - Can be used to add additional headers to the request
-  /// * [extras] - Can be used to add flags to the request
-  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
-  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
-  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
-  ///
-  /// Returns a [Future] containing a [Response] with a [AdminRefundsIdVerdictPost200Response] as data
-  /// Throws [DioException] if API call or serialization fails
-  Future<Response<AdminRefundsIdVerdictPost200Response>>
-  refundsIdRejectionPost({
-    required String id,
-    required RejectRefundRequest rejectRefundRequest,
-    CancelToken? cancelToken,
-    Map<String, dynamic>? headers,
-    Map<String, dynamic>? extra,
-    ValidateStatus? validateStatus,
-    ProgressCallback? onSendProgress,
-    ProgressCallback? onReceiveProgress,
-  }) async {
-    final _path = r'/refunds/{id}/rejection'.replaceAll(
-      '{'
-      r'id'
-      '}',
-      id.toString(),
-    );
-    final _options = Options(
-      method: r'POST',
-      headers: <String, dynamic>{...?headers},
-      extra: <String, dynamic>{
-        'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
-        ],
-        ...?extra,
-      },
-      contentType: 'application/json',
-      validateStatus: validateStatus,
-    );
-
-    dynamic _bodyData;
-
-    try {
-      _bodyData = jsonEncode(rejectRefundRequest);
-    } catch (error, stackTrace) {
-      throw DioException(
-        requestOptions: _options.compose(_dio.options, _path),
-        type: DioExceptionType.unknown,
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
-
-    final _response = await _dio.request<Object>(
-      _path,
-      data: _bodyData,
       options: _options,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,

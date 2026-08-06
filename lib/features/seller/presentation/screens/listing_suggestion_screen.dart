@@ -8,12 +8,11 @@ import 'package:shimmer/shimmer.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/create_listing_request.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/create_variant_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/seller/data/models/listing_draft.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/listing_suggestion_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
 
@@ -576,7 +575,7 @@ class _ListingSuggestionScreenState
         ),
         const SizedBox(height: 16),
 
-        _fieldLabel('Thẻ'),
+        _fieldLabel('Thẻ (${_tags.length}/$maxListingTags)'),
         _tagEditor(),
         const SizedBox(height: 16),
 
@@ -751,31 +750,21 @@ class _ListingSuggestionScreenState
         .whereType<String>()
         .toList();
 
-    final request = CreateListingRequest(
+    final request = listingDraftRequest(
       name: name,
-      description: _descriptionController.text.trim().isEmpty
-          ? null
-          : _descriptionController.text.trim(),
+      description: _descriptionController.text.trim(),
       categoryId: _categoryId!,
       condition: _condition!,
       currency: _currency,
       priceMode: _priceMode,
-      attachments: attachments.isEmpty ? null : attachments,
-      tags: _tags.isEmpty ? null : _tags,
-      specifications: _specs.isEmpty
-          ? null
-          : <String, Object>{for (final spec in _specs) spec.key: spec.value},
-      variants: [
-        // One variant: this is a marketplace for used goods, so a listing is
-        // normally the one item in the seller's hands. Price and parcel weight
-        // live on the variant, which is why it exists at all.
-        CreateVariantRequest(
-          price: price,
-          quantity: quantity,
-          attributes: const <String, Object>{},
-          packageDetails: <String, Object>{'weight_g': weight},
-        ),
-      ],
+      price: price,
+      weightG: weight,
+      quantity: quantity,
+      attachments: attachments,
+      tags: _tags,
+      specifications: <String, Object>{
+        for (final spec in _specs) spec.key: spec.value,
+      },
     );
 
     final ok = await notifier.submit(
@@ -888,6 +877,14 @@ class _ListingSuggestionScreenState
   }
 
   Future<void> _addTag() async {
+    // Said before the dialog opens, not after it is filled in: the route counts
+    // the tags and refuses the whole listing over ten, and typing an eleventh
+    // only to lose it at "Đăng bán" is the worst place to learn that.
+    if (_tags.length >= maxListingTags) {
+      _snack('Mỗi tin chỉ gắn được tối đa $maxListingTags thẻ.', error: true);
+      return;
+    }
+
     final controller = TextEditingController();
     final raw = await _promptText(
       title: 'Thêm thẻ',
@@ -895,9 +892,7 @@ class _ListingSuggestionScreenState
       controller: controller,
     );
     controller.dispose();
-    final slug = _slugify(raw ?? '');
-    if (slug.isEmpty || _tags.contains(slug)) return;
-    setState(() => _tags.add(slug));
+    setState(() => _tags = listingTags([..._tags, raw ?? '']));
   }
 
   Future<void> _addSpec() async {
@@ -1026,7 +1021,9 @@ class _ListingSuggestionScreenState
     setState(() {
       _categoryId = suggestion.categoryId;
       _condition = _conditionOf(suggestion.condition);
-      _tags = List<String>.from(suggestion.tags);
+      // The model answers with a list of its own, and a generous one would
+      // otherwise put the seller over the count with nothing they typed.
+      _tags = listingTags(suggestion.tags);
       _specs = (suggestion.specifications ?? const <String, Object>{}).entries
           .map((entry) => MapEntry(entry.key, entry.value.toString()))
           .toList();
@@ -1208,12 +1205,6 @@ class _ListingSuggestionScreenState
         return null;
     }
   }
-
-  String _slugify(String raw) => raw
-      .trim()
-      .toLowerCase()
-      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
-      .replaceAll(RegExp(r'^-+|-+$'), '');
 }
 
 /// Null means "the seller's default pickup address", which is what omitting

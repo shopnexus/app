@@ -32,11 +32,6 @@ class RefundActions extends _$RefundActions {
     _invalidate(id);
   }
 
-  Future<void> reject(String id, String reason) async {
-    await ref.read(refundRepositoryProvider).reject(id, reason);
-    _invalidate(id);
-  }
-
   Future<void> addAttachments(String id, List<String> resourceIds) async {
     await ref.read(refundRepositoryProvider).addAttachments(id, resourceIds);
     _invalidate(id);

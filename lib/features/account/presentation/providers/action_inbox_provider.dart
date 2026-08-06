@@ -30,7 +30,7 @@ Future<int> countOrZero(Future<int> Function() read) async {
 Future<ActionInbox> actionInbox(Ref ref) async {
   final repository = ref.watch(refundRepositoryProvider);
 
-  final (ordersToShip, refundsAsSeller, refundsAsBuyer, unreadMessages) =
+  final (ordersToShip, refundsAsSeller, unreadMessages) =
       await (
         countOrZero(() async {
           final dashboard = await ref.watch(sellerDashboardProvider.future);
@@ -45,13 +45,6 @@ Future<ActionInbox> actionInbox(Ref ref) async {
             status: RefundStatus.awaitingSellerReview,
           ),
         ),
-        countOrZero(
-          () => _countRefunds(
-            repository,
-            role: RefundRole.buyer,
-            status: RefundStatus.awaitingBuyerAction,
-          ),
-        ),
         countOrZero(() async {
           final unread = await ref.watch(chatRepositoryProvider).unreadCount();
           return unread.unread;
@@ -61,7 +54,6 @@ Future<ActionInbox> actionInbox(Ref ref) async {
   return ActionInbox(
     ordersToShip: ordersToShip,
     refundsAsSeller: refundsAsSeller,
-    refundsAsBuyer: refundsAsBuyer,
     unreadMessages: unreadMessages,
   );
 }

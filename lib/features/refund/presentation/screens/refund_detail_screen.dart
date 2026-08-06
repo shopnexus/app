@@ -105,15 +105,6 @@ class _Body extends ConsumerWidget {
         const SizedBox(height: 4),
         Text(refund.reason),
 
-        // Null in `awaiting-buyer-action` when the seller never answered at all,
-        // which is how the two paths into that state are told apart.
-        if (refund.rejectionReason != null) ...[
-          const SizedBox(height: 20),
-          Text('Người bán từ chối vì', style: theme.textTheme.titleSmall),
-          const SizedBox(height: 4),
-          Text(refund.rejectionReason!),
-        ],
-
         if (refund.attachments.isNotEmpty) ...[
           const SizedBox(height: 20),
           Text('Bằng chứng', style: theme.textTheme.titleSmall),

@@ -68,7 +68,6 @@ void main() {
 
       expect(inbox.ordersToShip, 7);
       expect(inbox.refundsAsSeller, 3);
-      expect(inbox.refundsAsBuyer, 1);
       expect(inbox.unreadMessages, 5);
     });
 
@@ -143,10 +142,9 @@ void main() {
         repository.statusAsked[RefundRole.seller],
         RefundStatus.awaitingSellerReview,
       );
-      expect(
-        repository.statusAsked[RefundRole.buyer],
-        RefundStatus.awaitingBuyerAction,
-      );
+      // Không hỏi gì ở vai người mua: người bán không được từ chối hoàn tiền, nên
+      // không có trạng thái nào chờ người mua phản hồi.
+      expect(repository.statusAsked.containsKey(RefundRole.buyer), isFalse);
     });
 
     test('không có việc nào thì hộp rỗng', () async {

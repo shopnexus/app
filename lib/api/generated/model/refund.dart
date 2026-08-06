@@ -34,8 +34,6 @@ class Refund {
 
     required this.reason,
 
-    this.rejectionReason,
-
     this.returnedAt,
 
     this.sellerDecidedAt,
@@ -66,14 +64,11 @@ class Refund {
   @JsonKey(name: r'reason', required: true, includeIfNull: false)
   final String reason;
 
-  /// The seller's grounds for refusing. Null in `awaiting-buyer-action` when the seller never answered at all, which is how the two paths into that state are told apart.
-  @JsonKey(name: r'rejection_reason', required: false, includeIfNull: false)
-  final String? rejectionReason;
-
   /// When the return reached the seller and the inspection window opened.
   @JsonKey(name: r'returned_at', required: false, includeIfNull: false)
   final DateTime? returnedAt;
 
+  /// When the seller answered — by granting the refund, or by handing it to staff. There is no rejection reason beside it: they cannot refuse one.
   @JsonKey(name: r'seller_decided_at', required: false, includeIfNull: false)
   final DateTime? sellerDecidedAt;
 
@@ -91,7 +86,6 @@ class Refund {
           other.id == id &&
           other.orderId == orderId &&
           other.reason == reason &&
-          other.rejectionReason == rejectionReason &&
           other.returnedAt == returnedAt &&
           other.sellerDecidedAt == sellerDecidedAt &&
           other.status == status;
@@ -105,7 +99,6 @@ class Refund {
       id.hashCode +
       orderId.hashCode +
       reason.hashCode +
-      (rejectionReason == null ? 0 : rejectionReason.hashCode) +
       (returnedAt == null ? 0 : returnedAt.hashCode) +
       (sellerDecidedAt == null ? 0 : sellerDecidedAt.hashCode) +
       status.hashCode;
