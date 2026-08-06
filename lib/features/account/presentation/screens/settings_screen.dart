@@ -13,8 +13,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  bool _pushNotificationsEnabled = true;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -76,7 +74,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 border: Border(top: BorderSide(color: borderColor, width: 1)),
               ),
               padding: const EdgeInsets.only(top: 16),
-              child: const AccountCenterSection(),
+              child: Column(
+                children: [
+                  const AccountCenterSection(),
+                  // Ở mục bảo mật, không ở tuỳ chọn ứng dụng: bỏ liên kết Google
+                  // có thể là bỏ cách đăng nhập duy nhất của mình.
+                  _buildSettingRow(
+                    icon: Icons.link_rounded,
+                    label: 'Tài khoản liên kết',
+                    onTap: () => context.push('/account/linked-accounts'),
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 24),
@@ -150,36 +159,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                   ),
 
-                  // Chỉ đổi trong phiên: chưa có nơi lưu preference này, và
-                  // cũng chưa có đăng ký/huỷ đăng ký push tương ứng phía server.
-                  // Bật rồi thoát màn hình là mất.
+                  // Từng là một công tắc "Thông báo đẩy" chỉ đổi trong phiên:
+                  // không có chỗ lưu, không có push, bật rồi thoát là mất. Giờ
+                  // nó dẫn sang thứ thật sự quyết định — cái gì vào Hộp thư.
                   _buildSettingRow(
                     icon: Icons.notifications_none_rounded,
-                    label: 'Thông báo đẩy',
-                    trailingWidget: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _pushNotificationsEnabled ? 'Bật' : 'Tắt',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.chevron_right,
-                          color: theme.colorScheme.onSurfaceVariant,
-                          size: 22,
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _pushNotificationsEnabled = !_pushNotificationsEnabled;
-                      });
-                    },
+                    label: 'Thông báo',
+                    onTap: () => context.push('/account/notification-settings'),
                   ),
                 ],
               ),
