@@ -95,6 +95,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
   /// Exactly `OrderState`. A tab the contract has no filter for would be a tab
   /// that is always empty, which is what the previous five were.
   static const _tabs = {
+    OrderState.awaitingConfirmation: 'Chờ bạn xác nhận',
     OrderState.open: 'Đang xử lý',
     OrderState.completed: 'Hoàn thành',
     OrderState.cancelled: 'Đã hủy',
@@ -401,6 +402,24 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   child: const Text('Chat khách'),
                 ),
               ),
+              if (order.state == OrderState.awaitingConfirmation) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: isActionLoading
+                        ? null
+                        : () => _confirmOrder(context, order.id, notifier),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Xác nhận đơn'),
+                  ),
+                ),
+              ],
               if (order.state == OrderState.open) ...[
                 const SizedBox(width: 8),
                 Expanded(
@@ -422,7 +441,21 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
               ],
             ],
           ),
-          if (canCancel) ...[
+          if (order.state == OrderState.awaitingConfirmation) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: isActionLoading
+                    ? null
+                    : () => _declineOrder(context, order.id, notifier),
+                child: const Text(
+                  'Từ chối đơn',
+                  style: TextStyle(color: Color(0xFFEF4444)),
+                ),
+              ),
+            ),
+          ] else if (canCancel) ...[
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
@@ -489,6 +522,92 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     final ok = await notifier.reportCheckpoint(orderId, picked);
     if (!context.mounted) return;
     _report(context, ok, 'Đã cập nhật vận chuyển');
+  }
+
+  /// Accepting is what hands the parcel to the carrier, so it is confirmed rather than fired off a
+  /// single tap — and the dialog says what happens next, because nothing has shipped until now.
+  Future<void> _confirmOrder(
+    BuildContext context,
+    String orderId,
+    SellerOrdersNotifier notifier,
+  ) async {
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Xác nhận đơn hàng?'),
+        content: const Text(
+          'Đơn sẽ được đặt vận chuyển ngay sau khi bạn xác nhận. '
+          'Hãy chắc là bạn còn hàng.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Để sau'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Xác nhận'),
+          ),
+        ],
+      ),
+    );
+    if (accepted != true) return;
+
+    final ok = await notifier.confirmOrder(orderId);
+    if (!context.mounted) return;
+    _report(context, ok, 'Đã xác nhận đơn, đang đặt vận chuyển');
+  }
+
+  /// Refusing needs a reason and the server refuses an empty one: the buyer gets their money back
+  /// in full, and "đã hủy" with no cause tells them nothing about why.
+  Future<void> _declineOrder(
+    BuildContext context,
+    String orderId,
+    SellerOrdersNotifier notifier,
+  ) async {
+    final controller = TextEditingController();
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Từ chối đơn hàng?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Người mua được hoàn lại toàn bộ, gồm cả phí vận chuyển. '
+              'Cho họ biết vì sao.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              maxLength: 500,
+              decoration: const InputDecoration(
+                hintText: 'Ví dụ: hết hàng',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Không'),
+          ),
+          ElevatedButton(
+            onPressed: () =>
+                Navigator.pop(dialogContext, controller.text.trim()),
+            child: const Text('Từ chối'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (reason == null || reason.isEmpty) return;
+
+    final ok = await notifier.declineOrder(orderId, reason);
+    if (!context.mounted) return;
+    _report(context, ok, 'Đã từ chối đơn và hoàn tiền cho người mua');
   }
 
   Future<void> _confirmCancel(

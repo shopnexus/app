@@ -9,6 +9,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/create_withdrawal_requ
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/decline_order_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
@@ -116,6 +117,20 @@ class SellerRepository {
     final items = page?.data ?? const <OrderItem>[];
     return _lines(items, await _listingsById(items));
   }
+
+  /// The seller accepting a paid sale. Nothing reaches the carrier before this, so it is what
+  /// moves an order out of `awaiting-confirmation`. Not re-runnable: a second confirmation would
+  /// book a second parcel for one sale, which the route answers 409 for.
+  Future<void> confirmOrder(String orderId) =>
+      _orderApi.ordersIdConfirmationPost(id: orderId);
+
+  /// Refusing one. The buyer is refunded in full, delivery included, because the parcel never
+  /// left — so the reason is required and it is kept on the order.
+  Future<void> declineOrder(String orderId, String reason) =>
+      _orderApi.ordersIdDeclinePost(
+        id: orderId,
+        declineOrderRequest: DeclineOrderRequest(reason: reason),
+      );
 
   /// Either party may cancel while the parcel has not left `pending`; after that
   /// the route answers 409 and a refund is the only way back.

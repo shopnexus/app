@@ -69,6 +69,15 @@ class SellerOrdersNotifier extends _$SellerOrdersNotifier {
     TransportCheckpoint checkpoint,
   ) => _act((repository) => repository.reportCheckpoint(orderId, checkpoint));
 
+  /// The seller's two answers to a paid order. Doing neither is not a third option that resolves
+  /// itself: staff are asked to chase it after 48 hours, because the platform will neither void
+  /// the sale nor post the goods on their behalf.
+  Future<bool> confirmOrder(String orderId) =>
+      _act((repository) => repository.confirmOrder(orderId));
+
+  Future<bool> declineOrder(String orderId, String reason) =>
+      _act((repository) => repository.declineOrder(orderId, reason));
+
   /// Only while the parcel has not left `pending`; after that the route answers
   /// 409 and a refund is the way back.
   Future<bool> cancelOrder(String orderId) =>
