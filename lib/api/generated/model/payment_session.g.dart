@@ -37,7 +37,6 @@ PaymentSession _$PaymentSessionFromJson(
         'expired_at',
         (v) => DateTime.parse(v as String),
       ),
-      fromId: $checkedConvert('from_id', (v) => v as String?),
       id: $checkedConvert('id', (v) => v as String),
       kind: $checkedConvert(
         'kind',
@@ -53,7 +52,6 @@ PaymentSession _$PaymentSessionFromJson(
         'status',
         (v) => $enumDecode(_$PaymentSessionStatusEnumMap, v),
       ),
-      toId: $checkedConvert('to_id', (v) => v as String?),
       totalAmount: $checkedConvert('total_amount', (v) => (v as num).toInt()),
     );
     return val;
@@ -61,9 +59,7 @@ PaymentSession _$PaymentSessionFromJson(
   fieldKeyMap: const {
     'createdAt': 'created_at',
     'expiredAt': 'expired_at',
-    'fromId': 'from_id',
     'paidAt': 'paid_at',
-    'toId': 'to_id',
     'totalAmount': 'total_amount',
   },
 );
@@ -73,14 +69,12 @@ Map<String, dynamic> _$PaymentSessionToJson(PaymentSession instance) =>
       'created_at': instance.createdAt.toIso8601String(),
       'currency': instance.currency,
       'expired_at': instance.expiredAt.toIso8601String(),
-      'from_id': ?instance.fromId,
       'id': instance.id,
       'kind': _$PaymentSessionKindEnumMap[instance.kind]!,
       'note': instance.note,
       'outstanding': instance.outstanding,
       'paid_at': instance.paidAt?.toIso8601String(),
       'status': _$PaymentSessionStatusEnumMap[instance.status]!,
-      'to_id': ?instance.toId,
       'total_amount': instance.totalAmount,
     };
 

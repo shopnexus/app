@@ -1056,7 +1056,7 @@ class FinanceApi {
   }
 
   /// Read one wallet&#39;s ledger
-  /// Every balance change with its before/after snapshot, newest first. Ordered by &#x60;seq&#x60;, not by time: two movements can share a timestamp, and a ledger that cannot be totally ordered cannot be replayed or shown to be complete. A gap in &#x60;seq&#x60; means a missing row.  Legs of one logical movement share a &#x60;group_id&#x60; — a checkout is a debit plus an escrow hold plus a fee — which is what makes \&quot;does this add up\&quot; answerable.
+  /// Every balance change with its before/after snapshot, newest first. Ordered by &#x60;seq&#x60;, not by time: two movements can share a timestamp, and a ledger that cannot be totally ordered cannot be replayed or shown to be complete. A gap in &#x60;seq&#x60; means a missing row.  Legs of one logical movement share a &#x60;ref_type&#x60;/&#x60;ref_id&#x60; — a checkout is a debit plus an escrow hold plus a fee, all three against the same payment session — which is what makes \&quot;does this add up\&quot; answerable. An adjustment references nothing, so its legs are grouped only by &#x60;seq&#x60; adjacency.
   ///
   /// Parameters:
   /// * [currency]

@@ -27,8 +27,6 @@ class WalletTransaction {
 
     required this.currency,
 
-    this.groupId,
-
     required this.heldAfter,
 
     required this.heldDelta,
@@ -58,10 +56,6 @@ class WalletTransaction {
   /// ISO 4217. Never inferred from the account's country — one currency spans many countries, and a seller may want a balance in a foreign one.
   @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
-
-  /// Shared by every leg of one logical movement — a checkout is a debit plus an escrow hold plus a fee. An opaque token for grouping rows in a response, not an address: nothing accepts it as input and no endpoint resolves it.
-  @JsonKey(name: r'group_id', required: false, includeIfNull: false)
-  final String? groupId;
 
   // minimum: 0
   @JsonKey(name: r'held_after', required: true, includeIfNull: false)
@@ -98,7 +92,6 @@ class WalletTransaction {
           other.availableDelta == availableDelta &&
           other.createdAt == createdAt &&
           other.currency == currency &&
-          other.groupId == groupId &&
           other.heldAfter == heldAfter &&
           other.heldDelta == heldDelta &&
           other.kind == kind &&
@@ -113,7 +106,6 @@ class WalletTransaction {
       availableDelta.hashCode +
       createdAt.hashCode +
       currency.hashCode +
-      (groupId == null ? 0 : groupId.hashCode) +
       heldAfter.hashCode +
       heldDelta.hashCode +
       kind.hashCode +

@@ -41,7 +41,6 @@ WalletTransaction _$WalletTransactionFromJson(Map<String, dynamic> json) =>
             (v) => DateTime.parse(v as String),
           ),
           currency: $checkedConvert('currency', (v) => v as String),
-          groupId: $checkedConvert('group_id', (v) => v as String?),
           heldAfter: $checkedConvert('held_after', (v) => (v as num).toInt()),
           heldDelta: $checkedConvert('held_delta', (v) => (v as num).toInt()),
           kind: $checkedConvert(
@@ -62,7 +61,6 @@ WalletTransaction _$WalletTransactionFromJson(Map<String, dynamic> json) =>
         'availableAfter': 'available_after',
         'availableDelta': 'available_delta',
         'createdAt': 'created_at',
-        'groupId': 'group_id',
         'heldAfter': 'held_after',
         'heldDelta': 'held_delta',
         'refId': 'ref_id',
@@ -76,7 +74,6 @@ Map<String, dynamic> _$WalletTransactionToJson(WalletTransaction instance) =>
       'available_delta': instance.availableDelta,
       'created_at': instance.createdAt.toIso8601String(),
       'currency': instance.currency,
-      'group_id': ?instance.groupId,
       'held_after': instance.heldAfter,
       'held_delta': instance.heldDelta,
       'kind': _$WalletTransactionKindEnumMap[instance.kind]!,

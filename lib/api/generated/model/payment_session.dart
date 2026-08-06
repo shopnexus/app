@@ -26,8 +26,6 @@ class PaymentSession {
 
     required this.expiredAt,
 
-    this.fromId,
-
     required this.id,
 
     required this.kind,
@@ -39,8 +37,6 @@ class PaymentSession {
     required this.paidAt,
 
     required this.status,
-
-    this.toId,
 
     required this.totalAmount,
   });
@@ -55,10 +51,6 @@ class PaymentSession {
   /// A session still unsettled past this point is voided by a job.
   @JsonKey(name: r'expired_at', required: true, includeIfNull: false)
   final DateTime expiredAt;
-
-  /// The payer. Null means the platform itself.
-  @JsonKey(name: r'from_id', required: false, includeIfNull: false)
-  final String? fromId;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
@@ -80,10 +72,6 @@ class PaymentSession {
   @JsonKey(name: r'status', required: true, includeIfNull: false)
   final PaymentSessionStatus status;
 
-  /// The payee. Null means the platform itself.
-  @JsonKey(name: r'to_id', required: false, includeIfNull: false)
-  final String? toId;
-
   /// Amount owed, smallest unit of `currency`
   // minimum: 0
   @JsonKey(name: r'total_amount', required: true, includeIfNull: false)
@@ -96,14 +84,12 @@ class PaymentSession {
           other.createdAt == createdAt &&
           other.currency == currency &&
           other.expiredAt == expiredAt &&
-          other.fromId == fromId &&
           other.id == id &&
           other.kind == kind &&
           other.note == note &&
           other.outstanding == outstanding &&
           other.paidAt == paidAt &&
           other.status == status &&
-          other.toId == toId &&
           other.totalAmount == totalAmount;
 
   @override
@@ -111,14 +97,12 @@ class PaymentSession {
       createdAt.hashCode +
       currency.hashCode +
       expiredAt.hashCode +
-      (fromId == null ? 0 : fromId.hashCode) +
       id.hashCode +
       kind.hashCode +
       note.hashCode +
       outstanding.hashCode +
       (paidAt == null ? 0 : paidAt.hashCode) +
       status.hashCode +
-      (toId == null ? 0 : toId.hashCode) +
       totalAmount.hashCode;
 
   factory PaymentSession.fromJson(Map<String, dynamic> json) =>
