@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/option_category_name.dart';
+import 'package:shopnexus_flutter_app/core/providers/option_names_provider.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/request_refund_sheet.dart';
@@ -90,7 +92,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 // 5. Shipping info details
-                _buildShippingDetailsCard(context, view),
+                _buildShippingDetailsCard(context, ref, view),
                 const SizedBox(height: 32),
               ],
             ),
@@ -508,7 +510,11 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShippingDetailsCard(BuildContext context, OrderView view) {
+  Widget _buildShippingDetailsCard(
+    BuildContext context,
+    WidgetRef ref,
+    OrderView view,
+  ) {
     final order = view.order;
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -544,8 +550,12 @@ class OrderDetailScreen extends ConsumerWidget {
           Divider(height: 24, color: dividerColor),
           _buildPaymentRow(
             context,
-            'Phương thức',
-            order.transport?.option ?? 'Chưa đặt vận chuyển',
+            'Đơn vị vận chuyển',
+            order.transport == null
+                ? 'Chưa đặt vận chuyển'
+                : ref
+                      .watch(optionNamesProvider(OptionCategoryName.transport))
+                      .nameOf(order.transport!.option),
           ),
           const SizedBox(height: 12),
           _buildPaymentRow(context, 'Trạng thái vận chuyển', view.statusLabel),

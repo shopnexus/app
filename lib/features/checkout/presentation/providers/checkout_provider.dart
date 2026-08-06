@@ -166,18 +166,34 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     }
   }
 
-  /// Fill in each line's listing, which is where its price, name and photo live.
+  /// Fill in the listings the lines arrived without — that is where a line's price,
+  /// name and photo live.
+  ///
+  /// Only the missing ones, and a line never gives one back. Both ways into checkout
+  /// already hand over resolved lines (the cart joined them, "mua ngay" had the
+  /// listing in hand), and this used to re-read all of them and assign the answer
+  /// unconditionally — so one failed read replaced good data with `null` and every
+  /// row on the page became "Đang tải sản phẩm…" at 0₫, for a listing the screen
+  /// was already holding.
   Future<void> _resolveListings() async {
+    final missing = {
+      for (final line in state.lines)
+        if (line.listing == null) line.listingId,
+    };
+    if (missing.isEmpty) return;
+
     try {
       final resolved = await ref
           .read(checkoutRepositoryProvider)
-          .listings(state.listingIds);
+          .listings(missing);
 
       if (!ref.mounted) return;
       state = state.copyWith(
         lines: [
           for (final line in state.lines)
-            line.withListing(resolved[line.listingId]),
+            line.listing != null
+                ? line
+                : line.withListing(resolved[line.listingId]),
         ],
       );
     } catch (e) {

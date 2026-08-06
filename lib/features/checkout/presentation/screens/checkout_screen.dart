@@ -100,23 +100,21 @@ class CheckoutScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Delivery Address Section (Bento Style)
-          _buildAddressBentoCard(context, ref, state),
-          const SizedBox(height: 16),
-
-          // 2. Delivery Speed Section
-          _buildDeliverySpeedCard(context, ref, state),
-          const SizedBox(height: 16),
-
-          // 3. Payment Method Section
-          _buildPaymentMethodCard(context, ref, state),
-          const SizedBox(height: 16),
-
-          // 4. Order Items Section
+          // Cái đang mua đứng trước cách nó tới và cách trả tiền: một trang thanh
+          // toán mở ra ở "địa chỉ" bắt người ta cuộn qua ba thẻ để kiểm lại mình
+          // đang mua gì, mà đó là câu hỏi đầu tiên họ có.
           _buildOrderItemsCard(context, ref, state),
           const SizedBox(height: 16),
 
-          // 5. Order Summary Card
+          _buildAddressBentoCard(context, ref, state),
+          const SizedBox(height: 16),
+
+          _buildDeliverySpeedCard(context, ref, state),
+          const SizedBox(height: 16),
+
+          _buildPaymentMethodCard(context, ref, state),
+          const SizedBox(height: 16),
+
           _buildOrderSummaryCard(context, state),
           const SizedBox(height: 16),
 
@@ -543,7 +541,9 @@ class CheckoutScreen extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Order Items',
+                state.lines.length > 1
+                    ? 'Đang mua ${state.lines.length} món'
+                    : 'Đang mua',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,
@@ -584,18 +584,42 @@ class CheckoutScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          line.name ?? 'Đang tải sản phẩm…',
-                          maxLines: 1,
+                          // Một dòng không đọc được tin đăng thì nói thẳng, không
+                          // treo "Đang tải…" mãi: tin có thể đã bị gỡ, và người
+                          // mua cần biết trước khi trả tiền chứ không sau.
+                          line.name ?? 'Không đọc được tin đăng này',
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.onSurface,
+                            color: line.name == null
+                                ? theme.colorScheme.error
+                                : theme.colorScheme.onSurface,
                           ),
                         ),
+                        // Phiên bản nào, vì hai dòng cùng một tin chỉ khác nhau ở
+                        // đây — "Màu sắc: Xanh dương" là thứ phân biệt chúng.
+                        if (line.attributesLabel != null)
+                          Text(
+                            line.attributesLabel!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                         Text(
-                          'SL: ${line.quantity}',
+                          // Đơn giá × số lượng, không chỉ số lượng: tổng dòng bên
+                          // phải là phép nhân của hai số này, và không hiện đơn giá
+                          // thì người đọc không kiểm được nó.
+                          line.unitPrice == null
+                              ? 'SL: ${line.quantity}'
+                              : '${MoneyUtils.format(line.unitPrice!, currency: line.currency ?? state.currency)}'
+                                    ' × ${line.quantity}',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 12,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:shopnexus_flutter_app/api/generated/model/option_category_name.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
+import 'package:shopnexus_flutter_app/core/providers/option_names_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 
 /// "Hàng tôi đang ở đâu" — câu hỏi hay gặp nhất của một người vừa trả tiền, và cho
@@ -82,7 +84,7 @@ class TransportJourneySheet extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Do ${transport.option} cập nhật.',
+                'Do ${ref.watch(optionNamesProvider(OptionCategoryName.transport)).nameOf(transport.option)} cập nhật.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

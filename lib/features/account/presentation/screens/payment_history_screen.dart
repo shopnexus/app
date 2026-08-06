@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:shopnexus_flutter_app/api/generated/model/option_category_name.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
+import 'package:shopnexus_flutter_app/core/providers/option_names_provider.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
@@ -252,7 +254,13 @@ class _LegsState extends ConsumerState<_Legs> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              leg.paymentOption,
+                              ref
+                                  .watch(
+                                    optionNamesProvider(
+                                      OptionCategoryName.payment,
+                                    ),
+                                  )
+                                  .nameOf(leg.paymentOption),
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
