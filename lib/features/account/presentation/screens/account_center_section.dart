@@ -419,49 +419,6 @@ class _AccountCenterSectionState extends ConsumerState<AccountCenterSection> {
   }
 }
 
-/// Đường vào cũ, `/account/account-center`. Cài đặt đã là nhà mới của mục này;
-/// màn hình rời còn ở đây cho tới khi mọi caller đã chuyển sang
-/// `/account/settings` — xoá route cùng lúc đổi caller là cách làm vỡ một cái
-/// nút mà `dart analyze` không hề nhìn thấy.
-class AccountCenterScreen extends ConsumerWidget {
-  const AccountCenterScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: theme.colorScheme.onSurface,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          'Trung tâm tài khoản',
-          style: TextStyle(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Manrope',
-            fontSize: 20,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: const AccountCenterSection(),
-      ),
-    );
-  }
-}
-
 class _EditAccountCenterFormSheet extends ConsumerStatefulWidget {
   final Me profile;
 

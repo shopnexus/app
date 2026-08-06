@@ -18,7 +18,6 @@ import 'package:shopnexus_flutter_app/features/account/presentation/screens/orde
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/addresses_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/wishlist_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/settings_screen.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/screens/account_center_section.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/my_reviews_screen.dart';
 import 'package:shopnexus_flutter_app/features/kyc/presentation/screens/kyc_verification_screen.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/main_layout.dart';
@@ -145,14 +144,6 @@ GoRouter appRouter(Ref ref) {
               return SellerProfileScreen(vendorId: id);
             },
           ),
-          // Đường cũ, giữ lại cho tới khi mọi caller đã chuyển. Chỉ redirect,
-          // không builder: một link `/vendor/...` còn sống ở đâu đó vẫn tới đúng
-          // chỗ thay vì rơi vào trang lỗi.
-          GoRoute(
-            path: '/vendor/:id',
-            redirect: (context, state) =>
-                '/users/${state.pathParameters['id']}',
-          ),
           GoRoute(
             path: '/seller',
             name: 'seller',
@@ -254,11 +245,6 @@ GoRouter appRouter(Ref ref) {
                 path: 'settings',
                 name: 'buyer_settings',
                 builder: (context, state) => const SettingsScreen(),
-              ),
-              GoRoute(
-                path: 'account-center',
-                name: 'account_center',
-                builder: (context, state) => const AccountCenterScreen(),
               ),
               GoRoute(
                 path: 'kyc',
