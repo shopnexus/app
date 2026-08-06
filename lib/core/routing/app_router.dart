@@ -14,6 +14,7 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/sear
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/following_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/linked_accounts_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/notification_preferences_screen.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/screens/payment_history_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/offers_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/profile_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
@@ -260,6 +261,11 @@ GoRouter appRouter(Ref ref) {
                 path: 'kyc',
                 name: 'kyc_verification',
                 builder: (context, state) => const KycVerificationScreen(),
+              ),
+              GoRoute(
+                path: 'payments',
+                name: 'payment_history',
+                builder: (context, state) => const PaymentHistoryScreen(),
               ),
               GoRoute(
                 path: 'notification-settings',

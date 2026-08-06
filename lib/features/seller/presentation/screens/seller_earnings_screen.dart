@@ -453,6 +453,18 @@ class _SellerEarningsScreenState extends ConsumerState<SellerEarningsScreen> {
               ],
             ),
           ),
+          const SizedBox(height: 12),
+          // Ở đây chứ không ở một dòng menu riêng: "cái 64.000đ này là gì" là câu
+          // hỏi người ta đặt khi đang nhìn số dư, và lịch sử trả lời cả hai chiều
+          // tiền — cả lần mình mua, không chỉ lần mình bán.
+          OutlinedButton.icon(
+            onPressed: () => context.push('/account/payments'),
+            icon: const Icon(Icons.receipt_long_outlined, size: 18),
+            label: const Text('Lịch sử thanh toán'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+          ),
           const SizedBox(height: 24),
           if (state.withdrawals.isNotEmpty) ...[
             _buildSectionTitle(context, 'Lệnh rút tiền'),
