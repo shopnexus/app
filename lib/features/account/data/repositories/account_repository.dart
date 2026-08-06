@@ -5,6 +5,13 @@ import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
     as generated;
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/offer_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/notification_preference.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/o_auth_identity.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_notification_preferences_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_notification_preferences_request_items_inner.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/verify_contact_phone_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
@@ -191,6 +198,63 @@ class AccountRepository {
   // --- Wishlist ---
   /// Theo dõi một người, không một shop: `follows` gắn với account, và ở C2C thì
   /// "tôi muốn thấy người này đăng gì nữa" là câu hỏi thật.
+  /// Loại thông báo nào được vào hộp thư. Không phải cài đặt push — app cố ý không
+  /// có push — mà là cái quyết định thứ gì xuất hiện trong tab Thông báo.
+  Future<List<NotificationPreference>> notificationPreferences() async =>
+      (await _api.notificationPreferencesGet()).data?.data ?? const [];
+
+  /// Gửi cả bộ, không gửi từng cái: route nhận một danh sách, và một lần lưu là
+  /// một lần người dùng bấm xong — không phải mỗi công tắc một request.
+  Future<void> saveNotificationPreferences(
+    List<NotificationPreference> preferences,
+  ) => _api.notificationPreferencesPut(
+    updateNotificationPreferencesRequest: UpdateNotificationPreferencesRequest(
+      items: [
+        for (final preference in preferences)
+          UpdateNotificationPreferencesRequestItemsInner(
+            category: preference.category,
+            channel: preference.channel,
+            isEnabled: preference.isEnabled,
+          ),
+      ],
+    ),
+  );
+
+  /// Google/Apple đã liên kết. Server giữ luật "ít nhất một cách để đăng nhập",
+  /// nên bỏ liên kết cuối cùng khi không có mật khẩu sẽ bị từ chối ở đó.
+  Future<List<OAuthIdentity>> oauthIdentities() async =>
+      (await _api.meOauthIdentitiesGet()).data?.data ?? const [];
+
+  Future<void> unlinkOauth(String provider) =>
+      _api.meOauthIdentitiesProviderDelete(provider: provider);
+
+  /// Những cuộc mặc cả của một vai. Trước đây chúng chỉ tới được qua một thẻ trong
+  /// chat, nên một đề nghị đang chờ mình trả lời sẽ mất tăm khi cuộc trò chuyện bị
+  /// đẩy xuống dưới — mà nó có hạn 12 giờ.
+  Future<List<Offer>> offers({
+    required String role,
+    OfferStatus? status,
+    String? cursor,
+    int limit = 20,
+  }) async =>
+      (await _orderApi.offersGet(
+        role: role,
+        status: status,
+        cursor: cursor,
+        limit: limit,
+      )).data?.data ??
+      const [];
+
+  /// Hành trình của kiện hàng: các mốc đơn vị vận chuyển đã báo. Đây là câu trả lời
+  /// cho "hàng tôi đang ở đâu" — câu hỏi hay gặp nhất của một người vừa trả tiền.
+  Future<Transport> orderTransport(String orderId) async {
+    final transport = (await _orderApi.ordersIdTransportGet(
+      id: orderId,
+    )).data?.data;
+    if (transport == null) throw StateError('empty transport response');
+    return transport;
+  }
+
   Future<void> follow(String accountId) =>
       _api.followsAccountIDPut(accountID: accountId);
 

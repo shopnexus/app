@@ -5,7 +5,10 @@ import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/bank_account.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_bank_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_bank_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/update_variant_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_withdrawal_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
@@ -257,6 +260,22 @@ class SellerRepository {
 
   /// Một lệnh rút cụ thể — `outcome` ở đây là thứ khách hàng đọc, còn `status` là
   /// của payment session bên dưới.
+  /// Lịch sử thanh toán: mọi phiên tiền của account này, gồm cả checkout và rút.
+  /// Đây là chỗ trả lời "tôi đã trả cái gì, khi nào" — sổ ví chỉ nói số dư đổi ra
+  /// sao, không nói nó thuộc lần mua nào.
+  Future<List<PaymentSession>> paymentSessions({int limit = 20}) async =>
+      (await _financeApi.paymentSessionsGet(limit: limit)).data?.data ??
+      const [];
+
+  /// Các chặng tiền của một phiên. Một phiên có thể có nhiều chặng: lần trả trước
+  /// bị từ chối vẫn nằm đó, và đó chính là thứ giải thích vì sao một đơn "chờ
+  /// thanh toán" lại có hai dòng.
+  Future<List<Transaction>> paymentTransactions(String sessionId) async =>
+      (await _financeApi.paymentSessionsIdTransactionsGet(
+        id: sessionId,
+      )).data?.data ??
+      const [];
+
   Future<Withdrawal> withdrawal(String id) async {
     final withdrawal = (await _financeApi.withdrawalsIdGet(id: id)).data?.data;
     if (withdrawal == null) throw StateError('empty withdrawal');
@@ -271,6 +290,12 @@ class SellerRepository {
   /// với cho tới khi một admin xử.
   Future<void> cancelWithdrawal(String id) =>
       _financeApi.withdrawalsIdDelete(id: id);
+
+  /// Sửa một biến thể: giá, tồn, thuộc tính. Route riêng vì một biến thể không
+  /// phải một field của tin — nó có tồn kho, và một lần sửa giá không được ghi đè
+  /// con số mà một checkout đang giữ.
+  Future<void> updateVariant(String id, UpdateVariantRequest request) =>
+      _catalogApi.variantsIdPatch(id: id, updateVariantRequest: request);
 
   Future<List<BankAccount>> bankAccounts() async =>
       (await _financeApi.bankAccountsGet()).data?.data ?? const [];

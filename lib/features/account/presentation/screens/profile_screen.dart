@@ -190,6 +190,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     onTap: () => context.push('/account/wishlist'),
                   ),
                   AccountMenuTile(
+                    icon: Icons.handshake_outlined,
+                    // Một đề nghị có hạn 12 giờ, nên nó cần một chỗ ngoài chat:
+                    // một thread bị đẩy xuống dưới là mất tăm một việc có đồng hồ.
+                    title: 'Thương lượng',
+                    onTap: () => context.push('/account/offers'),
+                  ),
+                  AccountMenuTile(
                     icon: Icons.person_add_alt_outlined,
                     // Người, không shop: ở C2C thì "tôi muốn thấy người này đăng
                     // gì nữa" là câu hỏi thật, và `follows` gắn với account.
