@@ -20,8 +20,6 @@ part 'tax_info.g.dart';
 class TaxInfo {
   /// Returns a new [TaxInfo] instance.
   TaxInfo({
-    required this.createdAt,
-
     required this.legalName,
 
     required this.taxCode,
@@ -32,11 +30,8 @@ class TaxInfo {
 
     required this.verificationStatus,
 
-    this.verifiedAt,
+    required this.verifiedAt,
   });
-
-  @JsonKey(name: r'created_at', required: true, includeIfNull: false)
-  final DateTime createdAt;
 
   @JsonKey(name: r'legal_name', required: true, includeIfNull: false)
   final String legalName;
@@ -54,14 +49,13 @@ class TaxInfo {
   @JsonKey(name: r'verification_status', required: true, includeIfNull: false)
   final TaxVerificationStatus verificationStatus;
 
-  @JsonKey(name: r'verified_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'verified_at', required: true, includeIfNull: true)
   final DateTime? verifiedAt;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TaxInfo &&
-          other.createdAt == createdAt &&
           other.legalName == legalName &&
           other.taxCode == taxCode &&
           other.taxCodeType == taxCodeType &&
@@ -71,7 +65,6 @@ class TaxInfo {
 
   @override
   int get hashCode =>
-      createdAt.hashCode +
       legalName.hashCode +
       taxCode.hashCode +
       taxCodeType.hashCode +

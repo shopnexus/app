@@ -13,19 +13,15 @@ TaxInfo _$TaxInfoFromJson(Map<String, dynamic> json) => $checkedCreate(
     $checkKeys(
       json,
       requiredKeys: const [
-        'created_at',
         'legal_name',
         'tax_code',
         'tax_code_type',
         'updated_at',
         'verification_status',
+        'verified_at',
       ],
     );
     final val = TaxInfo(
-      createdAt: $checkedConvert(
-        'created_at',
-        (v) => DateTime.parse(v as String),
-      ),
       legalName: $checkedConvert('legal_name', (v) => v as String),
       taxCode: $checkedConvert('tax_code', (v) => v as String),
       taxCodeType: $checkedConvert(
@@ -48,7 +44,6 @@ TaxInfo _$TaxInfoFromJson(Map<String, dynamic> json) => $checkedCreate(
     return val;
   },
   fieldKeyMap: const {
-    'createdAt': 'created_at',
     'legalName': 'legal_name',
     'taxCode': 'tax_code',
     'taxCodeType': 'tax_code_type',
@@ -59,14 +54,13 @@ TaxInfo _$TaxInfoFromJson(Map<String, dynamic> json) => $checkedCreate(
 );
 
 Map<String, dynamic> _$TaxInfoToJson(TaxInfo instance) => <String, dynamic>{
-  'created_at': instance.createdAt.toIso8601String(),
   'legal_name': instance.legalName,
   'tax_code': instance.taxCode,
   'tax_code_type': _$TaxCodeTypeEnumMap[instance.taxCodeType]!,
   'updated_at': instance.updatedAt.toIso8601String(),
   'verification_status':
       _$TaxVerificationStatusEnumMap[instance.verificationStatus]!,
-  'verified_at': ?instance.verifiedAt?.toIso8601String(),
+  'verified_at': instance.verifiedAt?.toIso8601String(),
 };
 
 const _$TaxCodeTypeEnumMap = {

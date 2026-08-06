@@ -19,6 +19,9 @@ Withdrawal _$WithdrawalFromJson(Map<String, dynamic> json) => $checkedCreate(
         'currency',
         'id',
         'outcome',
+        'resolution_note',
+        'resolved_at',
+        'resolved_by_id',
         'status',
       ],
     );
@@ -68,9 +71,9 @@ Map<String, dynamic> _$WithdrawalToJson(Withdrawal instance) =>
       'currency': instance.currency,
       'id': instance.id,
       'outcome': _$WithdrawalOutcomeEnumMap[instance.outcome]!,
-      'resolution_note': ?instance.resolutionNote,
-      'resolved_at': ?instance.resolvedAt?.toIso8601String(),
-      'resolved_by_id': ?instance.resolvedById,
+      'resolution_note': instance.resolutionNote,
+      'resolved_at': instance.resolvedAt?.toIso8601String(),
+      'resolved_by_id': instance.resolvedById,
       'status': _$PaymentSessionStatusEnumMap[instance.status]!,
     };
 

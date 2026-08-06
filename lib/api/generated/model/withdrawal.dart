@@ -33,11 +33,11 @@ class Withdrawal {
 
     required this.outcome,
 
-    this.resolutionNote,
+    required this.resolutionNote,
 
-    this.resolvedAt,
+    required this.resolvedAt,
 
-    this.resolvedById,
+    required this.resolvedById,
 
     required this.status,
   });
@@ -62,14 +62,14 @@ class Withdrawal {
   @JsonKey(name: r'outcome', required: true, includeIfNull: false)
   final WithdrawalOutcome outcome;
 
-  @JsonKey(name: r'resolution_note', required: false, includeIfNull: false)
+  @JsonKey(name: r'resolution_note', required: true, includeIfNull: true)
   final String? resolutionNote;
 
-  @JsonKey(name: r'resolved_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'resolved_at', required: true, includeIfNull: true)
   final DateTime? resolvedAt;
 
   /// The admin who decided. Null on one the owner cancelled themselves.
-  @JsonKey(name: r'resolved_by_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'resolved_by_id', required: true, includeIfNull: true)
   final String? resolvedById;
 
   /// The underlying session status. `outcome` is what a client should render; this is here because a withdrawal is a payment session and hiding that would make its id unexplainable.
