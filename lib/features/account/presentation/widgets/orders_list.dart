@@ -13,6 +13,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/or
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/confirm_receipt_sheet.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/rate_order_sheet.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/transport_journey_sheet.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 
 /// Đơn của một vai, hai nhóm, không tab.
@@ -264,15 +265,33 @@ class _OrderRow extends ConsumerWidget {
     final isActing = ref.watch(ordersActionsProvider).isLoading;
     final order = view.order;
 
+    // "Hàng tôi đang ở đâu" là câu hỏi hay gặp nhất của một người vừa trả tiền, và
+    // nó chỉ có nghĩa khi kiện hàng đã rời `pending` — trước đó không có mốc nào.
+    final moving =
+        (order.transport?.status ?? TransportStatus.pending) !=
+        TransportStatus.pending;
+
     if (role == OrderRole.buyer) {
-      if (!view.canConfirmReceipt) return const [];
       return [
-        Expanded(
-          child: ElevatedButton(
-            onPressed: isActing ? null : () => _confirmReceipt(context, ref),
-            child: const Text('Đã nhận hàng'),
+        if (moving)
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () => TransportJourneySheet.show(
+                context,
+                orderId: order.id,
+              ),
+              child: const Text('Hành trình'),
+            ),
           ),
-        ),
+        if (view.canConfirmReceipt) ...[
+          if (moving) const SizedBox(width: 8),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: isActing ? null : () => _confirmReceipt(context, ref),
+              child: const Text('Đã nhận hàng'),
+            ),
+          ),
+        ],
       ];
     }
 
