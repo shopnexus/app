@@ -134,13 +134,24 @@ GoRouter appRouter(Ref ref) {
             name: 'search',
             builder: (context, state) => const SearchScreen(),
           ),
+          // Trang công khai của một *người*, không của một shop. Spec không có
+          // thực thể shop nào: `reputation` và `follows` đều gắn với account, nên
+          // "vendor" là vốn từ B2C mượn vào một sàn C2C.
           GoRoute(
-            path: '/vendor/:id',
-            name: 'seller_profile',
+            path: '/users/:id',
+            name: 'public_profile',
             builder: (context, state) {
               final id = state.pathParameters['id']!;
               return SellerProfileScreen(vendorId: id);
             },
+          ),
+          // Đường cũ, giữ lại cho tới khi mọi caller đã chuyển. Chỉ redirect,
+          // không builder: một link `/vendor/...` còn sống ở đâu đó vẫn tới đúng
+          // chỗ thay vì rơi vào trang lỗi.
+          GoRoute(
+            path: '/vendor/:id',
+            redirect: (context, state) =>
+                '/users/${state.pathParameters['id']}',
           ),
           GoRoute(
             path: '/seller',
