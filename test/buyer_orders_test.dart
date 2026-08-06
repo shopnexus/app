@@ -51,7 +51,7 @@ void main() {
       expect(order.transport?.status, TransportStatus.pending);
       expect(order.transport?.fee, 15000);
 
-      final item = order.items!.single;
+      final item = order.items.single;
       // Opaque ids, not ints, and a variant rather than a sku.
       expect(item.id, 'itm_fa1kdfqze7egn');
       expect(item.variantId, 'vrn_8vw1sy73ddpkc');

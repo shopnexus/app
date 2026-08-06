@@ -107,14 +107,13 @@ class ChatMessageBubble extends StatelessWidget {
                       for (final attachment in message.attachments)
                         // `url` is absent until a module can presign one, which
                         // is "not available yet" rather than an empty object.
-                        if (attachment.url != null &&
-                            attachment.url!.isNotEmpty)
+                        if (attachment.url.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 6),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: CachedNetworkImage(
-                                imageUrl: attachment.url!,
+                                imageUrl: attachment.url,
                                 height: 200,
                                 fit: BoxFit.cover,
                               ),

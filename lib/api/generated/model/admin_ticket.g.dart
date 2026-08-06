@@ -13,8 +13,11 @@ AdminTicket _$AdminTicketFromJson(Map<String, dynamic> json) => $checkedCreate(
     $checkKeys(
       json,
       requiredKeys: const [
+        'assignee',
         'open_tickets_against_target',
         'requester',
+        'resolved_by',
+        'target',
         'ticket',
       ],
     );
@@ -41,9 +44,8 @@ AdminTicket _$AdminTicketFromJson(Map<String, dynamic> json) => $checkedCreate(
       ),
       target: $checkedConvert(
         'target',
-        (v) => (v as Map<String, dynamic>?)?.map(
-          (k, e) => MapEntry(k, e as Object),
-        ),
+        (v) =>
+            (v as Map<String, dynamic>).map((k, e) => MapEntry(k, e as Object)),
       ),
       ticket: $checkedConvert(
         'ticket',
@@ -60,10 +62,10 @@ AdminTicket _$AdminTicketFromJson(Map<String, dynamic> json) => $checkedCreate(
 
 Map<String, dynamic> _$AdminTicketToJson(AdminTicket instance) =>
     <String, dynamic>{
-      'assignee': ?instance.assignee?.toJson(),
+      'assignee': instance.assignee?.toJson(),
       'open_tickets_against_target': instance.openTicketsAgainstTarget,
       'requester': instance.requester.toJson(),
-      'resolved_by': ?instance.resolvedBy?.toJson(),
-      'target': ?instance.target,
+      'resolved_by': instance.resolvedBy?.toJson(),
+      'target': instance.target,
       'ticket': instance.ticket.toJson(),
     };

@@ -10,10 +10,23 @@ PendingEdit _$PendingEditFromJson(Map<String, dynamic> json) => $checkedCreate(
   'PendingEdit',
   json,
   ($checkedConvert) {
+    $checkKeys(
+      json,
+      requiredKeys: const [
+        'attachments',
+        'category_id',
+        'condition',
+        'description',
+        'name',
+        'price_mode',
+        'specifications',
+        'tags',
+      ],
+    );
     final val = PendingEdit(
       attachments: $checkedConvert(
         'attachments',
-        (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
+        (v) => (v as List<dynamic>).map((e) => e as String).toList(),
       ),
       categoryId: $checkedConvert('category_id', (v) => v as String?),
       condition: $checkedConvert(
@@ -28,13 +41,12 @@ PendingEdit _$PendingEditFromJson(Map<String, dynamic> json) => $checkedCreate(
       ),
       specifications: $checkedConvert(
         'specifications',
-        (v) => (v as Map<String, dynamic>?)?.map(
-          (k, e) => MapEntry(k, e as Object),
-        ),
+        (v) =>
+            (v as Map<String, dynamic>).map((k, e) => MapEntry(k, e as Object)),
       ),
       tags: $checkedConvert(
         'tags',
-        (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
+        (v) => (v as List<dynamic>).map((e) => e as String).toList(),
       ),
     );
     return val;
@@ -44,14 +56,14 @@ PendingEdit _$PendingEditFromJson(Map<String, dynamic> json) => $checkedCreate(
 
 Map<String, dynamic> _$PendingEditToJson(PendingEdit instance) =>
     <String, dynamic>{
-      'attachments': ?instance.attachments,
-      'category_id': ?instance.categoryId,
-      'condition': ?_$ListingConditionEnumMap[instance.condition],
-      'description': ?instance.description,
-      'name': ?instance.name,
-      'price_mode': ?_$PriceModeEnumMap[instance.priceMode],
-      'specifications': ?instance.specifications,
-      'tags': ?instance.tags,
+      'attachments': instance.attachments,
+      'category_id': instance.categoryId,
+      'condition': _$ListingConditionEnumMap[instance.condition],
+      'description': instance.description,
+      'name': instance.name,
+      'price_mode': _$PriceModeEnumMap[instance.priceMode],
+      'specifications': instance.specifications,
+      'tags': instance.tags,
     };
 
 const _$ListingConditionEnumMap = {

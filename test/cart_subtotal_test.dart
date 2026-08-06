@@ -43,6 +43,8 @@ void main() {
             'https://down-cl.img.susercontent.com/file/342847e9f89669cb6fe702a8c08a7a42_tn',
         'mime': 'image/jpeg',
         'size': 0,
+        'checksum': '',
+        'url_expires_at': null,
         'url':
             'https://down-cl.img.susercontent.com/file/342847e9f89669cb6fe702a8c08a7a42_tn',
       },
@@ -53,6 +55,7 @@ void main() {
       'name': 'Trang trí nhà cửa & Đèn chiếu sáng',
       'description':
           'Tranh treo tường, khung ảnh, bình hoa, nến, gương, thảm, rèm cửa, gối tựa, đèn trần, đèn bàn, đèn sàn và các vật dụng trang trí',
+      'score': null,
     },
     'tags': ['bo-do-an', 'dung-cu-an-uong', 'nha-cua-va-doi-song'],
     'variants': [
@@ -88,6 +91,8 @@ void main() {
             'object_key': 'https://img.example/blue.jpg',
             'mime': 'image/jpeg',
             'size': 0,
+            'checksum': '',
+            'url_expires_at': null,
             'url': 'https://img.example/blue.jpg',
           },
         ],
@@ -100,10 +105,16 @@ void main() {
     'sold': 2,
     'rating': 0,
     'review_count': 0,
-    'seller': {'id': 'acc_48gmxxfhd8ta3', 'name': 'Bob Electronics'},
+    'seller': {
+      'id': 'acc_48gmxxfhd8ta3',
+      'name': 'Bob Electronics',
+      'avatar': null,
+    },
     'favorited': false,
     'favorite_count': 0,
     'pending_edit': null,
+    'taken_down_at': null,
+    'takedown_reason': null,
     'location': {
       'province_code': '01',
       'province_name': 'Ha Noi',
@@ -111,6 +122,7 @@ void main() {
       'district_name': 'Hai Ba Trung',
       'ward_code': '00091',
       'ward_name': 'Bach Khoa',
+      'distance_km': null,
     },
     'created_at': '2026-08-02T04:55:15.318908Z',
     'deleted_at': null,

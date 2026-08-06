@@ -13,6 +13,7 @@ DraftOrder _$DraftOrderFromJson(Map<String, dynamic> json) => $checkedCreate(
     $checkKeys(
       json,
       requiredKeys: const [
+        'cancelled_at',
         'created_at',
         'currency',
         'id',
@@ -69,7 +70,7 @@ DraftOrder _$DraftOrderFromJson(Map<String, dynamic> json) => $checkedCreate(
 
 Map<String, dynamic> _$DraftOrderToJson(DraftOrder instance) =>
     <String, dynamic>{
-      'cancelled_at': ?instance.cancelledAt?.toIso8601String(),
+      'cancelled_at': instance.cancelledAt?.toIso8601String(),
       'created_at': instance.createdAt.toIso8601String(),
       'currency': instance.currency,
       'id': instance.id,

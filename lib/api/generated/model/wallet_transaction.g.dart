@@ -22,6 +22,8 @@ WalletTransaction _$WalletTransactionFromJson(Map<String, dynamic> json) =>
             'held_delta',
             'kind',
             'note',
+            'ref_id',
+            'ref_type',
             'seq',
           ],
         );
@@ -47,11 +49,10 @@ WalletTransaction _$WalletTransactionFromJson(Map<String, dynamic> json) =>
             (v) => $enumDecode(_$WalletTransactionKindEnumMap, v),
           ),
           note: $checkedConvert('note', (v) => v as String),
-          refId: $checkedConvert('ref_id', (v) => v as String?),
+          refId: $checkedConvert('ref_id', (v) => v as String),
           refType: $checkedConvert(
             'ref_type',
-            (v) =>
-                $enumDecodeNullable(_$WalletTransactionRefTypeEnumEnumMap, v),
+            (v) => $enumDecode(_$WalletTransactionRefTypeEnumEnumMap, v),
           ),
           seq: $checkedConvert('seq', (v) => (v as num).toInt()),
         );
@@ -80,8 +81,8 @@ Map<String, dynamic> _$WalletTransactionToJson(WalletTransaction instance) =>
       'held_delta': instance.heldDelta,
       'kind': _$WalletTransactionKindEnumMap[instance.kind]!,
       'note': instance.note,
-      'ref_id': ?instance.refId,
-      'ref_type': ?_$WalletTransactionRefTypeEnumEnumMap[instance.refType],
+      'ref_id': instance.refId,
+      'ref_type': _$WalletTransactionRefTypeEnumEnumMap[instance.refType]!,
       'seq': instance.seq,
     };
 
@@ -97,6 +98,7 @@ const _$WalletTransactionKindEnumMap = {
 };
 
 const _$WalletTransactionRefTypeEnumEnumMap = {
+  WalletTransactionRefTypeEnum.empty: '',
   WalletTransactionRefTypeEnum.order: 'order',
   WalletTransactionRefTypeEnum.paymentSession: 'payment-session',
 };

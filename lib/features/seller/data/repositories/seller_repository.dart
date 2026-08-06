@@ -94,13 +94,13 @@ class SellerRepository {
     )).data;
     final orders = page?.data ?? const <Order>[];
     final listings = await _listingsById(
-      orders.expand((order) => order.items ?? const <OrderItem>[]),
+      orders.expand((order) => order.items),
     );
     return [
       for (final order in orders)
         OrderView(
           order: order,
-          lines: _lines(order.items ?? const [], listings),
+          lines: _lines(order.items, listings),
         ),
     ];
   }

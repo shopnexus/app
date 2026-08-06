@@ -26,7 +26,7 @@ class Refund {
 
     required this.createdAt,
 
-    this.deadlineAt,
+    required this.deadlineAt,
 
     required this.id,
 
@@ -34,9 +34,9 @@ class Refund {
 
     required this.reason,
 
-    this.returnedAt,
+    required this.returnedAt,
 
-    this.sellerDecidedAt,
+    required this.sellerDecidedAt,
 
     required this.status,
   });
@@ -52,7 +52,7 @@ class Refund {
   final DateTime createdAt;
 
   /// When the party named by `status` runs out of time, and missing it is itself a move. Null while the case waits on staff or a carrier, and in the terminal states.
-  @JsonKey(name: r'deadline_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'deadline_at', required: true, includeIfNull: true)
   final DateTime? deadlineAt;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
@@ -65,11 +65,11 @@ class Refund {
   final String reason;
 
   /// When the return reached the seller and the inspection window opened.
-  @JsonKey(name: r'returned_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'returned_at', required: true, includeIfNull: true)
   final DateTime? returnedAt;
 
   /// When the seller answered — by granting the refund, or by handing it to staff. There is no rejection reason beside it: they cannot refuse one.
-  @JsonKey(name: r'seller_decided_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'seller_decided_at', required: true, includeIfNull: true)
   final DateTime? sellerDecidedAt;
 
   @JsonKey(name: r'status', required: true, includeIfNull: false)

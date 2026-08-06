@@ -13,11 +13,16 @@ void main() {
         'data': {
           'id': 'msg_agnc1pe4pjb4k',
           'conversation_id': 'cnv_6ptz3n8kvq1wd',
+          'sender_id': null,
+          'from_support': false,
           'type': 'user',
           'body': 'còn hàng không bạn',
           'attachments': <Map<String, dynamic>>[],
           'refs': <String, dynamic>{},
+          'card': <String, dynamic>{},
           'created_at': '2026-08-03T11:17:04Z',
+          'edited_at': null,
+          'deleted_at': null,
         },
       });
 
@@ -71,6 +76,7 @@ void main() {
           'category': 'order',
           'title': 'Đơn hàng đã được giao',
           'payload': {'order_id': 'ord_fv2cpg50vkrfp'},
+          'read_at': null,
           'created_at': '2026-08-03T11:17:04Z',
         },
       });
@@ -97,6 +103,7 @@ void main() {
           'quantity': 2,
           'total': 598000,
           'currency': 'VND',
+          'reason': '',
           'created_at': '2026-08-03T11:00:00Z',
           'expires_at': '2026-08-03T11:30:00Z',
         },

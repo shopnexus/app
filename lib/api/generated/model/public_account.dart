@@ -19,11 +19,11 @@ part 'public_account.g.dart';
 class PublicAccount {
   /// Returns a new [PublicAccount] instance.
   PublicAccount({
-    this.avatar,
+    required this.avatar,
 
     required this.createdAt,
 
-    this.description,
+    required this.description,
 
     required this.followerCount,
 
@@ -34,14 +34,14 @@ class PublicAccount {
     required this.name,
   });
 
-  @JsonKey(name: r'avatar', required: false, includeIfNull: false)
+  @JsonKey(name: r'avatar', required: true, includeIfNull: true)
   final Resource? avatar;
 
   /// Member since.
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-  @JsonKey(name: r'description', required: false, includeIfNull: false)
+  @JsonKey(name: r'description', required: true, includeIfNull: true)
   final String? description;
 
   // minimum: 0

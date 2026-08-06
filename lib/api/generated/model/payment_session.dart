@@ -32,11 +32,11 @@ class PaymentSession {
 
     required this.kind,
 
-    this.note,
+    required this.note,
 
     required this.outstanding,
 
-    this.paidAt,
+    required this.paidAt,
 
     required this.status,
 
@@ -66,15 +66,15 @@ class PaymentSession {
   @JsonKey(name: r'kind', required: true, includeIfNull: false)
   final PaymentSessionKind kind;
 
-  @JsonKey(name: r'note', required: false, includeIfNull: false)
-  final String? note;
+  @JsonKey(name: r'note', required: true, includeIfNull: false)
+  final String note;
 
   /// The total less what has already settled on a rail: what a further payment may still tender. Computed, because a stored copy would be a second fact to keep in step with every leg.
   // minimum: 0
   @JsonKey(name: r'outstanding', required: true, includeIfNull: false)
   final int outstanding;
 
-  @JsonKey(name: r'paid_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'paid_at', required: true, includeIfNull: true)
   final DateTime? paidAt;
 
   @JsonKey(name: r'status', required: true, includeIfNull: false)

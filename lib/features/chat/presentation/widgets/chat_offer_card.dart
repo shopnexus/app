@@ -145,7 +145,7 @@ class ChatOfferCard extends StatelessWidget {
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        if (offer.reason != null && offer.reason!.isNotEmpty) ...[
+        if (offer.reason.isNotEmpty) ...[
           const SizedBox(height: 10),
           Container(
             width: double.infinity,

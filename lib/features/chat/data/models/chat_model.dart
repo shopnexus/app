@@ -59,11 +59,16 @@ class ChatMessage {
       message: Message(
         id: 'pending-${DateTime.now().microsecondsSinceEpoch}',
         conversationId: conversationId,
+        senderId: null,
+        fromSupport: false,
         type: MessageType.user,
         body: body,
         attachments: const [],
         refs: const {},
+        card: const {},
         createdAt: DateTime.now(),
+        editedAt: null,
+        deletedAt: null,
       ),
       isMine: true,
       delivery: MessageDelivery.sending,
@@ -96,7 +101,7 @@ class ChatMessage {
 
   /// The desk answers as the platform, and the contract says so on the row: a
   /// requester's view of a support reply carries the flag instead of a sender.
-  bool get isFromSupport => message.fromSupport ?? false;
+  bool get isFromSupport => message.fromSupport;
 
   /// Produced by the backend — an offer accepted, an order shipped — so it
   /// belongs to neither side and is not somebody's writing.
@@ -106,7 +111,7 @@ class ChatMessage {
   /// are read from the offer, so a counter-offer cannot leave an old price on
   /// screen.
   String? get offerId {
-    final value = message.card?['offer_id'];
+    final value = message.card['offer_id'];
     return value is String && value.isNotEmpty ? value : null;
   }
 

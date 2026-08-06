@@ -338,7 +338,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 children: [
                   // `url` is absent until the module can presign one, so one
                   // un-presigned photo costs a placeholder, not the gallery.
-                  if (mediaUrl == null || mediaUrl.isEmpty)
+                  if (mediaUrl.isEmpty)
                     Container(
                       color: isDarkMode
                           ? AppColors.darkSurface
@@ -1484,7 +1484,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   Widget _buildReviewAttachment(Resource attachment) {
     final url = attachment.url;
-    if (url == null || url.isEmpty) {
+    if (url.isEmpty) {
       return const Padding(
         padding: EdgeInsets.only(right: 8.0),
         child: SizedBox(

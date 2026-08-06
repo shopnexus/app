@@ -15,12 +15,17 @@ AdminAccount _$AdminAccountFromJson(Map<String, dynamic> json) =>
           json,
           requiredKeys: const [
             'created_at',
+            'email',
             'email_verified',
             'id',
             'identity_verified',
             'name',
+            'phone',
             'role',
             'status',
+            'suspended_until',
+            'suspension_reason',
+            'username',
           ],
         );
         final val = AdminAccount(
@@ -69,17 +74,17 @@ AdminAccount _$AdminAccountFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$AdminAccountToJson(AdminAccount instance) =>
     <String, dynamic>{
       'created_at': instance.createdAt.toIso8601String(),
-      'email': ?instance.email,
+      'email': instance.email,
       'email_verified': instance.emailVerified,
       'id': instance.id,
       'identity_verified': instance.identityVerified,
       'name': instance.name,
-      'phone': ?instance.phone,
+      'phone': instance.phone,
       'role': _$AccountRoleEnumMap[instance.role]!,
       'status': _$AccountStatusEnumMap[instance.status]!,
-      'suspended_until': ?instance.suspendedUntil?.toIso8601String(),
-      'suspension_reason': ?instance.suspensionReason,
-      'username': ?instance.username,
+      'suspended_until': instance.suspendedUntil?.toIso8601String(),
+      'suspension_reason': instance.suspensionReason,
+      'username': instance.username,
     };
 
 const _$AccountRoleEnumMap = {

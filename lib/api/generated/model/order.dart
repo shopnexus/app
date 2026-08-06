@@ -28,37 +28,37 @@ class Order {
 
     required this.buyer,
 
-    this.cancelledAt,
+    required this.cancelledAt,
 
-    this.completedAt,
+    required this.completedAt,
 
-    this.confirmationDeadlineAt,
+    required this.confirmationDeadlineAt,
 
-    this.confirmedAt,
+    required this.confirmedAt,
 
     required this.createdAt,
 
     required this.currency,
 
-    this.declineReason,
+    required this.declineReason,
 
-    this.draftId,
+    required this.draftId,
 
     required this.id,
 
-    this.items,
+    required this.items,
 
-    this.offerId,
+    required this.offerId,
 
-    this.payoutDeadlineAt,
+    required this.payoutDeadlineAt,
 
-    this.payoutReleasedAt,
+    required this.payoutReleasedAt,
 
     required this.pickupAddress,
 
     required this.receiptAttachments,
 
-    this.receivedAt,
+    required this.receivedAt,
 
     required this.seller,
 
@@ -66,7 +66,7 @@ class Order {
 
     required this.total,
 
-    this.transport,
+    required this.transport,
   });
 
   @JsonKey(name: r'address', required: true, includeIfNull: false)
@@ -75,23 +75,23 @@ class Order {
   @JsonKey(name: r'buyer', required: true, includeIfNull: false)
   final AccountSummary buyer;
 
-  @JsonKey(name: r'cancelled_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'cancelled_at', required: true, includeIfNull: true)
   final DateTime? cancelledAt;
 
   /// Set when the payout is claimed
-  @JsonKey(name: r'completed_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'completed_at', required: true, includeIfNull: true)
   final DateTime? completedAt;
 
   /// `created_at` + 48h, computed rather than stored. Staff are asked to chase the seller past this point; the sale is not voided, because neither the money nor the goods are the platform's to dispose of. Null once the seller has accepted.
   @JsonKey(
     name: r'confirmation_deadline_at',
-    required: false,
-    includeIfNull: false,
+    required: true,
+    includeIfNull: true,
   )
   final DateTime? confirmationDeadlineAt;
 
   /// When the seller accepted the sale. Null means the parcel has not been booked and will not be — a buyer reading this knows what they are waiting on.
-  @JsonKey(name: r'confirmed_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'confirmed_at', required: true, includeIfNull: true)
   final DateTime? confirmedAt;
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
@@ -102,29 +102,29 @@ class Order {
   final String currency;
 
   /// Why the seller refused, set only on an order they refused outright. A refusal is a cancellation that says who ended the sale, where `cancelled_at` alone says only that it did not happen.
-  @JsonKey(name: r'decline_reason', required: false, includeIfNull: false)
+  @JsonKey(name: r'decline_reason', required: true, includeIfNull: true)
   final String? declineReason;
 
   /// The checkout this came from. Exactly one of `draft_id` and `offer_id` is set: a fixed-price sale is checked out from a draft, a negotiated one from the offer both sides accepted.
-  @JsonKey(name: r'draft_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'draft_id', required: true, includeIfNull: true)
   final String? draftId;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-  @JsonKey(name: r'items', required: false, includeIfNull: false)
-  final List<OrderItem>? items;
+  @JsonKey(name: r'items', required: true, includeIfNull: false)
+  final List<OrderItem> items;
 
   /// The accepted negotiation this came from. Null on a fixed-price sale.
-  @JsonKey(name: r'offer_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'offer_id', required: true, includeIfNull: true)
   final String? offerId;
 
   /// `received_at` + 72h, computed rather than stored. The seller is paid out at this point unless a refund still has a claim on the escrow.
-  @JsonKey(name: r'payout_deadline_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'payout_deadline_at', required: true, includeIfNull: true)
   final DateTime? payoutDeadlineAt;
 
   /// When the escrow reached the seller. Null on a completed order means the release has not landed yet — the platform owes the seller and knows it, and a retry pass keeps trying until it does.
-  @JsonKey(name: r'payout_released_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'payout_released_at', required: true, includeIfNull: true)
   final DateTime? payoutReleasedAt;
 
   @JsonKey(name: r'pickup_address', required: true, includeIfNull: false)
@@ -135,7 +135,7 @@ class Order {
   final List<Resource> receiptAttachments;
 
   /// When the buyer confirmed receipt. Null means the payout clock has not started.
-  @JsonKey(name: r'received_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'received_at', required: true, includeIfNull: true)
   final DateTime? receivedAt;
 
   @JsonKey(name: r'seller', required: true, includeIfNull: false)
@@ -150,7 +150,7 @@ class Order {
   final int total;
 
   /// The shipment, carried in full rather than as an id: it has no read of its own outside the order it belongs to.
-  @JsonKey(name: r'transport', required: false, includeIfNull: false)
+  @JsonKey(name: r'transport', required: true, includeIfNull: true)
   final Transport? transport;
 
   @override
@@ -203,7 +203,7 @@ class Order {
       seller.hashCode +
       state.hashCode +
       total.hashCode +
-      transport.hashCode;
+      (transport == null ? 0 : transport.hashCode);
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
 

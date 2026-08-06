@@ -24,23 +24,23 @@ class Message {
 
     required this.body,
 
-    this.card,
+    required this.card,
 
     required this.conversationId,
 
     required this.createdAt,
 
-    this.deletedAt,
+    required this.deletedAt,
 
-    this.editedAt,
+    required this.editedAt,
 
-    this.fromSupport,
+    required this.fromSupport,
 
     required this.id,
 
     required this.refs,
 
-    this.senderId,
+    required this.senderId,
 
     required this.type,
   });
@@ -53,9 +53,9 @@ class Message {
   @JsonKey(name: r'body', required: true, includeIfNull: false)
   final String body;
 
-  /// What a system message renders, and for a price negotiation that is `{\"offer_id\": \"ofr_…\"}` and nothing else — the terms are read from the offer, so a counter-offer cannot leave an old price on screen. Written only by the backend and rejected on a `user` message, otherwise anyone could send a card that looks like an offer the seller accepted.
-  @JsonKey(name: r'card', required: false, includeIfNull: false)
-  final Map<String, Object>? card;
+  /// Empty on an ordinary message, so a client reads \"no card\" as an empty object rather than a missing key. What a system message renders, and for a price negotiation that is `{\"offer_id\": \"ofr_…\"}` and nothing else — the terms are read from the offer, so a counter-offer cannot leave an old price on screen. Written only by the backend and rejected on a `user` message, otherwise anyone could send a card that looks like an offer the seller accepted.
+  @JsonKey(name: r'card', required: true, includeIfNull: false)
+  final Map<String, Object> card;
 
   @JsonKey(name: r'conversation_id', required: true, includeIfNull: false)
   final String conversationId;
@@ -64,15 +64,15 @@ class Message {
   final DateTime createdAt;
 
   /// Set on a redacted message. The row stays so a thread has no unexplained gaps.
-  @JsonKey(name: r'deleted_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'deleted_at', required: true, includeIfNull: true)
   final DateTime? deletedAt;
 
-  @JsonKey(name: r'edited_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'edited_at', required: true, includeIfNull: true)
   final DateTime? editedAt;
 
   /// True on a reply the support desk wrote, in the requester's own view of their ticket thread. Support answers as the platform, so the requester is told that much and no more; staff reading the same thread see the real sender and never this flag, because a colleague's name is what makes a thread reviewable.
-  @JsonKey(name: r'from_support', required: false, includeIfNull: false)
-  final bool? fromSupport;
+  @JsonKey(name: r'from_support', required: true, includeIfNull: false)
+  final bool fromSupport;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
@@ -82,7 +82,7 @@ class Message {
   final Map<String, Object> refs;
 
   /// Null on a system message, and null on a support reply seen by the requester — see `from_support`, which is how the two are told apart.
-  @JsonKey(name: r'sender_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'sender_id', required: true, includeIfNull: true)
   final String? senderId;
 
   @JsonKey(name: r'type', required: true, includeIfNull: false)
@@ -109,7 +109,7 @@ class Message {
   int get hashCode =>
       attachments.hashCode +
       body.hashCode +
-      (card == null ? 0 : card.hashCode) +
+      card.hashCode +
       conversationId.hashCode +
       createdAt.hashCode +
       (deletedAt == null ? 0 : deletedAt.hashCode) +

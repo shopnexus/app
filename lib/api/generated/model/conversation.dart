@@ -22,19 +22,19 @@ class Conversation {
   Conversation({
     required this.counterparty,
 
-    this.counterpartyReadAt,
+    required this.counterpartyReadAt,
 
     required this.createdAt,
 
     required this.id,
 
-    this.lastMessage,
+    required this.lastMessage,
 
     required this.lastMessageAt,
 
-    this.readAt,
+    required this.readAt,
 
-    this.ticketId,
+    required this.ticketId,
 
     required this.unread,
   });
@@ -44,7 +44,7 @@ class Conversation {
   final AccountSummary counterparty;
 
   /// How far the other side has read. This is the read receipt: a message the caller sent is seen when this is at or past its `created_at`, which is why no message carries a delivery status of its own.
-  @JsonKey(name: r'counterparty_read_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'counterparty_read_at', required: true, includeIfNull: true)
   final DateTime? counterpartyReadAt;
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
@@ -53,7 +53,7 @@ class Conversation {
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-  @JsonKey(name: r'last_message', required: false, includeIfNull: false)
+  @JsonKey(name: r'last_message', required: true, includeIfNull: true)
   final Message? lastMessage;
 
   /// Starts at the creation time so an empty thread still sorts predictably in the inbox.
@@ -61,11 +61,11 @@ class Conversation {
   final DateTime lastMessageAt;
 
   /// The caller's own read mark. Null while they have read nothing.
-  @JsonKey(name: r'read_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'read_at', required: true, includeIfNull: true)
   final DateTime? readAt;
 
   /// Set when this thread is a support ticket's, null on an ordinary one. A ticket is read in the support screen rather than the inbox, so a client tells them apart from the row.
-  @JsonKey(name: r'ticket_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'ticket_id', required: true, includeIfNull: true)
   final String? ticketId;
 
   /// The counterparty's messages after the caller's read mark.

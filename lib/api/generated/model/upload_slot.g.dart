@@ -10,7 +10,10 @@ UploadSlot _$UploadSlotFromJson(Map<String, dynamic> json) => $checkedCreate(
   'UploadSlot',
   json,
   ($checkedConvert) {
-    $checkKeys(json, requiredKeys: const ['expires_at', 'resource_id', 'url']);
+    $checkKeys(
+      json,
+      requiredKeys: const ['expires_at', 'headers', 'resource_id', 'url'],
+    );
     final val = UploadSlot(
       expiresAt: $checkedConvert(
         'expires_at',
@@ -18,9 +21,7 @@ UploadSlot _$UploadSlotFromJson(Map<String, dynamic> json) => $checkedCreate(
       ),
       headers: $checkedConvert(
         'headers',
-        (v) => (v as Map<String, dynamic>?)?.map(
-          (k, e) => MapEntry(k, e as String),
-        ),
+        (v) => Map<String, String>.from(v as Map),
       ),
       resourceId: $checkedConvert('resource_id', (v) => v as String),
       url: $checkedConvert('url', (v) => v as String),
@@ -33,7 +34,7 @@ UploadSlot _$UploadSlotFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$UploadSlotToJson(UploadSlot instance) =>
     <String, dynamic>{
       'expires_at': instance.expiresAt.toIso8601String(),
-      'headers': ?instance.headers,
+      'headers': instance.headers,
       'resource_id': instance.resourceId,
       'url': instance.url,
     };

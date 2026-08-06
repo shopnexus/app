@@ -8,7 +8,10 @@ part of 'category.dart';
 
 Category _$CategoryFromJson(Map<String, dynamic> json) =>
     $checkedCreate('Category', json, ($checkedConvert) {
-      $checkKeys(json, requiredKeys: const ['description', 'id', 'name']);
+      $checkKeys(
+        json,
+        requiredKeys: const ['description', 'id', 'name', 'parent_id', 'score'],
+      );
       final val = Category(
         description: $checkedConvert('description', (v) => v as String),
         id: $checkedConvert('id', (v) => v as String),
@@ -23,6 +26,6 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
   'description': instance.description,
   'id': instance.id,
   'name': instance.name,
-  'parent_id': ?instance.parentId,
-  'score': ?instance.score,
+  'parent_id': instance.parentId,
+  'score': instance.score,
 };

@@ -13,7 +13,13 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['category', 'created_at', 'payload', 'title'],
+          requiredKeys: const [
+            'category',
+            'created_at',
+            'payload',
+            'read_at',
+            'title',
+          ],
         );
         final val = Notification(
           category: $checkedConvert(
@@ -46,7 +52,7 @@ Map<String, dynamic> _$NotificationToJson(Notification instance) =>
       'category': _$NotificationCategoryEnumMap[instance.category]!,
       'created_at': instance.createdAt.toIso8601String(),
       'payload': instance.payload,
-      'read_at': ?instance.readAt?.toIso8601String(),
+      'read_at': instance.readAt?.toIso8601String(),
       'title': instance.title,
     };
 

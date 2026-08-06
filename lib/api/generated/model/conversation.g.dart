@@ -15,9 +15,13 @@ Conversation _$ConversationFromJson(Map<String, dynamic> json) =>
           json,
           requiredKeys: const [
             'counterparty',
+            'counterparty_read_at',
             'created_at',
             'id',
+            'last_message',
             'last_message_at',
+            'read_at',
+            'ticket_id',
             'unread',
           ],
         );
@@ -66,12 +70,12 @@ Conversation _$ConversationFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ConversationToJson(Conversation instance) =>
     <String, dynamic>{
       'counterparty': instance.counterparty.toJson(),
-      'counterparty_read_at': ?instance.counterpartyReadAt?.toIso8601String(),
+      'counterparty_read_at': instance.counterpartyReadAt?.toIso8601String(),
       'created_at': instance.createdAt.toIso8601String(),
       'id': instance.id,
-      'last_message': ?instance.lastMessage?.toJson(),
+      'last_message': instance.lastMessage?.toJson(),
       'last_message_at': instance.lastMessageAt.toIso8601String(),
-      'read_at': ?instance.readAt?.toIso8601String(),
-      'ticket_id': ?instance.ticketId,
+      'read_at': instance.readAt?.toIso8601String(),
+      'ticket_id': instance.ticketId,
       'unread': instance.unread,
     };

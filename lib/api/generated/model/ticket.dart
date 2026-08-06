@@ -23,9 +23,9 @@ part 'ticket.g.dart';
 class Ticket {
   /// Returns a new [Ticket] instance.
   Ticket({
-    this.actionTaken,
+    required this.actionTaken,
 
-    this.conversationId,
+    required this.conversationId,
 
     required this.createdAt,
 
@@ -33,15 +33,15 @@ class Ticket {
 
     required this.kind,
 
-    this.reason,
+    required this.reason,
 
-    this.refId,
+    required this.refId,
 
-    this.refType,
+    required this.refType,
 
-    this.resolutionNote,
+    required this.resolutionNote,
 
-    this.resolvedAt,
+    required this.resolvedAt,
 
     required this.status,
 
@@ -49,11 +49,11 @@ class Ticket {
   });
 
   /// Null until the ticket is resolved.
-  @JsonKey(name: r'action_taken', required: false, includeIfNull: false)
+  @JsonKey(name: r'action_taken', required: true, includeIfNull: true)
   final TicketAction? actionTaken;
 
   /// The thread this ticket is discussed in — where the requester's own words went and where support answers. Null only between the row being written and the thread being opened; reading the ticket repairs it.
-  @JsonKey(name: r'conversation_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'conversation_id', required: true, includeIfNull: true)
   final String? conversationId;
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
@@ -65,20 +65,20 @@ class Ticket {
   @JsonKey(name: r'kind', required: true, includeIfNull: false)
   final TicketKind kind;
 
-  @JsonKey(name: r'reason', required: false, includeIfNull: false)
+  @JsonKey(name: r'reason', required: true, includeIfNull: true)
   final TicketReason? reason;
 
   /// Opaque id of what the ticket is about, kinded by `ref_type`. Null on a ticket about nothing in particular.
-  @JsonKey(name: r'ref_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'ref_id', required: true, includeIfNull: true)
   final String? refId;
 
-  @JsonKey(name: r'ref_type', required: false, includeIfNull: false)
+  @JsonKey(name: r'ref_type', required: true, includeIfNull: true)
   final TicketRefType? refType;
 
-  @JsonKey(name: r'resolution_note', required: false, includeIfNull: false)
+  @JsonKey(name: r'resolution_note', required: true, includeIfNull: true)
   final String? resolutionNote;
 
-  @JsonKey(name: r'resolved_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'resolved_at', required: true, includeIfNull: true)
   final DateTime? resolvedAt;
 
   @JsonKey(name: r'status', required: true, includeIfNull: false)

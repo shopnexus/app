@@ -22,13 +22,13 @@ class Option {
 
     required this.id,
 
-    this.isEnabled,
+    required this.isEnabled,
 
     required this.name,
 
-    this.priority,
+    required this.priority,
 
-    this.provider,
+    required this.provider,
   });
 
   /// A line of explanation. May be empty.
@@ -40,7 +40,7 @@ class Option {
   final String id;
 
   /// Staff only. A row switched off is not offered, but stays resolvable for the records naming it.
-  @JsonKey(name: r'is_enabled', required: false, includeIfNull: false)
+  @JsonKey(name: r'is_enabled', required: true, includeIfNull: true)
   final bool? isEnabled;
 
   /// What to show the chooser.
@@ -50,12 +50,12 @@ class Option {
   /// Staff only. Display order, highest first.
   // minimum: 0
   // maximum: 1000
-  @JsonKey(name: r'priority', required: false, includeIfNull: false)
+  @JsonKey(name: r'priority', required: true, includeIfNull: true)
   final int? priority;
 
   /// Staff only. The implementation serving this row — what an admin changes to move it to another vendor.
-  @JsonKey(name: r'provider', required: false, includeIfNull: false)
-  final String? provider;
+  @JsonKey(name: r'provider', required: true, includeIfNull: false)
+  final String provider;
 
   @override
   bool operator ==(Object other) =>
@@ -72,9 +72,9 @@ class Option {
   int get hashCode =>
       description.hashCode +
       id.hashCode +
-      isEnabled.hashCode +
+      (isEnabled == null ? 0 : isEnabled.hashCode) +
       name.hashCode +
-      priority.hashCode +
+      (priority == null ? 0 : priority.hashCode) +
       provider.hashCode;
 
   factory Option.fromJson(Map<String, dynamic> json) => _$OptionFromJson(json);

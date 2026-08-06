@@ -15,14 +15,26 @@ Order _$OrderFromJson(Map<String, dynamic> json) => $checkedCreate(
       requiredKeys: const [
         'address',
         'buyer',
+        'cancelled_at',
+        'completed_at',
+        'confirmation_deadline_at',
+        'confirmed_at',
         'created_at',
         'currency',
+        'decline_reason',
+        'draft_id',
         'id',
+        'items',
+        'offer_id',
+        'payout_deadline_at',
+        'payout_released_at',
         'pickup_address',
         'receipt_attachments',
+        'received_at',
         'seller',
         'state',
         'total',
+        'transport',
       ],
     );
     final val = Order(
@@ -60,8 +72,8 @@ Order _$OrderFromJson(Map<String, dynamic> json) => $checkedCreate(
       id: $checkedConvert('id', (v) => v as String),
       items: $checkedConvert(
         'items',
-        (v) => (v as List<dynamic>?)
-            ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+        (v) => (v as List<dynamic>)
+            .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
             .toList(),
       ),
       offerId: $checkedConvert('offer_id', (v) => v as String?),
@@ -123,29 +135,29 @@ Order _$OrderFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'address': instance.address.toJson(),
   'buyer': instance.buyer.toJson(),
-  'cancelled_at': ?instance.cancelledAt?.toIso8601String(),
-  'completed_at': ?instance.completedAt?.toIso8601String(),
-  'confirmation_deadline_at': ?instance.confirmationDeadlineAt
+  'cancelled_at': instance.cancelledAt?.toIso8601String(),
+  'completed_at': instance.completedAt?.toIso8601String(),
+  'confirmation_deadline_at': instance.confirmationDeadlineAt
       ?.toIso8601String(),
-  'confirmed_at': ?instance.confirmedAt?.toIso8601String(),
+  'confirmed_at': instance.confirmedAt?.toIso8601String(),
   'created_at': instance.createdAt.toIso8601String(),
   'currency': instance.currency,
-  'decline_reason': ?instance.declineReason,
-  'draft_id': ?instance.draftId,
+  'decline_reason': instance.declineReason,
+  'draft_id': instance.draftId,
   'id': instance.id,
-  'items': ?instance.items?.map((e) => e.toJson()).toList(),
-  'offer_id': ?instance.offerId,
-  'payout_deadline_at': ?instance.payoutDeadlineAt?.toIso8601String(),
-  'payout_released_at': ?instance.payoutReleasedAt?.toIso8601String(),
+  'items': instance.items.map((e) => e.toJson()).toList(),
+  'offer_id': instance.offerId,
+  'payout_deadline_at': instance.payoutDeadlineAt?.toIso8601String(),
+  'payout_released_at': instance.payoutReleasedAt?.toIso8601String(),
   'pickup_address': instance.pickupAddress.toJson(),
   'receipt_attachments': instance.receiptAttachments
       .map((e) => e.toJson())
       .toList(),
-  'received_at': ?instance.receivedAt?.toIso8601String(),
+  'received_at': instance.receivedAt?.toIso8601String(),
   'seller': instance.seller.toJson(),
   'state': _$OrderStateEnumMap[instance.state]!,
   'total': instance.total,
-  'transport': ?instance.transport?.toJson(),
+  'transport': instance.transport?.toJson(),
 };
 
 const _$OrderStateEnumMap = {

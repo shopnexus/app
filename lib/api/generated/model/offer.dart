@@ -35,7 +35,7 @@ class Offer {
 
     required this.quantity,
 
-    this.reason,
+    required this.reason,
 
     required this.sellerId,
 
@@ -74,8 +74,8 @@ class Offer {
   final int quantity;
 
   /// Shown on the offer card beside the proposed price
-  @JsonKey(name: r'reason', required: false, includeIfNull: false)
-  final String? reason;
+  @JsonKey(name: r'reason', required: true, includeIfNull: false)
+  final String reason;
 
   @JsonKey(name: r'seller_id', required: true, includeIfNull: false)
   final String sellerId;

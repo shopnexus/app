@@ -9,8 +9,16 @@ import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_
 /// thread, `from_support` marks a support reply. Both used to be guessed at, and
 /// a guess put the desk in the inbox and read every system row as support.
 void main() {
-  final desk = AccountSummary(id: 'acc_desk', name: 'Hỗ trợ ShopNexus');
-  final seller = AccountSummary(id: 'acc_seller', name: 'Bún Bò Store');
+  final desk = AccountSummary(
+    id: 'acc_desk',
+    name: 'Hỗ trợ ShopNexus',
+    avatar: null,
+  );
+  final seller = AccountSummary(
+    id: 'acc_seller',
+    name: 'Bún Bò Store',
+    avatar: null,
+  );
 
   Conversation conversation({
     required String id,
@@ -21,7 +29,10 @@ void main() {
       counterparty: counterparty,
       createdAt: DateTime.utc(2026, 1, 1),
       id: id,
+      lastMessage: null,
       lastMessageAt: DateTime.utc(2026, 1, 2),
+      readAt: null,
+      counterpartyReadAt: null,
       ticketId: ticketId,
       unread: 0,
     );
@@ -29,7 +40,7 @@ void main() {
 
   Message message({
     String? senderId,
-    bool? fromSupport,
+    bool fromSupport = false,
     MessageType type = MessageType.user,
   }) {
     return Message(
@@ -41,7 +52,10 @@ void main() {
       body: 'Chúng tôi đang xem xét yêu cầu của bạn.',
       attachments: const [],
       refs: const {},
+      card: const {},
       createdAt: DateTime.utc(2026, 1, 2),
+      editedAt: null,
+      deletedAt: null,
     );
   }
 

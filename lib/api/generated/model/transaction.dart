@@ -21,15 +21,15 @@ class Transaction {
   Transaction({
     required this.amount,
 
-    this.checkoutUrl,
+    required this.checkoutUrl,
 
     required this.createdAt,
 
     required this.currency,
 
-    this.error,
+    required this.error,
 
-    this.expiredAt,
+    required this.expiredAt,
 
     required this.id,
 
@@ -37,11 +37,11 @@ class Transaction {
 
     required this.paymentOption,
 
-    this.reversesId,
+    required this.reversesId,
 
     required this.sessionId,
 
-    this.settledAt,
+    required this.settledAt,
 
     required this.status,
   });
@@ -50,9 +50,9 @@ class Transaction {
   @JsonKey(name: r'amount', required: true, includeIfNull: false)
   final int amount;
 
-  /// Where to send the payer for this leg. Null once the rail no longer needs it, or for rails that have none.
-  @JsonKey(name: r'checkout_url', required: false, includeIfNull: false)
-  final String? checkoutUrl;
+  /// Where to send the payer for this leg. Empty once the rail no longer needs it, or for rails that have none.
+  @JsonKey(name: r'checkout_url', required: true, includeIfNull: false)
+  final String checkoutUrl;
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
@@ -61,11 +61,12 @@ class Transaction {
   @JsonKey(name: r'currency', required: true, includeIfNull: false)
   final String currency;
 
-  @JsonKey(name: r'error', required: false, includeIfNull: false)
-  final String? error;
+  /// Empty unless the rail reported a failure on this leg.
+  @JsonKey(name: r'error', required: true, includeIfNull: false)
+  final String error;
 
   /// Gateway URL expiry
-  @JsonKey(name: r'expired_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'expired_at', required: true, includeIfNull: true)
   final DateTime? expiredAt;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
@@ -79,13 +80,13 @@ class Transaction {
   final String paymentOption;
 
   /// The leg this one reverses. Set on reversals, null on originals.
-  @JsonKey(name: r'reverses_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'reverses_id', required: true, includeIfNull: true)
   final String? reversesId;
 
   @JsonKey(name: r'session_id', required: true, includeIfNull: false)
   final String sessionId;
 
-  @JsonKey(name: r'settled_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'settled_at', required: true, includeIfNull: true)
   final DateTime? settledAt;
 
   @JsonKey(name: r'status', required: true, includeIfNull: false)
@@ -112,10 +113,10 @@ class Transaction {
   @override
   int get hashCode =>
       amount.hashCode +
-      (checkoutUrl == null ? 0 : checkoutUrl.hashCode) +
+      checkoutUrl.hashCode +
       createdAt.hashCode +
       currency.hashCode +
-      (error == null ? 0 : error.hashCode) +
+      error.hashCode +
       (expiredAt == null ? 0 : expiredAt.hashCode) +
       id.hashCode +
       note.hashCode +

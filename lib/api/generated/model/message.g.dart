@@ -15,10 +15,15 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
       requiredKeys: const [
         'attachments',
         'body',
+        'card',
         'conversation_id',
         'created_at',
+        'deleted_at',
+        'edited_at',
+        'from_support',
         'id',
         'refs',
+        'sender_id',
         'type',
       ],
     );
@@ -32,9 +37,8 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
       body: $checkedConvert('body', (v) => v as String),
       card: $checkedConvert(
         'card',
-        (v) => (v as Map<String, dynamic>?)?.map(
-          (k, e) => MapEntry(k, e as Object),
-        ),
+        (v) =>
+            (v as Map<String, dynamic>).map((k, e) => MapEntry(k, e as Object)),
       ),
       conversationId: $checkedConvert('conversation_id', (v) => v as String),
       createdAt: $checkedConvert(
@@ -49,7 +53,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
         'edited_at',
         (v) => v == null ? null : DateTime.parse(v as String),
       ),
-      fromSupport: $checkedConvert('from_support', (v) => v as bool?),
+      fromSupport: $checkedConvert('from_support', (v) => v as bool),
       id: $checkedConvert('id', (v) => v as String),
       refs: $checkedConvert(
         'refs',
@@ -77,15 +81,15 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
   'attachments': instance.attachments.map((e) => e.toJson()).toList(),
   'body': instance.body,
-  'card': ?instance.card,
+  'card': instance.card,
   'conversation_id': instance.conversationId,
   'created_at': instance.createdAt.toIso8601String(),
-  'deleted_at': ?instance.deletedAt?.toIso8601String(),
-  'edited_at': ?instance.editedAt?.toIso8601String(),
-  'from_support': ?instance.fromSupport,
+  'deleted_at': instance.deletedAt?.toIso8601String(),
+  'edited_at': instance.editedAt?.toIso8601String(),
+  'from_support': instance.fromSupport,
   'id': instance.id,
   'refs': instance.refs,
-  'sender_id': ?instance.senderId,
+  'sender_id': instance.senderId,
   'type': _$MessageTypeEnumMap[instance.type]!,
 };
 

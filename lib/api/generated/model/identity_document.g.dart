@@ -16,9 +16,12 @@ IdentityDocument _$IdentityDocumentFromJson(Map<String, dynamic> json) =>
           requiredKeys: const [
             'created_at',
             'doc_type',
+            'expires_at',
             'id',
             'provider',
+            'rejection_reason',
             'status',
+            'verified_at',
           ],
         );
         final val = IdentityDocument(
@@ -64,12 +67,12 @@ Map<String, dynamic> _$IdentityDocumentToJson(IdentityDocument instance) =>
     <String, dynamic>{
       'created_at': instance.createdAt.toIso8601String(),
       'doc_type': _$IdentityDocumentTypeEnumMap[instance.docType]!,
-      'expires_at': ?instance.expiresAt?.toIso8601String(),
+      'expires_at': instance.expiresAt?.toIso8601String(),
       'id': instance.id,
       'provider': instance.provider,
-      'rejection_reason': ?instance.rejectionReason,
+      'rejection_reason': instance.rejectionReason,
       'status': _$IdentityStatusEnumMap[instance.status]!,
-      'verified_at': ?instance.verifiedAt?.toIso8601String(),
+      'verified_at': instance.verifiedAt?.toIso8601String(),
     };
 
 const _$IdentityDocumentTypeEnumMap = {

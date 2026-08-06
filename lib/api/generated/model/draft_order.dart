@@ -19,7 +19,7 @@ part 'draft_order.g.dart';
 class DraftOrder {
   /// Returns a new [DraftOrder] instance.
   DraftOrder({
-    this.cancelledAt,
+    required this.cancelledAt,
 
     required this.createdAt,
 
@@ -41,7 +41,7 @@ class DraftOrder {
   });
 
   /// Set when the buyer closed it, the expiry did, or a checkout spent it — a session is claimed as it is checked out, so exactly one checkout can succeed.
-  @JsonKey(name: r'cancelled_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'cancelled_at', required: true, includeIfNull: true)
   final DateTime? cancelledAt;
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)

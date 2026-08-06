@@ -20,7 +20,7 @@ class ReviewVoteTally {
   ReviewVoteTally({
     required this.helpful,
 
-    this.myVote,
+    required this.myVote,
 
     required this.notHelpful,
   });
@@ -30,7 +30,7 @@ class ReviewVoteTally {
   final int helpful;
 
   /// The caller's own vote. Null when they have not voted.
-  @JsonKey(name: r'my_vote', required: false, includeIfNull: false)
+  @JsonKey(name: r'my_vote', required: true, includeIfNull: true)
   final ReviewVoteTallyMyVoteEnum? myVote;
 
   // minimum: 0

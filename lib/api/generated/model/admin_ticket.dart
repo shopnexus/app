@@ -20,21 +20,21 @@ part 'admin_ticket.g.dart';
 class AdminTicket {
   /// Returns a new [AdminTicket] instance.
   AdminTicket({
-    this.assignee,
+    required this.assignee,
 
     required this.openTicketsAgainstTarget,
 
     required this.requester,
 
-    this.resolvedBy,
+    required this.resolvedBy,
 
-    this.target,
+    required this.target,
 
     required this.ticket,
   });
 
   /// The moderator working it. Staff-only, and null until it is claimed.
-  @JsonKey(name: r'assignee', required: false, includeIfNull: false)
+  @JsonKey(name: r'assignee', required: true, includeIfNull: true)
   final AccountSummary? assignee;
 
   /// How many other unresolved tickets name the same target. A pattern is what a decision rests on rather than a single complaint.
@@ -49,12 +49,12 @@ class AdminTicket {
   @JsonKey(name: r'requester', required: true, includeIfNull: false)
   final AccountSummary requester;
 
-  @JsonKey(name: r'resolved_by', required: false, includeIfNull: false)
+  @JsonKey(name: r'resolved_by', required: true, includeIfNull: true)
   final AccountSummary? resolvedBy;
 
-  /// What the ticket is about, shaped by `ref_type`. Fetched from the module that owns it, and absent once that module no longer has it — a listing already taken down.
-  @JsonKey(name: r'target', required: false, includeIfNull: false)
-  final Map<String, Object>? target;
+  /// What the ticket is about, shaped by `ref_type`. Fetched from the module that owns it, and empty once that module no longer has it — a listing already taken down — as well as on a ticket about nothing in particular.
+  @JsonKey(name: r'target', required: true, includeIfNull: false)
+  final Map<String, Object> target;
 
   @JsonKey(name: r'ticket', required: true, includeIfNull: false)
   final Ticket ticket;

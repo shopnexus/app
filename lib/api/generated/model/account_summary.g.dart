@@ -8,7 +8,7 @@ part of 'account_summary.dart';
 
 AccountSummary _$AccountSummaryFromJson(Map<String, dynamic> json) =>
     $checkedCreate('AccountSummary', json, ($checkedConvert) {
-      $checkKeys(json, requiredKeys: const ['id', 'name']);
+      $checkKeys(json, requiredKeys: const ['avatar', 'id', 'name']);
       final val = AccountSummary(
         avatar: $checkedConvert(
           'avatar',
@@ -23,7 +23,7 @@ AccountSummary _$AccountSummaryFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$AccountSummaryToJson(AccountSummary instance) =>
     <String, dynamic>{
-      'avatar': ?instance.avatar?.toJson(),
+      'avatar': instance.avatar?.toJson(),
       'id': instance.id,
       'name': instance.name,
     };

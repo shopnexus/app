@@ -8,7 +8,7 @@ part of 'tag.dart';
 
 Tag _$TagFromJson(Map<String, dynamic> json) =>
     $checkedCreate('Tag', json, ($checkedConvert) {
-      $checkKeys(json, requiredKeys: const ['slug']);
+      $checkKeys(json, requiredKeys: const ['description', 'score', 'slug']);
       final val = Tag(
         description: $checkedConvert('description', (v) => v as String?),
         score: $checkedConvert('score', (v) => (v as num?)?.toDouble()),
@@ -18,7 +18,7 @@ Tag _$TagFromJson(Map<String, dynamic> json) =>
     });
 
 Map<String, dynamic> _$TagToJson(Tag instance) => <String, dynamic>{
-  'description': ?instance.description,
-  'score': ?instance.score,
+  'description': instance.description,
+  'score': instance.score,
   'slug': instance.slug,
 };

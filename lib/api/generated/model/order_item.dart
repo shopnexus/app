@@ -18,7 +18,7 @@ part 'order_item.g.dart';
 class OrderItem {
   /// Returns a new [OrderItem] instance.
   OrderItem({
-    this.cancelledAt,
+    required this.cancelledAt,
 
     required this.createdAt,
 
@@ -28,9 +28,9 @@ class OrderItem {
 
     required this.listingId,
 
-    this.note,
+    required this.note,
 
-    this.orderId,
+    required this.orderId,
 
     required this.paymentSessionId,
 
@@ -45,7 +45,7 @@ class OrderItem {
     required this.variantId,
   });
 
-  @JsonKey(name: r'cancelled_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'cancelled_at', required: true, includeIfNull: true)
   final DateTime? cancelledAt;
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
@@ -63,11 +63,11 @@ class OrderItem {
   final String listingId;
 
   /// Buyer note, per checkout
-  @JsonKey(name: r'note', required: false, includeIfNull: false)
-  final String? note;
+  @JsonKey(name: r'note', required: true, includeIfNull: false)
+  final String note;
 
   /// Null until the payment session completes and the webhook writes the order. Nobody confirms it — a seller can refuse a price, never a sale.
-  @JsonKey(name: r'order_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'order_id', required: true, includeIfNull: true)
   final String? orderId;
 
   /// The single session covering every line of this checkout.

@@ -13,10 +13,13 @@ OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => $checkedCreate(
     $checkKeys(
       json,
       requiredKeys: const [
+        'cancelled_at',
         'created_at',
         'currency',
         'id',
         'listing_id',
+        'note',
+        'order_id',
         'payment_session_id',
         'quantity',
         'seller_id',
@@ -37,7 +40,7 @@ OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => $checkedCreate(
       currency: $checkedConvert('currency', (v) => v as String),
       id: $checkedConvert('id', (v) => v as String),
       listingId: $checkedConvert('listing_id', (v) => v as String),
-      note: $checkedConvert('note', (v) => v as String?),
+      note: $checkedConvert('note', (v) => v as String),
       orderId: $checkedConvert('order_id', (v) => v as String?),
       paymentSessionId: $checkedConvert(
         'payment_session_id',
@@ -65,13 +68,13 @@ OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => $checkedCreate(
 );
 
 Map<String, dynamic> _$OrderItemToJson(OrderItem instance) => <String, dynamic>{
-  'cancelled_at': ?instance.cancelledAt?.toIso8601String(),
+  'cancelled_at': instance.cancelledAt?.toIso8601String(),
   'created_at': instance.createdAt.toIso8601String(),
   'currency': instance.currency,
   'id': instance.id,
   'listing_id': instance.listingId,
-  'note': ?instance.note,
-  'order_id': ?instance.orderId,
+  'note': instance.note,
+  'order_id': instance.orderId,
   'payment_session_id': instance.paymentSessionId,
   'quantity': instance.quantity,
   'seller_id': instance.sellerId,

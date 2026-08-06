@@ -21,7 +21,7 @@ class Contact {
   Contact({
     required this.address,
 
-    this.addressDetail,
+    required this.addressDetail,
 
     required this.addressType,
 
@@ -29,9 +29,9 @@ class Contact {
 
     required this.createdAt,
 
-    this.districtCode,
+    required this.districtCode,
 
-    this.districtName,
+    required this.districtName,
 
     required this.fullName,
 
@@ -41,17 +41,17 @@ class Contact {
 
     required this.isDefaultPickup,
 
-    this.latitude,
+    required this.latitude,
 
-    this.longitude,
+    required this.longitude,
 
     required this.phone,
 
     required this.phoneVerified,
 
-    this.postalCode,
+    required this.postalCode,
 
-    this.providerCodes,
+    required this.providerCodes,
 
     required this.provinceCode,
 
@@ -67,7 +67,7 @@ class Contact {
   final String address;
 
   /// Unit or floor or notes.
-  @JsonKey(name: r'address_detail', required: false, includeIfNull: false)
+  @JsonKey(name: r'address_detail', required: true, includeIfNull: true)
   final String? addressDetail;
 
   @JsonKey(name: r'address_type', required: true, includeIfNull: false)
@@ -80,10 +80,10 @@ class Contact {
   final DateTime createdAt;
 
   /// Null where the country has no district tier. Vietnam dropped it in 2025 and now goes province to ward.
-  @JsonKey(name: r'district_code', required: false, includeIfNull: false)
+  @JsonKey(name: r'district_code', required: true, includeIfNull: true)
   final String? districtCode;
 
-  @JsonKey(name: r'district_name', required: false, includeIfNull: false)
+  @JsonKey(name: r'district_name', required: true, includeIfNull: true)
   final String? districtName;
 
   @JsonKey(name: r'full_name', required: true, includeIfNull: false)
@@ -100,12 +100,12 @@ class Contact {
 
   // minimum: -90
   // maximum: 90
-  @JsonKey(name: r'latitude', required: false, includeIfNull: false)
+  @JsonKey(name: r'latitude', required: true, includeIfNull: true)
   final double? latitude;
 
   // minimum: -180
   // maximum: 180
-  @JsonKey(name: r'longitude', required: false, includeIfNull: false)
+  @JsonKey(name: r'longitude', required: true, includeIfNull: true)
   final double? longitude;
 
   /// E.164.
@@ -115,12 +115,12 @@ class Contact {
   @JsonKey(name: r'phone_verified', required: true, includeIfNull: false)
   final bool phoneVerified;
 
-  @JsonKey(name: r'postal_code', required: false, includeIfNull: false)
+  @JsonKey(name: r'postal_code', required: true, includeIfNull: true)
   final String? postalCode;
 
   /// Per-carrier territory ids. Carriers number territories their own way and some still require a district.
-  @JsonKey(name: r'provider_codes', required: false, includeIfNull: false)
-  final Map<String, Object>? providerCodes;
+  @JsonKey(name: r'provider_codes', required: true, includeIfNull: false)
+  final Map<String, Object> providerCodes;
 
   @JsonKey(name: r'province_code', required: true, includeIfNull: false)
   final String provinceCode;

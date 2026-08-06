@@ -8,7 +8,7 @@ part of 'option_list.dart';
 
 OptionList _$OptionListFromJson(Map<String, dynamic> json) =>
     $checkedCreate('OptionList', json, ($checkedConvert) {
-      $checkKeys(json, requiredKeys: const ['options']);
+      $checkKeys(json, requiredKeys: const ['options', 'providers']);
       final val = OptionList(
         options: $checkedConvert(
           'options',
@@ -18,7 +18,7 @@ OptionList _$OptionListFromJson(Map<String, dynamic> json) =>
         ),
         providers: $checkedConvert(
           'providers',
-          (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
+          (v) => (v as List<dynamic>).map((e) => e as String).toList(),
         ),
       );
       return val;
@@ -27,5 +27,5 @@ OptionList _$OptionListFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$OptionListToJson(OptionList instance) =>
     <String, dynamic>{
       'options': instance.options.map((e) => e.toJson()).toList(),
-      'providers': ?instance.providers,
+      'providers': instance.providers,
     };

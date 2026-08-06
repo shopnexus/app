@@ -44,7 +44,7 @@ class _CounterOfferDialogState extends State<CounterOfferDialog> {
     text: widget.offer.total.toString(),
   );
   late final TextEditingController _reasonController = TextEditingController(
-    text: widget.offer.reason ?? '',
+    text: widget.offer.reason,
   );
   late int _quantity = widget.offer.quantity;
 

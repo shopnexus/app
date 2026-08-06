@@ -17,15 +17,15 @@ part 'tag.g.dart';
 )
 class Tag {
   /// Returns a new [Tag] instance.
-  Tag({this.description, this.score, required this.slug});
+  Tag({required this.description, required this.score, required this.slug});
 
-  @JsonKey(name: r'description', required: false, includeIfNull: false)
+  @JsonKey(name: r'description', required: true, includeIfNull: true)
   final String? description;
 
   /// Relevance, always oriented so that higher is closer — for a vector ranking that is `1 - (a <=> b)`, the cosine similarity, because the operator itself returns a distance. Null unless the request asked for a ranking.
   // minimum: -1
   // maximum: 1
-  @JsonKey(name: r'score', required: false, includeIfNull: false)
+  @JsonKey(name: r'score', required: true, includeIfNull: true)
   final double? score;
 
   /// A tag's id is its slug. A natural key, so it is never encoded.

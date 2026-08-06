@@ -19,24 +19,24 @@ part 'order_feedback.g.dart';
 class OrderFeedback {
   /// Returns a new [OrderFeedback] instance.
   OrderFeedback({
-    this.mine,
+    required this.mine,
 
-    this.revealAt,
+    required this.revealAt,
 
-    this.theirs,
+    required this.theirs,
 
     required this.theirsSubmitted,
   });
 
-  @JsonKey(name: r'mine', required: false, includeIfNull: false)
+  @JsonKey(name: r'mine', required: true, includeIfNull: true)
   final Feedback? mine;
 
   /// When the blind window closes and whatever has been submitted becomes visible, whether or not both sides rated. Null once both are published. Exposed for the same reason the order module exposes its deadlines: a client that cannot count down has to guess.
-  @JsonKey(name: r'reveal_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'reveal_at', required: true, includeIfNull: true)
   final DateTime? revealAt;
 
   /// Present only once published.
-  @JsonKey(name: r'theirs', required: false, includeIfNull: false)
+  @JsonKey(name: r'theirs', required: true, includeIfNull: true)
   final Feedback? theirs;
 
   /// Whether the counterparty has rated at all. Shown while their rating is still blind so the caller knows a reveal is coming.

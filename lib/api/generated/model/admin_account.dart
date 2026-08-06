@@ -22,7 +22,7 @@ class AdminAccount {
   AdminAccount({
     required this.createdAt,
 
-    this.email,
+    required this.email,
 
     required this.emailVerified,
 
@@ -32,23 +32,23 @@ class AdminAccount {
 
     required this.name,
 
-    this.phone,
+    required this.phone,
 
     required this.role,
 
     required this.status,
 
-    this.suspendedUntil,
+    required this.suspendedUntil,
 
-    this.suspensionReason,
+    required this.suspensionReason,
 
-    this.username,
+    required this.username,
   });
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-  @JsonKey(name: r'email', required: false, includeIfNull: false)
+  @JsonKey(name: r'email', required: true, includeIfNull: true)
   final String? email;
 
   @JsonKey(name: r'email_verified', required: true, includeIfNull: false)
@@ -63,7 +63,7 @@ class AdminAccount {
   @JsonKey(name: r'name', required: true, includeIfNull: false)
   final String name;
 
-  @JsonKey(name: r'phone', required: false, includeIfNull: false)
+  @JsonKey(name: r'phone', required: true, includeIfNull: true)
   final String? phone;
 
   @JsonKey(name: r'role', required: true, includeIfNull: false)
@@ -73,13 +73,13 @@ class AdminAccount {
   final AccountStatus status;
 
   /// Null while suspended means the suspension is permanent.
-  @JsonKey(name: r'suspended_until', required: false, includeIfNull: false)
+  @JsonKey(name: r'suspended_until', required: true, includeIfNull: true)
   final DateTime? suspendedUntil;
 
-  @JsonKey(name: r'suspension_reason', required: false, includeIfNull: false)
+  @JsonKey(name: r'suspension_reason', required: true, includeIfNull: true)
   final String? suspensionReason;
 
-  @JsonKey(name: r'username', required: false, includeIfNull: false)
+  @JsonKey(name: r'username', required: true, includeIfNull: true)
   final String? username;
 
   @override

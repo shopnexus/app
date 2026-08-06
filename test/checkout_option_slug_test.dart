@@ -68,18 +68,27 @@ void main() {
   // named was retired and every checkout answered 422 with nothing on screen to say why.
   final rails = OptionList.fromJson(
     Map<String, dynamic>.from({
+      // A user-facing read blanks `provider` and nulls the two staff fields, and
+      // `providers` — what an admin may switch a row to — is empty for the same reason.
       'options': [
         {
           'id': 'mock-success',
           'name': 'Mock: pay now (succeeds)',
           'description': 'Settles immediately, no redirect and no webhook.',
+          'provider': '',
+          'is_enabled': null,
+          'priority': null,
         },
         {
           'id': 'mock-decline',
           'name': 'Mock: pay now (declined)',
           'description': 'Refused immediately.',
+          'provider': '',
+          'is_enabled': null,
+          'priority': null,
         },
       ],
+      'providers': <String>[],
     }),
   ).options.toList();
 

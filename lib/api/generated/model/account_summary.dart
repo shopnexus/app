@@ -18,9 +18,9 @@ part 'account_summary.g.dart';
 )
 class AccountSummary {
   /// Returns a new [AccountSummary] instance.
-  AccountSummary({this.avatar, required this.id, required this.name});
+  AccountSummary({required this.avatar, required this.id, required this.name});
 
-  @JsonKey(name: r'avatar', required: false, includeIfNull: false)
+  @JsonKey(name: r'avatar', required: true, includeIfNull: true)
   final Resource? avatar;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)

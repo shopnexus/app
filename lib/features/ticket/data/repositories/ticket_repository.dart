@@ -110,7 +110,7 @@ class TicketRepository {
       data: file.openRead(),
       options: Options(
         headers: {
-          ...?reserved.headers,
+          ...reserved.headers,
           Headers.contentLengthHeader: await file.length(),
         },
         contentType: mime,

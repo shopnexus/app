@@ -116,9 +116,8 @@ class _ListingSuggestionScreenState
             if (state.suggesting)
               _formSkeleton()
             else ...[
-              if (state.suggestion?.transcript != null &&
-                  state.suggestion!.transcript!.isNotEmpty) ...[
-                _transcriptCard(state.suggestion!.transcript!),
+              if (state.suggestion?.transcript.isNotEmpty ?? false) ...[
+                _transcriptCard(state.suggestion!.transcript),
                 const SizedBox(height: 16),
               ],
               _listingForm(state),
@@ -1024,7 +1023,7 @@ class _ListingSuggestionScreenState
       // The model answers with a list of its own, and a generous one would
       // otherwise put the seller over the count with nothing they typed.
       _tags = listingTags(suggestion.tags);
-      _specs = (suggestion.specifications ?? const <String, Object>{}).entries
+      _specs = suggestion.specifications.entries
           .map((entry) => MapEntry(entry.key, entry.value.toString()))
           .toList();
     });

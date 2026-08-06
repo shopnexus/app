@@ -14,7 +14,9 @@ PublicAccount _$PublicAccountFromJson(Map<String, dynamic> json) =>
         $checkKeys(
           json,
           requiredKeys: const [
+            'avatar',
             'created_at',
+            'description',
             'follower_count',
             'id',
             'identity_verified',
@@ -54,9 +56,9 @@ PublicAccount _$PublicAccountFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$PublicAccountToJson(PublicAccount instance) =>
     <String, dynamic>{
-      'avatar': ?instance.avatar?.toJson(),
+      'avatar': instance.avatar?.toJson(),
       'created_at': instance.createdAt.toIso8601String(),
-      'description': ?instance.description,
+      'description': instance.description,
       'follower_count': instance.followerCount,
       'id': instance.id,
       'identity_verified': instance.identityVerified,

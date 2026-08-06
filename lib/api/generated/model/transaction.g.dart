@@ -14,24 +14,29 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => $checkedCreate(
       json,
       requiredKeys: const [
         'amount',
+        'checkout_url',
         'created_at',
         'currency',
+        'error',
+        'expired_at',
         'id',
         'note',
         'payment_option',
+        'reverses_id',
         'session_id',
+        'settled_at',
         'status',
       ],
     );
     final val = Transaction(
       amount: $checkedConvert('amount', (v) => (v as num).toInt()),
-      checkoutUrl: $checkedConvert('checkout_url', (v) => v as String?),
+      checkoutUrl: $checkedConvert('checkout_url', (v) => v as String),
       createdAt: $checkedConvert(
         'created_at',
         (v) => DateTime.parse(v as String),
       ),
       currency: $checkedConvert('currency', (v) => v as String),
-      error: $checkedConvert('error', (v) => v as String?),
+      error: $checkedConvert('error', (v) => v as String),
       expiredAt: $checkedConvert(
         'expired_at',
         (v) => v == null ? null : DateTime.parse(v as String),
@@ -66,17 +71,17 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     <String, dynamic>{
       'amount': instance.amount,
-      'checkout_url': ?instance.checkoutUrl,
+      'checkout_url': instance.checkoutUrl,
       'created_at': instance.createdAt.toIso8601String(),
       'currency': instance.currency,
-      'error': ?instance.error,
-      'expired_at': ?instance.expiredAt?.toIso8601String(),
+      'error': instance.error,
+      'expired_at': instance.expiredAt?.toIso8601String(),
       'id': instance.id,
       'note': instance.note,
       'payment_option': instance.paymentOption,
-      'reverses_id': ?instance.reversesId,
+      'reverses_id': instance.reversesId,
       'session_id': instance.sessionId,
-      'settled_at': ?instance.settledAt?.toIso8601String(),
+      'settled_at': instance.settledAt?.toIso8601String(),
       'status': _$TransactionStatusEnumMap[instance.status]!,
     };
 

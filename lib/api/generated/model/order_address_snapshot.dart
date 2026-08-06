@@ -18,23 +18,23 @@ part 'order_address_snapshot.g.dart';
 class OrderAddressSnapshot {
   /// Returns a new [OrderAddressSnapshot] instance.
   OrderAddressSnapshot({
-    this.addressDetail,
+    required this.addressDetail,
 
     required this.country,
 
-    this.districtCode,
+    required this.districtCode,
 
     required this.fullName,
 
     required this.phone,
 
-    this.provinceCode,
+    required this.provinceCode,
 
-    this.wardCode,
+    required this.wardCode,
   });
 
   /// The street line and anything below it
-  @JsonKey(name: r'address_detail', required: false, includeIfNull: false)
+  @JsonKey(name: r'address_detail', required: true, includeIfNull: true)
   final String? addressDetail;
 
   /// ISO 3166-1 alpha-2
@@ -42,7 +42,7 @@ class OrderAddressSnapshot {
   final String country;
 
   /// Null where the country has no district tier
-  @JsonKey(name: r'district_code', required: false, includeIfNull: false)
+  @JsonKey(name: r'district_code', required: true, includeIfNull: true)
   final String? districtCode;
 
   @JsonKey(name: r'full_name', required: true, includeIfNull: false)
@@ -52,11 +52,11 @@ class OrderAddressSnapshot {
   @JsonKey(name: r'phone', required: true, includeIfNull: false)
   final String phone;
 
-  @JsonKey(name: r'province_code', required: false, includeIfNull: false)
-  final String? provinceCode;
+  @JsonKey(name: r'province_code', required: true, includeIfNull: false)
+  final String provinceCode;
 
-  @JsonKey(name: r'ward_code', required: false, includeIfNull: false)
-  final String? wardCode;
+  @JsonKey(name: r'ward_code', required: true, includeIfNull: false)
+  final String wardCode;
 
   @override
   bool operator ==(Object other) =>

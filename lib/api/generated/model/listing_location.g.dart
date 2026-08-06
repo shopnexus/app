@@ -14,6 +14,7 @@ ListingLocation _$ListingLocationFromJson(Map<String, dynamic> json) =>
         $checkKeys(
           json,
           requiredKeys: const [
+            'distance_km',
             'district_code',
             'district_name',
             'province_code',
@@ -49,7 +50,7 @@ ListingLocation _$ListingLocationFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ListingLocationToJson(ListingLocation instance) =>
     <String, dynamic>{
-      'distance_km': ?instance.distanceKm,
+      'distance_km': instance.distanceKm,
       'district_code': instance.districtCode,
       'district_name': instance.districtName,
       'province_code': instance.provinceCode,

@@ -45,6 +45,7 @@ const contactJson = <String, dynamic>{
   'address_detail': null,
   'latitude': 20.874824027527453,
   'longitude': 106.66524643065901,
+  'provider_codes': <String, dynamic>{},
   'created_at': '2026-08-05T02:34:22.408272Z',
 };
 
@@ -59,6 +60,7 @@ const orderItemJson = <String, dynamic>{
   'total_amount': 98000,
   'transport_option': 'standard-delivery',
   'payment_session_id': 'pay_01bp1w1e0bg97',
+  'note': '',
   'cancelled_at': null,
   'created_at': '2026-08-05T02:47:11.309399Z',
 };
@@ -67,14 +69,24 @@ const orderJson = <String, dynamic>{
   'id': 'ord_2ybcv39246zn7',
   'draft_id': 'drf_9s9npa0zabx7n',
   'offer_id': null,
-  'buyer': {'id': 'acc_88sxn2txxspd4', 'name': "Alice's Corner"},
-  'seller': {'id': 'acc_48gmxxfhd8ta3', 'name': 'Bob Electronics'},
+  'buyer': {
+    'id': 'acc_88sxn2txxspd4',
+    'name': "Alice's Corner",
+    'avatar': null,
+  },
+  'seller': {
+    'id': 'acc_48gmxxfhd8ta3',
+    'name': 'Bob Electronics',
+    'avatar': null,
+  },
   'address': {
     'full_name': "Alice's Corner",
     'phone': '+84900000001',
     'country': 'VN',
     'province_code': '31',
+    'district_code': null,
     'ward_code': '11365',
+    'address_detail': null,
   },
   'pickup_address': {
     'full_name': 'Bob Electronics',
@@ -82,6 +94,8 @@ const orderJson = <String, dynamic>{
     'country': 'VN',
     'province_code': '79',
     'ward_code': '26734',
+    'district_code': null,
+    'address_detail': null,
   },
   'items': [orderItemJson],
   'state': 'open',
@@ -94,6 +108,9 @@ const orderJson = <String, dynamic>{
     'fee': 15000,
     'created_at': '2026-08-05T02:47:38.200063Z',
   },
+  'confirmed_at': null,
+  'confirmation_deadline_at': '2026-08-07T02:47:38.20111Z',
+  'decline_reason': null,
   'received_at': null,
   'receipt_attachments': <Map<String, dynamic>>[],
   'payout_deadline_at': null,
@@ -142,13 +159,23 @@ const listingJson = <String, dynamic>{
     'object_key': 'listings/cover.jpg',
     'mime': 'image/jpeg',
     'size': 12345,
+    'checksum': '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
     'url': 'https://cdn.example/cover.jpg',
+    'url_expires_at': null,
   },
   'rating': 0,
   'review_count': 0,
   'category_id': 'cat_b68877mkawpab',
-  'seller': {'id': 'acc_48gmxxfhd8ta3', 'name': 'Bob Electronics'},
+  'seller': {
+    'id': 'acc_48gmxxfhd8ta3',
+    'name': 'Bob Electronics',
+    'avatar': null,
+  },
   'favorited': false,
+  // Null unless the read was a ranked search, and unless the listing was published
+  // with an address — both always present as keys.
+  'score': null,
+  'location': null,
   // On the card, so chips cost no request per row.
   'tags': ['bo-do-an', 'dung-cu-an-uong', 'nha-cua-va-doi-song'],
   // Null on a live listing, and null on one the seller hid themselves — it is set only by a
@@ -189,6 +216,8 @@ const listingDetailJson = <String, dynamic>{
           'https://down-cl.img.susercontent.com/file/342847e9f89669cb6fe702a8c08a7a42_tn',
       'mime': 'image/jpeg',
       'size': 0,
+      'checksum': '',
+      'url_expires_at': null,
       'url':
           'https://down-cl.img.susercontent.com/file/342847e9f89669cb6fe702a8c08a7a42_tn',
     },
@@ -199,6 +228,8 @@ const listingDetailJson = <String, dynamic>{
           'https://down-cl.img.susercontent.com/file/538fcf6b96fbbb3cc874405f5c19a562_tn',
       'mime': 'image/jpeg',
       'size': 0,
+      'checksum': '',
+      'url_expires_at': null,
       'url':
           'https://down-cl.img.susercontent.com/file/538fcf6b96fbbb3cc874405f5c19a562_tn',
     },
@@ -208,6 +239,7 @@ const listingDetailJson = <String, dynamic>{
     'parent_id': null,
     'name': 'Trang trí nhà cửa & Đèn chiếu sáng',
     'description': 'Tranh treo tường, khung ảnh, bình hoa, nến, gương, thảm',
+    'score': null,
   },
   'tags': ['bo-do-an', 'dung-cu-an-uong', 'nha-cua-va-doi-song'],
   'variants': [
@@ -246,10 +278,16 @@ const listingDetailJson = <String, dynamic>{
   'sold': 2,
   'rating': 0,
   'review_count': 0,
-  'seller': {'id': 'acc_48gmxxfhd8ta3', 'name': 'Bob Electronics'},
+  'seller': {
+    'id': 'acc_48gmxxfhd8ta3',
+    'name': 'Bob Electronics',
+    'avatar': null,
+  },
   'favorited': false,
   'favorite_count': 0,
   'pending_edit': null,
+  'taken_down_at': null,
+  'takedown_reason': null,
   'location': {
     'province_code': '01',
     'province_name': 'Ha Noi',
@@ -257,6 +295,7 @@ const listingDetailJson = <String, dynamic>{
     'district_name': 'Hai Ba Trung',
     'ward_code': '00091',
     'ward_name': 'Bach Khoa',
+    'distance_km': null,
   },
   'created_at': '2026-08-02T04:55:15.318908Z',
   'deleted_at': null,

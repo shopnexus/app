@@ -35,7 +35,7 @@ class ListingDetail {
 
     required this.currency,
 
-    this.deletedAt,
+    required this.deletedAt,
 
     required this.description,
 
@@ -43,17 +43,17 @@ class ListingDetail {
 
     required this.favorited,
 
-    this.featuredVariantId,
+    required this.featuredVariantId,
 
     required this.id,
 
     required this.images,
 
-    this.location,
+    required this.location,
 
     required this.name,
 
-    this.pendingEdit,
+    required this.pendingEdit,
 
     required this.priceMode,
 
@@ -73,9 +73,9 @@ class ListingDetail {
 
     required this.tags,
 
-    this.takedownReason,
+    required this.takedownReason,
 
-    this.takenDownAt,
+    required this.takenDownAt,
 
     required this.variants,
   });
@@ -94,7 +94,7 @@ class ListingDetail {
   final String currency;
 
   /// Set on a listing the seller removed.
-  @JsonKey(name: r'deleted_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'deleted_at', required: true, includeIfNull: true)
   final DateTime? deletedAt;
 
   @JsonKey(name: r'description', required: true, includeIfNull: false)
@@ -109,7 +109,7 @@ class ListingDetail {
   @JsonKey(name: r'favorited', required: true, includeIfNull: false)
   final bool favorited;
 
-  @JsonKey(name: r'featured_variant_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'featured_variant_id', required: true, includeIfNull: true)
   final String? featuredVariantId;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
@@ -120,14 +120,14 @@ class ListingDetail {
   final List<Resource> images;
 
   /// Where the goods are. Null on a listing that was never published — the address is taken when the seller publishes, because that is when it becomes something a buyer can find.
-  @JsonKey(name: r'location', required: false, includeIfNull: false)
+  @JsonKey(name: r'location', required: true, includeIfNull: true)
   final ListingLocation? location;
 
   @JsonKey(name: r'name', required: true, includeIfNull: false)
   final String name;
 
   /// An edit waiting on moderation, null when there is none. Visible to the owner and to staff only; buyers see the published version until it is approved.
-  @JsonKey(name: r'pending_edit', required: false, includeIfNull: false)
+  @JsonKey(name: r'pending_edit', required: true, includeIfNull: true)
   final PendingEdit? pendingEdit;
 
   @JsonKey(name: r'price_mode', required: true, includeIfNull: false)
@@ -165,11 +165,11 @@ class ListingDetail {
   final List<String> tags;
 
   /// What the moderator chose to tell the seller, and null when they chose not to (`notify_seller: false` on the takedown). The full reason is in the audit trail either way. Publishing again clears both fields, so they always describe why the listing is down *now* rather than why it once was.
-  @JsonKey(name: r'takedown_reason', required: false, includeIfNull: false)
+  @JsonKey(name: r'takedown_reason', required: true, includeIfNull: true)
   final String? takedownReason;
 
   /// When staff removed the listing. Null when it is live, and null when the seller hid it themselves — the two used to be indistinguishable, which left a seller unable to tell that their listing had been removed at all.
-  @JsonKey(name: r'taken_down_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'taken_down_at', required: true, includeIfNull: true)
   final DateTime? takenDownAt;
 
   @JsonKey(name: r'variants', required: true, includeIfNull: false)

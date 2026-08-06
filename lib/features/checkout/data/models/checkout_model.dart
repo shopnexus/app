@@ -55,7 +55,7 @@ class PurchaseLine {
   String? get imageUrl {
     final images = [...?variant?.images, ...?listing?.images];
     for (final image in images) {
-      if (image.url != null) return image.url;
+      if (image.url.isNotEmpty) return image.url;
     }
     return null;
   }

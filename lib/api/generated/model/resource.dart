@@ -18,7 +18,7 @@ part 'resource.g.dart';
 class Resource {
   /// Returns a new [Resource] instance.
   Resource({
-    this.checksum,
+    required this.checksum,
 
     required this.id,
 
@@ -30,14 +30,14 @@ class Resource {
 
     required this.size,
 
-    this.url,
+    required this.url,
 
-    this.urlExpiresAt,
+    required this.urlExpiresAt,
   });
 
   /// Content hash, read back from storage at completion.
-  @JsonKey(name: r'checksum', required: false, includeIfNull: false)
-  final String? checksum;
+  @JsonKey(name: r'checksum', required: true, includeIfNull: false)
+  final String checksum;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
@@ -58,11 +58,11 @@ class Resource {
   @JsonKey(name: r'size', required: true, includeIfNull: false)
   final int size;
 
-  /// Short-lived URL to fetch the bytes. Absent until a module can presign one, so a consumer that needs the bytes has to treat it as \"not available yet\" rather than as an empty object. Not a stable address: store the id, not this.
-  @JsonKey(name: r'url', required: false, includeIfNull: false)
-  final String? url;
+  /// Short-lived URL to fetch the bytes. Empty until a module can presign one, so a consumer that needs the bytes has to treat an empty string as \"not available yet\". Not a stable address: store the id, not this.
+  @JsonKey(name: r'url', required: true, includeIfNull: false)
+  final String url;
 
-  @JsonKey(name: r'url_expires_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'url_expires_at', required: true, includeIfNull: true)
   final DateTime? urlExpiresAt;
 
   @override
@@ -87,7 +87,7 @@ class Resource {
       provider.hashCode +
       size.hashCode +
       url.hashCode +
-      urlExpiresAt.hashCode;
+      (urlExpiresAt == null ? 0 : urlExpiresAt.hashCode);
 
   factory Resource.fromJson(Map<String, dynamic> json) =>
       _$ResourceFromJson(json);

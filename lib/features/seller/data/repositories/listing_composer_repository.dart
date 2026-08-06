@@ -66,7 +66,7 @@ class ListingComposerRepository {
         headers: <String, dynamic>{
           Headers.contentTypeHeader: mime,
           Headers.contentLengthHeader: bytes.length,
-          ...?slot.headers,
+          ...slot.headers,
         },
       ),
     );

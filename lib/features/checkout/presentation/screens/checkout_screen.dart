@@ -1475,7 +1475,7 @@ class CheckoutScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               SelectableText(
-                state.paymentTransaction!.checkoutUrl!,
+                state.paymentTransaction!.checkoutUrl,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Inter',

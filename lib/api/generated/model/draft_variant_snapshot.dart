@@ -18,15 +18,15 @@ part 'draft_variant_snapshot.g.dart';
 class DraftVariantSnapshot {
   /// Returns a new [DraftVariantSnapshot] instance.
   DraftVariantSnapshot({
-    this.attributes,
+    required this.attributes,
 
     required this.price,
 
     required this.variantId,
   });
 
-  @JsonKey(name: r'attributes', required: false, includeIfNull: false)
-  final Map<String, Object>? attributes;
+  @JsonKey(name: r'attributes', required: true, includeIfNull: false)
+  final Map<String, Object> attributes;
 
   /// Smallest currency unit
   // minimum: 1

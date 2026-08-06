@@ -24,9 +24,9 @@ class Category {
 
     required this.name,
 
-    this.parentId,
+    required this.parentId,
 
-    this.score,
+    required this.score,
   });
 
   @JsonKey(name: r'description', required: true, includeIfNull: false)
@@ -39,13 +39,13 @@ class Category {
   final String name;
 
   /// Null for a root category.
-  @JsonKey(name: r'parent_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'parent_id', required: true, includeIfNull: true)
   final String? parentId;
 
   /// Relevance, always oriented so that higher is closer — for a vector ranking that is `1 - (a <=> b)`, the cosine similarity, because the operator itself returns a distance. Null unless the request asked for a ranking.
   // minimum: -1
   // maximum: 1
-  @JsonKey(name: r'score', required: false, includeIfNull: false)
+  @JsonKey(name: r'score', required: true, includeIfNull: true)
   final double? score;
 
   @override

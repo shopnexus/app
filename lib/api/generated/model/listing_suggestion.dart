@@ -28,11 +28,11 @@ class ListingSuggestion {
 
     required this.price,
 
-    this.specifications,
+    required this.specifications,
 
     required this.tags,
 
-    this.transcript,
+    required this.transcript,
 
     required this.weightG,
   });
@@ -57,16 +57,16 @@ class ListingSuggestion {
   final int? price;
 
   /// Attributes it could read off the photos, as plain strings.
-  @JsonKey(name: r'specifications', required: false, includeIfNull: false)
-  final Map<String, Object>? specifications;
+  @JsonKey(name: r'specifications', required: true, includeIfNull: false)
+  final Map<String, Object> specifications;
 
   /// Already slugified, at most four. Empty rather than guessed.
   @JsonKey(name: r'tags', required: true, includeIfNull: false)
   final List<String> tags;
 
-  /// What the voice note was heard as, echoed so the seller can see why a field is wrong rather than guess. Absent when they sent no recording.
-  @JsonKey(name: r'transcript', required: false, includeIfNull: false)
-  final String? transcript;
+  /// What the voice note was heard as, echoed so the seller can see why a field is wrong rather than guess. Empty when they sent no recording.
+  @JsonKey(name: r'transcript', required: true, includeIfNull: false)
+  final String transcript;
 
   /// Estimated parcel weight, which is what a shipping quote needs.
   // minimum: 1

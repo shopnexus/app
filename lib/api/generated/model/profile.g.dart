@@ -13,8 +13,12 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) => $checkedCreate(
     $checkKeys(
       json,
       requiredKeys: const [
+        'avatar',
         'country',
         'created_at',
+        'date_of_birth',
+        'description',
+        'gender',
         'locale',
         'name',
         'timezone',
@@ -49,12 +53,12 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) => $checkedCreate(
 );
 
 Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
-  'avatar': ?instance.avatar?.toJson(),
+  'avatar': instance.avatar?.toJson(),
   'country': instance.country,
   'created_at': instance.createdAt.toIso8601String(),
-  'date_of_birth': ?instance.dateOfBirth,
-  'description': ?instance.description,
-  'gender': ?_$ProfileGenderEnumMap[instance.gender],
+  'date_of_birth': instance.dateOfBirth,
+  'description': instance.description,
+  'gender': _$ProfileGenderEnumMap[instance.gender],
   'locale': instance.locale,
   'name': instance.name,
   'timezone': instance.timezone,

@@ -28,19 +28,19 @@ class Listing {
 
     required this.condition,
 
-    this.cover,
+    required this.cover,
 
     required this.createdAt,
 
     required this.currency,
 
-    this.deletedAt,
+    required this.deletedAt,
 
     required this.favorited,
 
     required this.id,
 
-    this.location,
+    required this.location,
 
     required this.name,
 
@@ -52,7 +52,7 @@ class Listing {
 
     required this.reviewCount,
 
-    this.score,
+    required this.score,
 
     required this.seller,
 
@@ -62,9 +62,9 @@ class Listing {
 
     required this.status,
 
-    this.tags,
+    required this.tags,
 
-    this.takenDownAt,
+    required this.takenDownAt,
   });
 
   @JsonKey(name: r'category_id', required: true, includeIfNull: false)
@@ -73,7 +73,7 @@ class Listing {
   @JsonKey(name: r'condition', required: true, includeIfNull: false)
   final ListingCondition condition;
 
-  @JsonKey(name: r'cover', required: false, includeIfNull: false)
+  @JsonKey(name: r'cover', required: true, includeIfNull: true)
   final Resource? cover;
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
@@ -84,7 +84,7 @@ class Listing {
   final String currency;
 
   /// Set on a listing the seller removed. Only an `ids` lookup returns one, so that an order or a cart referencing it can still be rendered.
-  @JsonKey(name: r'deleted_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'deleted_at', required: true, includeIfNull: true)
   final DateTime? deletedAt;
 
   /// Whether the caller has this on their wishlist. False for an anonymous request. A plain join, because the wishlist is a catalog table — the client never has to fetch its own saves to know which hearts to fill in.
@@ -95,7 +95,7 @@ class Listing {
   final String id;
 
   /// Where the goods are. Null on a listing that was never published — the address is taken when the seller publishes, because that is when it becomes something a buyer can find.
-  @JsonKey(name: r'location', required: false, includeIfNull: false)
+  @JsonKey(name: r'location', required: true, includeIfNull: true)
   final ListingLocation? location;
 
   @JsonKey(name: r'name', required: true, includeIfNull: false)
@@ -123,7 +123,7 @@ class Listing {
   /// Relevance, always oriented so that higher is closer — for a vector ranking that is `1 - (a <=> b)`, the cosine similarity, because the operator itself returns a distance. Null unless the request asked for a ranking.
   // minimum: -1
   // maximum: 1
-  @JsonKey(name: r'score', required: false, includeIfNull: false)
+  @JsonKey(name: r'score', required: true, includeIfNull: true)
   final double? score;
 
   @JsonKey(name: r'seller', required: true, includeIfNull: false)
@@ -142,11 +142,11 @@ class Listing {
   final ListingStatus status;
 
   /// The listing's own tags, on the card so chips render without a request per row. Empty when it has none.
-  @JsonKey(name: r'tags', required: false, includeIfNull: false)
-  final List<String>? tags;
+  @JsonKey(name: r'tags', required: true, includeIfNull: false)
+  final List<String> tags;
 
   /// When staff removed this listing — which is the only thing that tells a takedown apart from the seller hiding their own, since both read `hidden`. Null otherwise. The reason is on the detail read, because it is a sentence rather than a badge.
-  @JsonKey(name: r'taken_down_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'taken_down_at', required: true, includeIfNull: true)
   final DateTime? takenDownAt;
 
   @override

@@ -24,17 +24,17 @@ class IdentityDocument {
 
     required this.docType,
 
-    this.expiresAt,
+    required this.expiresAt,
 
     required this.id,
 
     required this.provider,
 
-    this.rejectionReason,
+    required this.rejectionReason,
 
     required this.status,
 
-    this.verifiedAt,
+    required this.verifiedAt,
   });
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
@@ -44,7 +44,7 @@ class IdentityDocument {
   final IdentityDocumentType docType;
 
   /// When the document itself runs out. A payout gate reads this as well as the status.
-  @JsonKey(name: r'expires_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'expires_at', required: true, includeIfNull: true)
   final DateTime? expiresAt;
 
   @JsonKey(name: r'id', required: true, includeIfNull: false)
@@ -54,13 +54,13 @@ class IdentityDocument {
   @JsonKey(name: r'provider', required: true, includeIfNull: false)
   final String provider;
 
-  @JsonKey(name: r'rejection_reason', required: false, includeIfNull: false)
+  @JsonKey(name: r'rejection_reason', required: true, includeIfNull: true)
   final String? rejectionReason;
 
   @JsonKey(name: r'status', required: true, includeIfNull: false)
   final IdentityStatus status;
 
-  @JsonKey(name: r'verified_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'verified_at', required: true, includeIfNull: true)
   final DateTime? verifiedAt;
 
   @override

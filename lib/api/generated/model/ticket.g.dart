@@ -12,7 +12,20 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => $checkedCreate(
   ($checkedConvert) {
     $checkKeys(
       json,
-      requiredKeys: const ['created_at', 'id', 'kind', 'status', 'subject'],
+      requiredKeys: const [
+        'action_taken',
+        'conversation_id',
+        'created_at',
+        'id',
+        'kind',
+        'reason',
+        'ref_id',
+        'ref_type',
+        'resolution_note',
+        'resolved_at',
+        'status',
+        'subject',
+      ],
     );
     final val = Ticket(
       actionTaken: $checkedConvert(
@@ -60,16 +73,16 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => $checkedCreate(
 );
 
 Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
-  'action_taken': ?_$TicketActionEnumMap[instance.actionTaken],
-  'conversation_id': ?instance.conversationId,
+  'action_taken': _$TicketActionEnumMap[instance.actionTaken],
+  'conversation_id': instance.conversationId,
   'created_at': instance.createdAt.toIso8601String(),
   'id': instance.id,
   'kind': _$TicketKindEnumMap[instance.kind]!,
-  'reason': ?_$TicketReasonEnumMap[instance.reason],
-  'ref_id': ?instance.refId,
-  'ref_type': ?_$TicketRefTypeEnumMap[instance.refType],
-  'resolution_note': ?instance.resolutionNote,
-  'resolved_at': ?instance.resolvedAt?.toIso8601String(),
+  'reason': _$TicketReasonEnumMap[instance.reason],
+  'ref_id': instance.refId,
+  'ref_type': _$TicketRefTypeEnumMap[instance.refType],
+  'resolution_note': instance.resolutionNote,
+  'resolved_at': instance.resolvedAt?.toIso8601String(),
   'status': _$TicketStatusEnumMap[instance.status]!,
   'subject': instance.subject,
 };

@@ -14,13 +14,16 @@ Me _$MeFromJson(Map<String, dynamic> json) => $checkedCreate(
       json,
       requiredKeys: const [
         'created_at',
+        'email',
         'email_verified',
         'has_password',
         'id',
         'identity_verified',
+        'phone',
         'profile',
         'role',
         'status',
+        'username',
       ],
     );
     final val = Me(
@@ -60,16 +63,16 @@ Me _$MeFromJson(Map<String, dynamic> json) => $checkedCreate(
 
 Map<String, dynamic> _$MeToJson(Me instance) => <String, dynamic>{
   'created_at': instance.createdAt.toIso8601String(),
-  'email': ?instance.email,
+  'email': instance.email,
   'email_verified': instance.emailVerified,
   'has_password': instance.hasPassword,
   'id': instance.id,
   'identity_verified': instance.identityVerified,
-  'phone': ?instance.phone,
+  'phone': instance.phone,
   'profile': instance.profile.toJson(),
   'role': _$AccountRoleEnumMap[instance.role]!,
   'status': _$AccountStatusEnumMap[instance.status]!,
-  'username': ?instance.username,
+  'username': instance.username,
 };
 
 const _$AccountRoleEnumMap = {

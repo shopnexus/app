@@ -40,7 +40,7 @@ class Review {
 
     required this.replyCount,
 
-    this.updatedAt,
+    required this.updatedAt,
 
     required this.votes,
   });
@@ -77,7 +77,7 @@ class Review {
   final int replyCount;
 
   /// Null until the author edits it. A review rewritten after the seller answered it should say so, and the reply thread cannot say it on its own.
-  @JsonKey(name: r'updated_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'updated_at', required: true, includeIfNull: true)
   final DateTime? updatedAt;
 
   @JsonKey(name: r'votes', required: true, includeIfNull: false)

@@ -18,7 +18,7 @@ part 'listing_location.g.dart';
 class ListingLocation {
   /// Returns a new [ListingLocation] instance.
   ListingLocation({
-    this.distanceKm,
+    required this.distanceKm,
 
     required this.districtCode,
 
@@ -35,7 +35,7 @@ class ListingLocation {
 
   /// How far the goods are from where the buyer said they are. Absent unless the browse sent a position, and absent for an address that was never geocoded.
   // minimum: 0
-  @JsonKey(name: r'distance_km', required: false, includeIfNull: false)
+  @JsonKey(name: r'distance_km', required: true, includeIfNull: true)
   final double? distanceKm;
 
   /// Null where the country has no district tier. Code and name travel together.
@@ -71,7 +71,7 @@ class ListingLocation {
 
   @override
   int get hashCode =>
-      distanceKm.hashCode +
+      (distanceKm == null ? 0 : distanceKm.hashCode) +
       (districtCode == null ? 0 : districtCode.hashCode) +
       (districtName == null ? 0 : districtName.hashCode) +
       provinceCode.hashCode +

@@ -64,7 +64,7 @@ class AccountRepository {
       data: Stream.fromIterable([bytes]),
       options: Options(
         headers: {
-          ...?reserved.headers,
+          ...reserved.headers,
           Headers.contentLengthHeader: bytes.length,
         },
         contentType: mime,
@@ -179,7 +179,7 @@ class AccountRepository {
     )).data;
     final orders = page?.data ?? const <Order>[];
     final listings = await _listingsById(
-      orders.expand((order) => order.items ?? const <OrderItem>[]),
+      orders.expand((order) => order.items),
     );
     return [for (final order in orders) _view(order, listings)];
   }
@@ -187,7 +187,7 @@ class AccountRepository {
   Future<OrderView> buyerOrder(String id) async {
     final order = (await _orderApi.ordersIdGet(id: id)).data?.data;
     if (order == null) throw StateError('empty order');
-    return _view(order, await _listingsById(order.items ?? const []));
+    return _view(order, await _listingsById(order.items));
   }
 
   /// [pending] is the contract's own filter: lines the money has not produced an
@@ -213,7 +213,7 @@ class AccountRepository {
       _orderApi.itemsIdCancellationPost(id: itemId);
 
   OrderView _view(Order order, Map<String, Listing> listings) =>
-      OrderView(order: order, lines: _lines(order.items ?? const [], listings));
+      OrderView(order: order, lines: _lines(order.items, listings));
 
   List<OrderLineView> _lines(
     Iterable<OrderItem> items,

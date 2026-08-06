@@ -229,6 +229,9 @@ final _stubRefund = Refund(
   orderId: 'ord_1',
   reason: 'stub',
   status: RefundStatus.awaitingSellerReview,
+  deadlineAt: null,
+  sellerDecidedAt: null,
+  returnedAt: null,
 );
 
 class _FakeDashboardNotifier extends SellerDashboardNotifier {

@@ -117,7 +117,7 @@ class _Body extends ConsumerWidget {
               separatorBuilder: (_, _) => const SizedBox(width: 8),
               itemBuilder: (_, index) {
                 final url = refund.attachments[index].url;
-                if (url == null || url.isEmpty) {
+                if (url.isEmpty) {
                   // `url` is absent until a module can presign one.
                   return const SizedBox(
                     width: 96,

@@ -12,15 +12,26 @@ OrderAddressSnapshot _$OrderAddressSnapshotFromJson(
   'OrderAddressSnapshot',
   json,
   ($checkedConvert) {
-    $checkKeys(json, requiredKeys: const ['country', 'full_name', 'phone']);
+    $checkKeys(
+      json,
+      requiredKeys: const [
+        'address_detail',
+        'country',
+        'district_code',
+        'full_name',
+        'phone',
+        'province_code',
+        'ward_code',
+      ],
+    );
     final val = OrderAddressSnapshot(
       addressDetail: $checkedConvert('address_detail', (v) => v as String?),
       country: $checkedConvert('country', (v) => v as String),
       districtCode: $checkedConvert('district_code', (v) => v as String?),
       fullName: $checkedConvert('full_name', (v) => v as String),
       phone: $checkedConvert('phone', (v) => v as String),
-      provinceCode: $checkedConvert('province_code', (v) => v as String?),
-      wardCode: $checkedConvert('ward_code', (v) => v as String?),
+      provinceCode: $checkedConvert('province_code', (v) => v as String),
+      wardCode: $checkedConvert('ward_code', (v) => v as String),
     );
     return val;
   },
@@ -36,11 +47,11 @@ OrderAddressSnapshot _$OrderAddressSnapshotFromJson(
 Map<String, dynamic> _$OrderAddressSnapshotToJson(
   OrderAddressSnapshot instance,
 ) => <String, dynamic>{
-  'address_detail': ?instance.addressDetail,
+  'address_detail': instance.addressDetail,
   'country': instance.country,
-  'district_code': ?instance.districtCode,
+  'district_code': instance.districtCode,
   'full_name': instance.fullName,
   'phone': instance.phone,
-  'province_code': ?instance.provinceCode,
-  'ward_code': ?instance.wardCode,
+  'province_code': instance.provinceCode,
+  'ward_code': instance.wardCode,
 };

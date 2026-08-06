@@ -20,46 +20,46 @@ part 'pending_edit.g.dart';
 class PendingEdit {
   /// Returns a new [PendingEdit] instance.
   PendingEdit({
-    this.attachments,
+    required this.attachments,
 
-    this.categoryId,
+    required this.categoryId,
 
-    this.condition,
+    required this.condition,
 
-    this.description,
+    required this.description,
 
-    this.name,
+    required this.name,
 
-    this.priceMode,
+    required this.priceMode,
 
-    this.specifications,
+    required this.specifications,
 
-    this.tags,
+    required this.tags,
   });
 
-  @JsonKey(name: r'attachments', required: false, includeIfNull: false)
-  final List<String>? attachments;
+  @JsonKey(name: r'attachments', required: true, includeIfNull: false)
+  final List<String> attachments;
 
-  @JsonKey(name: r'category_id', required: false, includeIfNull: false)
+  @JsonKey(name: r'category_id', required: true, includeIfNull: true)
   final String? categoryId;
 
-  @JsonKey(name: r'condition', required: false, includeIfNull: false)
+  @JsonKey(name: r'condition', required: true, includeIfNull: true)
   final ListingCondition? condition;
 
-  @JsonKey(name: r'description', required: false, includeIfNull: false)
+  @JsonKey(name: r'description', required: true, includeIfNull: true)
   final String? description;
 
-  @JsonKey(name: r'name', required: false, includeIfNull: false)
+  @JsonKey(name: r'name', required: true, includeIfNull: true)
   final String? name;
 
-  @JsonKey(name: r'price_mode', required: false, includeIfNull: false)
+  @JsonKey(name: r'price_mode', required: true, includeIfNull: true)
   final PriceMode? priceMode;
 
-  @JsonKey(name: r'specifications', required: false, includeIfNull: false)
-  final Map<String, Object>? specifications;
+  @JsonKey(name: r'specifications', required: true, includeIfNull: false)
+  final Map<String, Object> specifications;
 
-  @JsonKey(name: r'tags', required: false, includeIfNull: false)
-  final List<String>? tags;
+  @JsonKey(name: r'tags', required: true, includeIfNull: false)
+  final List<String> tags;
 
   @override
   bool operator ==(Object other) =>
@@ -77,11 +77,11 @@ class PendingEdit {
   @override
   int get hashCode =>
       attachments.hashCode +
-      categoryId.hashCode +
-      condition.hashCode +
-      description.hashCode +
-      name.hashCode +
-      priceMode.hashCode +
+      (categoryId == null ? 0 : categoryId.hashCode) +
+      (condition == null ? 0 : condition.hashCode) +
+      (description == null ? 0 : description.hashCode) +
+      (name == null ? 0 : name.hashCode) +
+      (priceMode == null ? 0 : priceMode.hashCode) +
       specifications.hashCode +
       tags.hashCode;
 

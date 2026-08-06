@@ -25,7 +25,7 @@ class Notification {
 
     required this.payload,
 
-    this.readAt,
+    required this.readAt,
 
     required this.title,
   });
@@ -41,7 +41,7 @@ class Notification {
   @JsonKey(name: r'payload', required: true, includeIfNull: false)
   final Map<String, Object> payload;
 
-  @JsonKey(name: r'read_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'read_at', required: true, includeIfNull: true)
   final DateTime? readAt;
 
   @JsonKey(name: r'title', required: true, includeIfNull: false)

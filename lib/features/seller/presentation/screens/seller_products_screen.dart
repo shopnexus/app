@@ -399,13 +399,13 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                   ],
                 ),
                 // On the card, so chips cost no request per row.
-                if (listing.tags?.isNotEmpty ?? false) ...[
+                if (listing.tags.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   Wrap(
                     spacing: 4,
                     runSpacing: 4,
                     children: [
-                      for (final tag in listing.tags!)
+                      for (final tag in listing.tags)
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 6,

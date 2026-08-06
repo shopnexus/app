@@ -23,7 +23,7 @@ class Me {
   Me({
     required this.createdAt,
 
-    this.email,
+    required this.email,
 
     required this.emailVerified,
 
@@ -33,7 +33,7 @@ class Me {
 
     required this.identityVerified,
 
-    this.phone,
+    required this.phone,
 
     required this.profile,
 
@@ -41,13 +41,13 @@ class Me {
 
     required this.status,
 
-    this.username,
+    required this.username,
   });
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-  @JsonKey(name: r'email', required: false, includeIfNull: false)
+  @JsonKey(name: r'email', required: true, includeIfNull: true)
   final String? email;
 
   @JsonKey(name: r'email_verified', required: true, includeIfNull: false)
@@ -64,7 +64,7 @@ class Me {
   @JsonKey(name: r'identity_verified', required: true, includeIfNull: false)
   final bool identityVerified;
 
-  @JsonKey(name: r'phone', required: false, includeIfNull: false)
+  @JsonKey(name: r'phone', required: true, includeIfNull: true)
   final String? phone;
 
   @JsonKey(name: r'profile', required: true, includeIfNull: false)
@@ -76,7 +76,7 @@ class Me {
   @JsonKey(name: r'status', required: true, includeIfNull: false)
   final AccountStatus status;
 
-  @JsonKey(name: r'username', required: false, includeIfNull: false)
+  @JsonKey(name: r'username', required: true, includeIfNull: true)
   final String? username;
 
   @override

@@ -12,7 +12,14 @@ IdentityVerificationTicket _$IdentityVerificationTicketFromJson(
   'IdentityVerificationTicket',
   json,
   ($checkedConvert) {
-    $checkKeys(json, requiredKeys: const ['document']);
+    $checkKeys(
+      json,
+      requiredKeys: const [
+        'document',
+        'vendor_session_expires_at',
+        'vendor_session_url',
+      ],
+    );
     final val = IdentityVerificationTicket(
       document: $checkedConvert(
         'document',
@@ -39,7 +46,7 @@ Map<String, dynamic> _$IdentityVerificationTicketToJson(
   IdentityVerificationTicket instance,
 ) => <String, dynamic>{
   'document': instance.document.toJson(),
-  'vendor_session_expires_at': ?instance.vendorSessionExpiresAt
+  'vendor_session_expires_at': instance.vendorSessionExpiresAt
       ?.toIso8601String(),
-  'vendor_session_url': ?instance.vendorSessionUrl,
+  'vendor_session_url': instance.vendorSessionUrl,
 };

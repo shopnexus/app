@@ -21,9 +21,9 @@ class IdentityVerificationTicket {
   IdentityVerificationTicket({
     required this.document,
 
-    this.vendorSessionExpiresAt,
+    required this.vendorSessionExpiresAt,
 
-    this.vendorSessionUrl,
+    required this.vendorSessionUrl,
   });
 
   @JsonKey(name: r'document', required: true, includeIfNull: false)
@@ -31,13 +31,13 @@ class IdentityVerificationTicket {
 
   @JsonKey(
     name: r'vendor_session_expires_at',
-    required: false,
-    includeIfNull: false,
+    required: true,
+    includeIfNull: true,
   )
   final DateTime? vendorSessionExpiresAt;
 
   /// Where the caller finishes the check with the vendor.
-  @JsonKey(name: r'vendor_session_url', required: false, includeIfNull: false)
+  @JsonKey(name: r'vendor_session_url', required: true, includeIfNull: true)
   final String? vendorSessionUrl;
 
   @override

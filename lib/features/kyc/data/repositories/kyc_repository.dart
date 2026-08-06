@@ -78,7 +78,7 @@ class KycRepository {
       data: Stream.fromIterable([bytes]),
       options: Options(
         headers: {
-          ...?reserved.headers,
+          ...reserved.headers,
           Headers.contentLengthHeader: bytes.length,
         },
         contentType: mimeType,

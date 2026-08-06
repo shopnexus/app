@@ -19,7 +19,9 @@ ListingSuggestion _$ListingSuggestionFromJson(Map<String, dynamic> json) =>
             'description',
             'name',
             'price',
+            'specifications',
             'tags',
+            'transcript',
             'weight_g',
           ],
         );
@@ -34,7 +36,7 @@ ListingSuggestion _$ListingSuggestionFromJson(Map<String, dynamic> json) =>
           price: $checkedConvert('price', (v) => (v as num?)?.toInt()),
           specifications: $checkedConvert(
             'specifications',
-            (v) => (v as Map<String, dynamic>?)?.map(
+            (v) => (v as Map<String, dynamic>).map(
               (k, e) => MapEntry(k, e as Object),
             ),
           ),
@@ -42,7 +44,7 @@ ListingSuggestion _$ListingSuggestionFromJson(Map<String, dynamic> json) =>
             'tags',
             (v) => (v as List<dynamic>).map((e) => e as String).toList(),
           ),
-          transcript: $checkedConvert('transcript', (v) => v as String?),
+          transcript: $checkedConvert('transcript', (v) => v as String),
           weightG: $checkedConvert('weight_g', (v) => (v as num?)?.toInt()),
         );
         return val;
@@ -57,9 +59,9 @@ Map<String, dynamic> _$ListingSuggestionToJson(ListingSuggestion instance) =>
       'description': instance.description,
       'name': instance.name,
       'price': instance.price,
-      'specifications': ?instance.specifications,
+      'specifications': instance.specifications,
       'tags': instance.tags,
-      'transcript': ?instance.transcript,
+      'transcript': instance.transcript,
       'weight_g': instance.weightG,
     };
 

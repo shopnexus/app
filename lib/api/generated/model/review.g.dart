@@ -22,6 +22,7 @@ Review _$ReviewFromJson(Map<String, dynamic> json) => $checkedCreate(
         'rating',
         'replies',
         'reply_count',
+        'updated_at',
         'votes',
       ],
     );
@@ -80,6 +81,6 @@ Map<String, dynamic> _$ReviewToJson(Review instance) => <String, dynamic>{
   'rating': instance.rating,
   'replies': instance.replies.map((e) => e.toJson()).toList(),
   'reply_count': instance.replyCount,
-  'updated_at': ?instance.updatedAt?.toIso8601String(),
+  'updated_at': instance.updatedAt?.toIso8601String(),
   'votes': instance.votes.toJson(),
 };

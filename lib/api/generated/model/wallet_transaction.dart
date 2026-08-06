@@ -37,9 +37,9 @@ class WalletTransaction {
 
     required this.note,
 
-    this.refId,
+    required this.refId,
 
-    this.refType,
+    required this.refType,
 
     required this.seq,
   });
@@ -77,13 +77,13 @@ class WalletTransaction {
   @JsonKey(name: r'note', required: true, includeIfNull: false)
   final String note;
 
-  /// Opaque id of the referenced entity, its prefix given by `ref_type`.
-  @JsonKey(name: r'ref_id', required: false, includeIfNull: false)
-  final String? refId;
+  /// Opaque id of the referenced entity, its prefix given by `ref_type`. Empty when `ref_type` is.
+  @JsonKey(name: r'ref_id', required: true, includeIfNull: false)
+  final String refId;
 
-  /// What this movement was for. Null on an adjustment.
-  @JsonKey(name: r'ref_type', required: false, includeIfNull: false)
-  final WalletTransactionRefTypeEnum? refType;
+  /// What this movement was for. Empty on an adjustment, which references nothing.
+  @JsonKey(name: r'ref_type', required: true, includeIfNull: false)
+  final WalletTransactionRefTypeEnum refType;
 
   /// Position in this wallet's ledger, from 1. Identifies the row and orders it; a gap means a missing movement. Per wallet, so each currency counts from 1 again.
   // minimum: 1
@@ -118,8 +118,8 @@ class WalletTransaction {
       heldDelta.hashCode +
       kind.hashCode +
       note.hashCode +
-      (refId == null ? 0 : refId.hashCode) +
-      (refType == null ? 0 : refType.hashCode) +
+      refId.hashCode +
+      refType.hashCode +
       seq.hashCode;
 
   factory WalletTransaction.fromJson(Map<String, dynamic> json) =>
@@ -133,13 +133,17 @@ class WalletTransaction {
   }
 }
 
-/// What this movement was for. Null on an adjustment.
+/// What this movement was for. Empty on an adjustment, which references nothing.
 enum WalletTransactionRefTypeEnum {
-  /// What this movement was for. Null on an adjustment.
+  /// What this movement was for. Empty on an adjustment, which references nothing.
+  @JsonValue(r'')
+  empty(r''),
+
+  /// What this movement was for. Empty on an adjustment, which references nothing.
   @JsonValue(r'order')
   order(r'order'),
 
-  /// What this movement was for. Null on an adjustment.
+  /// What this movement was for. Empty on an adjustment, which references nothing.
   @JsonValue(r'payment-session')
   paymentSession(r'payment-session');
 

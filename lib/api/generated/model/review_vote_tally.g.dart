@@ -11,7 +11,10 @@ ReviewVoteTally _$ReviewVoteTallyFromJson(Map<String, dynamic> json) =>
       'ReviewVoteTally',
       json,
       ($checkedConvert) {
-        $checkKeys(json, requiredKeys: const ['helpful', 'not_helpful']);
+        $checkKeys(
+          json,
+          requiredKeys: const ['helpful', 'my_vote', 'not_helpful'],
+        );
         final val = ReviewVoteTally(
           helpful: $checkedConvert('helpful', (v) => (v as num).toInt()),
           myVote: $checkedConvert(
@@ -28,7 +31,7 @@ ReviewVoteTally _$ReviewVoteTallyFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ReviewVoteTallyToJson(ReviewVoteTally instance) =>
     <String, dynamic>{
       'helpful': instance.helpful,
-      'my_vote': ?_$ReviewVoteTallyMyVoteEnumEnumMap[instance.myVote],
+      'my_vote': _$ReviewVoteTallyMyVoteEnumEnumMap[instance.myVote],
       'not_helpful': instance.notHelpful,
     };
 

@@ -20,7 +20,7 @@ class UploadSlot {
   UploadSlot({
     required this.expiresAt,
 
-    this.headers,
+    required this.headers,
 
     required this.resourceId,
 
@@ -31,8 +31,8 @@ class UploadSlot {
   final DateTime expiresAt;
 
   /// Send these with the PUT verbatim, when the signature covers any.
-  @JsonKey(name: r'headers', required: false, includeIfNull: false)
-  final Map<String, String>? headers;
+  @JsonKey(name: r'headers', required: true, includeIfNull: false)
+  final Map<String, String> headers;
 
   @JsonKey(name: r'resource_id', required: true, includeIfNull: false)
   final String resourceId;

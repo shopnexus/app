@@ -20,17 +20,17 @@ part 'profile.g.dart';
 class Profile {
   /// Returns a new [Profile] instance.
   Profile({
-    this.avatar,
+    required this.avatar,
 
     required this.country,
 
     required this.createdAt,
 
-    this.dateOfBirth,
+    required this.dateOfBirth,
 
-    this.description,
+    required this.description,
 
-    this.gender,
+    required this.gender,
 
     required this.locale,
 
@@ -39,7 +39,7 @@ class Profile {
     required this.timezone,
   });
 
-  @JsonKey(name: r'avatar', required: false, includeIfNull: false)
+  @JsonKey(name: r'avatar', required: true, includeIfNull: true)
   final Resource? avatar;
 
   @JsonKey(name: r'country', required: true, includeIfNull: false)
@@ -48,13 +48,13 @@ class Profile {
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
 
-  @JsonKey(name: r'date_of_birth', required: false, includeIfNull: false)
+  @JsonKey(name: r'date_of_birth', required: true, includeIfNull: true)
   final String? dateOfBirth;
 
-  @JsonKey(name: r'description', required: false, includeIfNull: false)
+  @JsonKey(name: r'description', required: true, includeIfNull: true)
   final String? description;
 
-  @JsonKey(name: r'gender', required: false, includeIfNull: false)
+  @JsonKey(name: r'gender', required: true, includeIfNull: true)
   final ProfileGender? gender;
 
   @JsonKey(name: r'locale', required: true, includeIfNull: false)

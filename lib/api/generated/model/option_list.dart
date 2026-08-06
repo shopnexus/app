@@ -18,14 +18,14 @@ part 'option_list.g.dart';
 )
 class OptionList {
   /// Returns a new [OptionList] instance.
-  OptionList({required this.options, this.providers});
+  OptionList({required this.options, required this.providers});
 
   @JsonKey(name: r'options', required: true, includeIfNull: false)
   final List<Option> options;
 
   /// Staff only. What a row's `provider` may be set to in this deployment, so a switch is a choice from a list rather than a guess.
-  @JsonKey(name: r'providers', required: false, includeIfNull: false)
-  final List<String>? providers;
+  @JsonKey(name: r'providers', required: true, includeIfNull: false)
+  final List<String> providers;
 
   @override
   bool operator ==(Object other) =>

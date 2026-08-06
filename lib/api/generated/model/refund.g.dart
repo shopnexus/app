@@ -16,9 +16,12 @@ Refund _$RefundFromJson(Map<String, dynamic> json) => $checkedCreate(
         'attachments',
         'buyer_id',
         'created_at',
+        'deadline_at',
         'id',
         'order_id',
         'reason',
+        'returned_at',
+        'seller_decided_at',
         'status',
       ],
     );
@@ -70,12 +73,12 @@ Map<String, dynamic> _$RefundToJson(Refund instance) => <String, dynamic>{
   'attachments': instance.attachments.map((e) => e.toJson()).toList(),
   'buyer_id': instance.buyerId,
   'created_at': instance.createdAt.toIso8601String(),
-  'deadline_at': ?instance.deadlineAt?.toIso8601String(),
+  'deadline_at': instance.deadlineAt?.toIso8601String(),
   'id': instance.id,
   'order_id': instance.orderId,
   'reason': instance.reason,
-  'returned_at': ?instance.returnedAt?.toIso8601String(),
-  'seller_decided_at': ?instance.sellerDecidedAt?.toIso8601String(),
+  'returned_at': instance.returnedAt?.toIso8601String(),
+  'seller_decided_at': instance.sellerDecidedAt?.toIso8601String(),
   'status': _$RefundStatusEnumMap[instance.status]!,
 };
 

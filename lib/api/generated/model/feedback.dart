@@ -30,7 +30,7 @@ class Feedback {
 
     required this.orderId,
 
-    this.publishedAt,
+    required this.publishedAt,
 
     required this.rateeId,
 
@@ -55,7 +55,7 @@ class Feedback {
   final String orderId;
 
   /// Null while the rating is still blind. Only published feedback is visible to anyone but its author and counted towards reputation.
-  @JsonKey(name: r'published_at', required: false, includeIfNull: false)
+  @JsonKey(name: r'published_at', required: true, includeIfNull: true)
   final DateTime? publishedAt;
 
   @JsonKey(name: r'ratee_id', required: true, includeIfNull: false)
