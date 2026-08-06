@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_provider.dart';
 
@@ -26,6 +28,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
     final sellerProfileAsync = ref.watch(
       publicProfileProvider(widget.vendorId),
     );
+    final isMe = ref.watch(profileProvider).value?.id == widget.vendorId;
     final sellerProductsAsync = ref.watch(
       sellerProductsProvider(widget.vendorId),
     );
@@ -92,9 +95,11 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
+                          // Không phải "Cửa hàng đối tác": đây là trang của một
+                          // *người*, và spec không có thực thể shop nào.
                           profile.name.isNotEmpty
                               ? profile.name
-                              : 'Cửa hàng đối tác',
+                              : 'Người dùng ShopNexus',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 22,
@@ -103,6 +108,15 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                             color: Color(0xFF1A1C1B),
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        _TrustRow(profile: profile),
+                        if (!isMe) ...[
+                          const SizedBox(height: 12),
+                          _FollowButton(
+                            accountId: widget.vendorId,
+                            following: profile.following,
+                          ),
+                        ],
                         if (profile.description != null &&
                             profile.description!.isNotEmpty) ...[
                           const SizedBox(height: 8),
@@ -436,7 +450,6 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
         // nơi đúng để xem chúng: đánh giá là thứ người khác đọc về mình, nên nó
         // thuộc trang công khai chứ không phải một hàng menu trong trang tài
         // khoản.
-        final isMe = ref.watch(profileProvider).value?.id == widget.vendorId;
 
         return Container(
           width: double.infinity,
@@ -465,7 +478,8 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                   color: Color(0xFF6E7977),
                 ),
               ),
-              if (isMe && _selectedTabIndex == 2) ...[
+              if (ref.watch(profileProvider).value?.id == widget.vendorId &&
+                  _selectedTabIndex == 2) ...[
                 const SizedBox(height: 16),
                 OutlinedButton.icon(
                   onPressed: () => context.push('/account/reviews'),
@@ -589,5 +603,135 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
         ],
       ),
     );
+  }
+}
+
+/// Bằng chứng tin cậy **thật**, ở trang quyết định xem một người có đáng tin.
+///
+/// Mọi người bán trên ShopNexus đều đã định danh — server không cho đăng tin nếu
+/// chưa — nên badge này là tài sản tin cậy lớn nhất của một người bán mới, người
+/// chưa có đánh giá nào.
+class _TrustRow extends StatelessWidget {
+  const _TrustRow({required this.profile});
+
+  final PublicAccount profile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 12,
+      runSpacing: 4,
+      children: [
+        if (profile.identityVerified)
+          const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.verified_user_rounded,
+                size: 15,
+                color: Color(0xFF005049),
+              ),
+              SizedBox(width: 4),
+              Text(
+                'Đã định danh',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF005049),
+                ),
+              ),
+            ],
+          ),
+        Text(
+          '${profile.followerCount} người theo dõi',
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13,
+            color: Color(0xFF6E7977),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Theo dõi / bỏ theo dõi, với trạng thái lạc quan.
+///
+/// Lạc quan vì hai lý do: kết quả gần như luôn thành công, và một nút đứng im nửa
+/// giây sau khi chạm sẽ bị chạm lần nữa. Hỏng thì trả lại đúng trạng thái cũ và
+/// nói ra — chứ không im lặng để lại một nút nói sai.
+class _FollowButton extends ConsumerStatefulWidget {
+  const _FollowButton({required this.accountId, required this.following});
+
+  final String accountId;
+  final bool following;
+
+  @override
+  ConsumerState<_FollowButton> createState() => _FollowButtonState();
+}
+
+class _FollowButtonState extends ConsumerState<_FollowButton> {
+  bool? _optimistic;
+  bool _busy = false;
+
+  bool get _following => _optimistic ?? widget.following;
+
+  Future<void> _toggle() async {
+    final next = !_following;
+    setState(() {
+      _optimistic = next;
+      _busy = true;
+    });
+    try {
+      final repository = ref.read(accountRepositoryProvider);
+      if (next) {
+        await repository.follow(widget.accountId);
+      } else {
+        await repository.unfollow(widget.accountId);
+      }
+      // Đọc lại để `follower_count` khớp, không chỉ mỗi cái nút.
+      ref.invalidate(publicProfileProvider(widget.accountId));
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _optimistic = !next);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không thực hiện được, thử lại sau')),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final following = _following;
+
+    return following
+        ? OutlinedButton.icon(
+            onPressed: _busy ? null : _toggle,
+            icon: const Icon(Icons.check_rounded, size: 18),
+            label: const Text('Đang theo dõi'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF005049),
+              side: const BorderSide(color: Color(0xFF005049)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          )
+        : ElevatedButton.icon(
+            onPressed: _busy ? null : _toggle,
+            icon: const Icon(Icons.add_rounded, size: 18),
+            label: const Text('Theo dõi'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF005049),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
   }
 }

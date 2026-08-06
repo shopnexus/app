@@ -190,6 +190,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     onTap: () => context.push('/account/wishlist'),
                   ),
                   AccountMenuTile(
+                    icon: Icons.person_add_alt_outlined,
+                    // Người, không shop: ở C2C thì "tôi muốn thấy người này đăng
+                    // gì nữa" là câu hỏi thật, và `follows` gắn với account.
+                    title: 'Đang theo dõi',
+                    onTap: () => context.push('/account/following'),
+                  ),
+                  AccountMenuTile(
                     icon: Icons.location_on_outlined,
                     title: 'Địa chỉ',
                     onTap: () => context.push('/account/addresses'),

@@ -619,7 +619,9 @@ $ProfileCopyWith<$Res>? get profile {
 /// @nodoc
 mixin _$PublicAccount {
 
- String get id; String get name;@JsonKey(name: 'follower_count') int get followerCount;@JsonKey(name: 'identity_verified') bool get identityVerified;@JsonKey(name: 'created_at') String get createdAt; String? get description; Resource? get avatar;
+ String get id; String get name;@JsonKey(name: 'follower_count') int get followerCount;@JsonKey(name: 'identity_verified') bool get identityVerified;/// Quan hệ của *người đọc* với account này — false khi đọc ẩn danh và trên
+/// trang của chính mình. Nút theo dõi không có nó thì không biết vẽ chiều nào.
+@JsonKey(name: 'following') bool get following;@JsonKey(name: 'created_at') String get createdAt; String? get description; Resource? get avatar;
 /// Create a copy of PublicAccount
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -632,16 +634,16 @@ $PublicAccountCopyWith<PublicAccount> get copyWith => _$PublicAccountCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PublicAccount&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.followerCount, followerCount) || other.followerCount == followerCount)&&(identical(other.identityVerified, identityVerified) || other.identityVerified == identityVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PublicAccount&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.followerCount, followerCount) || other.followerCount == followerCount)&&(identical(other.identityVerified, identityVerified) || other.identityVerified == identityVerified)&&(identical(other.following, following) || other.following == following)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,followerCount,identityVerified,createdAt,description,avatar);
+int get hashCode => Object.hash(runtimeType,id,name,followerCount,identityVerified,following,createdAt,description,avatar);
 
 @override
 String toString() {
-  return 'PublicAccount(id: $id, name: $name, followerCount: $followerCount, identityVerified: $identityVerified, createdAt: $createdAt, description: $description, avatar: $avatar)';
+  return 'PublicAccount(id: $id, name: $name, followerCount: $followerCount, identityVerified: $identityVerified, following: $following, createdAt: $createdAt, description: $description, avatar: $avatar)';
 }
 
 
@@ -652,7 +654,7 @@ abstract mixin class $PublicAccountCopyWith<$Res>  {
   factory $PublicAccountCopyWith(PublicAccount value, $Res Function(PublicAccount) _then) = _$PublicAccountCopyWithImpl;
 @useResult
 $Res call({
- String id, String name,@JsonKey(name: 'follower_count') int followerCount,@JsonKey(name: 'identity_verified') bool identityVerified,@JsonKey(name: 'created_at') String createdAt, String? description, Resource? avatar
+ String id, String name,@JsonKey(name: 'follower_count') int followerCount,@JsonKey(name: 'identity_verified') bool identityVerified,@JsonKey(name: 'following') bool following,@JsonKey(name: 'created_at') String createdAt, String? description, Resource? avatar
 });
 
 
@@ -669,12 +671,13 @@ class _$PublicAccountCopyWithImpl<$Res>
 
 /// Create a copy of PublicAccount
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? followerCount = null,Object? identityVerified = null,Object? createdAt = null,Object? description = freezed,Object? avatar = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? followerCount = null,Object? identityVerified = null,Object? following = null,Object? createdAt = null,Object? description = freezed,Object? avatar = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,followerCount: null == followerCount ? _self.followerCount : followerCount // ignore: cast_nullable_to_non_nullable
 as int,identityVerified: null == identityVerified ? _self.identityVerified : identityVerified // ignore: cast_nullable_to_non_nullable
+as bool,following: null == following ? _self.following : following // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
@@ -763,10 +766,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(name: 'follower_count')  int followerCount, @JsonKey(name: 'identity_verified')  bool identityVerified, @JsonKey(name: 'created_at')  String createdAt,  String? description,  Resource? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(name: 'follower_count')  int followerCount, @JsonKey(name: 'identity_verified')  bool identityVerified, @JsonKey(name: 'following')  bool following, @JsonKey(name: 'created_at')  String createdAt,  String? description,  Resource? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PublicAccount() when $default != null:
-return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_that.createdAt,_that.description,_that.avatar);case _:
+return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_that.following,_that.createdAt,_that.description,_that.avatar);case _:
   return orElse();
 
 }
@@ -784,10 +787,10 @@ return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(name: 'follower_count')  int followerCount, @JsonKey(name: 'identity_verified')  bool identityVerified, @JsonKey(name: 'created_at')  String createdAt,  String? description,  Resource? avatar)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(name: 'follower_count')  int followerCount, @JsonKey(name: 'identity_verified')  bool identityVerified, @JsonKey(name: 'following')  bool following, @JsonKey(name: 'created_at')  String createdAt,  String? description,  Resource? avatar)  $default,) {final _that = this;
 switch (_that) {
 case _PublicAccount():
-return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_that.createdAt,_that.description,_that.avatar);case _:
+return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_that.following,_that.createdAt,_that.description,_that.avatar);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -804,10 +807,10 @@ return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name, @JsonKey(name: 'follower_count')  int followerCount, @JsonKey(name: 'identity_verified')  bool identityVerified, @JsonKey(name: 'created_at')  String createdAt,  String? description,  Resource? avatar)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name, @JsonKey(name: 'follower_count')  int followerCount, @JsonKey(name: 'identity_verified')  bool identityVerified, @JsonKey(name: 'following')  bool following, @JsonKey(name: 'created_at')  String createdAt,  String? description,  Resource? avatar)?  $default,) {final _that = this;
 switch (_that) {
 case _PublicAccount() when $default != null:
-return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_that.createdAt,_that.description,_that.avatar);case _:
+return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_that.following,_that.createdAt,_that.description,_that.avatar);case _:
   return null;
 
 }
@@ -819,13 +822,16 @@ return $default(_that.id,_that.name,_that.followerCount,_that.identityVerified,_
 @JsonSerializable()
 
 class _PublicAccount extends PublicAccount {
-  const _PublicAccount({required this.id, required this.name, @JsonKey(name: 'follower_count') required this.followerCount, @JsonKey(name: 'identity_verified') required this.identityVerified, @JsonKey(name: 'created_at') required this.createdAt, this.description, this.avatar}): super._();
+  const _PublicAccount({required this.id, required this.name, @JsonKey(name: 'follower_count') required this.followerCount, @JsonKey(name: 'identity_verified') required this.identityVerified, @JsonKey(name: 'following') required this.following, @JsonKey(name: 'created_at') required this.createdAt, this.description, this.avatar}): super._();
   factory _PublicAccount.fromJson(Map<String, dynamic> json) => _$PublicAccountFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override@JsonKey(name: 'follower_count') final  int followerCount;
 @override@JsonKey(name: 'identity_verified') final  bool identityVerified;
+/// Quan hệ của *người đọc* với account này — false khi đọc ẩn danh và trên
+/// trang của chính mình. Nút theo dõi không có nó thì không biết vẽ chiều nào.
+@override@JsonKey(name: 'following') final  bool following;
 @override@JsonKey(name: 'created_at') final  String createdAt;
 @override final  String? description;
 @override final  Resource? avatar;
@@ -843,16 +849,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PublicAccount&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.followerCount, followerCount) || other.followerCount == followerCount)&&(identical(other.identityVerified, identityVerified) || other.identityVerified == identityVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PublicAccount&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.followerCount, followerCount) || other.followerCount == followerCount)&&(identical(other.identityVerified, identityVerified) || other.identityVerified == identityVerified)&&(identical(other.following, following) || other.following == following)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,followerCount,identityVerified,createdAt,description,avatar);
+int get hashCode => Object.hash(runtimeType,id,name,followerCount,identityVerified,following,createdAt,description,avatar);
 
 @override
 String toString() {
-  return 'PublicAccount(id: $id, name: $name, followerCount: $followerCount, identityVerified: $identityVerified, createdAt: $createdAt, description: $description, avatar: $avatar)';
+  return 'PublicAccount(id: $id, name: $name, followerCount: $followerCount, identityVerified: $identityVerified, following: $following, createdAt: $createdAt, description: $description, avatar: $avatar)';
 }
 
 
@@ -863,7 +869,7 @@ abstract mixin class _$PublicAccountCopyWith<$Res> implements $PublicAccountCopy
   factory _$PublicAccountCopyWith(_PublicAccount value, $Res Function(_PublicAccount) _then) = __$PublicAccountCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name,@JsonKey(name: 'follower_count') int followerCount,@JsonKey(name: 'identity_verified') bool identityVerified,@JsonKey(name: 'created_at') String createdAt, String? description, Resource? avatar
+ String id, String name,@JsonKey(name: 'follower_count') int followerCount,@JsonKey(name: 'identity_verified') bool identityVerified,@JsonKey(name: 'following') bool following,@JsonKey(name: 'created_at') String createdAt, String? description, Resource? avatar
 });
 
 
@@ -880,12 +886,13 @@ class __$PublicAccountCopyWithImpl<$Res>
 
 /// Create a copy of PublicAccount
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? followerCount = null,Object? identityVerified = null,Object? createdAt = null,Object? description = freezed,Object? avatar = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? followerCount = null,Object? identityVerified = null,Object? following = null,Object? createdAt = null,Object? description = freezed,Object? avatar = freezed,}) {
   return _then(_PublicAccount(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,followerCount: null == followerCount ? _self.followerCount : followerCount // ignore: cast_nullable_to_non_nullable
 as int,identityVerified: null == identityVerified ? _self.identityVerified : identityVerified // ignore: cast_nullable_to_non_nullable
+as bool,following: null == following ? _self.following : following // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable

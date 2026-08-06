@@ -64,7 +64,7 @@ class Refund {
   @JsonKey(name: r'reason', required: true, includeIfNull: false)
   final String reason;
 
-  /// When the return reached the seller and the inspection window opened.
+  /// When the return leg was reported delivered. Set by either party's report, since it answers \"is there anything left to ship\" for a later verdict — whose report it was is what `status` says.
   @JsonKey(name: r'returned_at', required: true, includeIfNull: true)
   final DateTime? returnedAt;
 

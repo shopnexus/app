@@ -5,6 +5,7 @@ import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
     as generated;
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/confirm_receipt_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
@@ -173,6 +174,32 @@ class AccountRepository {
       _api.contactsIdDelete(id: contactId);
 
   // --- Wishlist ---
+  /// Theo dõi một người, không một shop: `follows` gắn với account, và ở C2C thì
+  /// "tôi muốn thấy người này đăng gì nữa" là câu hỏi thật.
+  Future<void> follow(String accountId) =>
+      _api.followsAccountIDPut(accountID: accountId);
+
+  Future<void> unfollow(String accountId) =>
+      _api.followsAccountIDDelete(accountID: accountId);
+
+  /// Những người tôi theo dõi. Cursor-less: route này phân trang bằng page/limit.
+  Future<List<AccountSummary>> following({int page = 1, int limit = 20}) async =>
+      (await _api.meFollowingGet(page: page, limit: limit)).data?.data ??
+      const [];
+
+  /// Người theo dõi một account — đọc được bởi bất kỳ ai, như chính trang đó.
+  Future<List<AccountSummary>> followers(
+    String accountId, {
+    int page = 1,
+    int limit = 20,
+  }) async =>
+      (await _api.accountsIdFollowersGet(
+        id: accountId,
+        page: page,
+        limit: limit,
+      )).data?.data ??
+      const [];
+
   Future<void> addFavorite(String listingId) =>
       _apiService.addFavorite(listingId);
 

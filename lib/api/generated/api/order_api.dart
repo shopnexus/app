@@ -2718,7 +2718,7 @@ class OrderApi {
   }
 
   /// Accept a refund (seller)
-  /// Grants it without staff. The goods have to come back first, so this books the return shipment on the same carrier as the outbound leg and moves the refund to &#x60;returning&#x60;; the money goes back once that leg is delivered and the seller has not escalated it. No body — there is nothing left to choose.
+  /// Grants it without staff. The goods have to come back first, so this books the return shipment on the same carrier as the outbound leg and moves the refund to &#x60;returning&#x60;; the money goes back once the seller has reported that leg delivered and has not escalated what arrived. No body — there is nothing left to choose.
   ///
   /// Parameters:
   /// * [id]
@@ -3032,7 +3032,7 @@ class OrderApi {
   }
 
   /// Report a checkpoint on the leg carrying the goods back
-  /// The return leg exists only from the moment a refund is granted, and &#x60;delivered&#x60; is what moves the case to &#x60;returned&#x60; and opens the seller&#39;s inspection window. It is the only exit from &#x60;returning&#x60;.  Either party to the order may report it. The buyer posted the parcel and the seller received it, and requiring the seller alone would let one who simply never confirms strand the escrow with nobody on a clock — which is what having no writer at all did. A buyer who claims a delivery that did not happen is answered by the seller escalating, which is exactly what that window is for.
+  /// The return leg exists only from the moment a refund is granted, and this is the only exit from &#x60;returning&#x60;. Either party to the order may report it, unlike the outbound leg: this one is never booked with a carrier, so no webhook can report it and requiring the seller alone would let one who simply never confirms strand the escrow with nobody on a clock.  Who reports &#x60;delivered&#x60; is what decides where the case goes. From the **seller** it is an acknowledgement that the goods arrived, so the refund moves to &#x60;returned&#x60; and their inspection window opens — and letting that window pass settles for the buyer, which is their own silence costing them. From the **buyer** it is a claim about somebody else&#39;s warehouse, so the refund moves to &#x60;disputed&#x60; and staff decide: on the inspection window a buyer who posted nothing at all had only to report &#x60;delivered&#x60; and wait out an inattentive seller to keep both the money and the goods.  Reporting a position short of &#x60;delivered&#x60; moves the leg and leaves the case in &#x60;returning&#x60; whoever sent it.
   ///
   /// Parameters:
   /// * [id]

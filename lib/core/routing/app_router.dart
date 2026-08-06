@@ -11,6 +11,7 @@ import 'package:shopnexus_flutter_app/features/auth/presentation/screens/forgot_
 import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/product_list_screen.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/categories_screen.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/search_screen.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/screens/following_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/profile_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/orders_screen.dart';
@@ -256,6 +257,11 @@ GoRouter appRouter(Ref ref) {
                 path: 'kyc',
                 name: 'kyc_verification',
                 builder: (context, state) => const KycVerificationScreen(),
+              ),
+              GoRoute(
+                path: 'following',
+                name: 'following',
+                builder: (context, state) => const FollowingScreen(),
               ),
               GoRoute(
                 path: 'reviews',

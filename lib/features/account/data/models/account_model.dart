@@ -73,6 +73,9 @@ abstract class PublicAccount with _$PublicAccount {
     required String name,
     @JsonKey(name: 'follower_count') required int followerCount,
     @JsonKey(name: 'identity_verified') required bool identityVerified,
+    /// Quan hệ của *người đọc* với account này — false khi đọc ẩn danh và trên
+    /// trang của chính mình. Nút theo dõi không có nó thì không biết vẽ chiều nào.
+    @JsonKey(name: 'following') required bool following,
     @JsonKey(name: 'created_at') required String createdAt,
     String? description,
     Resource? avatar,

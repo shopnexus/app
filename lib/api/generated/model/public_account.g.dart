@@ -18,6 +18,7 @@ PublicAccount _$PublicAccountFromJson(Map<String, dynamic> json) =>
             'created_at',
             'description',
             'follower_count',
+            'following',
             'id',
             'identity_verified',
             'name',
@@ -38,6 +39,7 @@ PublicAccount _$PublicAccountFromJson(Map<String, dynamic> json) =>
             'follower_count',
             (v) => (v as num).toInt(),
           ),
+          following: $checkedConvert('following', (v) => v as bool),
           id: $checkedConvert('id', (v) => v as String),
           identityVerified: $checkedConvert(
             'identity_verified',
@@ -60,6 +62,7 @@ Map<String, dynamic> _$PublicAccountToJson(PublicAccount instance) =>
       'created_at': instance.createdAt.toIso8601String(),
       'description': instance.description,
       'follower_count': instance.followerCount,
+      'following': instance.following,
       'id': instance.id,
       'identity_verified': instance.identityVerified,
       'name': instance.name,

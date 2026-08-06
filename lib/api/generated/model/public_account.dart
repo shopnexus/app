@@ -27,6 +27,8 @@ class PublicAccount {
 
     required this.followerCount,
 
+    required this.following,
+
     required this.id,
 
     required this.identityVerified,
@@ -48,6 +50,10 @@ class PublicAccount {
   @JsonKey(name: r'follower_count', required: true, includeIfNull: false)
   final int followerCount;
 
+  /// Whether the *reader* follows this account, so it is false for an anonymous read and on one's own page. It is here rather than left to the client because the alternative is paging the whole following list to find out, and a follow button with no state cannot tell \"follow\" from \"unfollow\".
+  @JsonKey(name: r'following', required: true, includeIfNull: false)
+  final bool following;
+
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
@@ -66,6 +72,7 @@ class PublicAccount {
           other.createdAt == createdAt &&
           other.description == description &&
           other.followerCount == followerCount &&
+          other.following == following &&
           other.id == id &&
           other.identityVerified == identityVerified &&
           other.name == name;
@@ -76,6 +83,7 @@ class PublicAccount {
       createdAt.hashCode +
       (description == null ? 0 : description.hashCode) +
       followerCount.hashCode +
+      following.hashCode +
       id.hashCode +
       identityVerified.hashCode +
       name.hashCode;

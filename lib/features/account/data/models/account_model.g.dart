@@ -68,6 +68,7 @@ _PublicAccount _$PublicAccountFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       followerCount: (json['follower_count'] as num).toInt(),
       identityVerified: json['identity_verified'] as bool,
+      following: json['following'] as bool,
       createdAt: json['created_at'] as String,
       description: json['description'] as String?,
       avatar: json['avatar'] == null
@@ -81,6 +82,7 @@ Map<String, dynamic> _$PublicAccountToJson(_PublicAccount instance) =>
       'name': instance.name,
       'follower_count': instance.followerCount,
       'identity_verified': instance.identityVerified,
+      'following': instance.following,
       'created_at': instance.createdAt,
       'description': instance.description,
       'avatar': instance.avatar,
