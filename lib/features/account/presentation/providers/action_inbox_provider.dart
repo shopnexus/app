@@ -32,12 +32,15 @@ Future<ActionInbox> actionInbox(Ref ref) async {
   final repository = ref.watch(refundRepositoryProvider);
   final seller = ref.watch(sellerRepositoryProvider);
 
-  final (ordersToConfirm, ordersToShip, refundsAsSeller, unreadMessages) =
+  final (toConfirm, ordersToShip, refundsAsSeller, unreadMessages) =
       await (
-        countOrZero(
+        _countOrEmpty(
           () => seller.countOrders(state: OrderState.awaitingConfirmation),
         ),
-        countOrZero(() => seller.countOrders(state: OrderState.open)),
+        countOrZero(
+          () async =>
+              (await seller.countOrders(state: OrderState.open)).count,
+        ),
         // Lọc phía server: `/refunds` phân trang bằng cursor, nên đếm trên trang
         // đầu sẽ báo 0 cho một người bán vừa đóng 20 vụ và còn 3 vụ chờ duyệt.
         countOrZero(
@@ -54,11 +57,24 @@ Future<ActionInbox> actionInbox(Ref ref) async {
       ).wait;
 
   return ActionInbox(
-    ordersToConfirm: ordersToConfirm,
+    ordersToConfirm: toConfirm.count,
+    confirmDeadline: toConfirm.soonestDeadline,
     ordersToShip: ordersToShip,
     refundsAsSeller: refundsAsSeller,
     unreadMessages: unreadMessages,
   );
+}
+
+/// [countOrZero] cho một nguồn mang theo cả cái hạn: hỏng thì mất đúng dòng của
+/// nó, không mất cả khối.
+Future<OrderStateCount> _countOrEmpty(
+  Future<OrderStateCount> Function() read,
+) async {
+  try {
+    return await read();
+  } catch (_) {
+    return const OrderStateCount(0);
+  }
 }
 
 /// Đếm hết chứ không chỉ trang đầu. Route trả cursor và không trả tổng, nên con

@@ -28,6 +28,18 @@ part 'seller_repository.g.dart';
 /// rather than wrong.
 const orderRoleSeller = 'seller';
 
+/// Bao nhiêu đơn ở một trạng thái, và cái hạn gần nhất trong số đó.
+///
+/// Hạn đi kèm số vì một con số không nói được cái gấp: "3 đơn chờ bạn xác nhận"
+/// và "3 đơn chờ bạn xác nhận · còn 2 giờ" là hai mức độ khác nhau. Null khi
+/// trạng thái đó không có hạn nào — `open` chẳng hạn, hạn xác nhận đã hết vai.
+class OrderStateCount {
+  const OrderStateCount(this.count, {this.soonestDeadline});
+
+  final int count;
+  final DateTime? soonestDeadline;
+}
+
 /// The seller side of the marketplace, read through the same contract the buyer
 /// side uses with `role=seller`. There is no seller-specific analytics service
 /// and no SPU/SKU tree: the four routes this feature used to call
@@ -113,12 +125,13 @@ class SellerRepository {
   /// nhất không nằm trong đó), và summary bị giới hạn theo cửa sổ thời gian của
   /// nó nên bỏ sót đơn cũ hơn cửa sổ — đúng hai lỗi mà một con số trên badge
   /// không cách nào để lộ ra.
-  Future<int> countOrders({
+  Future<OrderStateCount> countOrders({
     required OrderState state,
     int limit = 50,
     int maxPages = 5,
   }) async {
     var total = 0;
+    DateTime? soonest;
     String? cursor;
 
     for (var page = 0; page < maxPages; page++) {
@@ -130,11 +143,17 @@ class SellerRepository {
       )).data;
       final orders = result?.data ?? const <Order>[];
       total += orders.length;
+      for (final order in orders) {
+        final deadline = order.confirmationDeadlineAt;
+        if (deadline != null && (soonest == null || deadline.isBefore(soonest))) {
+          soonest = deadline;
+        }
+      }
       cursor = result?.meta.nextCursor;
       if (cursor == null || orders.isEmpty) break;
     }
 
-    return total;
+    return OrderStateCount(total, soonestDeadline: soonest);
   }
 
   /// Paid lines the money has not produced an order for yet — a retry list, not

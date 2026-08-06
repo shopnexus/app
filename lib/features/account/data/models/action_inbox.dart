@@ -1,3 +1,5 @@
+import 'package:shopnexus_flutter_app/core/utils/deadline_utils.dart';
+
 /// Một dòng trong khối "Việc cần làm": số việc, và chỗ để đi tới khi chạm vào.
 class ActionInboxEntry {
   const ActionInboxEntry({
@@ -18,10 +20,15 @@ class ActionInboxEntry {
 class ActionInbox {
   const ActionInbox({
     this.ordersToConfirm = 0,
+    this.confirmDeadline,
     this.ordersToShip = 0,
     this.refundsAsSeller = 0,
     this.unreadMessages = 0,
   });
+
+  /// Hạn gần nhất trong số đơn chờ xác nhận. Đi kèm con số vì con số không nói
+  /// được cái gấp — và đây là việc duy nhất ở đây quá hạn thì mod vào.
+  final DateTime? confirmDeadline;
 
   /// Đơn khách đã trả tiền và đang chờ **chính mình** xác nhận — việc gấp nhất
   /// trên sàn này, vì tiền của người mua đang bị giữ và đồng hồ 48 giờ đang
@@ -53,7 +60,10 @@ class ActionInbox {
   List<ActionInboxEntry> get entries => [
     if (ordersToConfirm > 0)
       ActionInboxEntry(
-        label: 'đơn chờ bạn xác nhận',
+        label: switch (DeadlineUtils.remaining(confirmDeadline)) {
+          final left? => 'đơn chờ bạn xác nhận · $left',
+          _ => 'đơn chờ bạn xác nhận',
+        },
         count: ordersToConfirm,
         route: '/seller/orders',
       ),

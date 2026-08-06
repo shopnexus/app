@@ -52,6 +52,24 @@ void main() {
         'đơn chờ giao',
       ]);
     });
+
+    /// Con số không nói được cái gấp, nên hạn gần nhất đi kèm nó.
+    test('hạn gần nhất hiện ngay trên dòng việc', () {
+      final inbox = ActionInbox(
+        ordersToConfirm: 3,
+        confirmDeadline: DateTime.now().add(const Duration(hours: 5)),
+      );
+
+      expect(inbox.entries.single.label, 'đơn chờ bạn xác nhận · còn 4 giờ');
+    });
+
+    /// Không có hạn thì dòng vẫn phải đọc được, không được thành một dấu gạch
+    /// treo lơ lửng.
+    test('không có hạn thì chỉ còn nhãn', () {
+      const inbox = ActionInbox(ordersToConfirm: 3);
+
+      expect(inbox.entries.single.label, 'đơn chờ bạn xác nhận');
+    });
   });
 
   group('route của từng mục', () {

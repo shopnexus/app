@@ -184,13 +184,13 @@ void main() {
         };
       });
 
-      final count = await backend.seller.countOrders(
+      final result = await backend.seller.countOrders(
         state: OrderState.awaitingConfirmation,
       );
 
       // A page count would have said 2 and stopped — `/orders` sends no total,
       // so the only right answer is to walk to the last page.
-      expect(count, 3);
+      expect(result.count, 3);
       final orderCalls = backend.calls.where((c) => c.path == '/orders');
       expect(
         orderCalls.map((c) => c.queryParameters['state']),

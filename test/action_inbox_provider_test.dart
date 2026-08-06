@@ -285,8 +285,11 @@ class _FakeSellerRepository extends SellerRepository {
   final Map<OrderState, int?> counts;
   final List<OrderState> statesAsked = [];
 
+  /// Hạn gần nhất mà repository thật sẽ tìm ra khi đi hết các trang.
+  DateTime? soonestDeadline;
+
   @override
-  Future<int> countOrders({
+  Future<OrderStateCount> countOrders({
     required OrderState state,
     int limit = 50,
     int maxPages = 5,
@@ -294,6 +297,6 @@ class _FakeSellerRepository extends SellerRepository {
     statesAsked.add(state);
     final value = counts[state];
     if (value == null) throw StateError('đọc đơn hỏng');
-    return value;
+    return OrderStateCount(value, soonestDeadline: soonestDeadline);
   }
 }
