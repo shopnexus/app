@@ -17,7 +17,6 @@ import 'package:shopnexus_flutter_app/features/account/presentation/screens/orde
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/order_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/addresses_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/wishlist_screen.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/screens/notifications_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/settings_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/account_center_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/my_reviews_screen.dart';
@@ -239,11 +238,6 @@ GoRouter appRouter(Ref ref) {
                 path: 'wishlist',
                 name: 'buyer_wishlist',
                 builder: (context, state) => const WishlistScreen(),
-              ),
-              GoRoute(
-                path: 'notifications',
-                name: 'buyer_notifications',
-                builder: (context, state) => const NotificationsScreen(),
               ),
               GoRoute(
                 path: 'settings',
