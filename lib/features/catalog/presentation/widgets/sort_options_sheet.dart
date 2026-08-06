@@ -60,61 +60,61 @@ void showSortOptionsSheet(
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Sắp xếp theo',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: sheetTheme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-            Divider(color: sheetTheme.colorScheme.outlineVariant),
-            for (final option in options)
-              ListTile(
-                title: Text(
-                  sortLabel(option),
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    color: option == filters.sort
-                        ? sheetTheme.colorScheme.primary
-                        : sheetTheme.colorScheme.onSurface,
-                    fontWeight: option == filters.sort
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                ),
-                trailing: option == filters.sort
-                    ? Icon(
-                        Icons.check_rounded,
-                        color: sheetTheme.colorScheme.primary,
-                      )
-                    : null,
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  onSelected(option);
-                },
-              ),
-            if (!filters.hasPosition)
+            children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'Chọn một địa chỉ đã lưu trong bộ lọc để sắp xếp theo khoảng cách.',
+                  'Sắp xếp theo',
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: sheetTheme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: sheetTheme.colorScheme.onSurface,
                   ),
                 ),
               ),
-          ],
+              Divider(color: sheetTheme.colorScheme.outlineVariant),
+              for (final option in options)
+                ListTile(
+                  title: Text(
+                    sortLabel(option),
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      color: option == filters.sort
+                          ? sheetTheme.colorScheme.primary
+                          : sheetTheme.colorScheme.onSurface,
+                      fontWeight: option == filters.sort
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                  ),
+                  trailing: option == filters.sort
+                      ? Icon(
+                          Icons.check_rounded,
+                          color: sheetTheme.colorScheme.primary,
+                        )
+                      : null,
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    onSelected(option);
+                  },
+                ),
+              if (!filters.hasPosition)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 16.0),
+                  child: Text(
+                    'Chọn một địa chỉ đã lưu trong bộ lọc để sắp xếp theo khoảng cách.',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      color: sheetTheme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
-      ),
-    );
-  },
+      );
+    },
   );
 }
