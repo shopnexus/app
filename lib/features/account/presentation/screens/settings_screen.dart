@@ -39,7 +39,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Settings',
+          'Cài đặt',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Section: Account & Security
-            _buildSectionHeader('Account & Security'),
+            _buildSectionHeader('TÀI KHOẢN & BẢO MẬT'),
             Container(
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: borderColor, width: 1)),
@@ -73,7 +73,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   _buildSettingRow(
                     icon: Icons.manage_accounts_outlined,
-                    label: 'Account Center (Trung tâm tài khoản)',
+                    label: 'Trung tâm tài khoản',
                     onTap: () => context.push('/account/account-center'),
                   ),
                 ],
@@ -83,7 +83,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 24),
 
             // Section: App Preferences
-            _buildSectionHeader('App Preferences'),
+            _buildSectionHeader('TÙY CHỌN ỨNG DỤNG'),
             Container(
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: borderColor, width: 1)),
@@ -151,15 +151,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                   ),
 
-                  // Notifications Toggle Row
+                  // Chỉ đổi trong phiên: chưa có nơi lưu preference này, và
+                  // cũng chưa có đăng ký/huỷ đăng ký push tương ứng phía server.
+                  // Bật rồi thoát màn hình là mất.
                   _buildSettingRow(
                     icon: Icons.notifications_none_rounded,
-                    label: 'Notifications',
+                    label: 'Thông báo đẩy',
                     trailingWidget: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _pushNotificationsEnabled ? 'On' : 'Off',
+                          _pushNotificationsEnabled ? 'Bật' : 'Tắt',
                           style: TextStyle(
                             fontSize: 14,
                             color: theme.colorScheme.onSurfaceVariant,
@@ -187,40 +189,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 32),
 
             // Section: Legal
-            _buildSectionHeader('Legal'),
+            _buildSectionHeader('PHÁP LÝ'),
             Container(
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: borderColor, width: 1)),
               ),
               child: Column(
                 children: [
-                  _buildSettingRow(
-                    icon: Icons.description_outlined,
-                    label: 'Terms of Service',
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Điều khoản dịch vụ ShopNexus'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildSettingRow(
-                    icon: Icons.privacy_tip_outlined,
-                    label: 'Privacy Policy',
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Chính sách bảo mật ShopNexus'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                  ),
+                  // "Điều khoản dịch vụ" và "Chính sách bảo mật" từng ở đây,
+                  // nhưng chạm vào chỉ hiện một SnackBar rồi biến mất — một ngõ
+                  // cụt giả vờ làm được việc. Chưa có trang thật để dẫn tới, nên
+                  // gỡ hẳn còn trung thực hơn là để chúng đứng đó.
                   _buildSettingRow(
                     icon: Icons.info_outline_rounded,
-                    label: 'About ShopNexus',
+                    label: 'Về ShopNexus',
                     trailingWidget: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

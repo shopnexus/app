@@ -12,17 +12,11 @@ import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refun
 /// backend because a refund row only records the buyer — the seller side is
 /// resolved through the order.
 class RefundListScreen extends ConsumerStatefulWidget {
-  const RefundListScreen({
-    super.key,
-    this.initialRole = RefundRole.buyer,
-    this.showAppBar = true,
-  });
+  const RefundListScreen({super.key, this.initialRole = RefundRole.buyer});
 
+  /// Which tab opens first. Read from `?role=` so the account page's
+  /// việc-cần-làm block can send a seller straight to the queue awaiting them.
   final RefundRole initialRole;
-
-  /// False when the screen is a tab inside the order history, which already has
-  /// its own app bar.
-  final bool showAppBar;
 
   @override
   ConsumerState<RefundListScreen> createState() => _RefundListScreenState();
@@ -59,14 +53,6 @@ class _RefundListScreenState extends ConsumerState<RefundListScreen>
       ],
     );
 
-    if (!widget.showAppBar) {
-      return Column(
-        children: [
-          tabs,
-          Expanded(child: body),
-        ],
-      );
-    }
     return Scaffold(
       appBar: AppBar(title: const Text('Yêu cầu hoàn tiền'), bottom: tabs),
       body: body,

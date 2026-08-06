@@ -55,7 +55,7 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Account Center',
+          'Trung tâm tài khoản',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
@@ -446,10 +446,13 @@ class _EditAccountCenterFormSheet extends ConsumerStatefulWidget {
 
 class __EditAccountCenterFormSheetState
     extends ConsumerState<_EditAccountCenterFormSheet> {
+  final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
   late TextEditingController _usernameController;
+  late TextEditingController _emailController;
   ProfileGender? _selectedGender;
+  DateTime? _dob;
   bool _isSaving = false;
 
   @override
@@ -458,7 +461,11 @@ class __EditAccountCenterFormSheetState
     _nameController = TextEditingController(text: widget.profile.name);
     _phoneController = TextEditingController(text: widget.profile.phone);
     _usernameController = TextEditingController(text: widget.profile.username);
+    _emailController = TextEditingController(text: widget.profile.email);
     _selectedGender = genderOf(widget.profile.gender);
+    if (widget.profile.dateOfBirth != null) {
+      _dob = DateTime.tryParse(widget.profile.dateOfBirth!);
+    }
   }
 
   @override
@@ -466,10 +473,17 @@ class __EditAccountCenterFormSheetState
     _nameController.dispose();
     _phoneController.dispose();
     _usernameController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
   Future<void> _saveProfile() async {
+    // `includeIfNull: false` chỉ bỏ null, không bỏ chuỗi rỗng — nên một ô tên bị
+    // xoá trắng vẫn đi trên dây thành `"name": ""` và xoá tên hiển thị. Form này
+    // là form duy nhất còn lại sau khi gộp, nên nó phải gánh cả validation mà
+    // bản ở profile_screen từng có.
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
     setState(() {
       _isSaving = true;
     });
@@ -480,17 +494,29 @@ class __EditAccountCenterFormSheetState
         UpdateProfileRequest(
           name: _nameController.text.trim(),
           gender: _selectedGender,
+          // Picker trả về nửa đêm giờ địa phương; cái cần gửi là ngày theo lịch.
+          dateOfBirth: _dob?.toIso8601String().split('T').first,
         ),
       );
+
+      // Đọc lỗi ngay tại đây, không để tới sau lời gọi thứ hai: `updateAccount`
+      // mở đầu bằng `state = AsyncValue.loading()` rồi ghi đè bằng `AsyncData`
+      // khi thành công, nên nó xoá sạch lỗi của `updateProfile`. Đọc muộn từng
+      // làm một lần lưu hỏng nửa chừng — hồ sơ 400, định danh 200 — hiện ra
+      // thông báo "thành công" và mất im lặng phần hồ sơ.
+      final profileFailure = ref.read(accountControllerProvider).error;
+      if (profileFailure != null) throw profileFailure;
 
       // The username and the phone are identifiers, so they are a second route;
       // an unchanged one is not resent, since re-posting an email would clear its
       // verification.
       final identifiers = _identifierChanges();
-      if (identifiers != null) await controller.updateAccount(identifiers);
-
-      final failure = ref.read(accountControllerProvider).error;
-      if (failure != null) throw failure;
+      if (identifiers != null) {
+        await controller.updateAccount(identifiers);
+        if (!mounted) return;
+        final identifierFailure = ref.read(accountControllerProvider).error;
+        if (identifierFailure != null) throw identifierFailure;
+      }
 
       if (mounted) {
         Navigator.pop(context);
@@ -519,19 +545,23 @@ class __EditAccountCenterFormSheetState
     }
   }
 
-  /// Null when neither identifier moved, so an unchanged form sends nothing.
+  /// Null when no identifier moved, so an unchanged form sends nothing.
   UpdateAccountRequest? _identifierChanges() {
     final username = _usernameController.text.trim();
     final phone = _phoneController.text.trim();
+    final email = _emailController.text.trim();
     final usernameChanged = username != (widget.profile.username ?? '');
     final phoneChanged = phone != (widget.profile.phone ?? '');
-    if (!usernameChanged && !phoneChanged) return null;
+    final emailChanged = email != (widget.profile.email ?? '');
+    if (!usernameChanged && !phoneChanged && !emailChanged) return null;
 
     return UpdateAccountRequest(
       username: usernameChanged && username.isNotEmpty ? username : null,
       clearUsername: usernameChanged && username.isEmpty ? true : null,
       phone: phoneChanged && phone.isNotEmpty ? phone : null,
       clearPhone: phoneChanged && phone.isEmpty ? true : null,
+      email: emailChanged && email.isNotEmpty ? email : null,
+      clearEmail: emailChanged && email.isEmpty ? true : null,
     );
   }
 
@@ -546,11 +576,13 @@ class __EditAccountCenterFormSheetState
         top: 20,
         bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Text(
               'Chỉnh sửa thông tin tài khoản',
               style: TextStyle(
@@ -561,15 +593,18 @@ class __EditAccountCenterFormSheetState
               ),
             ),
             const SizedBox(height: 16),
-            TextField(
+            TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(
                 labelText: 'Họ và tên',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? 'Vui lòng nhập họ tên'
+                  : null,
             ),
             const SizedBox(height: 12),
-            TextField(
+            TextFormField(
               controller: _usernameController,
               decoration: const InputDecoration(
                 labelText: 'Tên người dùng (Username)',
@@ -577,12 +612,55 @@ class __EditAccountCenterFormSheetState
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
+            TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
                 labelText: 'Số điện thoại',
                 border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+              // Bỏ trống là hợp lệ — đó là cách gỡ liên kết email. Nhưng một
+              // chuỗi không phải địa chỉ thì không: gửi đi sẽ xoá cờ
+              // email_verified cho một giá trị không ai gửi thư tới được.
+              validator: (value) {
+                final email = value?.trim() ?? '';
+                if (email.isEmpty) return null;
+                final looksLikeEmail = RegExp(
+                  r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                ).hasMatch(email);
+                return looksLikeEmail ? null : 'Email không hợp lệ';
+              },
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: _dob ?? DateTime(2000),
+                  firstDate: DateTime(1930),
+                  lastDate: DateTime.now(),
+                );
+                if (picked != null) setState(() => _dob = picked);
+              },
+              child: InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: 'Ngày sinh',
+                  border: OutlineInputBorder(),
+                ),
+                child: Text(
+                  _dob == null
+                      ? 'Chưa chọn'
+                      : '${_dob!.day.toString().padLeft(2, '0')}/${_dob!.month.toString().padLeft(2, '0')}/${_dob!.year}',
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -632,7 +710,8 @@ class __EditAccountCenterFormSheetState
                       ),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

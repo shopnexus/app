@@ -20,6 +20,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/screens/wish
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/notifications_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/settings_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/account_center_screen.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/screens/my_reviews_screen.dart';
 import 'package:shopnexus_flutter_app/features/kyc/presentation/screens/kyc_verification_screen.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/main_layout.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/product_detail_screen.dart';
@@ -34,6 +35,7 @@ import 'package:shopnexus_flutter_app/features/seller/presentation/screens/selle
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/chat_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/help_center/presentation/screens/help_center_screen.dart';
+import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_list_screen.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/screens/ticket_detail_screen.dart';
@@ -237,9 +239,18 @@ GoRouter appRouter(Ref ref) {
                 builder: (context, state) => const KycVerificationScreen(),
               ),
               GoRoute(
+                path: 'reviews',
+                name: 'my_reviews',
+                builder: (context, state) => const MyReviewsScreen(),
+              ),
+              GoRoute(
                 path: 'refunds',
                 name: 'refund_list',
-                builder: (context, state) => const RefundListScreen(),
+                builder: (context, state) => RefundListScreen(
+                  initialRole: roleFromQuery(
+                    state.uri.queryParameters['role'],
+                  ),
+                ),
                 routes: [
                   GoRoute(
                     path: ':id',

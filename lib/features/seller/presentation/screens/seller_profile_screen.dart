@@ -133,10 +133,10 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildTabButton(0, 'About'),
-                        _buildTabButton(1, 'Seller Products'),
-                        _buildTabButton(2, 'All Reviews'),
-                        _buildTabButton(3, 'Feedback'),
+                        _buildTabButton(0, 'Giới thiệu'),
+                        _buildTabButton(1, 'Sản phẩm'),
+                        _buildTabButton(2, 'Đánh giá'),
+                        _buildTabButton(3, 'Phản hồi'),
                       ],
                     ),
                   ),

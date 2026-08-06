@@ -23,6 +23,13 @@ enum RefundRole {
   final String value;
 }
 
+/// Vai đọc từ query string. Một giá trị lạ rơi về `buyer` thay vì ném: một link
+/// cũ hay gõ sai phải mở ra một màn hình dùng được, không phải một màn hình lỗi.
+RefundRole roleFromQuery(String? value) => switch (value) {
+  'seller' => RefundRole.seller,
+  _ => RefundRole.buyer,
+};
+
 class RefundPageResult {
   const RefundPageResult({required this.refunds, this.nextCursor});
 

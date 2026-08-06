@@ -174,7 +174,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.contact == null ? 'Add New Address' : 'Edit Address',
+                    widget.contact == null ? 'Thêm địa chỉ mới' : 'Sửa địa chỉ',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -202,7 +202,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                   color: theme.colorScheme.onSurface,
                 ),
                 decoration: InputDecoration(
-                  labelText: 'Recipient Full Name',
+                  labelText: 'Họ tên người nhận',
                   labelStyle: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -238,7 +238,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                   color: theme.colorScheme.onSurface,
                 ),
                 decoration: InputDecoration(
-                  labelText: 'Phone Number',
+                  labelText: 'Số điện thoại',
                   labelStyle: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -366,7 +366,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                   color: theme.colorScheme.onSurface,
                 ),
                 decoration: InputDecoration(
-                  labelText: 'Address Details (Apartment, Suite, etc.)',
+                  labelText: 'Địa chỉ chi tiết (số nhà, toà nhà...)',
                   labelStyle: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -391,7 +391,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
 
               // Address Type Chips
               Text(
-                'Address Type',
+                'Loại địa chỉ',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,
@@ -426,7 +426,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                     ),
                   ),
                   child: Text(
-                    widget.contact == null ? 'Save Address' : 'Update Address',
+                    widget.contact == null ? 'Lưu địa chỉ' : 'Cập nhật địa chỉ',
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

@@ -3,18 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/profile_gender.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/update_account_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
-import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
-import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/widgets/profile_fields.dart';
-import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_menu_tile.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/action_inbox_card.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 
+/// Trang tài khoản: ba nhóm và một khối việc-cần-làm.
+///
+/// Khu người bán không ở đây. Nó sống ở tab "Đăng bán" của bottom nav, và trang
+/// này từng chép lại gần nguyên vẹn cả Đơn bán, Sản phẩm lẫn Thu nhập của nó —
+/// một nửa trang tài khoản lặp lại một tab khác.
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -79,19 +83,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  void _showEditProfileBottomSheet(Me profile) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => _EditProfileFormSheet(profile: profile),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (previous, next) {
@@ -108,16 +99,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final profileAsync = ref.watch(profileProvider);
-    // The value if there is one, not `when`: the seller rows below are navigation
-    // and have to be on screen whether or not the counts have arrived — or failed.
-    // In Riverpod 3 `.value` is already nullable, which is exactly this case.
-    final dashboard = ref.watch(sellerDashboardProvider).value;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        // Khớp nhãn tab ở bottom nav, vốn đã là "Tài khoản". Hai tên khác nhau
+        // cho cùng một màn hình là một lỗi nhất quán riêng.
         title: Text(
-          'Profile',
+          'Tài khoản',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
@@ -128,139 +117,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: false,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.settings_outlined,
-              color: theme.colorScheme.onSurfaceVariant,
-              size: 24,
-            ),
-            onPressed: () => context.push('/account/settings'),
-          ),
-        ],
+        actions: [_buildNotificationBell(context)],
       ),
       body: RefreshIndicator(
-        onRefresh: () => ref.refresh(profileProvider.future),
+        onRefresh: () {
+          ref.invalidate(actionInboxProvider);
+          return ref.refresh(profileProvider.future);
+        },
         child: profileAsync.when(
           data: (profile) => SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Compact Profile Info (Header)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 16.0,
-                  ),
-                  child: Row(
-                    children: [
-                      // Avatar
-                      GestureDetector(
-                        onTap: _isUploadingAvatar
-                            ? null
-                            : () => _pickAndUploadAvatar(profile),
-                        child: Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 32,
-                              backgroundColor: isDarkMode
-                                  ? theme.colorScheme.surfaceContainerHighest
-                                  : const Color(0xFFEEEEEE),
-                              backgroundImage: profile.avatarUrl != null
-                                  ? NetworkImage(profile.avatarUrl!)
-                                  : null,
-                              child: profile.avatarUrl == null
-                                  ? Icon(
-                                      Icons.person_rounded,
-                                      size: 32,
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    )
-                                  : null,
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: _isUploadingAvatar
-                                    ? SizedBox(
-                                        width: 10,
-                                        height: 10,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 1.5,
-                                          color: theme.colorScheme.onPrimary,
-                                        ),
-                                      )
-                                    : Icon(
-                                        Icons.camera_alt_rounded,
-                                        size: 10,
-                                        color: theme.colorScheme.onPrimary,
-                                      ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // Info Text
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () => _showEditProfileBottomSheet(profile),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      profile.name.isNotEmpty
-                                          ? profile.name
-                                          : (profile.username ??
-                                                'Chưa đặt tên'),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: theme.colorScheme.onSurface,
-                                        fontFamily: 'Manrope',
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Icon(
-                                    Icons.edit_outlined,
-                                    size: 16,
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              profile.email ??
-                                  profile.phone ??
-                                  'Chưa liên kết email',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: theme.colorScheme.onSurfaceVariant,
-                                fontFamily: 'Inter',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _buildHeader(context, profile),
                 Divider(
                   height: 1,
                   color: isDarkMode
@@ -268,568 +138,212 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       : const Color(0xFFEEEEEE),
                 ),
 
-                // SHOPPING & SELLER SECTION
-                _buildSectionHeader(context, 'SHOPPING & SELLER'),
-                Container(
-                  color: isDarkMode ? AppColors.darkSurface : Colors.white,
-                  child: Column(
-                    children: [
-                      // --- 1. My Purchases ---
-                      ListTile(
-                        leading: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? theme.colorScheme.surfaceContainerHighest
-                                : const Color(0xFFEEEEEC),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.local_mall_outlined,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        title: Text(
-                          'My Purchases',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.chevron_right_rounded,
-                          color: theme.colorScheme.onSurfaceVariant,
-                          size: 22,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 2,
-                        ),
-                        onTap: () => context.push('/account/orders?tab=0'),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          bottom: 12,
-                        ),
-                        child: Row(
-                          children: [
-                            _buildQuickActionButton(
-                              context,
-                              icon: Icons.schedule_rounded,
-                              label: 'Pending',
-                              onTap: () =>
-                                  context.push('/account/orders?tab=1'),
-                            ),
-                            const SizedBox(width: 8),
-                            _buildQuickActionButton(
-                              context,
-                              icon: Icons.local_shipping_outlined,
-                              label: 'Shipping',
-                              onTap: () =>
-                                  context.push('/account/orders?tab=2'),
-                            ),
-                            const SizedBox(width: 8),
-                            _buildQuickActionButton(
-                              context,
-                              icon: Icons.check_circle_outline_rounded,
-                              label: 'Completed',
-                              onTap: () =>
-                                  context.push('/account/orders?tab=3'),
-                            ),
-                            const SizedBox(width: 8),
-                            _buildQuickActionButton(
-                              context,
-                              icon: Icons.history_rounded,
-                              label: 'Refund',
-                              onTap: () =>
-                                  context.push('/account/orders?tab=5'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Divider(
-                        height: 1,
-                        color: isDarkMode
-                            ? AppColors.darkPrimary.withAlpha(20)
-                            : const Color(0xFFF1F5F9),
-                        indent: 56,
-                      ),
+                // Tự ẩn khi không có việc nào đang chờ.
+                const ActionInboxCard(),
 
-                      // --- 2. My Sales (Single Row options) ---
-                      // Navigation, not data. This block used to sit inside
-                      // `dashboardAsync.when(error: SizedBox.shrink())`, so a
-                      // failed summary read took the only way into the seller
-                      // area off the screen with no message — a seller with
-                      // orders was told nothing at all. The counts are the only
-                      // part that needs the read, and a null count just hides
-                      // its badge.
-                      Column(
-                        children: [
-                          ListTile(
-                            leading: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: isDarkMode
-                                    ? theme.colorScheme.surfaceContainerHighest
-                                    : const Color(0xFFEEEEEC),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.storefront_outlined,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            title: Text(
-                              'My Sales',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: theme.colorScheme.onSurface,
-                              ),
-                            ),
-                            trailing: Icon(
-                              Icons.chevron_right_rounded,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              size: 22,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 2,
-                            ),
-                            onTap: () => context.push('/seller/orders'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 16,
-                              right: 16,
-                              bottom: 12,
-                            ),
-                            child: Row(
-                              children: [
-                                // OrderState's three values. `shipping` and
-                                // `disputing` were never states of an order.
-                                _buildQuickActionButton(
-                                  context,
-                                  icon: Icons.pending_actions,
-                                  label: 'Đang xử lý',
-                                  count: dashboard?.summary.open,
-                                  onTap: () =>
-                                      context.push('/seller/orders?state=open'),
-                                ),
-                                const SizedBox(width: 8),
-                                _buildQuickActionButton(
-                                  context,
-                                  icon: Icons.check_circle_outline,
-                                  label: 'Hoàn thành',
-                                  count: dashboard?.summary.completed,
-                                  onTap: () => context.push(
-                                    '/seller/orders?state=completed',
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                _buildQuickActionButton(
-                                  context,
-                                  icon: Icons.cancel_outlined,
-                                  label: 'Đã hủy',
-                                  count: dashboard?.summary.cancelled,
-                                  onTap: () => context.push(
-                                    '/seller/orders?state=cancelled',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Divider(
-                            height: 1,
-                            color: isDarkMode
-                                ? AppColors.darkPrimary.withAlpha(20)
-                                : const Color(0xFFF1F5F9),
-                            indent: 56,
-                          ),
-
-                          // --- 3. My Products (Single Row options) ---
-                          ListTile(
-                            leading: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: isDarkMode
-                                    ? theme.colorScheme.surfaceContainerHighest
-                                    : const Color(0xFFEEEEEC),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.inventory_2_outlined,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            title: Text(
-                              'My Products',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: theme.colorScheme.onSurface,
-                              ),
-                            ),
-                            trailing: Icon(
-                              Icons.chevron_right_rounded,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              size: 22,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 2,
-                            ),
-                            onTap: () => context.push('/seller/products'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 16,
-                              right: 16,
-                              bottom: 12,
-                            ),
-                            child: Row(
-                              children: [
-                                // ListingStatus's own values: `inactive` and
-                                // `violated` matched no listing at all.
-                                _buildQuickActionButton(
-                                  context,
-                                  icon: Icons.inventory_2_outlined,
-                                  label: 'Đang bán',
-                                  count: dashboard?.listingsWith(
-                                    ListingStatus.active,
-                                  ),
-                                  onTap: () => context.push(
-                                    '/seller/products?status=active',
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                _buildQuickActionButton(
-                                  context,
-                                  icon: Icons.hourglass_empty,
-                                  label: 'Chờ duyệt',
-                                  count: dashboard?.listingsWith(
-                                    ListingStatus.pending,
-                                  ),
-                                  onTap: () => context.push(
-                                    '/seller/products?status=pending',
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                _buildQuickActionButton(
-                                  context,
-                                  icon: Icons.visibility_off_outlined,
-                                  label: 'Đã ẩn',
-                                  count: dashboard?.listingsWith(
-                                    ListingStatus.hidden,
-                                  ),
-                                  onTap: () => context.push(
-                                    '/seller/products?status=hidden',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Divider(
-                            height: 1,
-                            color: isDarkMode
-                                ? AppColors.darkPrimary.withAlpha(20)
-                                : const Color(0xFFF1F5F9),
-                            indent: 56,
-                          ),
-                        ],
-                      ),
-                      // Posting a listing does not depend on
-                      // the sales figures, and this used to vanish with them.
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        child: _buildAiWizardBanner(context),
-                      ),
-                      Divider(
-                        height: 1,
-                        color: isDarkMode
-                            ? AppColors.darkPrimary.withAlpha(20)
-                            : const Color(0xFFF1F5F9),
-                        indent: 56,
-                      ),
-                      // Wishlist Link
-                      _buildMenuItem(
-                        context,
-                        icon: Icons.favorite_border_rounded,
-                        title: 'Wishlist',
-                        onTap: () => context.push('/account/wishlist'),
-                      ),
-                      Divider(
-                        height: 1,
-                        color: isDarkMode
-                            ? AppColors.darkPrimary.withAlpha(20)
-                            : const Color(0xFFF1F5F9),
-                        indent: 56,
-                      ),
-                      // Saved Addresses Link
-                      _buildMenuItem(
-                        context,
-                        icon: Icons.location_on_outlined,
-                        title: 'Saved Addresses',
-                        onTap: () => context.push('/account/addresses'),
-                      ),
-                      Divider(
-                        height: 1,
-                        color: isDarkMode
-                            ? AppColors.darkPrimary.withAlpha(20)
-                            : const Color(0xFFF1F5F9),
-                        indent: 56,
-                      ),
-                      // Payment Methods & Earnings Link (Merged & renamed to Payment)
-                      _buildMenuItem(
-                        context,
-                        icon: Icons.credit_card_rounded,
-                        title: 'Payment',
-                        onTap: () => context.push('/seller/earnings'),
-                      ),
-                    ],
+                const AccountSectionHeader(title: 'GIAO DỊCH'),
+                _buildGroup(context, [
+                  AccountMenuTile(
+                    icon: Icons.local_mall_outlined,
+                    title: 'Đơn mua',
+                    onTap: () => context.push('/account/orders'),
                   ),
-                ),
-
-                Divider(
-                  height: 1,
-                  color: isDarkMode
-                      ? AppColors.darkPrimary.withAlpha(25)
-                      : const Color(0xFFEEEEEE),
-                ),
-
-                // SUPPORT SECTION
-                _buildSectionHeader(context, 'SUPPORT'),
-                Container(
-                  color: isDarkMode ? AppColors.darkSurface : Colors.white,
-                  child: Column(
-                    children: [
-                      _buildMenuItem(
-                        context,
-                        icon: Icons.help_outline_rounded,
-                        title: 'Help Center',
-                        onTap: () => context.push('/account/help-center'),
-                      ),
-                      Divider(
-                        height: 1,
-                        color: isDarkMode
-                            ? AppColors.darkPrimary.withAlpha(20)
-                            : const Color(0xFFF1F5F9),
-                        indent: 56,
-                      ),
-                      // Sign Out
-                      ListTile(
-                        leading: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? const Color(0xFF450A0A)
-                                : const Color(0xFFFFDAD6),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.logout_rounded,
-                            color: isDarkMode
-                                ? const Color(0xFFEF4444)
-                                : const Color(0xFFBA1A1A),
-                          ),
-                        ),
-                        title: Text(
-                          'Sign Out',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: isDarkMode
-                                ? const Color(0xFFEF4444)
-                                : const Color(0xFFBA1A1A),
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 2,
-                        ),
-                        onTap: () => _handleLogout(context, ref),
-                      ),
-                    ],
+                  AccountMenuTile(
+                    icon: Icons.assignment_return_outlined,
+                    title: 'Yêu cầu hoàn tiền',
+                    onTap: () => context.push('/account/refunds'),
                   ),
-                ),
+                  AccountMenuTile(
+                    icon: Icons.star_outline_rounded,
+                    title: 'Đánh giá của tôi',
+                    onTap: () => context.push('/account/reviews'),
+                  ),
+                ]),
+
+                const AccountSectionHeader(title: 'HỒ SƠ'),
+                _buildGroup(context, [
+                  AccountMenuTile(
+                    icon: Icons.location_on_outlined,
+                    title: 'Địa chỉ',
+                    onTap: () => context.push('/account/addresses'),
+                  ),
+                  AccountMenuTile(
+                    icon: Icons.favorite_border_rounded,
+                    title: 'Yêu thích',
+                    onTap: () => context.push('/account/wishlist'),
+                  ),
+                  AccountMenuTile(
+                    icon: Icons.storefront_outlined,
+                    title: 'Xem shop của tôi',
+                    onTap: () => context.push('/vendor/${profile.id}'),
+                  ),
+                  // Lối vào khu người bán, không phải bản sao thứ hai của nó.
+                  AccountMenuTile(
+                    icon: Icons.sell_outlined,
+                    title: 'Kênh người bán',
+                    onTap: () => context.push('/seller'),
+                  ),
+                ]),
+
+                const AccountSectionHeader(title: 'HỖ TRỢ'),
+                _buildGroup(context, [
+                  AccountMenuTile(
+                    icon: Icons.help_outline_rounded,
+                    title: 'Trung tâm trợ giúp',
+                    onTap: () => context.push('/account/help-center'),
+                  ),
+                  AccountMenuTile(
+                    icon: Icons.settings_outlined,
+                    title: 'Cài đặt',
+                    onTap: () => context.push('/account/settings'),
+                  ),
+                  AccountMenuTile(
+                    icon: Icons.logout_rounded,
+                    title: 'Đăng xuất',
+                    tint: isDarkMode
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFFBA1A1A),
+                    onTap: () => _handleLogout(context, ref),
+                  ),
+                ]),
                 const SizedBox(height: 48),
               ],
             ),
           ),
           loading: () => _buildShimmer(context),
-          error: (err, stack) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline_rounded,
-                    size: 48,
-                    color: isDarkMode
-                        ? const Color(0xFFEF4444)
-                        : const Color(0xFFBA1A1A),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Không thể tải thông tin cá nhân',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Inter',
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    err.toString(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: 13,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    height: 48,
-                    width: 140,
-                    child: ElevatedButton(
-                      onPressed: () => ref.refresh(profileProvider),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary,
-                        foregroundColor: theme.colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Thử lại',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Inter',
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          error: (err, stack) => _buildError(context, err),
         ),
       ),
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title) {
+  Widget _buildNotificationBell(BuildContext context) {
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 8),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: isDarkMode ? AppColors.darkPrimary : const Color(0xFF64748B),
-          letterSpacing: 0.8,
-        ),
-      ),
-    );
-  }
 
-  Widget _buildAiWizardBanner(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.auto_awesome,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
+    return Consumer(
+      builder: (context, ref, _) {
+        final unread = ref.watch(unreadNotificationsCountProvider).value ?? 0;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.notifications_none_rounded,
+                color: theme.colorScheme.onSurfaceVariant,
+                size: 24,
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'AI Product Wizard',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+              onPressed: () => context.push('/account/notifications'),
+            ),
+            if (unread > 0)
+              Positioned(
+                top: 8,
+                right: 6,
+                child: IgnorePointer(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 1,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      unread > 99 ? '99+' : '$unread',
+                      style: const TextStyle(
                         color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Inter',
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Sinh tiêu đề & mô tả từ Image + Audio hoặc Raw Text',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.white.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => context.push('/seller/new-listing'),
-              icon: const Icon(Icons.auto_awesome, size: 18),
-              label: const Text('Tạo sản phẩm với AI Wizard'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, Me profile) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: _isUploadingAvatar
+                ? null
+                : () => _pickAndUploadAvatar(profile),
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  radius: 32,
+                  backgroundColor: isDarkMode
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : const Color(0xFFEEEEEE),
+                  backgroundImage: profile.avatarUrl != null
+                      ? NetworkImage(profile.avatarUrl!)
+                      : null,
+                  child: profile.avatarUrl == null
+                      ? Icon(
+                          Icons.person_rounded,
+                          size: 32,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        )
+                      : null,
                 ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: _isUploadingAvatar
+                        ? SizedBox(
+                            width: 10,
+                            height: 10,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 1.5,
+                              color: theme.colorScheme.onPrimary,
+                            ),
+                          )
+                        : Icon(
+                            Icons.camera_alt_rounded,
+                            size: 10,
+                            color: theme.colorScheme.onPrimary,
+                          ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Chạm vào mở Account Center — nơi có đủ sáu field và cả thẻ KYC.
+          // Trước đây chỗ này mở một bottom sheet riêng với tập field lệch so
+          // với form trong Account Center, cùng gọi một endpoint.
+          // Bọc cả phần chữ lẫn chevron: chevron là glyph duy nhất báo "chạm vào
+          // đây", nên để nó nằm ngoài vùng chạm là chỗ chết đúng nơi người dùng
+          // nhắm tới.
+          Expanded(
+            child: GestureDetector(
+              onTap: () => context.push('/account/account-center'),
+              behavior: HitTestBehavior.opaque,
+              child: Row(
+                children: [
+                  Expanded(child: _buildIdentity(context, profile)),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    size: 22,
+                  ),
+                ],
               ),
             ),
           ),
@@ -838,119 +352,143 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildQuickActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    int? count,
-    Color? iconColor,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildIdentity(BuildContext context, Me profile) {
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isDarkMode
-                ? theme.colorScheme.surfaceContainerHighest
-                : const Color(0xFFF4F4F1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Icon(
-                    icon,
-                    color: iconColor ?? theme.colorScheme.onSurfaceVariant,
-                    size: 20,
-                  ),
-                  if (count != null && count > 0)
-                    Positioned(
-                      top: -4,
-                      right: -8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          count > 99 ? '99+' : count.toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                profile.name.isNotEmpty
+                    ? profile.name
+                    : (profile.username ?? 'Chưa đặt tên'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 11,
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                  fontFamily: 'Manrope',
                 ),
               ),
+            ),
+            if (profile.identityVerified) ...[
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.verified_rounded,
+                size: 16,
+                color: Color(0xFF10B981),
+              ),
             ],
+          ],
+        ),
+        const SizedBox(height: 2),
+        Text(
+          profile.email ?? profile.phone ?? 'Chưa liên kết email',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 13,
+            color: theme.colorScheme.onSurfaceVariant,
+            fontFamily: 'Inter',
           ),
         ),
+      ],
+    );
+  }
+
+  /// Một nhóm menu: nền liền, kẻ ngăn giữa các dòng và không kẻ ở đáy.
+  Widget _buildGroup(BuildContext context, List<Widget> tiles) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final divider = Divider(
+      height: 1,
+      color: isDarkMode
+          ? AppColors.darkPrimary.withAlpha(20)
+          : const Color(0xFFF1F5F9),
+      indent: 56,
+    );
+
+    return Container(
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
+      child: Column(
+        children: [
+          for (var i = 0; i < tiles.length; i++) ...[
+            tiles[i],
+            if (i < tiles.length - 1) divider,
+          ],
+        ],
       ),
     );
   }
 
-  Widget _buildMenuItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildError(BuildContext context, Object err) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    return ListTile(
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: isDarkMode
-              ? theme.colorScheme.surfaceContainerHighest
-              : const Color(0xFFEEEEEC),
-          borderRadius: BorderRadius.circular(8),
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 48,
+              color: isDarkMode
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFFBA1A1A),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Không thể tải thông tin cá nhân',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Inter',
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              err.toString(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 13,
+                fontFamily: 'Inter',
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 48,
+              width: 140,
+              child: ElevatedButton(
+                onPressed: () => ref.refresh(profileProvider),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Thử lại',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        child: Icon(icon, color: theme.colorScheme.onSurfaceVariant),
       ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 15,
-          fontWeight: FontWeight.w500,
-          color: theme.colorScheme.onSurface,
-        ),
-      ),
-      trailing: Icon(
-        Icons.chevron_right_rounded,
-        color: theme.colorScheme.onSurfaceVariant,
-        size: 22,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      onTap: onTap,
     );
   }
 
@@ -1062,376 +600,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               height: 300,
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// ======================== EDIT PROFILE SHEET WIDGET ========================
-class _EditProfileFormSheet extends ConsumerStatefulWidget {
-  final Me profile;
-
-  const _EditProfileFormSheet({required this.profile});
-
-  @override
-  ConsumerState<_EditProfileFormSheet> createState() =>
-      _EditProfileFormSheetState();
-}
-
-class _EditProfileFormSheetState extends ConsumerState<_EditProfileFormSheet> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
-  late TextEditingController _phoneController;
-  late TextEditingController _emailController;
-
-  ProfileGender? _gender;
-  DateTime? _dob;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController(text: widget.profile.name);
-    _phoneController = TextEditingController(text: widget.profile.phone);
-    _emailController = TextEditingController(text: widget.profile.email);
-    _gender = genderOf(widget.profile.gender);
-
-    if (widget.profile.dateOfBirth != null) {
-      _dob = DateTime.tryParse(widget.profile.dateOfBirth!);
-    }
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _dob ?? DateTime(2000),
-      firstDate: DateTime(1930),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _dob) {
-      setState(() {
-        _dob = picked;
-      });
-    }
-  }
-
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final controller = ref.read(accountControllerProvider.notifier);
-
-    await controller.updateProfile(
-      UpdateProfileRequest(
-        name: _nameController.text.trim(),
-        gender: _gender,
-        // The picker answers a local midnight; the day is the whole fact, so the
-        // wall-clock date is what goes on the wire.
-        dateOfBirth: _dob?.toIso8601String().split('T').first,
-      ),
-    );
-
-    // A phone and an email are identifiers on `PATCH /me`, not profile fields,
-    // and only a real change may be sent: re-posting the same email would clear
-    // `email_verified` and mail out a fresh verification.
-    final identifiers = _identifierChanges();
-    if (identifiers != null && ref.read(accountControllerProvider).hasValue) {
-      await controller.updateAccount(identifiers);
-    }
-
-    if (!mounted) return;
-    final failure = ref.read(accountControllerProvider).error;
-    if (failure != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi cập nhật: $failure'),
-          backgroundColor: const Color(0xFFBA1A1A),
-        ),
-      );
-      return;
-    }
-    Navigator.of(context).pop();
-  }
-
-  /// Null when neither identifier moved, so an unchanged form sends nothing.
-  UpdateAccountRequest? _identifierChanges() {
-    final phone = _phoneController.text.trim();
-    final email = _emailController.text.trim();
-    final phoneChanged = phone != (widget.profile.phone ?? '');
-    final emailChanged = email != (widget.profile.email ?? '');
-    if (!phoneChanged && !emailChanged) return null;
-
-    return UpdateAccountRequest(
-      phone: phoneChanged && phone.isNotEmpty ? phone : null,
-      clearPhone: phoneChanged && phone.isEmpty ? true : null,
-      email: emailChanged && email.isNotEmpty ? email : null,
-      clearEmail: emailChanged && email.isEmpty ? true : null,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final inputFillColor = isDarkMode
-        ? theme.colorScheme.surfaceContainerHighest
-        : const Color(0xFFF4F4F1);
-
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 24,
-        bottom: 24 + bottomInset,
-      ),
-      child: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Chỉnh sửa thông tin cá nhân',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                      fontFamily: 'Manrope',
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.close_rounded,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Name Field
-              TextFormField(
-                controller: _nameController,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  color: theme.colorScheme.onSurface,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Họ và tên',
-                  labelStyle: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  filled: true,
-                  fillColor: inputFillColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.primary,
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-                validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'Vui lòng nhập họ tên'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-
-              // Phone Field
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  color: theme.colorScheme.onSurface,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Số điện thoại',
-                  labelStyle: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  filled: true,
-                  fillColor: inputFillColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.primary,
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Email Field
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  color: theme.colorScheme.onSurface,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  filled: true,
-                  fillColor: inputFillColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.primary,
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Gender Selection Dropdown
-              DropdownButtonFormField<ProfileGender>(
-                initialValue: _gender,
-                dropdownColor: isDarkMode
-                    ? AppColors.darkSurface
-                    : Colors.white,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  color: theme.colorScheme.onSurface,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Giới tính',
-                  labelStyle: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  filled: true,
-                  fillColor: inputFillColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                items: [
-                  for (final gender in ProfileGender.values)
-                    DropdownMenuItem(
-                      value: gender,
-                      child: Text(
-                        genderLabel(gender),
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                ],
-                onChanged: (val) {
-                  setState(() {
-                    _gender = val;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Date of Birth Selection Box
-              InkWell(
-                onTap: () => _selectDate(context),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: inputFillColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _dob == null
-                            ? 'Chọn ngày sinh'
-                            : 'Ngày sinh: ${_dob!.day}/${_dob!.month}/${_dob!.year}',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          color: _dob == null
-                              ? theme.colorScheme.onSurfaceVariant
-                              : theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      Icon(
-                        Icons.calendar_today_rounded,
-                        size: 18,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Action button
-              SizedBox(
-                height: 48,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Lưu thông tin',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

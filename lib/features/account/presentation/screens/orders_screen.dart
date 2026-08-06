@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_list_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
@@ -29,7 +28,6 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     'Đang xử lý',
     'Hoàn thành',
     'Đã hủy',
-    'Hoàn tiền',
   ];
 
   @override
@@ -177,7 +175,6 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
           _PendingOrdersTab(),
           _CompletedOrdersTab(),
           _CancelledOrdersTab(),
-          const RefundListScreen(showAppBar: false),
         ],
       ),
     );
