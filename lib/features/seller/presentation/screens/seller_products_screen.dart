@@ -6,6 +6,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/widgets/edit_variant_sheet.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
 
 /// The seller's own listings, read through `GET /listings?mine=true`. SPU/SKU is
@@ -633,6 +634,30 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                 onTap: () {
                   Navigator.pop(sheetContext);
                   context.push('/home/product/${listing.id}');
+                },
+              ),
+              // Giá và tồn, không phải "sửa tin": tên/ảnh/mô tả là
+              // `PATCH /listings/{id}`, một màn chưa có. Hai thứ này thì người
+              // bán đổi hằng tuần, và cho tới giờ họ phải xoá rồi đăng lại.
+              ListTile(
+                leading: Icon(
+                  Icons.sell_outlined,
+                  color: theme.colorScheme.onSurface,
+                ),
+                title: Text(
+                  'Sửa giá & tồn kho',
+                  style: TextStyle(color: theme.colorScheme.onSurface),
+                ),
+                onTap: () async {
+                  Navigator.pop(sheetContext);
+                  final saved = await EditVariantSheet.show(
+                    context,
+                    listingId: listing.id,
+                    currency: listing.currency,
+                  );
+                  // Giá trên thẻ là giá tổng hợp của các phiên bản, nên nó chỉ
+                  // đúng lại sau khi nạp lại từ server.
+                  if (saved == true) await notifier.refresh();
                 },
               ),
               // No "edit with AI" entry: the AI flow fills in a *new* listing and
