@@ -81,7 +81,8 @@ void main() {
       );
 
       expect(inbox.entries.map((e) => e.route), [
-        '/seller/orders',
+        // Đơn bán không còn là màn riêng: nó là vai "Tôi bán" của màn Đơn hàng.
+        '/account/orders?role=seller',
         '/account/refunds?role=seller',
         '/chat',
       ]);

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/core/constants/route_constants.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/screens/splash_screen.dart';
@@ -13,6 +12,7 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/prod
 import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/categories_screen.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/search_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/profile_screen.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/orders_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/order_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/addresses_screen.dart';
@@ -25,10 +25,8 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/prod
 import 'package:shopnexus_flutter_app/features/cart/presentation/screens/cart_screen.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/checkout_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_profile_screen.dart';
-import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_dashboard_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_suggestion_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_products_screen.dart';
-import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_orders_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_earnings_screen.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/inbox_screen.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/chat_detail_screen.dart';
@@ -144,10 +142,20 @@ GoRouter appRouter(Ref ref) {
               return SellerProfileScreen(vendorId: id);
             },
           ),
+          // Không còn bảng số liệu ở đây: nó cần sáu request thành công mới vẽ
+          // nổi tám con số, và một biểu đồ doanh thu 90 ngày không phải câu hỏi
+          // của ai ở C2C — người bán ba món nhớ cả ba. `/seller` ở lại vì nó là
+          // tiền tố của ba route con, là tab 2 của thanh nav, và là một deep link
+          // đã phát ra ngoài; nó mở "Tin của tôi", thứ mà cái cửa cũ chỉ dẫn tới.
           GoRoute(
             path: '/seller',
             name: 'seller',
-            builder: (context, state) => const SellerDashboardScreen(),
+            // `uri.path`, không `matchedLocation`: trong redirect của một route
+            // *cha*, `matchedLocation` là path của chính route đó ('/seller') kể cả
+            // khi request là '/seller/earnings' — nên cái chặn viết bằng nó sẽ đẩy
+            // mọi route con về "Tin của tôi", và tab Số dư không mở được nữa.
+            redirect: (context, state) =>
+                state.uri.path == '/seller' ? '/seller/products' : null,
             routes: [
               GoRoute(
                 path: 'new-listing',
@@ -168,19 +176,14 @@ GoRouter appRouter(Ref ref) {
                   return SellerProductsScreen(initialStatus: status);
                 },
               ),
+              // Đơn bán không còn là một màn riêng: nó là vai "Tôi bán" của màn
+              // Đơn hàng. Redirect ở lại vì `context.push` là một string —
+              // một link cũ, một thông báo đẩy hay một deep link không compile
+              // cùng app này, nên xoá path đi là để chúng vỡ trong tay người dùng.
               GoRoute(
                 path: 'orders',
                 name: 'seller_orders',
-                builder: (context, state) {
-                  final orderState =
-                      _enumByValue(
-                        OrderState.values,
-                        state.uri.queryParameters['state'],
-                        (s) => s.value,
-                      ) ??
-                      OrderState.open;
-                  return SellerOrdersScreen(initialState: orderState);
-                },
+                redirect: (context, state) => '/account/orders?role=seller',
               ),
               GoRoute(
                 path: 'earnings',
@@ -214,13 +217,16 @@ GoRouter appRouter(Ref ref) {
             name: 'account',
             builder: (context, state) => const ProfileScreen(),
             routes: [
+              // `?role=buyer|seller`. Không có tham số nghĩa là để màn tự chọn
+              // theo việc đang chờ; `?tab=N` của bản cũ rơi vào đúng nhánh đó.
               GoRoute(
                 path: 'orders',
                 name: 'buyer_orders',
                 builder: (context, state) {
-                  final tabString = state.uri.queryParameters['tab'];
-                  final initialTab = int.tryParse(tabString ?? '0') ?? 0;
-                  return OrdersScreen(initialTab: initialTab);
+                  final role = state.uri.queryParameters['role'];
+                  return OrdersScreen(
+                    initialRole: role == null ? null : orderRoleFromQuery(role),
+                  );
                 },
               ),
               GoRoute(

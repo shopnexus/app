@@ -168,12 +168,34 @@ class AccountRepository {
 
   /// `role` is required and `state` is what tells the tabs apart — without it
   /// every tab asked for the same list.
+  /// Đơn của một vai, không lọc trạng thái: màn Đơn hàng chia nhóm ở client, nên
+  /// một lượt đọc phục vụ cả "đang diễn ra" lẫn "đã xong". Trả cursor ra ngoài —
+  /// `/orders` phân trang bằng cursor, và một danh sách bỏ cursor đi là một danh
+  /// sách dừng ở đơn thứ 20 mà không nói gì.
+  Future<OrderPageResult> orders({
+    required OrderRole role,
+    String? cursor,
+    int limit = 20,
+  }) async {
+    final page = (await _orderApi.ordersGet(
+      role: role.value,
+      cursor: cursor,
+      limit: limit,
+    )).data;
+    final orders = page?.data ?? const <Order>[];
+    final listings = await _listingsById(orders.expand((order) => order.items));
+    return OrderPageResult(
+      orders: [for (final order in orders) _view(order, listings)],
+      nextCursor: page?.meta.nextCursor,
+    );
+  }
+
   Future<List<OrderView>> buyerOrders({
     OrderState? state,
     int limit = 20,
   }) async {
     final page = (await _orderApi.ordersGet(
-      role: orderRoleBuyer,
+      role: OrderRole.buyer.value,
       state: state,
       limit: limit,
     )).data;
@@ -191,12 +213,16 @@ class AccountRepository {
   /// [pending] is the contract's own filter: lines the money has not produced an
   /// order for. Everything else is one list, so "cancelled" is a read of
   /// `cancelled_at` rather than a filter the route does not have.
-  Future<List<OrderLineView>> buyerItems({
+  ///
+  /// Nhận [role] vì cả hai bên đều có câu hỏi này, và câu trả lời khác nhau: bên
+  /// mua còn hủy được dòng chưa gom, bên bán thì không có gì phải làm với nó.
+  Future<List<OrderLineView>> items({
+    required OrderRole role,
     required bool pending,
     int limit = 50,
   }) async {
     final page = (await _orderApi.itemsGet(
-      role: orderRoleBuyer,
+      role: role.value,
       pending: pending,
       limit: limit,
     )).data;
@@ -237,8 +263,32 @@ class AccountRepository {
   }
 }
 
-/// `oneof=buyer seller`, and the route refuses a request without it.
-const orderRoleBuyer = 'buyer';
+/// Bên nào của đơn. `oneof=buyer seller`, và route từ chối request thiếu nó.
+enum OrderRole {
+  buyer('buyer'),
+  seller('seller');
+
+  const OrderRole(this.value);
+
+  final String value;
+}
+
+/// Vai đọc từ query string. Một giá trị lạ rơi về `buyer` thay vì ném: một link
+/// cũ hay gõ sai phải mở ra một màn hình dùng được, không phải một màn hình lỗi.
+/// `?tab=2` của màn Đơn mua cũ rơi vào đúng nhánh này.
+OrderRole orderRoleFromQuery(String? value) => switch (value) {
+  'seller' => OrderRole.seller,
+  _ => OrderRole.buyer,
+};
+
+class OrderPageResult {
+  const OrderPageResult({required this.orders, this.nextCursor});
+
+  final List<OrderView> orders;
+  final String? nextCursor;
+
+  bool get hasMore => nextCursor != null && nextCursor!.isNotEmpty;
+}
 
 @riverpod
 AccountRepository accountRepository(Ref ref) => AccountRepository(

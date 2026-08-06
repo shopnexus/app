@@ -83,6 +83,13 @@ abstract class OrderView with _$OrderView {
   int get goodsTotal =>
       lines.fold(0, (total, line) => total + line.item.totalAmount);
 
+  /// Hai nhóm của màn Đơn hàng, và đường chia là *kết quả* chứ không phải kiện
+  /// hàng: `state` chỉ có bốn giá trị và hai trong số đó là kết cục, nên "còn
+  /// phải trông" và "xong rồi" là toàn bộ câu hỏi mà chín cái tab từng hỏi.
+  bool get isFinished =>
+      order.state == OrderState.completed ||
+      order.state == OrderState.cancelled;
+
   /// True while the money is in escrow and nothing has been handed to a carrier —
   /// the one window in which a refusal or a silence returns every đồng paid,
   /// carriage included.

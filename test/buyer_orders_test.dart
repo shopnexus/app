@@ -5,7 +5,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 
 import 'support/fixtures.dart';
 import 'support/recording_backend.dart';
@@ -125,8 +125,10 @@ void main() {
 
   /// The worst thing an escrow marketplace can do: a buyer who has just paid
   /// found 'Đang xử lý' empty, because `open` means *the seller has confirmed*.
+  /// Cả hai trạng thái đang bay giờ về trong một lượt đọc và nằm cùng một nhóm,
+  /// nên không còn một cái tab nào có thể bỏ sót một trong hai.
   group('the buyer sees an order they just paid for', () {
-    test('"Đang xử lý" asks for both in-flight states', () async {
+    test('một lượt đọc, không lọc trạng thái nào cả', () async {
       final backend = RecordingBackend(pages());
       final container = ProviderContainer(
         overrides: [
@@ -135,17 +137,14 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(buyerOpenOrdersProvider.future);
+      await container.read(ordersProvider(OrderRole.buyer).future);
 
-      expect(
-        backend.calls
-            .where((c) => c.path == '/orders')
-            .map((c) => c.queryParameters['state']),
-        containsAll([OrderState.awaitingConfirmation, OrderState.open]),
-      );
+      final orderCalls = backend.calls.where((c) => c.path == '/orders');
+      expect(orderCalls.length, 1);
+      expect(orderCalls.single.queryParameters.containsKey('state'), isFalse);
     });
 
-    test('awaiting confirmation comes first — it is the one with a clock', () async {
+    test('đơn chờ xác nhận mang theo cái đồng hồ của nó', () async {
       final awaiting = {
         ...orderJson,
         'id': 'ord_awaiting',
@@ -153,8 +152,6 @@ void main() {
         'confirmed_at': null,
         'confirmation_deadline_at': '2026-08-07T02:47:38Z',
       };
-      // Both reads answer the same envelope, so the ordering under test is the
-      // provider's, not the route's.
       final backend = RecordingBackend(pages(orders: [awaiting]));
       final container = ProviderContainer(
         overrides: [
@@ -163,13 +160,13 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final views = await container.read(buyerOpenOrdersProvider.future);
+      final feed = await container.read(ordersProvider(OrderRole.buyer).future);
 
-      expect(views.length, 2);
-      expect(views.first.isAwaitingConfirmation, isTrue);
-      // Neither side's badge says who is waiting; the card around it does.
-      expect(views.first.statusLabel, 'Chờ xác nhận');
-      expect(views.first.confirmationRemaining, isNotNull);
+      final view = feed.ongoing.single;
+      expect(view.isAwaitingConfirmation, isTrue);
+      // Neither side's badge says who is waiting; the row around it does.
+      expect(view.statusLabel, 'Chờ xác nhận');
+      expect(view.confirmationRemaining, isNotNull);
     });
   });
 
@@ -196,19 +193,22 @@ void main() {
         orderCalls.map((c) => c.queryParameters['state']),
         everyElement(OrderState.awaitingConfirmation),
       );
-      expect(orderCalls.map((c) => c.queryParameters['role']), everyElement('seller'));
+      expect(
+        orderCalls.map((c) => c.queryParameters['role']),
+        everyElement('seller'),
+      );
       expect(orderCalls.last.queryParameters['cursor'], 'p2');
     });
   });
 
   group('GET /items', () {
     test(
-      'the two item tabs differ by pending, and page is not a param',
+      'the two item reads differ by pending, and page is not a param',
       () async {
         final backend = RecordingBackend(pages(items: [orderItemJson]));
 
-        await backend.repository.buyerItems(pending: true);
-        await backend.repository.buyerItems(pending: false);
+        await backend.repository.items(role: OrderRole.buyer, pending: true);
+        await backend.repository.items(role: OrderRole.buyer, pending: false);
 
         final itemCalls = backend.calls.where((c) => c.path == '/items');
         expect(itemCalls.map((c) => c.queryParameters['role']), [

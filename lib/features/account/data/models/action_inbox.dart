@@ -65,13 +65,13 @@ class ActionInbox {
           _ => 'đơn chờ bạn xác nhận',
         },
         count: ordersToConfirm,
-        route: '/seller/orders',
+        route: '/account/orders?role=seller',
       ),
     if (ordersToShip > 0)
       ActionInboxEntry(
         label: 'đơn chờ giao',
         count: ordersToShip,
-        route: '/seller/orders',
+        route: '/account/orders?role=seller',
       ),
     if (refundsAsSeller > 0)
       ActionInboxEntry(
