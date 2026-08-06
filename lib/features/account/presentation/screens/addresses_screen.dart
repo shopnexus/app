@@ -10,7 +10,13 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/ad
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
 
 class AddressesScreen extends ConsumerWidget {
-  const AddressesScreen({super.key});
+  /// Chế độ chọn: mỗi dòng trả địa chỉ về cho màn hình gọi (`context.pop`) thay
+  /// vì mở form sửa, và mọi hành động sửa/xóa/đặt mặc định bị ẩn — người mua
+  /// xóa một địa chỉ rồi pop về checkout sẽ trả về một `Contact` không còn tồn
+  /// tại, và checkout đặt hàng bằng đúng cái id đó.
+  final bool selectMode;
+
+  const AddressesScreen({super.key, this.selectMode = false});
 
   void _showAddressFormSheet(
     BuildContext context,
@@ -57,7 +63,7 @@ class AddressesScreen extends ConsumerWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Địa chỉ',
+          selectMode ? 'Chọn địa chỉ nhận hàng' : 'Địa chỉ',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
@@ -75,15 +81,17 @@ class AddressesScreen extends ConsumerWidget {
           ),
           onPressed: () => context.pop(),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.more_vert_rounded,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            onPressed: () {},
-          ),
-        ],
+        actions: selectMode
+            ? const []
+            : [
+                IconButton(
+                  icon: Icon(
+                    Icons.more_vert_rounded,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onPressed: () {},
+                ),
+              ],
       ),
       body: Stack(
         children: [
@@ -259,184 +267,193 @@ class AddressesScreen extends ConsumerWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            // Default Badge ở góc trên bên phải
-            if (isDefault)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: badgeBgColor,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
+        child: InkWell(
+          // Ngoài chế độ chọn, cả thẻ không phải là một nút — các hành động nằm
+          // ở hàng dưới.
+          onTap: selectMode ? () => context.pop(contact) : null,
+          child: Stack(
+            children: [
+              // Default Badge ở góc trên bên phải
+              if (isDefault)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
                     ),
-                  ),
-                  child: Text(
-                    'Default',
-                    style: TextStyle(
-                      color: badgeTextColor,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Inter',
+                    decoration: BoxDecoration(
+                      color: badgeBgColor,
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Default',
+                      style: TextStyle(
+                        color: badgeTextColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Inter',
+                      ),
                     ),
                   ),
                 ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title Row with Icon
-                  Row(
-                    children: [
-                      Icon(
-                        typeIcon,
-                        color: isHome
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurfaceVariant,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        typeLabel,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                          fontFamily: 'Inter',
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title Row with Icon
+                    Row(
+                      children: [
+                        Icon(
+                          typeIcon,
+                          color: isHome
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.onSurfaceVariant,
+                          size: 20,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Recipient & Address Details
-                  Text(
-                    contact.fullName,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${contact.address}${contact.addressDetail != null && contact.addressDetail!.isNotEmpty ? ", ${contact.addressDetail}" : ""}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      height: 1.4,
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    contact.phone,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Divider
-                  Divider(height: 1, color: dividerColor),
-                  const SizedBox(height: 12),
-                  // Actions Row
-                  Row(
-                    children: [
-                      // Edit Button
-                      InkWell(
-                        onTap: () => _showAddressFormSheet(
-                          context,
-                          ref,
-                          contact: contact,
-                        ),
-                        borderRadius: BorderRadius.circular(6),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                        const SizedBox(width: 8),
+                        Text(
+                          typeLabel,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                            fontFamily: 'Inter',
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.edit_outlined,
-                                size: 16,
-                                color: theme.colorScheme.primary,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Recipient & Address Details
+                    Text(
+                      contact.fullName,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${contact.address}${contact.addressDetail != null && contact.addressDetail!.isNotEmpty ? ", ${contact.addressDetail}" : ""}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.4,
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      contact.phone,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    // Sửa, xóa và đặt mặc định vắng mặt ở chế độ chọn: người mua
+                    // không được xóa mất chính địa chỉ họ đang chọn cho đơn hàng.
+                    if (!selectMode) ...[
+                      const SizedBox(height: 16),
+                      Divider(height: 1, color: dividerColor),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          // Edit Button
+                          InkWell(
+                            onTap: () => _showAddressFormSheet(
+                              context,
+                              ref,
+                              contact: contact,
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
                               ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Edit',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 13,
-                                  color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit_outlined,
+                                    size: 16,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 13,
+                                      color: theme.colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Set Default Button — a default is a flag on the contact,
+                          // and delivery and pickup are separate defaults.
+                          if (!isDefault)
+                            InkWell(
+                              onTap: () {
+                                ref
+                                    .read(addressesControllerProvider.notifier)
+                                    .updateContact(
+                                      contact.id,
+                                      UpdateContactRequest(
+                                        isDefaultDelivery: true,
+                                      ),
+                                    );
+                              },
+                              borderRadius: BorderRadius.circular(6),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                child: Text(
+                                  'Set as Default',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 13,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // Set Default Button — a default is a flag on the contact,
-                      // and delivery and pickup are separate defaults.
-                      if (!isDefault)
-                        InkWell(
-                          onTap: () {
-                            ref
-                                .read(addressesControllerProvider.notifier)
-                                .updateContact(
-                                  contact.id,
-                                  UpdateContactRequest(isDefaultDelivery: true),
-                                );
-                          },
-                          borderRadius: BorderRadius.circular(6),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
                             ),
-                            child: Text(
-                              'Set as Default',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 13,
-                                color: theme.colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          const Spacer(),
+                          // Delete Button
+                          IconButton(
+                            icon: Icon(
+                              Icons.delete_outline_rounded,
+                              size: 18,
+                              color: isDarkMode
+                                  ? const Color(0xFFEF4444)
+                                  : const Color(0xFFBA1A1A),
                             ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () =>
+                                _confirmDelete(context, ref, contact.id),
                           ),
-                        ),
-                      const Spacer(),
-                      // Delete Button
-                      IconButton(
-                        icon: Icon(
-                          Icons.delete_outline_rounded,
-                          size: 18,
-                          color: isDarkMode
-                              ? const Color(0xFFEF4444)
-                              : const Color(0xFFBA1A1A),
-                        ),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: () =>
-                            _confirmDelete(context, ref, contact.id),
+                        ],
                       ),
                     ],
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
