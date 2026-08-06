@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/action_inbox.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/inbox_unread_provider.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/main_layout.dart';
 
@@ -21,6 +22,7 @@ void main() {
     String at = '/home',
     int? unread = 0,
     ActionInbox? inbox = const ActionInbox(),
+    bool signedIn = true,
   }) {
     final router = GoRouter(
       initialLocation: at,
@@ -52,14 +54,9 @@ void main() {
     // for the real metrics; the layout is not what these tests are about.
     return ProviderScope(
       overrides: [
-        // Một `Completer` không bao giờ hoàn thành là cách dựng lại đúng cái
-        // trạng thái đáng lo: app vừa mở, hai lời gọi mạng còn đang bay.
-        inboxUnreadProvider.overrideWith(
-          (ref) => unread == null ? Completer<int>().future : unread,
-        ),
-        actionInboxProvider.overrideWith(
-          (ref) => inbox == null ? Completer<ActionInbox>().future : inbox,
-        ),
+        authProvider.overrideWith(() => _FixedAuth(signedIn: signedIn)),
+        inboxUnreadProvider.overrideWith((ref) => _pending(unread)),
+        actionInboxProvider.overrideWith((ref) => _pending(inbox)),
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -205,6 +202,51 @@ void main() {
       expect(_dots(tester), 1);
     });
   });
+
+  /// Thanh nav sống trên cả những trang công khai. Cả hai nguồn của badge đều là
+  /// route cần token, nên khách chưa đăng nhập không được hỏi: một loạt 401 chỉ
+  /// để lấy hai số 0 đã biết trước.
+  testWidgets('khách chưa đăng nhập không có badge, không có chấm', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      app(
+        signedIn: false,
+        unread: 9,
+        inbox: const ActionInbox(ordersToShip: 5),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('9'), findsNothing);
+    expect(_dots(tester), 0);
+    // Và thanh nav vẫn đủ 5 chỗ — khách vẫn phải đi lại được trong app.
+    expect(find.text('Hộp thư'), findsOneWidget);
+    expect(find.text('Tài khoản'), findsOneWidget);
+  });
+}
+
+/// `build` ghi đè hoàn toàn, nên không cần Hive.
+class _FixedAuth extends AuthNotifier {
+  _FixedAuth({required this.signedIn});
+
+  final bool signedIn;
+
+  @override
+  AuthState build() => signedIn
+      ? const AuthState.authenticated(
+          accessToken: 'access',
+          refreshToken: 'refresh',
+        )
+      : const AuthState.unauthenticated();
+}
+
+/// Null nghĩa là nguồn chưa trả lời: một `Completer` không bao giờ hoàn thành là
+/// cách dựng lại đúng cái trạng thái đáng lo — app vừa mở, lời gọi mạng còn đang
+/// bay, và thanh nav vẫn phải vẽ.
+FutureOr<T> _pending<T>(T? value) {
+  if (value == null) return Completer<T>().future;
+  return value;
 }
 
 /// Chấm là hình tròn 9px duy nhất trên thanh nav — dấu gạch dưới của tab đang mở

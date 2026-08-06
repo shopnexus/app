@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/inbox_unread_provider.dart';
 
 /// Số trên badge. Trên 99 thì rút gọn: bốn chữ số không vừa một hình tròn 16px,
@@ -60,16 +61,30 @@ class MainLayout extends ConsumerWidget {
     final isDarkMode = theme.brightness == Brightness.dark;
     final currentIndex = _getCurrentIndex(context);
 
+    // Thanh nav sống trên cả những trang công khai, nên khách chưa đăng nhập
+    // cũng dựng nó. Cả hai nguồn dưới đây đều là route cần token: hỏi khi chưa
+    // đăng nhập chỉ đổi được một loạt 401 lấy hai số 0 đã biết trước.
+    // `maybeWhen` chứ không `is`: các nhánh của `AuthState` là class private của
+    // file freezed, nên tên chúng không gọi được từ đây. `orElse` là false, nên
+    // `initial`/`loading`/`error` cũng không hỏi — chưa biết là chưa đăng nhập.
+    final signedIn = ref
+        .watch(authProvider)
+        .maybeWhen(
+          authenticated: (accessToken, refreshToken) => true,
+          orElse: () => false,
+        );
+
     // `.value` với null-fallback, không `.when()`: cả hai nguồn đọc qua mạng khi
     // mở app, và một `loading` hay `error` được phép làm thanh nav không vẽ thì
     // toàn bộ điều hướng của app biến mất. Badge vắng thì chấp nhận được.
-    final unread = ref.watch(inboxUnreadProvider).value ?? 0;
+    final unread = signedIn ? (ref.watch(inboxUnreadProvider).value ?? 0) : 0;
 
     // Chấm tròn, không số, và cố ý như vậy. `ActionInbox.total` là một con số
     // thật, nhưng nó đếm việc ở nhiều nơi khác nhau — không có một trang nào cho
     // người dùng thấy đúng con số ấy khi họ chạm vào tab. Chấm chỉ nói "vào đây
     // xem", nên nó không thể nói sai; con số thật nằm trong khối "Việc cần làm".
-    final hasWork = ref.watch(actionInboxProvider).value?.isEmpty == false;
+    final hasWork =
+        signedIn && ref.watch(actionInboxProvider).value?.isEmpty == false;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
