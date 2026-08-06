@@ -2179,8 +2179,8 @@ class OrderApi {
     );
   }
 
-  /// Report a carrier checkpoint on the outbound leg (seller)
-  /// The seller&#39;s route — they are the one who hands the parcel over — and a moderator may correct it; nobody else writes this status.  Forward-only. Carrier reports arrive out of order, and whether the parcel has left is what decides whether the order can still be cancelled and the escrow taken back, so it is not a fact a later report may undo: a checkpoint at or behind where the shipment already is, or one on a leg that has ended, is 409.
+  /// Correct a checkpoint on the outbound leg (moderator)
+  /// Staff only. The carrier reports this leg on its own webhook, and this route is for a courier that got it wrong or never reported at all — neither party to the order writes it. Whether the parcel has left is what decides whether the order can still be cancelled and the escrow taken back, so a seller saying so was one request against days of the buyer&#39;s: a seller who sees the status wrong raises an &#x60;order-issue&#x60; ticket instead.  Forward-only. Carrier reports arrive out of order, and whether the parcel has left is what decides whether the order can still be cancelled and the escrow taken back, so it is not a fact a later report may undo: a checkpoint at or behind where the shipment already is, or one on a leg that has ended, is 409.
   ///
   /// Parameters:
   /// * [id]

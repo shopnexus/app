@@ -3,17 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 
 /// A seller's sales, read through `GET /orders?role=seller&state=…`. There is no
 /// confirm and no reject: the money creates the order, so the only thing a seller
-/// can refuse is a price. What is left is reading it, reporting where the parcel
-/// is, cancelling before it ships, and talking to the buyer.
+/// can refuse is a price. What is left is reading it, cancelling before it ships,
+/// talking to the buyer — and raising an issue when the carrier's own report of
+/// where the parcel is looks wrong, which is the only way that status moves now.
 class SellerOrdersScreen extends ConsumerStatefulWidget {
   final OrderState initialState;
 
@@ -447,24 +449,32 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
               if (order.state == OrderState.open) ...[
                 const SizedBox(width: 8),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: isActionLoading
-                        ? null
-                        : () =>
-                              _showCheckpointSheet(context, order.id, notifier),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
+                  child: OutlinedButton(
+                    onPressed: () => _reportIssue(context, order.id),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: theme.colorScheme.onSurface,
+                      side: BorderSide(color: theme.colorScheme.outline),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text('Cập nhật vận chuyển'),
+                    child: const Text('Báo vấn đề'),
                   ),
                 ),
               ],
             ],
           ),
+          if (order.state == OrderState.open) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Trạng thái vận chuyển do đơn vị giao hàng cập nhật. Nếu bạn thấy '
+              'sai, hãy báo để ShopNexus kiểm tra.',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
           if (order.state == OrderState.awaitingConfirmation) ...[
             const SizedBox(height: 8),
             SizedBox(
@@ -499,53 +509,19 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     );
   }
 
-  /// `pending` is missing on purpose: it is where a shipment starts, not a
-  /// position a checkpoint may report.
-  static const _checkpointLabels = {
-    TransportCheckpoint.pickedUp: 'Đã lấy hàng',
-    TransportCheckpoint.inTransit: 'Đang giao',
-    TransportCheckpoint.delivered: 'Đã giao',
-    TransportCheckpoint.returned: 'Đã trả về',
-    TransportCheckpoint.failed: 'Giao thất bại',
-  };
-
-  Future<void> _showCheckpointSheet(
-    BuildContext context,
-    String orderId,
-    SellerOrdersNotifier notifier,
-  ) async {
-    final theme = Theme.of(context);
-    final picked = await showModalBottomSheet<TransportCheckpoint>(
-      context: context,
-      backgroundColor: theme.colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            Text(
-              'Vị trí đơn hàng',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            for (final entry in _checkpointLabels.entries)
-              ListTile(
-                title: Text(entry.value),
-                onTap: () => Navigator.pop(sheetContext, entry.key),
-              ),
-          ],
-        ),
-      ),
+  /// Nơi một người bán nói "chỗ này sai". Vị trí kiện hàng là báo cáo của đơn vị
+  /// giao hàng, và chỉ ShopNexus sửa được — nên đường của người bán là mở một
+  /// yêu cầu `order-issue` để có người xem, chứ không phải tự ghi lại trạng thái.
+  Future<void> _reportIssue(BuildContext context, String orderId) async {
+    final ticket = await RaiseTicketSheet.show(
+      context,
+      kind: TicketKind.orderIssue,
+      refId: orderId,
+      subjectHint: 'Sự cố vận chuyển đơn $orderId',
+      refLabel: orderId,
     );
-    if (picked == null) return;
-
-    final ok = await notifier.reportCheckpoint(orderId, picked);
-    if (!context.mounted) return;
-    _report(context, ok, 'Đã cập nhật vận chuyển');
+    if (ticket == null || !context.mounted) return;
+    context.push('/account/help-center/${ticket.id}');
   }
 
   /// Accepting is what hands the parcel to the carrier, so it is confirmed rather than fired off a

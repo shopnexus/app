@@ -159,7 +159,8 @@ const listingJson = <String, dynamic>{
     'object_key': 'listings/cover.jpg',
     'mime': 'image/jpeg',
     'size': 12345,
-    'checksum': '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
+    'checksum':
+        '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
     'url': 'https://cdn.example/cover.jpg',
     'url_expires_at': null,
   },
@@ -301,11 +302,30 @@ const listingDetailJson = <String, dynamic>{
   'deleted_at': null,
 };
 
-/// `GET /orders/{id}/transport`. The shape a checkpoint POST answers with too.
+/// `GET /orders/{id}/transport`. A seller does not write this: the carrier reports
+/// it and a moderator corrects it.
 const transportJson = <String, dynamic>{
   'id': 'trp_ep6bh2cqjsxy3',
   'option': 'standard-delivery',
   'status': 'pending',
   'fee': 15000,
   'created_at': '2026-08-05T02:47:38.200063Z',
+};
+
+/// `POST /tickets` for an `order-issue`. `ref_type` follows from the kind and is
+/// never sent, and `conversation_id` is where the whole conversation happens —
+/// the ticket itself holds no body.
+const ticketJson = <String, dynamic>{
+  'id': 'tkt_4mhq7d2xr9wb5',
+  'kind': 'order-issue',
+  'ref_type': 'order',
+  'ref_id': 'ord_2ybcv39246zn7',
+  'reason': null,
+  'subject': 'Sự cố vận chuyển đơn ord_2ybcv39246zn7',
+  'status': 'open',
+  'action_taken': null,
+  'resolution_note': null,
+  'resolved_at': null,
+  'conversation_id': 'cnv_5tz8k3vqp2ny6',
+  'created_at': '2026-08-06T02:47:38.200063Z',
 };

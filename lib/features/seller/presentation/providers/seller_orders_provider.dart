@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
@@ -61,13 +60,6 @@ class SellerOrdersNotifier extends _$SellerOrdersNotifier {
   }
 
   Future<void> refresh() => _load();
-
-  /// The parcel's position, as the seller sees it. Forward-only server-side, so a
-  /// checkpoint behind the one already recorded is refused rather than applied.
-  Future<bool> reportCheckpoint(
-    String orderId,
-    TransportCheckpoint checkpoint,
-  ) => _act((repository) => repository.reportCheckpoint(orderId, checkpoint));
 
   /// The seller's two answers to a paid order. Doing neither is not a third option that resolves
   /// itself: staff are asked to chase it after 48 hours, because the platform will neither void

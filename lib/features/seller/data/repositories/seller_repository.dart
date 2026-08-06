@@ -13,8 +13,6 @@ import 'package:shopnexus_flutter_app/api/generated/model/decline_order_request.
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/wallet.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/wallet_transaction.dart';
@@ -105,15 +103,10 @@ class SellerRepository {
       limit: limit,
     )).data;
     final orders = page?.data ?? const <Order>[];
-    final listings = await _listingsById(
-      orders.expand((order) => order.items),
-    );
+    final listings = await _listingsById(orders.expand((order) => order.items));
     return [
       for (final order in orders)
-        OrderView(
-          order: order,
-          lines: _lines(order.items, listings),
-        ),
+        OrderView(order: order, lines: _lines(order.items, listings)),
     ];
   }
 
@@ -145,7 +138,8 @@ class SellerRepository {
       total += orders.length;
       for (final order in orders) {
         final deadline = order.confirmationDeadlineAt;
-        if (deadline != null && (soonest == null || deadline.isBefore(soonest))) {
+        if (deadline != null &&
+            (soonest == null || deadline.isBefore(soonest))) {
           soonest = deadline;
         }
       }
@@ -188,15 +182,11 @@ class SellerRepository {
   Future<void> cancelOrder(String orderId) =>
       _orderApi.ordersIdCancellationPost(id: orderId);
 
-  /// One carrier-reported position. Forward-only, so a late checkpoint loses to
-  /// one already recorded rather than moving the parcel backwards.
-  Future<void> reportCheckpoint(
-    String orderId,
-    TransportCheckpoint checkpoint,
-  ) => _orderApi.ordersIdTransportCheckpointsPost(
-    id: orderId,
-    transportCheckpointRequest: TransportCheckpointRequest(status: checkpoint),
-  );
+  // A seller does not report where the parcel is: the carrier does, on its own
+  // webhook, and a moderator corrects it. The route answers 403 to either party —
+  // `Shipped()` decides whether the buyer may still cancel, so a claim with
+  // nothing behind it bought days of theirs for one request. Seeing it wrong is an
+  // `order-issue` ticket.
 
   // --- Listings ---
 

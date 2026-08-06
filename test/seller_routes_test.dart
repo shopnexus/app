@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 
 import 'support/fixtures.dart';
 import 'support/recording_backend.dart';
@@ -173,20 +173,26 @@ void main() {
       expect(itemCall.queryParameters['pending'], true);
     });
 
-    test('a carrier checkpoint is a POST to the sub-resource', () async {
-      final backend = RecordingBackend((_) => {'data': transportJson});
+    // A seller reporting `picked-up` used to be enough to end the buyer's right to
+    // cancel — one request against days of theirs, with nobody checking a parcel
+    // was behind it. The carrier reports that leg now, so what a seller can do
+    // about a wrong status is ask for it to be looked at.
+    test('a wrong shipment status is raised, not written', () async {
+      final backend = RecordingBackend((_) => {'data': ticketJson});
 
-      await backend.seller.reportCheckpoint(
-        'ord_2ybcv39246zn7',
-        TransportCheckpoint.pickedUp,
+      await backend.tickets.open(
+        kind: TicketKind.orderIssue,
+        subject: 'Sự cố vận chuyển đơn ord_2ybcv39246zn7',
+        refId: 'ord_2ybcv39246zn7',
       );
 
       expect(backend.only.method, 'POST');
-      expect(
-        backend.paths.single,
-        'orders/ord_2ybcv39246zn7/transport/checkpoints',
-      );
-      expect(backend.bodyOf(0), {'status': 'picked-up'});
+      expect(backend.paths.single, 'tickets');
+      final body = backend.bodyOf(0);
+      expect(body['kind'], 'order-issue');
+      // `ref_type` follows from the kind, so the order's id is all that is sent.
+      expect(body['ref_id'], 'ord_2ybcv39246zn7');
+      expect(body.containsKey('ref_type'), isFalse);
     });
 
     test('cancelling is a POST, and there is nothing to confirm', () async {
