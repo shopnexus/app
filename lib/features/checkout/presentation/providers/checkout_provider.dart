@@ -387,10 +387,11 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     return null;
   }
 
-  /// Poll the payment session until it settles. The order appears when the
-  /// session completes — no seller confirms anything — so a settled session is
-  /// the whole answer, and `order.placed` on the socket is the same fact arriving
-  /// sooner.
+  /// Poll the payment session until it settles. A settled session is the whole
+  /// answer *this* screen waits for — the order exists at that point, in
+  /// `awaiting-confirmation`, and `order.placed` on the socket is the same fact
+  /// arriving sooner. What happens next is the seller's 48 hours to confirm or
+  /// decline, which is the order screen's business, not the checkout's.
   void _startPolling(String paymentSessionId) {
     _pollingTimer?.cancel();
     _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {

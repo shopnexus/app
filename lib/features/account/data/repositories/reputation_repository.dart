@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/feedback.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/reputation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reputation_role.dart';
 
 part 'reputation_repository.g.dart';
@@ -33,6 +34,24 @@ class ReputationRepository {
       limit: limit,
     );
     return page.data?.data ?? const [];
+  }
+
+  /// Uy tín của một tài khoản ở một vai. Server trả zero chứ không trả 404 cho
+  /// người chưa ai đánh giá, nên "chưa có đánh giá" là `rating_count == 0` —
+  /// một con số, không phải một lỗi phải bắt.
+  ///
+  /// `rating_average` là điểm giao dịch, tách khỏi `review_rating_*` là điểm sản
+  /// phẩm: một đơn sinh ra được cả hai, gộp lại là đếm đơn đó hai lần.
+  Future<Reputation> reputation({
+    required String accountId,
+    required ReputationRole role,
+  }) async {
+    final reputation = (await _trustApi.accountsAccountIDReputationGet(
+      accountID: accountId,
+      role: role,
+    )).data?.data;
+    if (reputation == null) throw StateError('empty reputation');
+    return reputation;
   }
 }
 

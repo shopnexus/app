@@ -106,3 +106,91 @@ final class MyFeedbackFamily extends $Family
   @override
   String toString() => r'myFeedbackProvider';
 }
+
+/// Uy tín người bán của một tài khoản bất kỳ — cái trang sản phẩm giới thiệu
+/// người bán bằng, thay cho một câu quảng cáo viết cứng.
+
+@ProviderFor(sellerReputation)
+const sellerReputationProvider = SellerReputationFamily._();
+
+/// Uy tín người bán của một tài khoản bất kỳ — cái trang sản phẩm giới thiệu
+/// người bán bằng, thay cho một câu quảng cáo viết cứng.
+
+final class SellerReputationProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Reputation>,
+          Reputation,
+          FutureOr<Reputation>
+        >
+    with $FutureModifier<Reputation>, $FutureProvider<Reputation> {
+  /// Uy tín người bán của một tài khoản bất kỳ — cái trang sản phẩm giới thiệu
+  /// người bán bằng, thay cho một câu quảng cáo viết cứng.
+  const SellerReputationProvider._({
+    required SellerReputationFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'sellerReputationProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$sellerReputationHash();
+
+  @override
+  String toString() {
+    return r'sellerReputationProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<Reputation> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Reputation> create(Ref ref) {
+    final argument = this.argument as String;
+    return sellerReputation(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SellerReputationProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$sellerReputationHash() => r'dba7f9d761f633ebcfb4afdca4fd825b6ea133ef';
+
+/// Uy tín người bán của một tài khoản bất kỳ — cái trang sản phẩm giới thiệu
+/// người bán bằng, thay cho một câu quảng cáo viết cứng.
+
+final class SellerReputationFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<Reputation>, String> {
+  const SellerReputationFamily._()
+    : super(
+        retry: null,
+        name: r'sellerReputationProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Uy tín người bán của một tài khoản bất kỳ — cái trang sản phẩm giới thiệu
+  /// người bán bằng, thay cho một câu quảng cáo viết cứng.
+
+  SellerReputationProvider call(String accountId) =>
+      SellerReputationProvider._(argument: accountId, from: this);
+
+  @override
+  String toString() => r'sellerReputationProvider';
+}

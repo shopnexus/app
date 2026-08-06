@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/feedback.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/reputation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reputation_role.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/reputation_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
@@ -17,3 +18,10 @@ Future<List<Feedback>> myFeedback(Ref ref, ReputationRole role) async {
       .watch(reputationRepositoryProvider)
       .receivedBy(accountId: me.id, role: role);
 }
+
+/// Uy tín người bán của một tài khoản bất kỳ — cái trang sản phẩm giới thiệu
+/// người bán bằng, thay cho một câu quảng cáo viết cứng.
+@riverpod
+Future<Reputation> sellerReputation(Ref ref, String accountId) => ref
+    .watch(reputationRepositoryProvider)
+    .reputation(accountId: accountId, role: ReputationRole.seller);

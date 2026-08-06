@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/reputation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review_reply.dart';
@@ -21,6 +22,7 @@ import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/c
 import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/my_reviews_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/providers/chat_providers.dart';
@@ -853,6 +855,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       error: (_, _) => seller.avatar?.url,
     );
 
+    // Hai tín hiệu thật, thay cho một câu viết cứng khen mọi người bán như nhau.
+    // `identity_verified` là điều kiện để được bán ở đây, nên nó là thứ đỡ cho
+    // người bán mới: chưa ai đánh giá thì vẫn có một sự thật để nói.
+    final bool identityVerified =
+        sellerProfileState.value?.identityVerified ?? false;
+    final reputation = ref.watch(sellerReputationProvider(seller.id)).value;
+
     return Container(
       color: isDarkMode ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(16.0),
@@ -868,10 +877,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               backgroundColor: isDarkMode
                   ? theme.colorScheme.surfaceContainerHighest
                   : const Color(0xFFEEEEEB),
+              // Người bán ở đây là một người, không phải một gian hàng — nên
+              // chữ đầu của tên, không phải cái mái hiên B2C.
               child: avatarUrl == null
-                  ? Icon(
-                      Icons.storefront_rounded,
-                      color: theme.colorScheme.onSurfaceVariant,
+                  ? Text(
+                      name.isEmpty ? '?' : name.substring(0, 1).toUpperCase(),
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     )
                   : null,
             ),
@@ -893,14 +909,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       color: theme.colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'Đối tác uy tín | Phản hồi 99%',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 12,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                  const SizedBox(height: 6.0),
+                  _buildSellerSignals(
+                    identityVerified: identityVerified,
+                    reputation: reputation,
                   ),
                 ],
               ),
@@ -924,6 +936,57 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  /// Những gì thật sự biết được về người bán này, và không gì hơn.
+  ///
+  /// Người chưa ai đánh giá thấy đúng "Chưa có đánh giá" — một con số bịa ở đây
+  /// là bịa ngay tại chỗ người mua quyết định xuống tiền. Uy tín chưa tải xong
+  /// thì chưa vẽ dòng nào, vì một khoảng trống đọc là "chưa biết", còn một số 0
+  /// nhấp nháy đọc là "kém".
+  Widget _buildSellerSignals({
+    required bool identityVerified,
+    required Reputation? reputation,
+  }) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+
+    return Wrap(
+      spacing: 10.0,
+      runSpacing: 4.0,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (identityVerified)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.verified_user_rounded,
+                size: 14,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 4.0),
+              Text(
+                'Đã định danh',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+        if (reputation != null)
+          Text(
+            reputation.ratingCount == 0
+                ? 'Chưa có đánh giá'
+                : '⭐ ${reputation.ratingAverage.toStringAsFixed(1)} · '
+                      '${reputation.ratingCount} đánh giá',
+            style: TextStyle(fontFamily: 'Inter', fontSize: 12, color: muted),
+          ),
+      ],
     );
   }
 
@@ -1725,7 +1788,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        'Added to Bag!',
+                                        'Đã thêm vào giỏ',
                                         style: TextStyle(
                                           fontFamily: 'Manrope',
                                           fontWeight: FontWeight.bold,
@@ -1770,7 +1833,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                     ),
                                   ),
                                   child: const Text(
-                                    'View Bag',
+                                    'Xem giỏ hàng',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 12,
@@ -1829,12 +1892,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   ),
                   elevation: 0,
                 ),
+                // Một hành động, một nhãn. Tin thương lượng được mở thêm một
+                // lựa chọn *sau* khi bấm, chứ không phải một hành động khác —
+                // hai tên cho cùng một nút chỉ làm người mua tưởng có hai đường
+                // mua khác nhau.
                 child: Text(
-                  isOutOfStock
-                      ? 'HẾT HÀNG'
-                      : (detail.priceMode == PriceMode.negotiable
-                            ? 'MUA HÀNG'
-                            : 'MUA NGAY'),
+                  isOutOfStock ? 'HẾT HÀNG' : 'MUA NGAY',
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.bold,

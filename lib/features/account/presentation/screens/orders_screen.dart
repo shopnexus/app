@@ -20,8 +20,10 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // 'Chờ thanh toán' rather than 'Chờ duyệt': nobody approves a sale, and a line
-  // sits here only while the money has not produced an order yet.
+  // 'Chờ thanh toán' is about the *money*, not about the seller: a line sits
+  // here only while the payment has not produced an order yet. Waiting for the
+  // seller to confirm is a different wait and a later one — it happens on an
+  // order that already exists, so it belongs in 'Đang xử lý'.
   final List<String> _tabs = const [
     'Tất cả',
     'Chờ thanh toán',
