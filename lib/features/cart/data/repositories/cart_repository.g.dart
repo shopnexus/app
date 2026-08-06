@@ -10,12 +10,12 @@ part of 'cart_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(cartRepository)
-const cartRepositoryProvider = CartRepositoryProvider._();
+final cartRepositoryProvider = CartRepositoryProvider._();
 
 final class CartRepositoryProvider
     extends $FunctionalProvider<CartRepository, CartRepository, CartRepository>
     with $Provider<CartRepository> {
-  const CartRepositoryProvider._()
+  CartRepositoryProvider._()
     : super(
         from: null,
         argument: null,

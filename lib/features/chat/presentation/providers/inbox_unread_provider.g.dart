@@ -22,7 +22,7 @@ part of 'inbox_unread_provider.dart';
 /// một badge biến mất và một badge bằng 0 trông giống nhau với người dùng.
 
 @ProviderFor(inboxUnread)
-const inboxUnreadProvider = InboxUnreadProvider._();
+final inboxUnreadProvider = InboxUnreadProvider._();
 
 /// Số chưa đọc của Hộp thư, và **chỉ** của Hộp thư: tin nhắn chưa đọc cộng thông
 /// báo chưa đọc, đúng hai thứ mà hai tab của nó chứa.
@@ -52,7 +52,7 @@ final class InboxUnreadProvider
   ///
   /// Mỗi nguồn bọc [countOrZero] riêng: chat hỏng không được xoá số thông báo, vì
   /// một badge biến mất và một badge bằng 0 trông giống nhau với người dùng.
-  const InboxUnreadProvider._()
+  InboxUnreadProvider._()
     : super(
         from: null,
         argument: null,

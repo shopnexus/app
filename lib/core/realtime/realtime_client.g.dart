@@ -13,7 +13,7 @@ part of 'realtime_client.dart';
 /// backend anyway.
 
 @ProviderFor(realtimeClient)
-const realtimeClientProvider = RealtimeClientProvider._();
+final realtimeClientProvider = RealtimeClientProvider._();
 
 /// Kept alive for the whole session and connected only while signed in — the
 /// handshake needs a token, and a revoked session's socket is closed by the
@@ -25,7 +25,7 @@ final class RealtimeClientProvider
   /// Kept alive for the whole session and connected only while signed in — the
   /// handshake needs a token, and a revoked session's socket is closed by the
   /// backend anyway.
-  const RealtimeClientProvider._()
+  RealtimeClientProvider._()
     : super(
         from: null,
         argument: null,
@@ -64,7 +64,7 @@ String _$realtimeClientHash() => r'925d7ef196e3a00f47651a1d509ee4a603ae7c51';
 /// about. Watching this is also what makes the socket connect.
 
 @ProviderFor(realtimeEvents)
-const realtimeEventsProvider = RealtimeEventsProvider._();
+final realtimeEventsProvider = RealtimeEventsProvider._();
 
 /// What a screen watches: the raw event feed, filtered by whatever it cares
 /// about. Watching this is also what makes the socket connect.
@@ -79,7 +79,7 @@ final class RealtimeEventsProvider
     with $FutureModifier<RealtimeEvent>, $StreamProvider<RealtimeEvent> {
   /// What a screen watches: the raw event feed, filtered by whatever it cares
   /// about. Watching this is also what makes the socket connect.
-  const RealtimeEventsProvider._()
+  RealtimeEventsProvider._()
     : super(
         from: null,
         argument: null,

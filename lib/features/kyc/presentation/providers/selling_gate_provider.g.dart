@@ -17,7 +17,7 @@ part of 'selling_gate_provider.dart';
 /// vẫn làm `identity_verified` false, và lúc đó việc cần làm là nộp lại.
 
 @ProviderFor(sellingEligibility)
-const sellingEligibilityProvider = SellingEligibilityProvider._();
+final sellingEligibilityProvider = SellingEligibilityProvider._();
 
 /// Server chặn đăng tin nếu chưa định danh (`identity_required`, 422). App phải
 /// biết điều đó *trước* khi mở form: chụp ảnh, tải lên, ghi âm, đợi model chạy
@@ -44,7 +44,7 @@ final class SellingEligibilityProvider
   /// `identity_verified` là nguồn duy nhất cho "được bán", đúng cái cờ server đọc.
   /// Trạng thái hồ sơ chỉ dùng để *nói* — vì một hồ sơ `verified` nhưng đã hết hạn
   /// vẫn làm `identity_verified` false, và lúc đó việc cần làm là nộp lại.
-  const SellingEligibilityProvider._()
+  SellingEligibilityProvider._()
     : super(
         from: null,
         argument: null,

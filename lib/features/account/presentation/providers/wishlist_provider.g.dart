@@ -14,7 +14,7 @@ part of 'wishlist_provider.dart';
 /// `ListingDetail` carries no card price, which is why every row read 0 ₫.
 
 @ProviderFor(wishlistProducts)
-const wishlistProductsProvider = WishlistProductsProvider._();
+final wishlistProductsProvider = WishlistProductsProvider._();
 
 /// The wishlist is a catalog query, not a list of its own: `GET /listings` with
 /// `favorited=true` answers cards, so the screen gets the price and the cover it
@@ -33,7 +33,7 @@ final class WishlistProductsProvider
   /// `favorited=true` answers cards, so the screen gets the price and the cover it
   /// draws. Resolving saved ids one detail request at a time gave neither — a
   /// `ListingDetail` carries no card price, which is why every row read 0 ₫.
-  const WishlistProductsProvider._()
+  WishlistProductsProvider._()
     : super(
         from: null,
         argument: null,
@@ -62,11 +62,11 @@ final class WishlistProductsProvider
 String _$wishlistProductsHash() => r'2ed77c7a3d39e28708fcabe13ec8fd36d315b06a';
 
 @ProviderFor(WishlistController)
-const wishlistControllerProvider = WishlistControllerProvider._();
+final wishlistControllerProvider = WishlistControllerProvider._();
 
 final class WishlistControllerProvider
     extends $AsyncNotifierProvider<WishlistController, void> {
-  const WishlistControllerProvider._()
+  WishlistControllerProvider._()
     : super(
         from: null,
         argument: null,
@@ -92,8 +92,7 @@ abstract class _$WishlistController extends $AsyncNotifier<void> {
   FutureOr<void> build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    build();
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<void>, void>;
     final element =
         ref.element
@@ -103,6 +102,6 @@ abstract class _$WishlistController extends $AsyncNotifier<void> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, null);
+    return element.handleCreate(ref, build);
   }
 }

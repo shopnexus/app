@@ -14,7 +14,7 @@ part of 'administrative_areas_provider.dart';
 /// a picker opens.
 
 @ProviderFor(provinces)
-const provincesProvider = ProvincesProvider._();
+final provincesProvider = ProvincesProvider._();
 
 /// The area vocabulary the address form writes an address in and the browse
 /// filter narrows by. It is public, unauthenticated and changes about once a
@@ -35,7 +35,7 @@ final class ProvincesProvider
   /// filter narrows by. It is public, unauthenticated and changes about once a
   /// decade, so each level is held for the session instead of refetched every time
   /// a picker opens.
-  const ProvincesProvider._()
+  ProvincesProvider._()
     : super(
         from: null,
         argument: null,
@@ -67,7 +67,7 @@ String _$provincesHash() => r'16b1ef34563787d7207fe02cb9bb2d4a97327da3';
 /// is why the picker searches the list rather than scrolling it.
 
 @ProviderFor(wards)
-const wardsProvider = WardsFamily._();
+final wardsProvider = WardsFamily._();
 
 /// A province answers every one of its wards in one response — up to 549 — which
 /// is why the picker searches the list rather than scrolling it.
@@ -84,7 +84,7 @@ final class WardsProvider
         $FutureProvider<List<AdministrativeArea>> {
   /// A province answers every one of its wards in one response — up to 549 — which
   /// is why the picker searches the list rather than scrolling it.
-  const WardsProvider._({
+  WardsProvider._({
     required WardsFamily super.from,
     required String super.argument,
   }) : super(
@@ -135,7 +135,7 @@ String _$wardsHash() => r'c51d90dc5ac1fa93bef845684e53709185d254c7';
 
 final class WardsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<AdministrativeArea>>, String> {
-  const WardsFamily._()
+  WardsFamily._()
     : super(
         retry: null,
         name: r'wardsProvider',

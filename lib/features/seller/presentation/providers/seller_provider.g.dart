@@ -13,7 +13,7 @@ part of 'seller_provider.dart';
 /// `mine=true` here, which is what would be needed to see a draft.
 
 @ProviderFor(sellerProducts)
-const sellerProductsProvider = SellerProductsFamily._();
+final sellerProductsProvider = SellerProductsFamily._();
 
 /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
 /// visitor sees exactly what is public — there is no shop-scoped route and no
@@ -30,7 +30,7 @@ final class SellerProductsProvider
   /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
   /// visitor sees exactly what is public — there is no shop-scoped route and no
   /// `mine=true` here, which is what would be needed to see a draft.
-  const SellerProductsProvider._({
+  SellerProductsProvider._({
     required SellerProductsFamily super.from,
     required String super.argument,
   }) : super(
@@ -82,7 +82,7 @@ String _$sellerProductsHash() => r'b719579b13ef528724735755b8425ed3322ed441';
 
 final class SellerProductsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Listing>>, String> {
-  const SellerProductsFamily._()
+  SellerProductsFamily._()
     : super(
         retry: null,
         name: r'sellerProductsProvider',

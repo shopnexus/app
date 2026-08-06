@@ -16,7 +16,7 @@ part of 'seller_earnings_provider.dart';
 /// lần chuyển tiền đầu tiên, không bởi việc đăng ký.
 
 @ProviderFor(sellerWallet)
-const sellerWalletProvider = SellerWalletProvider._();
+final sellerWalletProvider = SellerWalletProvider._();
 
 /// Chỉ cái ví, một lượt đọc.
 ///
@@ -34,7 +34,7 @@ final class SellerWalletProvider
   /// đọc bốn thứ để dựng cả màn Thu nhập — mở trang Tài khoản không nên trả giá đó.
   /// `null` khi sàn chưa ghi khoản nào cho tài khoản này: một dòng ví được tạo bởi
   /// lần chuyển tiền đầu tiên, không bởi việc đăng ký.
-  const SellerWalletProvider._()
+  SellerWalletProvider._()
     : super(
         from: null,
         argument: null,
@@ -62,12 +62,12 @@ final class SellerWalletProvider
 String _$sellerWalletHash() => r'c4747f966dc59b9c2e1f81df42302bdc19a1336e';
 
 @ProviderFor(SellerEarningsNotifier)
-const sellerEarningsProvider = SellerEarningsNotifierProvider._();
+final sellerEarningsProvider = SellerEarningsNotifierProvider._();
 
 final class SellerEarningsNotifierProvider
     extends
         $AsyncNotifierProvider<SellerEarningsNotifier, SellerEarningsState> {
-  const SellerEarningsNotifierProvider._()
+  SellerEarningsNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -94,8 +94,7 @@ abstract class _$SellerEarningsNotifier
   FutureOr<SellerEarningsState> build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<AsyncValue<SellerEarningsState>, SellerEarningsState>;
     final element =
@@ -106,6 +105,6 @@ abstract class _$SellerEarningsNotifier
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, build);
   }
 }

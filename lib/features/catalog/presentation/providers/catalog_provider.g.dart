@@ -10,7 +10,7 @@ part of 'catalog_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(categories)
-const categoriesProvider = CategoriesProvider._();
+final categoriesProvider = CategoriesProvider._();
 
 final class CategoriesProvider
     extends
@@ -20,7 +20,7 @@ final class CategoriesProvider
           FutureOr<List<Category>>
         >
     with $FutureModifier<List<Category>>, $FutureProvider<List<Category>> {
-  const CategoriesProvider._()
+  CategoriesProvider._()
     : super(
         from: null,
         argument: null,
@@ -49,11 +49,11 @@ final class CategoriesProvider
 String _$categoriesHash() => r'31469ca72056a492cb943427ab921b7eaf6fea87';
 
 @ProviderFor(CatalogProducts)
-const catalogProductsProvider = CatalogProductsFamily._();
+final catalogProductsProvider = CatalogProductsFamily._();
 
 final class CatalogProductsProvider
     extends $AsyncNotifierProvider<CatalogProducts, CatalogProductsState> {
-  const CatalogProductsProvider._({
+  CatalogProductsProvider._({
     required CatalogProductsFamily super.from,
     required CatalogSearchFilters super.argument,
   }) : super(
@@ -100,7 +100,7 @@ final class CatalogProductsFamily extends $Family
           FutureOr<CatalogProductsState>,
           CatalogSearchFilters
         > {
-  const CatalogProductsFamily._()
+  CatalogProductsFamily._()
     : super(
         retry: null,
         name: r'catalogProductsProvider',
@@ -123,8 +123,7 @@ abstract class _$CatalogProducts extends $AsyncNotifier<CatalogProductsState> {
   FutureOr<CatalogProductsState> build(CatalogSearchFilters initialFilters);
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build(_$args);
+  WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<AsyncValue<CatalogProductsState>, CatalogProductsState>;
@@ -139,16 +138,16 @@ abstract class _$CatalogProducts extends $AsyncNotifier<CatalogProductsState> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
 @ProviderFor(ActiveSearchFilters)
-const activeSearchFiltersProvider = ActiveSearchFiltersProvider._();
+final activeSearchFiltersProvider = ActiveSearchFiltersProvider._();
 
 final class ActiveSearchFiltersProvider
     extends $NotifierProvider<ActiveSearchFilters, CatalogSearchFilters> {
-  const ActiveSearchFiltersProvider._()
+  ActiveSearchFiltersProvider._()
     : super(
         from: null,
         argument: null,
@@ -182,8 +181,7 @@ abstract class _$ActiveSearchFilters extends $Notifier<CatalogSearchFilters> {
   CatalogSearchFilters build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<CatalogSearchFilters, CatalogSearchFilters>;
     final element =
         ref.element
@@ -193,12 +191,12 @@ abstract class _$ActiveSearchFilters extends $Notifier<CatalogSearchFilters> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, build);
   }
 }
 
 @ProviderFor(productDetail)
-const productDetailProvider = ProductDetailFamily._();
+final productDetailProvider = ProductDetailFamily._();
 
 final class ProductDetailProvider
     extends
@@ -208,7 +206,7 @@ final class ProductDetailProvider
           FutureOr<ListingDetail>
         >
     with $FutureModifier<ListingDetail>, $FutureProvider<ListingDetail> {
-  const ProductDetailProvider._({
+  ProductDetailProvider._({
     required ProductDetailFamily super.from,
     required String super.argument,
   }) : super(
@@ -256,7 +254,7 @@ String _$productDetailHash() => r'3294526819909b4400afac89936d07159019638e';
 
 final class ProductDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ListingDetail>, String> {
-  const ProductDetailFamily._()
+  ProductDetailFamily._()
     : super(
         retry: null,
         name: r'productDetailProvider',
@@ -276,7 +274,7 @@ final class ProductDetailFamily extends $Family
 /// ended on — a page number would re-read rows a new review has already shifted.
 
 @ProviderFor(ProductReviews)
-const productReviewsProvider = ProductReviewsFamily._();
+final productReviewsProvider = ProductReviewsFamily._();
 
 /// Reviews are cursor-paginated, so "show more" carries the cursor the last page
 /// ended on — a page number would re-read rows a new review has already shifted.
@@ -284,7 +282,7 @@ final class ProductReviewsProvider
     extends $AsyncNotifierProvider<ProductReviews, ProductReviewsState> {
   /// Reviews are cursor-paginated, so "show more" carries the cursor the last page
   /// ended on — a page number would re-read rows a new review has already shifted.
-  const ProductReviewsProvider._({
+  ProductReviewsProvider._({
     required ProductReviewsFamily super.from,
     required String super.argument,
   }) : super(
@@ -334,7 +332,7 @@ final class ProductReviewsFamily extends $Family
           FutureOr<ProductReviewsState>,
           String
         > {
-  const ProductReviewsFamily._()
+  ProductReviewsFamily._()
     : super(
         retry: null,
         name: r'productReviewsProvider',
@@ -363,8 +361,7 @@ abstract class _$ProductReviews extends $AsyncNotifier<ProductReviewsState> {
   FutureOr<ProductReviewsState> build(String listingId);
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build(_$args);
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<AsyncValue<ProductReviewsState>, ProductReviewsState>;
     final element =
@@ -375,12 +372,12 @@ abstract class _$ProductReviews extends $AsyncNotifier<ProductReviewsState> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
 @ProviderFor(recentlyViewedProducts)
-const recentlyViewedProductsProvider = RecentlyViewedProductsProvider._();
+final recentlyViewedProductsProvider = RecentlyViewedProductsProvider._();
 
 final class RecentlyViewedProductsProvider
     extends
@@ -392,7 +389,7 @@ final class RecentlyViewedProductsProvider
     with
         $FutureModifier<List<RecentListing>>,
         $FutureProvider<List<RecentListing>> {
-  const RecentlyViewedProductsProvider._()
+  RecentlyViewedProductsProvider._()
     : super(
         from: null,
         argument: null,

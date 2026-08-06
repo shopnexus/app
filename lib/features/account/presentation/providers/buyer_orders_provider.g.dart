@@ -14,7 +14,7 @@ part of 'buyer_orders_provider.dart';
 /// một đơn thì vẫn là một lượt đọc riêng, vì nó là một route riêng.
 
 @ProviderFor(buyerOrderDetail)
-const buyerOrderDetailProvider = BuyerOrderDetailFamily._();
+final buyerOrderDetailProvider = BuyerOrderDetailFamily._();
 
 /// Bốn provider lọc theo tab từng ở đây — `buyerOpenOrders`, `buyerCompletedOrders`,
 /// `buyerCancelledOrders`, `buyerCancelledItems` — đã đi cùng chín cái tab: một lượt
@@ -33,7 +33,7 @@ final class BuyerOrderDetailProvider
   /// `buyerCancelledOrders`, `buyerCancelledItems` — đã đi cùng chín cái tab: một lượt
   /// đọc `/orders?role=X` trả về cả bốn trạng thái và màn hình chia nhóm lấy. Chi tiết
   /// một đơn thì vẫn là một lượt đọc riêng, vì nó là một route riêng.
-  const BuyerOrderDetailProvider._({
+  BuyerOrderDetailProvider._({
     required BuyerOrderDetailFamily super.from,
     required String super.argument,
   }) : super(
@@ -85,7 +85,7 @@ String _$buyerOrderDetailHash() => r'dfee0a4d5e60d9ddec915e03be7aa2f83f52eb02';
 
 final class BuyerOrderDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<OrderView>, String> {
-  const BuyerOrderDetailFamily._()
+  BuyerOrderDetailFamily._()
     : super(
         retry: null,
         name: r'buyerOrderDetailProvider',

@@ -14,15 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CatalogSearchFilters {
 
- String? get keyword; String? get categoryId; int? get priceMin; int? get priceMax; String? get tag; String? get sort;// Where to look: the listing's own snapshot of the seller's pickup address.
-// Send the narrowest level meant — a ward is already inside its province.
-// There is no district: Vietnam goes province to ward, so a listing's
-// snapshot has no district code for one to be matched against.
- String? get provinceCode; String? get wardCode;// Codes carry no name, so the chip needs the label the user picked.
- String? get areaLabel;// Where the buyer is. A saved contact is the usual answer; lat/lon is
-// supported all the way down to the request but no screen sets it, since
-// the app has no geolocation plugin.
- String? get nearContactId; String? get nearLabel; double? get lat; double? get lon; double? get radiusKm; int get page; int get size;
+ String? get keyword; String? get categoryId; int? get priceMin; int? get priceMax; String? get tag; String? get sort; String? get provinceCode; String? get wardCode; String? get areaLabel; String? get nearContactId; String? get nearLabel; double? get lat; double? get lon; double? get radiusKm; int get page; int get size;
 /// Create a copy of CatalogSearchFilters
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -238,17 +230,9 @@ class _CatalogSearchFilters extends CatalogSearchFilters {
 @override final  int? priceMax;
 @override final  String? tag;
 @override final  String? sort;
-// Where to look: the listing's own snapshot of the seller's pickup address.
-// Send the narrowest level meant — a ward is already inside its province.
-// There is no district: Vietnam goes province to ward, so a listing's
-// snapshot has no district code for one to be matched against.
 @override final  String? provinceCode;
 @override final  String? wardCode;
-// Codes carry no name, so the chip needs the label the user picked.
 @override final  String? areaLabel;
-// Where the buyer is. A saved contact is the usual answer; lat/lon is
-// supported all the way down to the request but no screen sets it, since
-// the app has no geolocation plugin.
 @override final  String? nearContactId;
 @override final  String? nearLabel;
 @override final  double? lat;

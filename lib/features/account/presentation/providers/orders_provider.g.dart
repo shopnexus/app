@@ -14,7 +14,7 @@ part of 'orders_provider.dart';
 /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
 
 @ProviderFor(unsettledItems)
-const unsettledItemsProvider = UnsettledItemsProvider._();
+final unsettledItemsProvider = UnsettledItemsProvider._();
 
 /// Dòng đã trả tiền mà chưa thành đơn — cửa sổ duy nhất còn bỏ được.
 ///
@@ -35,7 +35,7 @@ final class UnsettledItemsProvider
   ///
   /// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
   /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
-  const UnsettledItemsProvider._()
+  UnsettledItemsProvider._()
     : super(
         from: null,
         argument: null,
@@ -67,14 +67,14 @@ String _$unsettledItemsHash() => r'faca7c951210529836df9c145b32d697214904e4';
 /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
 
 @ProviderFor(Orders)
-const ordersProvider = OrdersProvider._();
+final ordersProvider = OrdersProvider._();
 
 /// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
 /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
 final class OrdersProvider extends $AsyncNotifierProvider<Orders, OrdersFeed> {
   /// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
   /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
-  const OrdersProvider._()
+  OrdersProvider._()
     : super(
         from: null,
         argument: null,
@@ -102,8 +102,7 @@ abstract class _$Orders extends $AsyncNotifier<OrdersFeed> {
   FutureOr<OrdersFeed> build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<OrdersFeed>, OrdersFeed>;
     final element =
         ref.element
@@ -113,6 +112,6 @@ abstract class _$Orders extends $AsyncNotifier<OrdersFeed> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, build);
   }
 }

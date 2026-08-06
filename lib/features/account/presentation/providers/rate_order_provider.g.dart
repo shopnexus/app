@@ -19,7 +19,7 @@ part of 'rate_order_provider.dart';
 /// Bắt buộc cả hai là bắt người ta viết một thứ vô ích để làm xong một thứ hữu ích.
 
 @ProviderFor(RateOrder)
-const rateOrderProvider = RateOrderProvider._();
+final rateOrderProvider = RateOrderProvider._();
 
 /// Gửi cả hai nửa của một lần chấm điểm, theo thứ tự **kín trước, công khai sau**.
 ///
@@ -41,7 +41,7 @@ final class RateOrderProvider
   /// Nửa công khai là **tuỳ chọn**: một tin hàng cũ độc bản bán một lần, nên đánh giá
   /// sản phẩm ở đó gần như không có ai đọc — còn uy tín người bán thì luôn được đọc.
   /// Bắt buộc cả hai là bắt người ta viết một thứ vô ích để làm xong một thứ hữu ích.
-  const RateOrderProvider._()
+  RateOrderProvider._()
     : super(
         from: null,
         argument: null,
@@ -84,8 +84,7 @@ abstract class _$RateOrder extends $Notifier<RateOrderState> {
   RateOrderState build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<RateOrderState, RateOrderState>;
     final element =
         ref.element
@@ -95,6 +94,6 @@ abstract class _$RateOrder extends $Notifier<RateOrderState> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, build);
   }
 }

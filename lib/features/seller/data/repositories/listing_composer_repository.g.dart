@@ -10,7 +10,7 @@ part of 'listing_composer_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(listingComposerRepository)
-const listingComposerRepositoryProvider = ListingComposerRepositoryProvider._();
+final listingComposerRepositoryProvider = ListingComposerRepositoryProvider._();
 
 final class ListingComposerRepositoryProvider
     extends
@@ -20,7 +20,7 @@ final class ListingComposerRepositoryProvider
           ListingComposerRepository
         >
     with $Provider<ListingComposerRepository> {
-  const ListingComposerRepositoryProvider._()
+  ListingComposerRepositoryProvider._()
     : super(
         from: null,
         argument: null,

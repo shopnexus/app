@@ -10,11 +10,11 @@ part of 'checkout_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(CheckoutNotifier)
-const checkoutProvider = CheckoutNotifierProvider._();
+final checkoutProvider = CheckoutNotifierProvider._();
 
 final class CheckoutNotifierProvider
     extends $NotifierProvider<CheckoutNotifier, CheckoutState> {
-  const CheckoutNotifierProvider._()
+  CheckoutNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -47,8 +47,7 @@ abstract class _$CheckoutNotifier extends $Notifier<CheckoutState> {
   CheckoutState build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<CheckoutState, CheckoutState>;
     final element =
         ref.element
@@ -58,6 +57,6 @@ abstract class _$CheckoutNotifier extends $Notifier<CheckoutState> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, build);
   }
 }

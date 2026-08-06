@@ -10,12 +10,12 @@ part of 'account_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(profile)
-const profileProvider = ProfileProvider._();
+final profileProvider = ProfileProvider._();
 
 final class ProfileProvider
     extends $FunctionalProvider<AsyncValue<Me>, Me, FutureOr<Me>>
     with $FutureModifier<Me>, $FutureProvider<Me> {
-  const ProfileProvider._()
+  ProfileProvider._()
     : super(
         from: null,
         argument: null,
@@ -43,7 +43,7 @@ final class ProfileProvider
 String _$profileHash() => r'5f4ca96096caad1c75abb32ca4013f387cb76fbb';
 
 @ProviderFor(publicProfile)
-const publicProfileProvider = PublicProfileFamily._();
+final publicProfileProvider = PublicProfileFamily._();
 
 final class PublicProfileProvider
     extends
@@ -53,7 +53,7 @@ final class PublicProfileProvider
           FutureOr<PublicAccount>
         >
     with $FutureModifier<PublicAccount>, $FutureProvider<PublicAccount> {
-  const PublicProfileProvider._({
+  PublicProfileProvider._({
     required PublicProfileFamily super.from,
     required String super.argument,
   }) : super(
@@ -101,7 +101,7 @@ String _$publicProfileHash() => r'34d64cd73a71c9663e0919fc480853985677a1c2';
 
 final class PublicProfileFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<PublicAccount>, String> {
-  const PublicProfileFamily._()
+  PublicProfileFamily._()
     : super(
         retry: null,
         name: r'publicProfileProvider',
@@ -118,11 +118,11 @@ final class PublicProfileFamily extends $Family
 }
 
 @ProviderFor(AccountController)
-const accountControllerProvider = AccountControllerProvider._();
+final accountControllerProvider = AccountControllerProvider._();
 
 final class AccountControllerProvider
     extends $AsyncNotifierProvider<AccountController, void> {
-  const AccountControllerProvider._()
+  AccountControllerProvider._()
     : super(
         from: null,
         argument: null,
@@ -147,8 +147,7 @@ abstract class _$AccountController extends $AsyncNotifier<void> {
   FutureOr<void> build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    build();
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<void>, void>;
     final element =
         ref.element
@@ -158,6 +157,6 @@ abstract class _$AccountController extends $AsyncNotifier<void> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, null);
+    return element.handleCreate(ref, build);
   }
 }

@@ -12,7 +12,7 @@ part of 'ticket_provider.dart';
 /// nor which moderator is working theirs.
 
 @ProviderFor(TicketList)
-const ticketListProvider = TicketListFamily._();
+final ticketListProvider = TicketListFamily._();
 
 /// The caller's own tickets, newest first. A requester never sees anybody else's,
 /// nor which moderator is working theirs.
@@ -20,7 +20,7 @@ final class TicketListProvider
     extends $AsyncNotifierProvider<TicketList, List<Ticket>> {
   /// The caller's own tickets, newest first. A requester never sees anybody else's,
   /// nor which moderator is working theirs.
-  const TicketListProvider._({
+  TicketListProvider._({
     required TicketListFamily super.from,
     required TicketStatus? super.argument,
   }) : super(
@@ -70,7 +70,7 @@ final class TicketListFamily extends $Family
           FutureOr<List<Ticket>>,
           TicketStatus?
         > {
-  const TicketListFamily._()
+  TicketListFamily._()
     : super(
         retry: null,
         name: r'ticketListProvider',
@@ -99,8 +99,7 @@ abstract class _$TicketList extends $AsyncNotifier<List<Ticket>> {
   FutureOr<List<Ticket>> build({TicketStatus? status});
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build(status: _$args);
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<List<Ticket>>, List<Ticket>>;
     final element =
         ref.element
@@ -110,7 +109,7 @@ abstract class _$TicketList extends $AsyncNotifier<List<Ticket>> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, () => build(status: _$args));
   }
 }
 
@@ -118,7 +117,7 @@ abstract class _$TicketList extends $AsyncNotifier<List<Ticket>> {
 /// detail screen asks for it rather than reusing the row from the list.
 
 @ProviderFor(ticketDetail)
-const ticketDetailProvider = TicketDetailFamily._();
+final ticketDetailProvider = TicketDetailFamily._();
 
 /// Reading a ticket is also what repairs a missing `conversation_id`, so the
 /// detail screen asks for it rather than reusing the row from the list.
@@ -128,7 +127,7 @@ final class TicketDetailProvider
     with $FutureModifier<Ticket>, $FutureProvider<Ticket> {
   /// Reading a ticket is also what repairs a missing `conversation_id`, so the
   /// detail screen asks for it rather than reusing the row from the list.
-  const TicketDetailProvider._({
+  TicketDetailProvider._({
     required TicketDetailFamily super.from,
     required String super.argument,
   }) : super(
@@ -178,7 +177,7 @@ String _$ticketDetailHash() => r'aedb9be662d41da101ab3853c2086f542460f3f9';
 
 final class TicketDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Ticket>, String> {
-  const TicketDetailFamily._()
+  TicketDetailFamily._()
     : super(
         retry: null,
         name: r'ticketDetailProvider',
@@ -201,7 +200,7 @@ final class TicketDetailFamily extends $Family
 /// action, a refund the buyer or seller wants staff to decide.
 
 @ProviderFor(RaiseTicket)
-const raiseTicketProvider = RaiseTicketProvider._();
+final raiseTicketProvider = RaiseTicketProvider._();
 
 /// Raising a ticket, from anywhere: the help centre's form, a listing's report
 /// action, a refund the buyer or seller wants staff to decide.
@@ -209,7 +208,7 @@ final class RaiseTicketProvider
     extends $NotifierProvider<RaiseTicket, AsyncValue<Ticket?>> {
   /// Raising a ticket, from anywhere: the help centre's form, a listing's report
   /// action, a refund the buyer or seller wants staff to decide.
-  const RaiseTicketProvider._()
+  RaiseTicketProvider._()
     : super(
         from: null,
         argument: null,
@@ -245,8 +244,7 @@ abstract class _$RaiseTicket extends $Notifier<AsyncValue<Ticket?>> {
   AsyncValue<Ticket?> build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<Ticket?>, AsyncValue<Ticket?>>;
     final element =
         ref.element
@@ -256,6 +254,6 @@ abstract class _$RaiseTicket extends $Notifier<AsyncValue<Ticket?>> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, build);
   }
 }

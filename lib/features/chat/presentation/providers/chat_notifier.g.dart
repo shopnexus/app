@@ -14,7 +14,7 @@ part of 'chat_notifier.dart';
 /// nothing is replayed, so a re-handshake means refetching over REST.
 
 @ProviderFor(ChatListNotifier)
-const chatListProvider = ChatListNotifierProvider._();
+final chatListProvider = ChatListNotifierProvider._();
 
 /// The inbox.
 ///
@@ -26,7 +26,7 @@ final class ChatListNotifierProvider
   ///
   /// Every change to it arrives on the account's one socket; nothing is polled and
   /// nothing is replayed, so a re-handshake means refetching over REST.
-  const ChatListNotifierProvider._()
+  ChatListNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -56,8 +56,7 @@ abstract class _$ChatListNotifier extends $AsyncNotifier<ChatListState> {
   FutureOr<ChatListState> build();
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<ChatListState>, ChatListState>;
     final element =
         ref.element
@@ -67,7 +66,7 @@ abstract class _$ChatListNotifier extends $AsyncNotifier<ChatListState> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -77,7 +76,7 @@ abstract class _$ChatListNotifier extends $AsyncNotifier<ChatListState> {
 /// the same socket; what the app sends, it sends over REST.
 
 @ProviderFor(ChatDetailNotifier)
-const chatDetailProvider = ChatDetailNotifierFamily._();
+final chatDetailProvider = ChatDetailNotifierFamily._();
 
 /// One open thread.
 ///
@@ -89,7 +88,7 @@ final class ChatDetailNotifierProvider
   ///
   /// Messages, read receipts and the negotiations its cards point at all arrive on
   /// the same socket; what the app sends, it sends over REST.
-  const ChatDetailNotifierProvider._({
+  ChatDetailNotifierProvider._({
     required ChatDetailNotifierFamily super.from,
     required String super.argument,
   }) : super(
@@ -142,7 +141,7 @@ final class ChatDetailNotifierFamily extends $Family
           FutureOr<ChatDetailState>,
           String
         > {
-  const ChatDetailNotifierFamily._()
+  ChatDetailNotifierFamily._()
     : super(
         retry: null,
         name: r'chatDetailProvider',
@@ -175,8 +174,7 @@ abstract class _$ChatDetailNotifier extends $AsyncNotifier<ChatDetailState> {
   FutureOr<ChatDetailState> build(String conversationId);
   @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build(_$args);
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<ChatDetailState>, ChatDetailState>;
     final element =
         ref.element
@@ -186,6 +184,6 @@ abstract class _$ChatDetailNotifier extends $AsyncNotifier<ChatDetailState> {
               Object?,
               Object?
             >;
-    element.handleValue(ref, created);
+    return element.handleCreate(ref, () => build(_$args));
   }
 }

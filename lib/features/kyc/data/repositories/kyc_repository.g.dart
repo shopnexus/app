@@ -10,12 +10,12 @@ part of 'kyc_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(kycRepository)
-const kycRepositoryProvider = KycRepositoryProvider._();
+final kycRepositoryProvider = KycRepositoryProvider._();
 
 final class KycRepositoryProvider
     extends $FunctionalProvider<KycRepository, KycRepository, KycRepository>
     with $Provider<KycRepository> {
-  const KycRepositoryProvider._()
+  KycRepositoryProvider._()
     : super(
         from: null,
         argument: null,
