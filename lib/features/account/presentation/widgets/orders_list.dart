@@ -10,6 +10,7 @@ import 'package:shopnexus_flutter_app/features/account/data/models/order_view.da
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_actions_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/confirm_receipt_sheet.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 
 /// Đơn của một vai, hai nhóm, không tab.
@@ -235,13 +236,29 @@ class _OrderRow extends ConsumerWidget {
 
   /// Chỉ những gì vai này thật sự làm được với đơn này, tối đa hai nút.
   ///
-  /// Người mua không có nút nào ở đây: những gì họ làm được — xin hoàn tiền, báo
-  /// sự cố — sống trong màn chi tiết, nơi có đủ thông tin để viết một yêu cầu.
+  /// Người mua có đúng **một** nút, và chỉ khi kiện hàng đã tới: xác nhận đã nhận.
+  /// Mọi việc khác của họ — xin hoàn tiền, báo sự cố — sống trong màn chi tiết,
+  /// nơi có đủ thông tin để viết một yêu cầu. Cái này ra ngoài vì nó không phải
+  /// việc của người mua: `received_at` là điều kiện trong câu truy vấn payout, nên
+  /// tới khi họ chạm thì **tiền của người bán vẫn nằm trong escrow**. Chôn nó sau
+  /// một menu là để một khoản tiền chờ một người không biết mình đang giữ nó.
   List<Widget> _actions(BuildContext context, WidgetRef ref) {
-    if (role != OrderRole.seller || isFinished) return const [];
+    if (isFinished) return const [];
 
     final isActing = ref.watch(ordersActionsProvider).isLoading;
     final order = view.order;
+
+    if (role == OrderRole.buyer) {
+      if (!view.canConfirmReceipt) return const [];
+      return [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: isActing ? null : () => _confirmReceipt(context, ref),
+            child: const Text('Đã nhận hàng'),
+          ),
+        ),
+      ];
+    }
 
     if (view.isAwaitingConfirmation) {
       return [
@@ -411,6 +428,20 @@ class _OrderRow extends ConsumerWidget {
   /// Nơi một người bán nói "chỗ này sai". Vị trí kiện hàng là báo cáo của đơn vị
   /// giao hàng và chỉ ShopNexus sửa được, nên đường của người bán là mở một yêu
   /// cầu `order-issue` để có người xem, chứ không phải tự ghi lại trạng thái.
+  /// Ảnh là bắt buộc nên đây là một sheet, không phải hộp thoại — và nó nói ra
+  /// hai điều không hoàn tác được trước khi người mua chạm.
+  Future<void> _confirmReceipt(BuildContext context, WidgetRef ref) async {
+    final confirmed = await ConfirmReceiptSheet.show(
+      context,
+      orderId: view.order.id,
+    );
+    if (confirmed != true) return;
+    // Sheet đã báo lỗi của chính nó, nên ở đây chỉ còn việc nạp lại — cùng hai
+    // provider mà `_run` nạp, vì dòng vừa đổi trạng thái.
+    ref.invalidate(ordersProvider(role));
+    ref.invalidate(unsettledItemsProvider(role));
+  }
+
   Future<void> _reportIssue(BuildContext context) async {
     final orderId = view.order.id;
     final ticket = await RaiseTicketSheet.show(

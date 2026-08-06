@@ -96,6 +96,16 @@ abstract class OrderView with _$OrderView {
   bool get isAwaitingConfirmation =>
       order.state == OrderState.awaitingConfirmation;
 
+  /// Người mua xác nhận được khi kiện hàng đã tới và họ chưa xác nhận.
+  ///
+  /// Đọc kiện hàng chứ không đọc `state`: `open` chỉ nói người bán đã nhận đơn,
+  /// còn `received_at` mới là thứ điều kiện payout đòi — nên đây đúng là cửa sổ
+  /// duy nhất mà tiền của người bán đang chờ một cái chạm của người mua.
+  bool get canConfirmReceipt =>
+      !isFinished &&
+      order.receivedAt == null &&
+      order.transport?.status == TransportStatus.delivered;
+
   /// "còn 31 giờ" until the seller's 48 hours run out, or null once they have
   /// answered — the server drops the deadline at that point.
   String? get confirmationRemaining =>

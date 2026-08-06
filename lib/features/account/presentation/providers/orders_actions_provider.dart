@@ -43,6 +43,25 @@ class OrdersActions extends _$OrdersActions {
   Future<bool> cancelItem(String itemId) =>
       _run(() => ref.read(accountRepositoryProvider).cancelItem(itemId));
 
+  /// Ảnh mở hộp được upload trước, rồi mới xác nhận: server đòi ít nhất một
+  /// resource *đã* confirm, nên upload hỏng phải làm cả việc hỏng chứ không được
+  /// gửi một xác nhận rỗng.
+  Future<bool> confirmReceipt(String orderId, List<ReceiptPhoto> photos) =>
+      _run(() async {
+        final repository = ref.read(accountRepositoryProvider);
+        final ids = <String>[];
+        for (final photo in photos) {
+          ids.add(
+            await repository.uploadReceiptPhoto(
+              bytes: photo.bytes,
+              filename: photo.filename,
+              mime: photo.mime,
+            ),
+          );
+        }
+        await repository.confirmReceipt(orderId, ids);
+      });
+
   Future<bool> _act(Future<void> Function(SellerRepository) action) =>
       _run(() => action(ref.read(sellerRepositoryProvider)));
 
@@ -66,4 +85,18 @@ class OrdersActionsState {
 
   final bool isLoading;
   final String? errorMessage;
+}
+
+/// Một ảnh đã đọc thành bytes, để tầng provider không phải biết ảnh từ camera hay
+/// từ thư viện.
+class ReceiptPhoto {
+  const ReceiptPhoto({
+    required this.bytes,
+    required this.filename,
+    required this.mime,
+  });
+
+  final List<int> bytes;
+  final String filename;
+  final String mime;
 }

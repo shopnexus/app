@@ -6,6 +6,8 @@ import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/confirm_receipt_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
@@ -74,6 +76,53 @@ class AccountRepository {
     await _api.meUploadsIdConfirmationPost(id: reserved.resourceId);
     return reserved.resourceId;
   }
+
+  /// Ảnh mở hộp, cho lúc xác nhận đã nhận hàng. Cùng ba bước như mọi upload khác:
+  /// giữ chỗ, PUT bằng Dio trần (URL đã ký là origin của nhà lưu trữ, không được
+  /// mang bearer của sàn), rồi xác nhận — trước khi xác nhận thì resource không
+  /// resolve ra gì cả, nên một upload dở dang không bao giờ đính được vào đâu.
+  Future<String> uploadReceiptPhoto({
+    required List<int> bytes,
+    required String filename,
+    required String mime,
+  }) async {
+    final reserved = (await _orderApi.ordersUploadsPost(
+      createUploadRequest: CreateUploadRequest(
+        filename: filename,
+        mime: mime,
+        size: bytes.length,
+      ),
+    )).data?.data;
+    if (reserved == null) throw StateError('empty upload slot');
+
+    await Dio().put<void>(
+      reserved.url,
+      data: Stream.fromIterable([bytes]),
+      options: Options(
+        headers: {
+          ...reserved.headers,
+          Headers.contentLengthHeader: bytes.length,
+        },
+        contentType: mime,
+      ),
+    );
+
+    await _orderApi.ordersUploadsIdConfirmationPost(id: reserved.resourceId);
+    return reserved.resourceId;
+  }
+
+  /// Người mua nói hàng đã tới. Đây là thứ khởi động đồng hồ trả tiền cho người
+  /// bán — `received_at` là điều kiện trong câu truy vấn payout, nên khi màn hình
+  /// này chưa tồn tại thì mọi đơn giao xong đều giam tiền người bán trong escrow
+  /// vĩnh viễn.
+  ///
+  /// Ảnh là bắt buộc, không phải trang trí: một yêu cầu hoàn tiền về sau được xét
+  /// trên đúng những gì người mua chụp lúc mở hộp, và server từ chối danh sách rỗng.
+  Future<void> confirmReceipt(String orderId, List<String> attachments) =>
+      _orderApi.ordersIdReceiptPost(
+        id: orderId,
+        confirmReceiptRequest: ConfirmReceiptRequest(attachments: attachments),
+      );
 
   // --- Profile Features ---
   Future<Me> getProfile() async {
