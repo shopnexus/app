@@ -5,8 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/providers/addresses_provider.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/widgets/address_form_sheet.dart';
 import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/escrow_notice.dart';
@@ -131,6 +129,10 @@ class CheckoutScreen extends ConsumerWidget {
   }
 
   // --- 1. DELIVERY ADDRESS BENTO CARD ---
+  /// Một dòng địa chỉ đang chọn và một nút "Đổi". Sổ địa chỉ là màn hình
+  /// `AddressesScreen`, dùng lại ở chế độ chọn — checkout từng dựng lại thẻ địa
+  /// chỉ của riêng nó, nên "một địa chỉ trông thế nào" có hai định nghĩa và chỉ
+  /// một trong hai được sửa mỗi lần.
   Widget _buildAddressBentoCard(
     BuildContext context,
     WidgetRef ref,
@@ -144,9 +146,6 @@ class CheckoutScreen extends ConsumerWidget {
     final cardBorderColor = isDarkMode
         ? AppColors.darkPrimary.withAlpha(40)
         : const Color(0xFFE2E3E0);
-    final innerBgColor = isDarkMode
-        ? theme.colorScheme.surfaceContainerHighest
-        : const Color(0xFFF9F9F7);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -162,580 +161,70 @@ class CheckoutScreen extends ConsumerWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    color: theme.colorScheme.primary,
-                    size: 22,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Delivery Address',
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ],
-              ),
-              TextButton(
-                onPressed: () =>
-                    _showAddressSelectionModal(context, ref, state),
-                style: TextButton.styleFrom(
-                  foregroundColor: theme.colorScheme.primary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                ),
-                child: const Text(
-                  'Change',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (contact != null) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                color: innerBgColor,
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 6,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  contact.fullName,
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.onSurface,
-                                  ),
-                                ),
-                                if (contact.phoneVerified)
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 4),
-                                    child: Icon(
-                                      Icons.verified_rounded,
-                                      size: 15,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              contact.address,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 12,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            if (contact.addressDetail != null &&
-                                contact.addressDetail!.isNotEmpty)
-                              Text(
-                                contact.addressDetail!,
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 11,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            const SizedBox(height: 4),
-                            Text(
-                              contact.phone,
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 12,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    // Map Placeholder Image Overlay
-                    Expanded(
-                      flex: 4,
-                      child: SizedBox(
-                        height: 100,
-                        child: CachedNetworkImage(
-                          imageUrl:
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuCcht0CZm9E6p76WuIc7ot1PwtrnGodafyW8t2fimE-d9JTZHAJqnAFZkNqu_YDVfIuQ3XbG0T8muYuvnRu9GUxWYQoGNFOyf9AKqBWereVEnA8odf3HWfIkyl8z_lhpVwRSlqrKtgPgD43PJYJMdfkBofhBf4nvcXypUCsYLU55Xm8ytunYl83-KCYEFRJXzq4J2WyWDgx2zx1EOagubS-S6YON9e8fvE_7JaqvTufreotJtYG0M2ba0oIMGdyj6YXgSNplZcO3iE',
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              Container(color: cardBorderColor),
-                          errorWidget: (context, url, error) => Container(
-                            color: cardBorderColor,
-                            child: Icon(
-                              Icons.map_outlined,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ] else ...[
-            Text(
-              'No address selected. Please tap Change to select an address.',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 13,
-                color: isDarkMode ? const Color(0xFFEF4444) : Colors.red,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  void _showAddressForm(
-    BuildContext context,
-    WidgetRef ref, {
-    Contact? contact,
-  }) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => AddressFormSheet(contact: contact),
-    ).then((_) {
-      ref.read(checkoutProvider.notifier).reloadAddresses();
-    });
-  }
-
-  void _confirmDeleteContact(BuildContext context, WidgetRef ref, String id) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
-        title: Text(
-          'Xóa địa chỉ',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Inter',
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        content: Text(
-          'Bạn có chắc muốn xóa địa chỉ nhận hàng này?',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Hủy',
-              style: TextStyle(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontFamily: 'Inter',
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              await ref
-                  .read(addressesControllerProvider.notifier)
-                  .deleteContact(id);
-              await ref.read(checkoutProvider.notifier).reloadAddresses();
-            },
-            child: Text(
-              'Xóa',
-              style: TextStyle(
-                color: isDarkMode
-                    ? const Color(0xFFEF4444)
-                    : const Color(0xFFBA1A1A),
-                fontFamily: 'Inter',
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Address Selection BottomSheet Modal (Section-based, Top-to-Bottom)
-  void _showAddressSelectionModal(
-    BuildContext context,
-    WidgetRef ref,
-    CheckoutState state,
-  ) {
-    final parentTheme = Theme.of(context);
-    final isParentDark = parentTheme.brightness == Brightness.dark;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: isParentDark ? AppColors.darkSurface : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        final theme = Theme.of(context);
-
-        return Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.75,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 8, bottom: 4),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: isParentDark
-                      ? AppColors.darkPrimary.withAlpha(50)
-                      : const Color(0xFFE2E3E0),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Select Shipping Address',
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showAddressForm(context, ref);
-                      },
-                      icon: const Icon(Icons.add, size: 18),
-                      label: const Text(
-                        'Add New',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (state.contacts.isEmpty) ...[
-                        const SizedBox(height: 32),
-                        Center(
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.location_off_outlined,
-                                size: 48,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'No saved addresses.',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                      ] else ...[
-                        // The two `ContactAddressType` values, and no more:
-                        // the "Office"/"Other" sections could never fill.
-                        if (state.homeContacts.isNotEmpty) ...[
-                          _buildSectionHeader(
-                            context,
-                            title: 'Nhà riêng',
-                            icon: Icons.home_rounded,
-                          ),
-                          ...state.homeContacts.map(
-                            (contact) => _buildModalAddressCard(
-                              context,
-                              ref,
-                              contact,
-                              state.selectedContact,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-
-                        if (state.workContacts.isNotEmpty) ...[
-                          _buildSectionHeader(
-                            context,
-                            title: 'Cơ quan',
-                            icon: Icons.work_rounded,
-                          ),
-                          ...state.workContacts.map(
-                            (contact) => _buildModalAddressCard(
-                              context,
-                              ref,
-                              contact,
-                              state.selectedContact,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-                      ],
-
-                      // Bottom "+ Add New Address" Button inside modal
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            _showAddressForm(context, ref);
-                          },
-                          icon: const Icon(Icons.add_rounded, size: 20),
-                          label: const Text(
-                            'Add New Address',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: theme.colorScheme.primary,
-                            side: BorderSide(color: theme.colorScheme.primary),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSectionHeader(
-    BuildContext context, {
-    required String title,
-    required IconData icon,
-  }) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 8),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: theme.colorScheme.primary),
-          const SizedBox(width: 6),
-          Text(
-            title,
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
+          Icon(
+            Icons.location_on_outlined,
+            color: theme.colorScheme.primary,
+            size: 22,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModalAddressCard(
-    BuildContext context,
-    WidgetRef ref,
-    Contact contact,
-    Contact? selected,
-  ) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final isSelected = selected?.id == contact.id;
-
-    final selectedBg = isDarkMode
-        ? AppColors.darkPrimary.withAlpha(35)
-        : const Color(0xFFE6F4EA);
-    final unselectedBg = isDarkMode
-        ? theme.colorScheme.surfaceContainerHighest
-        : const Color(0xFFF9F9F7);
-    final borderColor = isSelected
-        ? theme.colorScheme.primary
-        : (isDarkMode
-              ? AppColors.darkPrimary.withAlpha(30)
-              : const Color(0xFFE2E3E0));
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? selectedBg : unselectedBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1.0),
-      ),
-      child: InkWell(
-        onTap: () {
-          ref.read(checkoutProvider.notifier).selectContact(contact);
-          Navigator.pop(context);
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                isSelected
-                    ? Icons.radio_button_checked
-                    : Icons.radio_button_off,
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurfaceVariant,
-                size: 20,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          contact.fullName,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        if (contact.phone.isNotEmpty) ...[
-                          const SizedBox(width: 8),
-                          Text(
-                            contact.phone,
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 12,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${contact.address}${contact.addressDetail != null && contact.addressDetail!.isNotEmpty ? ", ${contact.addressDetail}" : ""}',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Action buttons: Edit & Delete
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.edit_outlined,
-                      size: 18,
-                      color: theme.colorScheme.primary,
-                    ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(
-                      minWidth: 32,
-                      minHeight: 32,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showAddressForm(context, ref, contact: contact);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.delete_outline_rounded,
-                      size: 18,
+          const SizedBox(width: 10),
+          Expanded(
+            child: contact == null
+                ? Text(
+                    'Chưa chọn địa chỉ nhận hàng',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
                       color: isDarkMode
                           ? const Color(0xFFEF4444)
                           : const Color(0xFFBA1A1A),
                     ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(
-                      minWidth: 32,
-                      minHeight: 32,
+                  )
+                : Text(
+                    '${contact.fullName} · ${contact.phone}\n${contact.address}',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      height: 1.4,
+                      color: theme.colorScheme.onSurface,
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _confirmDeleteContact(context, ref, contact.id);
-                    },
                   ),
-                ],
-              ),
-            ],
           ),
-        ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () => _pickAddress(context, ref),
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.primary,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            ),
+            child: const Text(
+              'Đổi',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  /// Địa chỉ được chọn quay về theo `pop`, nhưng cái được dùng là **id** của nó:
+  /// `reloadAddresses` đọc lại danh sách từ server, nên một địa chỉ vừa thêm
+  /// trong picker cũng vào được state, và nó báo giá vận chuyển lại — phí giao
+  /// hàng được tính theo địa chỉ.
+  Future<void> _pickAddress(BuildContext context, WidgetRef ref) async {
+    final picked = await context.push<Contact>('/checkout/select-address');
+    if (picked == null) return;
+    await ref
+        .read(checkoutProvider.notifier)
+        .reloadAddresses(selectId: picked.id);
   }
 
   // --- 2. DELIVERY SPEED CARD ---

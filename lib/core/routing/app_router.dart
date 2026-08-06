@@ -85,6 +85,23 @@ GoRouter appRouter(Ref ref) {
         path: '/checkout',
         name: 'checkout',
         builder: (context, state) => const CheckoutScreen(),
+        routes: [
+          // Sổ địa chỉ dùng lại nguyên vẹn, chỉ ở chế độ chọn — checkout không
+          // còn định nghĩa lần thứ hai "một địa chỉ trông thế nào".
+          //
+          // Route nằm dưới `/checkout` chứ không phải `/account/addresses`: hai
+          // route đó khác nhau ở chỗ `/account/*` nằm trong `ShellRoute`, và đẩy
+          // một route trong shell lên trên `/checkout` (ngoài shell) làm
+          // `_shellNavigatorKey` bị đăng ký hai lần — Navigator ném
+          // `!keyReservation.contains(key)`. Ở đây picker cũng không đeo thanh
+          // nav dưới, đúng với việc nó là một bước của checkout.
+          GoRoute(
+            path: 'select-address',
+            name: 'checkout_select_address',
+            builder: (context, state) =>
+                const AddressesScreen(selectMode: true),
+          ),
+        ],
       ),
       // Cấu hình ShellRoute chứa Bottom Navigation Bar cho 5 tab chính
       ShellRoute(
@@ -247,9 +264,7 @@ GoRouter appRouter(Ref ref) {
                 path: 'refunds',
                 name: 'refund_list',
                 builder: (context, state) => RefundListScreen(
-                  initialRole: roleFromQuery(
-                    state.uri.queryParameters['role'],
-                  ),
+                  initialRole: roleFromQuery(state.uri.queryParameters['role']),
                 ),
                 routes: [
                   GoRoute(
