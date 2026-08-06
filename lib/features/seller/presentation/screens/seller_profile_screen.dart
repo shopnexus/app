@@ -34,7 +34,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
       backgroundColor: const Color(0xFFF9F9F7), // Stitch Background
       appBar: AppBar(
         title: const Text(
-          'Seller Profile',
+          'Trang cá nhân',
           style: TextStyle(
             color: Color(0xFF1A1C1B),
             fontWeight: FontWeight.bold,
@@ -431,6 +431,13 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
         );
       case 2: // All Reviews
       case 3: // Feedback
+        // Trang này chưa đọc được đánh giá của một người khác — API công khai
+        // không trả về. Nhưng đánh giá *của chính mình* thì đọc được, và đây là
+        // nơi đúng để xem chúng: đánh giá là thứ người khác đọc về mình, nên nó
+        // thuộc trang công khai chứ không phải một hàng menu trong trang tài
+        // khoản.
+        final isMe = ref.watch(profileProvider).value?.id == widget.vendorId;
+
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(32),
@@ -458,6 +465,28 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                   color: Color(0xFF6E7977),
                 ),
               ),
+              if (isMe && _selectedTabIndex == 2) ...[
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: () => context.push('/account/reviews'),
+                  icon: const Icon(Icons.star_outline_rounded, size: 18),
+                  label: const Text(
+                    'Xem đánh giá về tôi',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF005049),
+                    side: const BorderSide(color: Color(0xFF005049)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         );

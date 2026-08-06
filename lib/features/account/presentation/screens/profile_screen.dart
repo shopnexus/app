@@ -9,7 +9,6 @@ import 'package:shopnexus_flutter_app/features/account/data/models/account_model
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_menu_tile.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/action_inbox_card.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
@@ -117,7 +116,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: false,
-        actions: [_buildNotificationBell(context)],
+        // Chuông từng ở đây. Thông báo giờ là một tab của Hộp thư và số chưa đọc
+        // sống trên badge của thanh nav, thấy được từ mọi màn hình — một cái
+        // chuông thứ hai chỉ thấy được khi đã ở đúng trang này thì không thêm gì.
       ),
       body: RefreshIndicator(
         onRefresh: () {
@@ -153,11 +154,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     title: 'Yêu cầu hoàn tiền',
                     onTap: () => context.push('/account/refunds'),
                   ),
-                  AccountMenuTile(
-                    icon: Icons.star_outline_rounded,
-                    title: 'Đánh giá của tôi',
-                    onTap: () => context.push('/account/reviews'),
-                  ),
+                  // "Đánh giá của tôi" không còn ở đây: đánh giá là thứ *người
+                  // khác đọc về mình*, nên nó thuộc trang công khai — vào bằng
+                  // ảnh đại diện, tab "Đánh giá".
                 ]),
 
                 const AccountSectionHeader(title: 'HỒ SƠ'),
@@ -168,14 +167,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     onTap: () => context.push('/account/addresses'),
                   ),
                   AccountMenuTile(
-                    icon: Icons.favorite_border_rounded,
-                    title: 'Yêu thích',
+                    icon: Icons.bookmark_border_rounded,
+                    // "Đã lưu", không "Yêu thích": danh sách này là chỗ để dành
+                    // một tin đăng để quay lại xem, không phải một bảng cảm xúc.
+                    title: 'Đã lưu',
                     onTap: () => context.push('/account/wishlist'),
-                  ),
-                  AccountMenuTile(
-                    icon: Icons.storefront_outlined,
-                    title: 'Xem shop của tôi',
-                    onTap: () => context.push('/vendor/${profile.id}'),
                   ),
                   // Lối vào khu người bán, không phải bản sao thứ hai của nó.
                   AccountMenuTile(
@@ -217,55 +213,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildNotificationBell(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Consumer(
-      builder: (context, ref, _) {
-        final unread = ref.watch(unreadNotificationsCountProvider).value ?? 0;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.notifications_none_rounded,
-                color: theme.colorScheme.onSurfaceVariant,
-                size: 24,
-              ),
-              onPressed: () => context.push('/chat?tab=notifications'),
-            ),
-            if (unread > 0)
-              Positioned(
-                top: 8,
-                right: 6,
-                child: IgnorePointer(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      unread > 99 ? '99+' : '$unread',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget _buildHeader(BuildContext context, Me profile) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -274,13 +221,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: _isUploadingAvatar
-                ? null
-                : () => _pickAndUploadAvatar(profile),
-            child: Stack(
-              children: [
-                CircleAvatar(
+          // Ảnh đại diện là lối vào trang công khai của chính mình — chỗ mà dòng
+          // "Xem shop của tôi" từng chiếm một hàng menu để làm. Đổi ảnh chuyển
+          // sang cái huy hiệu máy ảnh, vốn đã là glyph duy nhất nói "đổi ảnh":
+          // hai việc khác nhau thì không thể dùng chung một vùng chạm.
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              GestureDetector(
+                onTap: () => context.push('/users/${profile.id}'),
+                child: CircleAvatar(
                   radius: 32,
                   backgroundColor: isDarkMode
                       ? theme.colorScheme.surfaceContainerHighest
@@ -296,33 +246,45 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         )
                       : null,
                 ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: _isUploadingAvatar
-                        ? SizedBox(
-                            width: 10,
-                            height: 10,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 1.5,
+              ),
+              // Huy hiệu vẽ 16px nhưng vùng chạm phải là 40px: một nút 16px trên
+              // ngón tay là một nút bấm mười lần trúng một. `Positioned` âm cho
+              // phần đệm tràn ra ngoài, nên hình không hề to lên.
+              Positioned(
+                bottom: -12,
+                right: -12,
+                child: GestureDetector(
+                  onTap: _isUploadingAvatar
+                      ? null
+                      : () => _pickAndUploadAvatar(profile),
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: _isUploadingAvatar
+                          ? SizedBox(
+                              width: 10,
+                              height: 10,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 1.5,
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                            )
+                          : Icon(
+                              Icons.camera_alt_rounded,
+                              size: 10,
                               color: theme.colorScheme.onPrimary,
                             ),
-                          )
-                        : Icon(
-                            Icons.camera_alt_rounded,
-                            size: 10,
-                            color: theme.colorScheme.onPrimary,
-                          ),
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           const SizedBox(width: 16),
           // Chạm vào mở Account Center — nơi có đủ sáu field và cả thẻ KYC.

@@ -915,7 +915,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => context.push('/vendor/${seller.id}'),
+            onTap: () => context.push('/users/${seller.id}'),
             child: CircleAvatar(
               radius: 24,
               backgroundImage: avatarUrl != null
@@ -942,7 +942,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           const SizedBox(width: 12.0),
           Expanded(
             child: GestureDetector(
-              onTap: () => context.push('/vendor/${seller.id}'),
+              onTap: () => context.push('/users/${seller.id}'),
               behavior: HitTestBehavior.opaque,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
