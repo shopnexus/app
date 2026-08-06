@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/inbox_unread_provider.dart';
 
-class MainLayout extends StatelessWidget {
+/// Số trên badge. Trên 99 thì rút gọn: bốn chữ số không vừa một hình tròn 16px,
+/// và "có rất nhiều" là toàn bộ thông tin mà một con số lớn mang lại.
+String badgeLabel(int count) => count > 99 ? '99+' : '$count';
+
+class MainLayout extends ConsumerWidget {
   final Widget child;
 
   const MainLayout({super.key, required this.child});
@@ -48,10 +55,21 @@ class MainLayout extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final currentIndex = _getCurrentIndex(context);
+
+    // `.value` với null-fallback, không `.when()`: cả hai nguồn đọc qua mạng khi
+    // mở app, và một `loading` hay `error` được phép làm thanh nav không vẽ thì
+    // toàn bộ điều hướng của app biến mất. Badge vắng thì chấp nhận được.
+    final unread = ref.watch(inboxUnreadProvider).value ?? 0;
+
+    // Chấm tròn, không số, và cố ý như vậy. `ActionInbox.total` là một con số
+    // thật, nhưng nó đếm việc ở nhiều nơi khác nhau — không có một trang nào cho
+    // người dùng thấy đúng con số ấy khi họ chạm vào tab. Chấm chỉ nói "vào đây
+    // xem", nên nó không thể nói sai; con số thật nằm trong khối "Việc cần làm".
+    final hasWork = ref.watch(actionInboxProvider).value?.isEmpty == false;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -121,6 +139,7 @@ class MainLayout extends StatelessWidget {
                       icon: Icons.chat_bubble_outline_rounded,
                       activeIcon: Icons.chat_bubble_rounded,
                       label: 'Hộp thư',
+                      badgeCount: unread,
                     ),
                     _buildTabItem(
                       context,
@@ -129,6 +148,7 @@ class MainLayout extends StatelessWidget {
                       icon: Icons.person_outline_rounded,
                       activeIcon: Icons.person_rounded,
                       label: 'Tài khoản',
+                      showDot: hasWork,
                     ),
                   ],
                 ),
@@ -147,6 +167,14 @@ class MainLayout extends StatelessWidget {
     required IconData icon,
     required IconData activeIcon,
     required String label,
+
+    /// Số chưa đọc. 0 nghĩa là không vẽ gì — một badge "0" là một badge nói rằng
+    /// có gì đó phải xem.
+    int badgeCount = 0,
+
+    /// Chấm không số, cho chỗ có việc nhưng không có một con số nào mà tab này
+    /// hứa được là đúng.
+    bool showDot = false,
   }) {
     final theme = Theme.of(context);
     final isActive = index == currentIndex;
@@ -164,10 +192,15 @@ class MainLayout extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              color: isActive ? activeColor : inactiveColor,
-              size: 24,
+            _withOverlay(
+              context,
+              badgeCount: badgeCount,
+              showDot: showDot,
+              child: Icon(
+                isActive ? activeIcon : icon,
+                color: isActive ? activeColor : inactiveColor,
+                size: 24,
+              ),
             ),
             const SizedBox(height: 2.0),
             Text(
@@ -194,6 +227,73 @@ class MainLayout extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  /// Badge có số thắng chấm khi cả hai cùng có: một con số nói được nhiều hơn.
+  /// Cả hai đều `IgnorePointer` và nằm ngoài luồng layout, nên chúng không hề
+  /// dịch icon hay nhãn — thanh nav phải trông y như trước khi không có gì để báo.
+  Widget _withOverlay(
+    BuildContext context, {
+    required Widget child,
+    required int badgeCount,
+    required bool showDot,
+  }) {
+    if (badgeCount <= 0 && !showDot) return child;
+
+    final theme = Theme.of(context);
+    final badgeColor = theme.colorScheme.error;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        Positioned(
+          top: -4,
+          right: -8,
+          child: IgnorePointer(
+            child: badgeCount > 0
+                ? Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 1,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 16),
+                    decoration: BoxDecoration(
+                      color: badgeColor,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: theme.colorScheme.surface,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Text(
+                      badgeLabel(badgeCount),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 9,
+                        height: 1.2,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onError,
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      color: badgeColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: theme.colorScheme.surface,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+          ),
+        ),
+      ],
     );
   }
 
