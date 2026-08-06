@@ -18,7 +18,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/screens/orde
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/addresses_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/wishlist_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/settings_screen.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/screens/account_center_screen.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/screens/account_center_section.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/my_reviews_screen.dart';
 import 'package:shopnexus_flutter_app/features/kyc/presentation/screens/kyc_verification_screen.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/main_layout.dart';

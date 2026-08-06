@@ -32,29 +32,27 @@ Future<ActionInbox> actionInbox(Ref ref) async {
   final repository = ref.watch(refundRepositoryProvider);
   final seller = ref.watch(sellerRepositoryProvider);
 
-  final (toConfirm, ordersToShip, refundsAsSeller, unreadMessages) =
-      await (
-        _countOrEmpty(
-          () => seller.countOrders(state: OrderState.awaitingConfirmation),
-        ),
-        countOrZero(
-          () async =>
-              (await seller.countOrders(state: OrderState.open)).count,
-        ),
-        // Lọc phía server: `/refunds` phân trang bằng cursor, nên đếm trên trang
-        // đầu sẽ báo 0 cho một người bán vừa đóng 20 vụ và còn 3 vụ chờ duyệt.
-        countOrZero(
-          () => _countRefunds(
-            repository,
-            role: RefundRole.seller,
-            status: RefundStatus.awaitingSellerReview,
-          ),
-        ),
-        countOrZero(() async {
-          final unread = await ref.watch(chatRepositoryProvider).unreadCount();
-          return unread.unread;
-        }),
-      ).wait;
+  final (toConfirm, ordersToShip, refundsAsSeller, unreadMessages) = await (
+    _countOrEmpty(
+      () => seller.countOrders(state: OrderState.awaitingConfirmation),
+    ),
+    countOrZero(
+      () async => (await seller.countOrders(state: OrderState.open)).count,
+    ),
+    // Lọc phía server: `/refunds` phân trang bằng cursor, nên đếm trên trang
+    // đầu sẽ báo 0 cho một người bán vừa đóng 20 vụ và còn 3 vụ chờ duyệt.
+    countOrZero(
+      () => _countRefunds(
+        repository,
+        role: RefundRole.seller,
+        status: RefundStatus.awaitingSellerReview,
+      ),
+    ),
+    countOrZero(() async {
+      final unread = await ref.watch(chatRepositoryProvider).unreadCount();
+      return unread.unread;
+    }),
+  ).wait;
 
   return ActionInbox(
     ordersToConfirm: toConfirm.count,

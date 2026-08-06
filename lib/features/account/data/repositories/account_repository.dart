@@ -178,9 +178,7 @@ class AccountRepository {
       limit: limit,
     )).data;
     final orders = page?.data ?? const <Order>[];
-    final listings = await _listingsById(
-      orders.expand((order) => order.items),
-    );
+    final listings = await _listingsById(orders.expand((order) => order.items));
     return [for (final order in orders) _view(order, listings)];
   }
 

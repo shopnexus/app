@@ -37,7 +37,11 @@ class ActionInboxView extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.bolt_rounded, size: 18, color: AppColors.primary),
+              const Icon(
+                Icons.bolt_rounded,
+                size: 18,
+                color: AppColors.primary,
+              ),
               const SizedBox(width: 6),
               Text(
                 'Việc cần làm',

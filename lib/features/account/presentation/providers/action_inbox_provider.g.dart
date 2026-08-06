@@ -65,4 +65,4 @@ final class ActionInboxProvider
   }
 }
 
-String _$actionInboxHash() => r'e1e06d40811a945dd8c4ac6ad23ccea2ba41c956';
+String _$actionInboxHash() => r'de580754fcd882769ce2681ea5d8007ea374c112';

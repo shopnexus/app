@@ -11,15 +11,22 @@ import 'package:shopnexus_flutter_app/features/account/data/models/account_model
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/profile_fields.dart';
 
-class AccountCenterScreen extends ConsumerStatefulWidget {
-  const AccountCenterScreen({super.key});
+/// Định danh và thông tin tài khoản chi tiết, không có `Scaffold` và không có
+/// `AppBar`: nó là một mục của Cài đặt.
+///
+/// "Trung tâm tài khoản" từng là một màn hình riêng, tới được bằng hai đường —
+/// một dòng trong Cài đặt và cả phần chữ ở header trang Tài khoản — nên người
+/// dùng phải học rằng hai chỗ khác nhau mở cùng một trang. Nó là cài đặt tài
+/// khoản, nên nó ở trong Cài đặt.
+class AccountCenterSection extends ConsumerStatefulWidget {
+  const AccountCenterSection({super.key});
 
   @override
-  ConsumerState<AccountCenterScreen> createState() =>
-      _AccountCenterScreenState();
+  ConsumerState<AccountCenterSection> createState() =>
+      _AccountCenterSectionState();
 }
 
-class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
+class _AccountCenterSectionState extends ConsumerState<AccountCenterSection> {
   void _showEditProfileBottomSheet(Me profile) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
@@ -40,154 +47,132 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
     final profileAsync = ref.watch(profileProvider);
     final kycState = ref.watch(kycProvider);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: theme.colorScheme.onSurface,
-            size: 20,
+    return profileAsync.when(
+      data: (profile) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. KYC Verification Banner & Entry Point
+          _buildKycCenterCard(kycState.kycModel),
+
+          const SizedBox(height: 24),
+
+          // 2. Detailed Account Information List
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Thông tin tài khoản chi tiết',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Manrope',
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => _showEditProfileBottomSheet(profile),
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: const Text(
+                  'Chỉnh sửa',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+              ),
+            ],
           ),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          'Trung tâm tài khoản',
-          style: TextStyle(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Manrope',
-            fontSize: 20,
-          ),
-        ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(profileProvider);
-          await ref.read(profileProvider.future);
-        },
-        child: profileAsync.when(
-          data: (profile) => SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          const SizedBox(height: 8),
+
+          Container(
+            decoration: BoxDecoration(
+              color: isDarkMode ? AppColors.darkSurface : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDarkMode
+                    ? AppColors.darkPrimary.withValues(alpha: 0.2)
+                    : const Color(0xFFE2E8F0),
+              ),
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. KYC Verification Banner & Entry Point
-                _buildKycCenterCard(kycState.kycModel),
-
-                const SizedBox(height: 24),
-
-                // 2. Detailed Account Information List
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Thông tin tài khoản chi tiết',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Manrope',
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    TextButton.icon(
-                      onPressed: () => _showEditProfileBottomSheet(profile),
-                      icon: const Icon(Icons.edit_outlined, size: 16),
-                      label: const Text(
-                        'Chỉnh sửa',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ),
-                  ],
+                _buildInfoTile(
+                  icon: Icons.person_outline_rounded,
+                  label: 'Họ và tên',
+                  value: profile.name.isNotEmpty
+                      ? profile.name
+                      : 'Chưa cập nhật',
                 ),
-                const SizedBox(height: 8),
-
-                Container(
-                  decoration: BoxDecoration(
-                    color: isDarkMode ? AppColors.darkSurface : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isDarkMode
-                          ? AppColors.darkPrimary.withValues(alpha: 0.2)
-                          : const Color(0xFFE2E8F0),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildInfoTile(
-                        icon: Icons.person_outline_rounded,
-                        label: 'Họ và tên',
-                        value: profile.name.isNotEmpty
-                            ? profile.name
-                            : 'Chưa cập nhật',
-                      ),
-                      _buildDivider(),
-                      _buildInfoTile(
-                        icon: Icons.alternate_email_rounded,
-                        label: 'Tên người dùng (Username)',
-                        value: profile.username ?? 'Chưa thiết lập',
-                      ),
-                      _buildDivider(),
-                      _buildInfoTile(
-                        icon: Icons.email_outlined,
-                        label: 'Email liên hệ',
-                        value: profile.email ?? 'Chưa liên kết Email',
-                        badgeText: profile.emailVerified
-                            ? 'Đã xác minh'
-                            : 'Chưa xác minh',
-                        badgeColor: profile.emailVerified
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFFF59E0B),
-                      ),
-                      _buildDivider(),
-                      // No badge: this phone is an identifier to sign in and be
-                      // reached by, and it carries no verified flag — the one a
-                      // carrier calls is a contact's, and that is where
-                      // `phone_verified` lives.
-                      _buildInfoTile(
-                        icon: Icons.phone_outlined,
-                        label: 'Số điện thoại',
-                        value: profile.phone ?? 'Chưa cập nhật SĐT',
-                      ),
-                      _buildDivider(),
-                      _buildInfoTile(
-                        icon: Icons.wc_rounded,
-                        label: 'Giới tính',
-                        value: switch (genderOf(profile.gender)) {
-                          null => 'Chưa cập nhật',
-                          final gender => genderLabel(gender),
-                        },
-                      ),
-                      _buildDivider(),
-                      _buildInfoTile(
-                        icon: Icons.cake_outlined,
-                        label: 'Ngày sinh',
-                        value: profile.dateOfBirth ?? 'Chưa cập nhật',
-                      ),
-                      _buildDivider(),
-                      _buildInfoTile(
-                        icon: Icons.calendar_today_rounded,
-                        label: 'Ngày tham gia',
-                        value: _formatDate(profile.createdAt),
-                      ),
-                    ],
-                  ),
+                _buildDivider(),
+                _buildInfoTile(
+                  icon: Icons.alternate_email_rounded,
+                  label: 'Tên người dùng (Username)',
+                  value: profile.username ?? 'Chưa thiết lập',
                 ),
-
-                const SizedBox(height: 40),
+                _buildDivider(),
+                _buildInfoTile(
+                  icon: Icons.email_outlined,
+                  label: 'Email liên hệ',
+                  value: profile.email ?? 'Chưa liên kết Email',
+                  badgeText: profile.emailVerified
+                      ? 'Đã xác minh'
+                      : 'Chưa xác minh',
+                  badgeColor: profile.emailVerified
+                      ? const Color(0xFF10B981)
+                      : const Color(0xFFF59E0B),
+                ),
+                _buildDivider(),
+                // No badge: this phone is an identifier to sign in and be
+                // reached by, and it carries no verified flag — the one a
+                // carrier calls is a contact's, and that is where
+                // `phone_verified` lives.
+                _buildInfoTile(
+                  icon: Icons.phone_outlined,
+                  label: 'Số điện thoại',
+                  value: profile.phone ?? 'Chưa cập nhật SĐT',
+                ),
+                _buildDivider(),
+                _buildInfoTile(
+                  icon: Icons.wc_rounded,
+                  label: 'Giới tính',
+                  value: switch (genderOf(profile.gender)) {
+                    null => 'Chưa cập nhật',
+                    final gender => genderLabel(gender),
+                  },
+                ),
+                _buildDivider(),
+                _buildInfoTile(
+                  icon: Icons.cake_outlined,
+                  label: 'Ngày sinh',
+                  value: profile.dateOfBirth ?? 'Chưa cập nhật',
+                ),
+                _buildDivider(),
+                _buildInfoTile(
+                  icon: Icons.calendar_today_rounded,
+                  label: 'Ngày tham gia',
+                  value: _formatDate(profile.createdAt),
+                ),
               ],
             ),
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, _) => Center(child: Text('Không thể tải dữ liệu: $err')),
+        ],
+      ),
+      // Là một mục trong trang, không phải cả trang: loading và error chỉ được
+      // chiếm chỗ của mình, hoặc các mục cài đặt dưới nó biến mất theo.
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 32),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (err, _) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Text(
+          'Không thể tải thông tin tài khoản: $err',
+          style: TextStyle(
+            fontSize: 13,
+            fontFamily: 'Inter',
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ),
     );
@@ -434,6 +419,49 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
   }
 }
 
+/// Đường vào cũ, `/account/account-center`. Cài đặt đã là nhà mới của mục này;
+/// màn hình rời còn ở đây cho tới khi mọi caller đã chuyển sang
+/// `/account/settings` — xoá route cùng lúc đổi caller là cách làm vỡ một cái
+/// nút mà `dart analyze` không hề nhìn thấy.
+class AccountCenterScreen extends ConsumerWidget {
+  const AccountCenterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: theme.colorScheme.onSurface,
+            size: 20,
+          ),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(
+          'Trung tâm tài khoản',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Manrope',
+            fontSize: 20,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: const AccountCenterSection(),
+      ),
+    );
+  }
+}
+
 class _EditAccountCenterFormSheet extends ConsumerStatefulWidget {
   final Me profile;
 
@@ -583,133 +611,133 @@ class __EditAccountCenterFormSheetState
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            Text(
-              'Chỉnh sửa thông tin tài khoản',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Manrope',
-                color: theme.colorScheme.onSurface,
+              Text(
+                'Chỉnh sửa thông tin tài khoản',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Manrope',
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Họ và tên',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Vui lòng nhập họ tên'
-                  : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Tên người dùng (Username)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Số điện thoại',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-              // Bỏ trống là hợp lệ — đó là cách gỡ liên kết email. Nhưng một
-              // chuỗi không phải địa chỉ thì không: gửi đi sẽ xoá cờ
-              // email_verified cho một giá trị không ai gửi thư tới được.
-              validator: (value) {
-                final email = value?.trim() ?? '';
-                if (email.isEmpty) return null;
-                final looksLikeEmail = RegExp(
-                  r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                ).hasMatch(email);
-                return looksLikeEmail ? null : 'Email không hợp lệ';
-              },
-            ),
-            const SizedBox(height: 12),
-            InkWell(
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _dob ?? DateTime(2000),
-                  firstDate: DateTime(1930),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) setState(() => _dob = picked);
-              },
-              child: InputDecorator(
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Ngày sinh',
+                  labelText: 'Họ và tên',
                   border: OutlineInputBorder(),
                 ),
-                child: Text(
-                  _dob == null
-                      ? 'Chưa chọn'
-                      : '${_dob!.day.toString().padLeft(2, '0')}/${_dob!.month.toString().padLeft(2, '0')}/${_dob!.year}',
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'Vui lòng nhập họ tên'
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'Tên người dùng (Username)',
+                  border: OutlineInputBorder(),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<ProfileGender>(
-              initialValue: _selectedGender,
-              decoration: const InputDecoration(
-                labelText: 'Giới tính',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Số điện thoại',
+                  border: OutlineInputBorder(),
+                ),
               ),
-              items: [
-                for (final gender in ProfileGender.values)
-                  DropdownMenuItem(
-                    value: gender,
-                    child: Text(genderLabel(gender)),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                // Bỏ trống là hợp lệ — đó là cách gỡ liên kết email. Nhưng một
+                // chuỗi không phải địa chỉ thì không: gửi đi sẽ xoá cờ
+                // email_verified cho một giá trị không ai gửi thư tới được.
+                validator: (value) {
+                  final email = value?.trim() ?? '';
+                  if (email.isEmpty) return null;
+                  final looksLikeEmail = RegExp(
+                    r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                  ).hasMatch(email);
+                  return looksLikeEmail ? null : 'Email không hợp lệ';
+                },
+              ),
+              const SizedBox(height: 12),
+              InkWell(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _dob ?? DateTime(2000),
+                    firstDate: DateTime(1930),
+                    lastDate: DateTime.now(),
+                  );
+                  if (picked != null) setState(() => _dob = picked);
+                },
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    labelText: 'Ngày sinh',
+                    border: OutlineInputBorder(),
                   ),
-              ],
-              onChanged: (val) {
-                if (val != null) {
-                  setState(() {
-                    _selectedGender = val;
-                  });
-                }
-              },
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: _isSaving ? null : _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  child: Text(
+                    _dob == null
+                        ? 'Chưa chọn'
+                        : '${_dob!.day.toString().padLeft(2, '0')}/${_dob!.month.toString().padLeft(2, '0')}/${_dob!.year}',
                   ),
                 ),
-                child: _isSaving
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Lưu thay đổi',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Inter',
-                          fontSize: 15,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<ProfileGender>(
+                initialValue: _selectedGender,
+                decoration: const InputDecoration(
+                  labelText: 'Giới tính',
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  for (final gender in ProfileGender.values)
+                    DropdownMenuItem(
+                      value: gender,
+                      child: Text(genderLabel(gender)),
+                    ),
+                ],
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _selectedGender = val;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: _isSaving ? null : _saveProfile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _isSaving
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Lưu thay đổi',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                          ),
                         ),
-                      ),
+                ),
               ),
-            ),
             ],
           ),
         ),

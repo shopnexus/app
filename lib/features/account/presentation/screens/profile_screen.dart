@@ -287,15 +287,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ],
           ),
           const SizedBox(width: 16),
-          // Chạm vào mở Account Center — nơi có đủ sáu field và cả thẻ KYC.
-          // Trước đây chỗ này mở một bottom sheet riêng với tập field lệch so
-          // với form trong Account Center, cùng gọi một endpoint.
+          // Chạm vào mở Cài đặt — nơi có đủ sáu field và cả thẻ KYC. Trước đây
+          // chỗ này mở một bottom sheet riêng với tập field lệch so với form
+          // trong Trung tâm tài khoản, cùng gọi một endpoint; rồi mở Trung tâm
+          // tài khoản, thứ giờ đã là mục đầu của Cài đặt.
           // Bọc cả phần chữ lẫn chevron: chevron là glyph duy nhất báo "chạm vào
           // đây", nên để nó nằm ngoài vùng chạm là chỗ chết đúng nơi người dùng
           // nhắm tới.
           Expanded(
             child: GestureDetector(
-              onTap: () => context.push('/account/account-center'),
+              onTap: () => context.push('/account/settings'),
               behavior: HitTestBehavior.opaque,
               child: Row(
                 children: [
