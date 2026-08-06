@@ -15,6 +15,7 @@ import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/models/listing_draft.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/listing_suggestion_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/condition_badge.dart';
 
 /// "Photo in, listing out": the seller snaps the item, says a sentence about it,
 /// and gets a filled-in form to correct. The AI only fills the form in —
@@ -469,7 +470,7 @@ class _ListingSuggestionScreenState
           children: ListingCondition.values
               .map(
                 (condition) => ChoiceChip(
-                  label: Text(_conditionLabel(condition)),
+                  label: Text(condition.label),
                   selected: _condition == condition,
                   selectedColor: theme.colorScheme.primary,
                   backgroundColor: theme.colorScheme.surfaceContainerHighest,
@@ -1177,17 +1178,6 @@ class _ListingSuggestionScreenState
     return parents.isEmpty
         ? category.name
         : '${parents.first.name} › ${category.name}';
-  }
-
-  String _conditionLabel(ListingCondition condition) {
-    switch (condition) {
-      case ListingCondition.new_:
-        return 'Mới';
-      case ListingCondition.used:
-        return 'Đã dùng';
-      case ListingCondition.damaged:
-        return 'Có lỗi / hỏng';
-    }
   }
 
   /// The suggestion enum carries an extra empty member for "could not tell",

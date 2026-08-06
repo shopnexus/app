@@ -26,6 +26,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/my
 import 'package:flutter/services.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/providers/chat_providers.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/condition_badge.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
@@ -437,6 +438,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   //
   // Không còn giá gạch ngang hay phần trăm giảm: một tin đăng chỉ có một giá,
   // `original_price` là trường server chưa từng gửi.
+  /// "Quận 1, TP. Hồ Chí Minh" — quận rồi tỉnh, bỏ phường vì đó là mức chi tiết
+  /// của một địa chỉ giao hàng, không phải của một tin đăng. Null khi tin không
+  /// khai vị trí, và khi đó không vẽ dòng nào: một dấu ghim không có tên đọc là
+  /// lỗi hiển thị.
+  String? _locationLabel(ListingDetail detail) {
+    final location = detail.location;
+    if (location == null) return null;
+    final district = location.districtName;
+    return district == null || district.isEmpty
+        ? location.provinceName
+        : '$district, ${location.provinceName}';
+  }
+
   Widget _buildProductPrimaryInfo(ListingDetail detail, String priceText) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -501,6 +515,39 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   ),
                 ),
               ],
+            ],
+          ),
+          // Tình trạng hàng và nơi hàng đang ở — hai câu trả lời cho "cái giá
+          // kia có hợp lý không", và trước đây không có câu nào ở màn quyết
+          // định: `condition` không hiện chỗ nào, còn vị trí thì thấy ở thẻ tin
+          // rồi mất đúng lúc bấm vào.
+          const SizedBox(height: 10.0),
+          Wrap(
+            spacing: 10.0,
+            runSpacing: 6.0,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              ConditionBadge(condition: detail.condition),
+              if (_locationLabel(detail) case final place?)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.place_outlined,
+                      size: 14,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4.0),
+                    Text(
+                      place,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
           if (detail.priceMode == PriceMode.negotiable) ...[

@@ -2,9 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/condition_badge.dart';
 
 /// The six things the card draws, derived from a `Listing` here at the widget
 /// boundary. The contract sends a `cover` resource and a `seller`, not a
@@ -22,6 +24,10 @@ class ProductCardView {
   final double rating;
   final bool negotiable;
 
+  /// Mới / đã dùng / có lỗi. Null chỉ cho những chỗ dựng thẻ từ dữ liệu cũ
+  /// không mang tình trạng — mọi `Listing` từ server đều mang, vì server bắt buộc.
+  final ListingCondition? condition;
+
   const ProductCardView({
     required this.name,
     required this.price,
@@ -29,6 +35,7 @@ class ProductCardView {
     this.sellerName,
     this.rating = 0.0,
     this.negotiable = false,
+    this.condition,
   });
 
   factory ProductCardView.fromListing(Listing listing) => ProductCardView(
@@ -38,6 +45,7 @@ class ProductCardView {
         sellerName: listing.seller.name,
         rating: listing.rating,
         negotiable: listing.priceMode == PriceMode.negotiable,
+        condition: listing.condition,
       );
 }
 
@@ -204,6 +212,16 @@ class SharedProductCard extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
+                          // Cạnh giá, vì tình trạng hàng là một nửa của cái giá:
+                          // 2 triệu cho hàng mới và cho hàng có lỗi là hai đề
+                          // nghị khác nhau.
+                          if (product.condition != null) ...[
+                            ConditionBadge(
+                              condition: product.condition!,
+                              dense: true,
+                            ),
+                            const SizedBox(height: 3.0),
+                          ],
                           Text(
                             MoneyUtils.format(product.price),
                             style: theme.textTheme.bodyMedium?.copyWith(
