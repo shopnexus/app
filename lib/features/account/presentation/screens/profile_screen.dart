@@ -189,13 +189,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     title: 'Đã lưu',
                     onTap: () => context.push('/account/wishlist'),
                   ),
-                  AccountMenuTile(
-                    icon: Icons.handshake_outlined,
-                    // Một đề nghị có hạn 12 giờ, nên nó cần một chỗ ngoài chat:
-                    // một thread bị đẩy xuống dưới là mất tăm một việc có đồng hồ.
-                    title: 'Thương lượng',
-                    onTap: () => context.push('/account/offers'),
-                  ),
+                  // "Thương lượng" không còn ở đây: một cuộc mặc cả sống trong
+                  // thread hai bên đang nói với nhau, và thẻ đề nghị ở đó đã mang
+                  // cả tin, đối phương lẫn đồng hồ đếm ngược.
                   AccountMenuTile(
                     icon: Icons.person_add_alt_outlined,
                     // Người, không shop: ở C2C thì "tôi muốn thấy người này đăng

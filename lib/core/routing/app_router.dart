@@ -15,7 +15,6 @@ import 'package:shopnexus_flutter_app/features/account/presentation/screens/foll
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/linked_accounts_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/notification_preferences_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/payment_history_screen.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/screens/offers_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/profile_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/orders_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/order_detail_screen.dart';
@@ -271,11 +270,6 @@ GoRouter appRouter(Ref ref) {
                 path: 'linked-accounts',
                 name: 'linked_accounts',
                 builder: (context, state) => const LinkedAccountsScreen(),
-              ),
-              GoRoute(
-                path: 'offers',
-                name: 'offers',
-                builder: (context, state) => const OffersScreen(),
               ),
               GoRoute(
                 path: 'following',

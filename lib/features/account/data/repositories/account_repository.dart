@@ -5,8 +5,6 @@ import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
     as generated;
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/offer_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/notification_preference.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/o_auth_identity.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_notification_preferences_request.dart';
@@ -226,25 +224,6 @@ class AccountRepository {
 
   Future<void> unlinkOauth(String provider) =>
       _api.meOauthIdentitiesProviderDelete(provider: provider);
-
-  /// Những cuộc mặc cả của một vai. Trước đây chúng chỉ tới được qua một thẻ trong
-  /// chat, nên một đề nghị đang chờ mình trả lời sẽ mất tăm khi cuộc trò chuyện bị
-  /// đẩy xuống dưới — mà nó có hạn 12 giờ.
-  ///
-  /// Không có `role`: route trả cả hai chiều trong một danh sách. Tham số đó từng
-  /// có ở đây và server chưa bao giờ đọc nó — hai giá trị cho ra đúng một kết quả,
-  /// nên cái segment "Tôi mua | Tôi bán" dựng trên nó chỉ là hình vẽ.
-  Future<List<Offer>> offers({
-    OfferStatus? status,
-    String? cursor,
-    int limit = 20,
-  }) async =>
-      (await _orderApi.offersGet(
-        status: status,
-        cursor: cursor,
-        limit: limit,
-      )).data?.data ??
-      const [];
 
   Future<void> follow(String accountId) =>
       _api.followsAccountIDPut(accountID: accountId);

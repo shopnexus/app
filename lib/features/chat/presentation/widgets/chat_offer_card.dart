@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import 'package:shopnexus_flutter_app/core/utils/deadline_utils.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 
@@ -9,6 +13,12 @@ import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart'
 /// everything here comes from the resolved [Offer] — the card renders the offer's
 /// *current* state and never branches on how it got there. That is what stops a
 /// counter-offer leaving yesterday's price on screen.
+///
+/// This card is the *only* home a negotiation has — there is no separate list
+/// screen any more — so it carries what that screen used to: the listing being
+/// haggled over, the other party, and the clock. An offer runs for 12 hours (30
+/// minutes once agreed), and a deadline that does not tick is one people notice
+/// after it has passed.
 class ChatOfferCard extends StatelessWidget {
   const ChatOfferCard({
     super.key,
@@ -19,6 +29,7 @@ class ChatOfferCard extends StatelessWidget {
     this.onCounter,
     this.onCancel,
     this.onCheckout,
+    this.onRenegotiate,
   });
 
   /// Null while the offer is still being read — the card carried only an id.
@@ -34,6 +45,10 @@ class ChatOfferCard extends StatelessWidget {
   final VoidCallback? onCounter;
   final VoidCallback? onCancel;
   final VoidCallback? onCheckout;
+
+  /// Re-opening a dead negotiation is a *new* offer, not an action on the old
+  /// one, so it leads back to the listing page where `POST /offers` lives.
+  final VoidCallback? onRenegotiate;
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +105,8 @@ class ChatOfferCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        _buildListing(theme, offer),
+        const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -164,8 +181,86 @@ class ChatOfferCard extends StatelessWidget {
             ),
           ),
         ],
+        // A clock only means something while there is something left to lose: on an
+        // offer already checked out or cancelled, its deadline is old news.
+        if (offer.status == OfferStatus.active ||
+            offer.status == OfferStatus.accepted) ...[
+          const SizedBox(height: 10),
+          _OfferCountdown(expiresAt: offer.expiresAt),
+        ],
         const SizedBox(height: 14),
         ..._buildActions(theme, offer),
+      ],
+    );
+  }
+
+  /// The listing being haggled over, and with whom.
+  ///
+  /// One thread holds a single conversation but may carry offers on several
+  /// listings, so "what is this price for" cannot be inferred from context — it
+  /// has to be on the card itself.
+  Widget _buildListing(ThemeData theme, Offer offer) {
+    final cover = offer.listing.cover?.url;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: cover == null
+              ? Container(
+                  width: 44,
+                  height: 44,
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: Icon(
+                    Icons.image_not_supported_outlined,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                )
+              : CachedNetworkImage(
+                  imageUrl: cover,
+                  width: 44,
+                  height: 44,
+                  fit: BoxFit.cover,
+                  placeholder: (_, _) => Container(
+                    width: 44,
+                    height: 44,
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
+                  errorWidget: (_, _, _) => Container(
+                    width: 44,
+                    height: 44,
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
+                ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                offer.listing.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  height: 1.25,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Với ${offer.counterparty.name}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -264,8 +359,17 @@ class ChatOfferCard extends StatelessWidget {
             label: 'Đã huỷ hoặc hết hạn',
             color: theme.colorScheme.error,
           ),
-          const SizedBox(height: 6),
-          _note(theme, 'Hãy thương lượng lại nếu vẫn muốn mua.'),
+          const SizedBox(height: 8),
+          // Only a buyer may open one: `POST /offers` is theirs.
+          if (viewerIsBuyer)
+            _outlined(
+              theme,
+              label: 'Thương lượng lại',
+              icon: Icons.refresh_rounded,
+              onPressed: onRenegotiate,
+            )
+          else
+            _note(theme, 'Người mua có thể mở một đề nghị mới từ trang tin.'),
         ];
     }
   }
@@ -406,5 +510,66 @@ class ChatOfferCard extends StatelessWidget {
     final hour = local.hour.toString().padLeft(2, '0');
     final minute = local.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
+  }
+}
+
+/// How long is left, counting itself down.
+///
+/// A thread is a screen people leave open: a label drawn once still reads "còn 2
+/// giờ" long after the offer expired, with a button under it that no longer works.
+/// Thirty seconds is fine — the label only resolves to minutes under the hour.
+class _OfferCountdown extends StatefulWidget {
+  const _OfferCountdown({required this.expiresAt});
+
+  final DateTime expiresAt;
+
+  @override
+  State<_OfferCountdown> createState() => _OfferCountdownState();
+}
+
+class _OfferCountdownState extends State<_OfferCountdown> {
+  Timer? _ticker;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => setState(() {}),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final label = DeadlineUtils.remaining(widget.expiresAt);
+    if (label == null) return const SizedBox.shrink();
+
+    // Dưới một giờ thì cái hạn mới là tin; trước đó nó chỉ là bối cảnh.
+    final urgent = widget.expiresAt.difference(DateTime.now()).inMinutes < 60;
+    final colour = urgent
+        ? theme.colorScheme.error
+        : theme.colorScheme.onSurfaceVariant;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.timer_outlined, size: 14, color: colour),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: colour,
+            fontWeight: urgent ? FontWeight.bold : FontWeight.w600,
+          ),
+        ),
+      ],
+    );
   }
 }

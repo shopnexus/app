@@ -267,6 +267,11 @@ class _Thread extends StatelessWidget {
                 onCheckout: offer == null
                     ? null
                     : () => context.push('/checkout?offer_id=${offer.id}'),
+                // Trang tin là nơi `POST /offers` mở ra — một cuộc mặc cả đã
+                // đóng không nhận thêm hành động nào.
+                onRenegotiate: offer == null
+                    ? null
+                    : () => context.push('/home/product/${offer.listingId}'),
               ),
             ),
           );

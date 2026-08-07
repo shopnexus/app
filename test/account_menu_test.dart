@@ -74,6 +74,9 @@ void main() {
 
     // Cửa cũ đi rồi: hai dòng trên đã là chính hai thứ nó dẫn tới.
     expect(find.text('Kênh người bán'), findsNothing);
+    // Thương lượng sống trong thread hai người đang nói với nhau, không phải một
+    // màn riêng — thẻ đề nghị trong chat đã mang đủ đồng hồ, ảnh và mọi hành động.
+    expect(find.text('Thương lượng'), findsNothing);
     // Và "Đơn mua" đổi tên, vì dòng đó giờ mở cả hai vai.
     expect(find.text('Đơn mua'), findsNothing);
   });
