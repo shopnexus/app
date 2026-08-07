@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/inbox_unread_provider.dart';
 
@@ -78,13 +77,6 @@ class MainLayout extends ConsumerWidget {
     // mở app, và một `loading` hay `error` được phép làm thanh nav không vẽ thì
     // toàn bộ điều hướng của app biến mất. Badge vắng thì chấp nhận được.
     final unread = signedIn ? (ref.watch(inboxUnreadProvider).value ?? 0) : 0;
-
-    // Chấm tròn, không số, và cố ý như vậy. `ActionInbox.total` là một con số
-    // thật, nhưng nó đếm việc ở nhiều nơi khác nhau — không có một trang nào cho
-    // người dùng thấy đúng con số ấy khi họ chạm vào tab. Chấm chỉ nói "vào đây
-    // xem", nên nó không thể nói sai; con số thật nằm trong khối "Việc cần làm".
-    final hasWork =
-        signedIn && ref.watch(actionInboxProvider).value?.isEmpty == false;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -163,7 +155,6 @@ class MainLayout extends ConsumerWidget {
                       icon: Icons.person_outline_rounded,
                       activeIcon: Icons.person_rounded,
                       label: 'Tài khoản',
-                      showDot: hasWork,
                     ),
                   ],
                 ),

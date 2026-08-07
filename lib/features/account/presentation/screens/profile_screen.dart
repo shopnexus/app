@@ -10,8 +10,10 @@ import 'package:shopnexus_flutter_app/features/account/data/models/account_model
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_menu_tile.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/widgets/action_inbox_card.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_earnings_provider.dart';
 
@@ -144,29 +146,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       : const Color(0xFFEEEEEE),
                 ),
 
-                // Tự ẩn khi không có việc nào đang chờ.
-                const ActionInboxCard(),
-
-                const AccountSectionHeader(title: 'MUA BÁN'),
+                const AccountSectionHeader(title: 'MUA BÁN & GIAO DỊCH'),
                 _buildGroup(context, [
                   AccountMenuTile(
                     icon: Icons.receipt_long_outlined,
-                    // "Đơn hàng", không "Đơn mua": một dòng cho cả hai vai, và
-                    // màn hình tự mở vai đang có việc chờ.
-                    title: 'Đơn hàng',
-                    onTap: () => context.push('/account/orders'),
+                    title: 'Đơn hàng của tôi',
+                    onTap: () => context.push('/account/orders?tab=0'),
                   ),
-                  // Hai dòng này thay cho "Kênh người bán". Một cái cửa dẫn tới
-                  // một trang toàn số liệu là một lần chạm thêm để tới đúng hai
-                  // thứ người bán thật sự vào xem: tin của mình và tiền của mình.
+                  _buildOrderStatusShortcutRow(context),
                   AccountMenuTile(
-                    icon: Icons.sell_outlined,
-                    title: 'Tin của tôi',
+                    icon: Icons.inventory_2_outlined,
+                    title: 'Sản phẩm của tôi',
                     onTap: () => context.push('/seller/products'),
                   ),
                   AccountMenuTile(
+                    icon: Icons.storefront_outlined,
+                    title: 'Đơn bán của tôi',
+                    onTap: () => context.push('/seller/orders'),
+                  ),
+                  AccountMenuTile(
                     icon: Icons.account_balance_wallet_outlined,
-                    title: 'Số dư',
+                    title: 'Ví & Số dư',
                     subtitle: _balanceLine(),
                     onTap: () => context.push('/seller/earnings'),
                   ),
@@ -175,38 +175,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     title: 'Yêu cầu hoàn tiền',
                     onTap: () => context.push('/account/refunds'),
                   ),
-                  // "Đánh giá của tôi" không còn ở đây: đánh giá là thứ *người
-                  // khác đọc về mình*, nên nó thuộc trang công khai — vào bằng
-                  // ảnh đại diện, tab "Đánh giá".
                 ]),
 
-                const AccountSectionHeader(title: 'HỒ SƠ'),
+                const AccountSectionHeader(title: 'HỒ SƠ CÁ NHÂN'),
                 _buildGroup(context, [
                   AccountMenuTile(
                     icon: Icons.bookmark_border_rounded,
-                    // "Đã lưu", không "Yêu thích": danh sách này là chỗ để dành
-                    // một tin đăng để quay lại xem, không phải một bảng cảm xúc.
-                    title: 'Đã lưu',
+                    title: 'Sản phẩm đã lưu',
                     onTap: () => context.push('/account/wishlist'),
                   ),
-                  // "Thương lượng" không còn ở đây: một cuộc mặc cả sống trong
-                  // thread hai bên đang nói với nhau, và thẻ đề nghị ở đó đã mang
-                  // cả tin, đối phương lẫn đồng hồ đếm ngược.
                   AccountMenuTile(
                     icon: Icons.person_add_alt_outlined,
-                    // Người, không shop: ở C2C thì "tôi muốn thấy người này đăng
-                    // gì nữa" là câu hỏi thật, và `follows` gắn với account.
                     title: 'Đang theo dõi',
                     onTap: () => context.push('/account/following'),
                   ),
                   AccountMenuTile(
                     icon: Icons.location_on_outlined,
-                    title: 'Địa chỉ',
+                    title: 'Sổ địa chỉ',
                     onTap: () => context.push('/account/addresses'),
                   ),
                 ]),
 
-                const AccountSectionHeader(title: 'HỖ TRỢ'),
+                const AccountSectionHeader(title: 'HỖ TRỢ & HỆ THỐNG'),
                 _buildGroup(context, [
                   AccountMenuTile(
                     icon: Icons.help_outline_rounded,
@@ -244,6 +234,167 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   /// phải tiền rút được, và "₫0" một mình là câu trả lời cho người bán vừa bán
   /// xong và đang đi tìm tiền của họ. Vắng khi chưa đọc xong hoặc đọc hỏng — dòng
   /// menu vẫn vào được, và trang Tài khoản không được vỡ vì một cái ví.
+  Widget _buildOrderStatusShortcutRow(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final ordersFeed = ref.watch(ordersProvider).value;
+    final orders = ordersFeed?.orders ?? [];
+
+    int getCount(int tabIndex) {
+      return orders.where((v) {
+        final isCancelled = v.order.state == OrderState.cancelled ||
+            v.order.cancelledAt != null;
+        final isDelivered =
+            v.order.transport?.status == TransportStatus.delivered;
+        final isCompleted = v.order.state == OrderState.completed ||
+            v.order.receivedAt != null ||
+            v.order.completedAt != null ||
+            isDelivered;
+
+        switch (tabIndex) {
+          case 1: // Chờ xác nhận
+            return v.order.state == OrderState.awaitingConfirmation &&
+                !isCancelled;
+          case 2: // Đang xử lý
+            return v.order.state == OrderState.open &&
+                !isCompleted &&
+                v.order.transport?.status != TransportStatus.returned &&
+                !isCancelled;
+          case 3: // Hoàn thành
+            return isCompleted && !isCancelled;
+          case 4: // Hoàn tiền
+            return (v.order.declineReason != null ||
+                    v.order.transport?.status == TransportStatus.returned) &&
+                !isCancelled;
+          case 5: // Đã hủy
+            return isCancelled;
+          default:
+            return false;
+        }
+      }).length;
+    }
+
+    final statuses = [
+      (
+        icon: Icons.pending_actions_outlined,
+        label: 'Chờ xác nhận',
+        tabIndex: 1,
+      ),
+      (
+        icon: Icons.local_shipping_outlined,
+        label: 'Đang xử lý',
+        tabIndex: 2,
+      ),
+      (
+        icon: Icons.check_circle_outline_rounded,
+        label: 'Hoàn thành',
+        tabIndex: 3,
+      ),
+      (
+        icon: Icons.assignment_return_outlined,
+        label: 'Hoàn tiền',
+        tabIndex: 4,
+      ),
+      (
+        icon: Icons.cancel_outlined,
+        label: 'Đã hủy',
+        tabIndex: 5,
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          for (final item in statuses)
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  final count = getCount(item.tabIndex);
+                  return GestureDetector(
+                    onTap: () =>
+                        context.push('/account/orders?tab=${item.tabIndex}'),
+                    behavior: HitTestBehavior.opaque,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? theme.colorScheme.primary.withAlpha(40)
+                                    : theme.colorScheme.primary.withAlpha(12),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Icon(
+                                item.icon,
+                                size: 22,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            if (count > 0)
+                              Positioned(
+                                top: -4,
+                                right: -6,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 1.5,
+                                  ),
+                                  constraints: const BoxConstraints(minWidth: 16),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.error,
+                                    borderRadius: BorderRadius.circular(9),
+                                    border: Border.all(
+                                      color: isDarkMode
+                                          ? AppColors.darkSurface
+                                          : Colors.white,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    count > 99 ? '99+' : '$count',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: theme.colorScheme.onError,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          item.label,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontFamily: 'Inter',
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   String? _balanceLine() {
     final wallet = ref.watch(sellerWalletProvider).value;
     if (wallet == null) return null;

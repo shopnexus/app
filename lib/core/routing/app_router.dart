@@ -236,7 +236,11 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: 'orders',
                 name: 'buyer_orders',
-                builder: (context, state) => const OrdersScreen(),
+                builder: (context, state) {
+                  final initialTabStr = state.uri.queryParameters['tab'];
+                  final initialTab = int.tryParse(initialTabStr ?? '') ?? 0;
+                  return OrdersScreen(initialTabIndex: initialTab);
+                },
               ),
               GoRoute(
                 path: 'order-detail/:id',

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
@@ -21,30 +22,59 @@ import 'package:shopnexus_flutter_app/features/account/presentation/widgets/rate
 /// bán) — còn câu hỏi thật là "cái gì đang chờ tôi", và nó vắt qua cả hai vai.
 /// Xem [WaitingSide].
 class OrdersList extends ConsumerStatefulWidget {
-  const OrdersList({super.key});
+  final int selectedTab;
+
+  const OrdersList({super.key, this.selectedTab = 0});
 
   @override
   ConsumerState<OrdersList> createState() => _OrdersListState();
 }
 
 class _OrdersListState extends ConsumerState<OrdersList> {
-  /// Bao nhiêu dòng "đã xong" đang hiện. Không gập nhóm này lại: một nút gập là
-  /// thêm một thứ phải học, còn cuộn thì miễn phí — nên chỉ cắt bớt phần đuôi.
-  int _finishedShown = _pageSize;
+  bool _matchesTab(OrderView view, int selectedTab) {
+    final isCancelled = view.order.state == OrderState.cancelled ||
+        view.order.cancelledAt != null;
 
-  static const _pageSize = 10;
+    final isDelivered =
+        view.order.transport?.status == TransportStatus.delivered;
+
+    final isCompleted = view.order.state == OrderState.completed ||
+        view.order.receivedAt != null ||
+        view.order.completedAt != null ||
+        isDelivered;
+
+    switch (selectedTab) {
+      case 1: // Chờ xác nhận
+        return view.order.state == OrderState.awaitingConfirmation &&
+            !isCancelled;
+      case 2: // Đang xử lý
+        return view.order.state == OrderState.open &&
+            !isCompleted &&
+            view.order.transport?.status != TransportStatus.returned &&
+            !isCancelled;
+      case 3: // Hoàn thành
+        return isCompleted && !isCancelled;
+      case 4: // Hoàn tiền
+        return (view.order.declineReason != null ||
+                view.order.transport?.status == TransportStatus.returned) &&
+            !isCancelled;
+      case 5: // Đã hủy
+        return isCancelled;
+      case 0: // Tất cả
+      default:
+        return true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final feed = ref.watch(ordersProvider);
     final unsettled = ref.watch(unsettledItemsProvider);
-    // Mọi câu "lượt của ai" so với id này, nên nó phải có trước khi chia nhóm.
     final me = ref.watch(profileProvider).value?.id;
 
     return RefreshIndicator(
       color: Theme.of(context).colorScheme.primary,
       onRefresh: () async {
-        setState(() => _finishedShown = _pageSize);
         ref.invalidate(ordersProvider);
         ref.invalidate(unsettledItemsProvider);
       },
@@ -53,8 +83,6 @@ class _OrdersListState extends ConsumerState<OrdersList> {
           error: error,
           onRetry: () => ref.invalidate(ordersProvider),
         ),
-        // `unsettled` không được chặn danh sách: nó là một endpoint khác, và một
-        // dòng chờ gom hỏng không đáng để giấu hết đơn hàng.
         AsyncValue(:final value?) => _body(
           value,
           unsettled.value ?? const [],
@@ -66,90 +94,39 @@ class _OrdersListState extends ConsumerState<OrdersList> {
   }
 
   Widget _body(OrdersFeed feed, List<OrderLineView> unsettled, String? me) {
-    final finished = feed.finished;
-    if (feed.orders.isEmpty && unsettled.isEmpty) return const _Empty();
+    final matchingOrders = feed.orders
+        .where((view) => _matchesTab(view, widget.selectedTab))
+        .toList();
 
-    // Ba nhóm theo lượt. Đơn chưa xong chia làm hai: cái có đồng hồ chỉ vào mình,
-    // và cái đang chờ bên kia / đơn vị vận chuyển.
-    final needsYou = <OrderView>[];
-    final waiting = <OrderView>[];
-    for (final view in feed.ongoing) {
-      (_needsMe(view, me) ? needsYou : waiting).add(view);
+    if (matchingOrders.isEmpty && (widget.selectedTab != 0 || unsettled.isEmpty)) {
+      return const _Empty();
     }
-    // Hạn gần nhất lên trước — đó là cả lý do nhóm này tồn tại.
-    needsYou.sort((a, b) => _deadlineOf(a).compareTo(_deadlineOf(b)));
 
-    final shown = finished.take(_finishedShown).toList();
-    // Một nút, một nghĩa: "cho tôi xem thêm đơn đã xong". Còn dòng đã nạp thì
-    // hiện thêm, hết rồi thì mới đi xin trang sau — người dùng không cần biết
-    // ranh giới đó ở đâu.
-    final hasMore = finished.length > shown.length || feed.hasMore;
-    // Câu về vận chuyển chỉ có nghĩa với người bán, và chỉ cần nói một lần: nó
-    // giải thích vì sao họ không tự sửa được vị trí kiện hàng.
-    final selling = feed.ongoing.any((view) => view.order.seller.id == me);
+    final selling = matchingOrders.any((view) => view.order.seller.id == me);
 
     return ListView(
       padding: const EdgeInsets.all(16),
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
-        if (unsettled.isNotEmpty) ...[
+        if (widget.selectedTab == 0 && unsettled.isNotEmpty) ...[
           _UnsettledBlock(lines: unsettled, me: me),
           const SizedBox(height: 20),
         ],
-        // Trên mọi nhóm, một lần: câu này nói vị trí kiện hàng do ai cập nhật, và nó
-        // đúng cho cả đơn đang chờ mình xác nhận lẫn đơn đã lên đường — mà hai thứ
-        // đó giờ ở hai nhóm khác nhau. Treo vào một nhóm là để nó biến mất đúng
-        // lúc kiện hàng bắt đầu đi.
         if (selling) const _CarrierNote(),
-        if (needsYou.isNotEmpty) ...[
-          WaitingGroupHeader(side: WaitingSide.you, count: needsYou.length),
-          for (final view in needsYou)
-            _OrderRow(view: view, me: me, isFinished: false),
+        for (final view in matchingOrders) ...[
+          _OrderRow(view: view, me: me, isFinished: view.isFinished),
           const SizedBox(height: 12),
         ],
-        if (waiting.isNotEmpty) ...[
-          WaitingGroupHeader(side: WaitingSide.other, count: waiting.length),
-          for (final view in waiting)
-            _OrderRow(view: view, me: me, isFinished: false),
-          const SizedBox(height: 12),
-        ],
-        if (finished.isNotEmpty) ...[
-          WaitingGroupHeader(side: WaitingSide.done, count: finished.length),
-          for (final view in shown)
-            _OrderRow(view: view, me: me, isFinished: true),
-          if (hasMore)
-            _LoadMoreButton(
-              isLoading: feed.isLoadingMore,
-              error: feed.loadMoreError,
-              onTap: () {
-                if (finished.length > _finishedShown) {
-                  setState(() => _finishedShown += _pageSize);
-                } else {
-                  ref.read(ordersProvider.notifier).loadMore();
-                }
-              },
-            ),
-        ],
+        if (widget.selectedTab == 0 && feed.hasMore)
+          _LoadMoreButton(
+            isLoading: feed.isLoadingMore,
+            error: feed.loadMoreError,
+            onTap: () => ref.read(ordersProvider.notifier).loadMore(),
+          ),
       ],
     );
   }
 
-  /// Có đồng hồ chỉ vào mình trên đơn này chưa.
-  ///
-  /// Hai trường hợp, và cả hai đều làm ai đó mất tiền nếu bỏ qua: người bán chưa
-  /// xác nhận (48 giờ, hết hạn thì lên bàn moderator), và người mua chưa xác nhận
-  /// đã nhận hàng trong khi kiện đã tới — `received_at` là điều kiện của câu truy
-  /// vấn payout, nên tới lúc họ chạm thì tiền người bán vẫn nằm trong escrow.
-  static bool _needsMe(OrderView view, String? me) {
-    if (view.order.seller.id == me && view.isAwaitingConfirmation) return true;
-    return view.order.buyer.id == me && view.canConfirmReceipt;
-  }
-
-  /// Hạn để sắp thứ tự. Không có hạn thì xuống cuối nhóm chứ không lên đầu.
-  static DateTime _deadlineOf(OrderView view) =>
-      view.order.confirmationDeadlineAt ??
-      view.order.payoutDeadlineAt ??
-      DateTime.now().add(const Duration(days: 3650));
 }
 
 /// Một đơn, một dòng: ảnh, tên, chuyện đang xảy ra, số tiền.

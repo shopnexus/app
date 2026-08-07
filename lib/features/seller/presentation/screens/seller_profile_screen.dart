@@ -536,12 +536,11 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-              ),
+          Container(
+            height: 120,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
             ),
           ),
           Padding(
