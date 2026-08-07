@@ -30,6 +30,7 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/prod
 import 'package:shopnexus_flutter_app/features/cart/presentation/screens/cart_screen.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/checkout_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_profile_screen.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_dashboard_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_suggestion_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_edit_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_products_screen.dart';
@@ -149,20 +150,13 @@ GoRouter appRouter(Ref ref) {
               return SellerProfileScreen(vendorId: id);
             },
           ),
-          // Không còn bảng số liệu ở đây: nó cần sáu request thành công mới vẽ
-          // nổi tám con số, và một biểu đồ doanh thu 90 ngày không phải câu hỏi
-          // của ai ở C2C — người bán ba món nhớ cả ba. `/seller` ở lại vì nó là
-          // tiền tố của ba route con, là tab 2 của thanh nav, và là một deep link
-          // đã phát ra ngoài; nó mở "Tin của tôi", thứ mà cái cửa cũ chỉ dẫn tới.
+          // Cửa duy nhất vào bảng số liệu: màn Tài khoản chỉ link tới
+          // `/seller/products`, `/seller/orders` và `/seller/earnings`, nên
+          // `/seller` mà redirect đi chỗ khác là dashboard không ai mở được.
           GoRoute(
             path: '/seller',
             name: 'seller',
-            // `uri.path`, không `matchedLocation`: trong redirect của một route
-            // *cha*, `matchedLocation` là path của chính route đó ('/seller') kể cả
-            // khi request là '/seller/earnings' — nên cái chặn viết bằng nó sẽ đẩy
-            // mọi route con về "Tin của tôi", và tab Số dư không mở được nữa.
-            redirect: (context, state) =>
-                state.uri.path == '/seller' ? '/seller/products' : null,
+            builder: (context, state) => const SellerDashboardScreen(),
             routes: [
               GoRoute(
                 path: 'new-listing',
