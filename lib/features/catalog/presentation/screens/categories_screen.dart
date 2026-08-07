@@ -94,7 +94,7 @@ class CategoriesScreen extends ConsumerWidget {
                       ref
                           .read(activeSearchFiltersProvider.notifier)
                           .setCategory(parent.id);
-                      context.push('/search');
+                      context.go('/search');
                     },
                   ),
                 );
@@ -152,7 +152,7 @@ class CategoriesScreen extends ConsumerWidget {
                           ref
                               .read(activeSearchFiltersProvider.notifier)
                               .setCategory(parent.id);
-                          context.push('/search');
+                          context.go('/search');
                         },
                       ),
                       const Divider(
@@ -189,7 +189,7 @@ class CategoriesScreen extends ConsumerWidget {
                                 ref
                                     .read(activeSearchFiltersProvider.notifier)
                                     .setCategory(child.id);
-                                context.push('/search');
+                                context.go('/search');
                               },
                             ),
                           ],

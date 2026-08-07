@@ -134,7 +134,13 @@ extension ConversationView on Conversation {
 
   String? get participantAvatar => counterparty.avatar?.url;
 
-  String? get lastMessageText => lastMessage?.body;
+  String? get lastMessageText {
+    final msg = lastMessage;
+    if (msg == null) return null;
+    if (msg.body.isNotEmpty) return msg.body;
+    if (msg.attachments.isNotEmpty) return '[Hình ảnh]';
+    return null;
+  }
 
   DateTime get lastMessageTime => lastMessageAt;
 

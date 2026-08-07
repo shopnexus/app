@@ -14,6 +14,7 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/sear
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/following_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/linked_accounts_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/notification_preferences_screen.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/screens/notifications_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/payment_history_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/profile_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/orders_screen.dart';
@@ -269,6 +270,11 @@ GoRouter appRouter(Ref ref) {
                 path: 'payments',
                 name: 'payment_history',
                 builder: (context, state) => const PaymentHistoryScreen(),
+              ),
+              GoRoute(
+                path: 'notifications',
+                name: 'notifications',
+                builder: (context, state) => const NotificationsScreen(),
               ),
               GoRoute(
                 path: 'notification-settings',

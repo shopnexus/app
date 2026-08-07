@@ -153,7 +153,7 @@ class MainLayout extends ConsumerWidget {
                       currentIndex: currentIndex,
                       icon: Icons.chat_bubble_outline_rounded,
                       activeIcon: Icons.chat_bubble_rounded,
-                      label: 'Hộp thư',
+                      label: 'Tin nhắn',
                       badgeCount: unread,
                     ),
                     _buildTabItem(

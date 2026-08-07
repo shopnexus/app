@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/core/realtime/realtime_client.dart';
@@ -421,16 +422,23 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
     }
   }
 
-  Future<bool> sendTextMessage(String content) async {
-    final body = content.trim();
-    if (body.isEmpty) return false;
+  Future<bool> sendTextMessage(String content) => sendMessage(text: content);
+
+  Future<bool> sendMessage({
+    String? text,
+    List<XFile>? files,
+  }) async {
+    final body = text?.trim() ?? '';
+    final hasFiles = files != null && files.isNotEmpty;
+    if (body.isEmpty && !hasFiles) return false;
+
     final current = state.value;
     final conversation = current?.conversation;
     if (current == null || conversation == null) return false;
 
     final pending = ChatMessage.pending(
       conversationId: conversationId,
-      body: body,
+      body: body.isNotEmpty ? body : (hasFiles ? '[Hình ảnh]' : ''),
     );
     state = AsyncValue.data(
       current.copyWith(
@@ -441,9 +449,30 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
     );
 
     try {
-      final sent = await ref
-          .read(chatRepositoryProvider)
-          .send(conversationId: conversationId, body: body);
+      final repository = ref.read(chatRepositoryProvider);
+      List<String>? attachmentIds;
+
+      if (hasFiles) {
+        attachmentIds = [];
+        for (final file in files) {
+          final bytes = await file.readAsBytes();
+          final filename = file.name.isNotEmpty ? file.name : 'image.jpg';
+          final mime = _guessMimeType(filename, file.mimeType);
+
+          final resourceId = await repository.uploadAttachment(
+            bytes: bytes,
+            filename: filename,
+            mime: mime,
+          );
+          attachmentIds.add(resourceId);
+        }
+      }
+
+      final sent = await repository.send(
+        conversationId: conversationId,
+        body: body.isEmpty ? null : body,
+        attachments: attachmentIds,
+      );
       _replacePending(pending.id, ChatMessage.inThread(sent, conversation));
       ref
           .read(chatListProvider.notifier)
@@ -458,6 +487,19 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
       _dropPending(pending.id, ErrorHandler.getErrorMessage(e));
       return false;
     }
+  }
+
+  String _guessMimeType(String filename, String? declaredMime) {
+    if (declaredMime != null &&
+        declaredMime.isNotEmpty &&
+        declaredMime.contains('/')) {
+      return declaredMime;
+    }
+    final lower = filename.toLowerCase();
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    if (lower.endsWith('.gif')) return 'image/gif';
+    return 'image/jpeg';
   }
 
   void _replacePending(String pendingId, ChatMessage sent) {

@@ -30,13 +30,57 @@ extension on wire.Notification {
 /// nhắn" sẽ là chữ "Tin nhắn" thứ hai, cách chữ thứ nhất một lần chạm và có
 /// nghĩa khác: một cái là cuộc trò chuyện, một cái là thông báo *về* cuộc trò
 /// chuyện. Một danh sách không lọc không mất dòng nào.
-class NotificationsTab extends ConsumerStatefulWidget {
-  /// Một thông báo hạng `chat` không có id nào để mở thì việc đúng là chuyển
-  /// sang tab Tin nhắn, chứ không phải `push('/chat')` — đẩy như thế xếp thêm
-  /// một Hộp thư nữa lên trên chính Hộp thư đang mở.
-  final VoidCallback onOpenMessages;
+/// Màn hình thông báo độc lập.
+class NotificationsScreen extends ConsumerWidget {
+  const NotificationsScreen({super.key});
 
-  const NotificationsTab({super.key, required this.onOpenMessages});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final tabKey = GlobalKey<NotificationsTabState>();
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
+        title: Text(
+          'Thông báo',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Manrope',
+            fontSize: 20,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => tabKey.currentState?.markAllAsRead(),
+            child: Text(
+              'Đọc tất cả',
+              style: TextStyle(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Inter',
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: NotificationsTab(
+        key: tabKey,
+        onOpenMessages: () => context.go('/chat'),
+      ),
+    );
+  }
+}
+
+/// Dòng thời gian thông báo hoạt động.
+class NotificationsTab extends ConsumerStatefulWidget {
+  final VoidCallback? onOpenMessages;
+
+  const NotificationsTab({super.key, this.onOpenMessages});
 
   @override
   ConsumerState<NotificationsTab> createState() => NotificationsTabState();
@@ -77,7 +121,11 @@ class NotificationsTabState extends ConsumerState<NotificationsTab> {
     } else if (ticketId != null && ticketId.isNotEmpty) {
       context.push('/account/help-center/$ticketId');
     } else if (item.category == NotificationCategory.chat) {
-      widget.onOpenMessages();
+      if (widget.onOpenMessages != null) {
+        widget.onOpenMessages!();
+      } else {
+        context.go('/chat');
+      }
     } else if (item.category == NotificationCategory.order) {
       context.push('/account/orders');
     }
@@ -96,7 +144,9 @@ class NotificationsTabState extends ConsumerState<NotificationsTab> {
       },
       child: feedAsync.when(
         data: (feed) {
-          final items = feed.items;
+          final items = feed.items
+              .where((item) => item.category != NotificationCategory.chat)
+              .toList();
           if (items.isEmpty) return const _EmptyNotifications();
 
           return ListView.builder(

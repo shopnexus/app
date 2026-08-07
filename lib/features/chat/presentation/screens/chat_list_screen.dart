@@ -5,8 +5,35 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_item_widget.dart';
 
-/// Danh sách cuộc trò chuyện, không có `Scaffold` và không có `AppBar`: nó là
-/// một tab của Hộp thư (`InboxScreen`), nơi tiêu đề và thanh chuyển tab đã có.
+/// Màn hình danh sách cuộc trò chuyện.
+class ChatListScreen extends ConsumerWidget {
+  const ChatListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
+        title: Text(
+          'Tin nhắn',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Manrope',
+            fontSize: 20,
+          ),
+        ),
+      ),
+      body: const MessagesTab(),
+    );
+  }
+}
+
+/// Danh sách cuộc trò chuyện và thanh tìm kiếm.
 class MessagesTab extends ConsumerWidget {
   const MessagesTab({super.key});
 

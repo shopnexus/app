@@ -5,6 +5,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
@@ -64,6 +65,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         (activeFilters.keyword != null &&
             activeFilters.keyword!.trim().isNotEmpty);
 
+    final unreadNotifs =
+        ref.watch(unreadNotificationsCountProvider).value ?? 0;
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
@@ -71,6 +75,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           onRefresh: () async {
             ref.invalidate(categoriesProvider);
             ref.invalidate(catalogProductsProvider(activeFilters));
+            ref.invalidate(unreadNotificationsCountProvider);
           },
           color: theme.colorScheme.primary,
           child: NotificationListener<ScrollNotification>(
@@ -86,7 +91,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
             child: CustomScrollView(
               controller: _scrollController,
               slivers: [
-                // 1. Mobile Header (Menu, Title, Cart) theo Stitch
+                // 1. Mobile Header (Menu, Title, Cart & Notification Bell)
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -119,15 +124,57 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                               onPressed: () => context.push('/cart'),
                             ),
                             const SizedBox(width: 4.0),
-                            IconButton(
-                              icon: Icon(
-                                Icons.notifications_none_rounded,
-                                color: theme.colorScheme.onSurface,
-                                size: 24,
-                              ),
-                              // Thông báo giờ là một tab của Hộp thư.
-                              onPressed: () =>
-                                  context.push('/chat?tab=notifications'),
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.notifications_none_rounded,
+                                    color: theme.colorScheme.onSurface,
+                                    size: 24,
+                                  ),
+                                  onPressed: () =>
+                                      context.push('/account/notifications'),
+                                ),
+                                if (unreadNotifs > 0)
+                                  Positioned(
+                                    top: 4,
+                                    right: 4,
+                                    child: IgnorePointer(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 1,
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 16,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: theme.colorScheme.error,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                            color: theme.colorScheme.surface,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          unreadNotifs > 99
+                                              ? '99+'
+                                              : '$unreadNotifs',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            height: 1.2,
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.onError,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ],
                         ),
@@ -135,8 +182,6 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                     ),
                   ),
                 ),
-
-                // 2. Search and Filter Bar
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -147,7 +192,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => context.push('/search'),
+                            onTap: () => context.go('/search'),
                             child: Container(
                               height: 48.0,
                               padding: const EdgeInsets.symmetric(

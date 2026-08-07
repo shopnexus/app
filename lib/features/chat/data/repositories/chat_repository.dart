@@ -5,6 +5,7 @@ import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/chat_unread_count.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/conversation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/mark_conversation_read_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/message.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
@@ -12,6 +13,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/send_message_request.d
 import 'package:shopnexus_flutter_app/api/generated/model/start_conversation_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_message_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_offer_request.dart';
+import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
 
 part 'chat_repository.g.dart';
 
@@ -106,6 +108,28 @@ class ChatRepository {
     final message = response.data?.data;
     if (message == null) throw StateError('empty message response');
     return message;
+  }
+
+  /// Reserve a slot, PUT the bytes to the signed URL, confirm the upload.
+  Future<String> uploadAttachment({
+    required List<int> bytes,
+    required String filename,
+    required String mime,
+  }) async {
+    final slotResponse = await _api.conversationsUploadsPost(
+      createUploadRequest: CreateUploadRequest(
+        filename: filename,
+        mime: mime,
+        size: bytes.length,
+      ),
+    );
+    final slot = slotResponse.data?.data;
+    if (slot == null) throw StateError('empty upload slot response');
+
+    await putToSlot(slot, bytes);
+
+    await _api.conversationsUploadsIdConfirmationPost(id: slot.resourceId);
+    return slot.resourceId;
   }
 
   /// Omitting `before` marks the whole thread read. The answer is the updated

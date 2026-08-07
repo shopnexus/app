@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
@@ -65,11 +68,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     );
   }
 
-  Future<void> _send() async {
-    final text = _textController.text;
-    if (text.trim().isEmpty) return;
-    _textController.clear();
-    if (await _notifier.sendTextMessage(text)) {
+  Future<void> _send(String text, List<XFile> images) async {
+    if (text.trim().isEmpty && images.isEmpty) return;
+    if (await _notifier.sendMessage(text: text, files: images)) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     }
   }
@@ -287,7 +288,7 @@ class _Thread extends StatelessWidget {
   }
 }
 
-class _Composer extends StatelessWidget {
+class _Composer extends StatefulWidget {
   const _Composer({
     required this.controller,
     required this.isSending,
@@ -296,7 +297,64 @@ class _Composer extends StatelessWidget {
 
   final TextEditingController controller;
   final bool isSending;
-  final VoidCallback onSend;
+  final Future<void> Function(String text, List<XFile> images) onSend;
+
+  @override
+  State<_Composer> createState() => _ComposerState();
+}
+
+class _ComposerState extends State<_Composer> {
+  final List<XFile> _selectedImages = [];
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImages() async {
+    final picked = await showModalBottomSheet<List<XFile>>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Chọn từ thư viện'),
+              onTap: () async {
+                final images = await _picker.pickMultiImage();
+                if (ctx.mounted) Navigator.pop(ctx, images);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Chụp ảnh mới'),
+              onTap: () async {
+                final image = await _picker.pickImage(source: ImageSource.camera);
+                if (ctx.mounted) Navigator.pop(ctx, image != null ? [image] : <XFile>[]);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (picked != null && picked.isNotEmpty) {
+      setState(() {
+        _selectedImages.addAll(picked);
+      });
+    }
+  }
+
+  Future<void> _handleSend() async {
+    final text = widget.controller.text;
+    final images = List<XFile>.from(_selectedImages);
+    if (text.trim().isEmpty && images.isEmpty) return;
+
+    widget.controller.clear();
+    setState(() {
+      _selectedImages.clear();
+    });
+    await widget.onSend(text, images);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -313,31 +371,105 @@ class _Composer extends StatelessWidget {
             ),
           ),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                minLines: 1,
-                maxLines: 4,
-                textInputAction: TextInputAction.newline,
-                decoration: const InputDecoration(
-                  hintText: 'Nhập tin nhắn…',
-                  border: InputBorder.none,
+            if (_selectedImages.isNotEmpty)
+              Container(
+                height: 72,
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _selectedImages.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final file = _selectedImages[index];
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.file(
+                            File(file.path),
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          top: -6,
+                          right: -6,
+                          child: InkWell(
+                            onTap: () => setState(
+                              () => _selectedImages.removeAt(index),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.error,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            IconButton.filled(
-              onPressed: isSending ? null : onSend,
-              icon: isSending
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.send_rounded, size: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: widget.isSending ? null : _pickImages,
+                  icon: Icon(
+                    Icons.photo_library_outlined,
+                    color: _selectedImages.isNotEmpty
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
+                  tooltip: 'Gửi hình ảnh',
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest
+                          .withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: TextField(
+                      controller: widget.controller,
+                      minLines: 1,
+                      maxLines: 4,
+                      textInputAction: TextInputAction.newline,
+                      decoration: const InputDecoration(
+                        hintText: 'Nhập tin nhắn…',
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 10),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton.filled(
+                  onPressed: widget.isSending ? null : _handleSend,
+                  icon: widget.isSending
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.send_rounded, size: 20),
+                ),
+              ],
             ),
           ],
         ),
