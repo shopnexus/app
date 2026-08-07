@@ -142,18 +142,52 @@ abstract class _$CatalogProducts extends $AsyncNotifier<CatalogProductsState> {
   }
 }
 
+/// `keepAlive` vì cùng lý do với `checkoutProvider`: bộ lọc được **đặt ở một màn
+/// và đọc ở màn khác**.
+///
+/// Trang Danh mục gọi `setCategory(id)` rồi `context.push('/search')`. Ở chế độ
+/// autoDispose, không widget nào watch provider trong khoảng giữa hai câu đó, nên
+/// nó bị bỏ đi và màn tìm kiếm mở ra với `categoryId` null — chạm vào một danh mục
+/// cho ra *toàn bộ* sàn.
+///
+/// Bộ lọc còn lại giữa hai lần vào là chấp nhận được: trang Danh mục luôn gọi
+/// `reset()` ngay trước khi đặt, nên đường vào đó luôn sạch, còn người vào thẳng
+/// `/search` thường muốn thấy lại lần tìm trước.
+
 @ProviderFor(ActiveSearchFilters)
 final activeSearchFiltersProvider = ActiveSearchFiltersProvider._();
 
+/// `keepAlive` vì cùng lý do với `checkoutProvider`: bộ lọc được **đặt ở một màn
+/// và đọc ở màn khác**.
+///
+/// Trang Danh mục gọi `setCategory(id)` rồi `context.push('/search')`. Ở chế độ
+/// autoDispose, không widget nào watch provider trong khoảng giữa hai câu đó, nên
+/// nó bị bỏ đi và màn tìm kiếm mở ra với `categoryId` null — chạm vào một danh mục
+/// cho ra *toàn bộ* sàn.
+///
+/// Bộ lọc còn lại giữa hai lần vào là chấp nhận được: trang Danh mục luôn gọi
+/// `reset()` ngay trước khi đặt, nên đường vào đó luôn sạch, còn người vào thẳng
+/// `/search` thường muốn thấy lại lần tìm trước.
 final class ActiveSearchFiltersProvider
     extends $NotifierProvider<ActiveSearchFilters, CatalogSearchFilters> {
+  /// `keepAlive` vì cùng lý do với `checkoutProvider`: bộ lọc được **đặt ở một màn
+  /// và đọc ở màn khác**.
+  ///
+  /// Trang Danh mục gọi `setCategory(id)` rồi `context.push('/search')`. Ở chế độ
+  /// autoDispose, không widget nào watch provider trong khoảng giữa hai câu đó, nên
+  /// nó bị bỏ đi và màn tìm kiếm mở ra với `categoryId` null — chạm vào một danh mục
+  /// cho ra *toàn bộ* sàn.
+  ///
+  /// Bộ lọc còn lại giữa hai lần vào là chấp nhận được: trang Danh mục luôn gọi
+  /// `reset()` ngay trước khi đặt, nên đường vào đó luôn sạch, còn người vào thẳng
+  /// `/search` thường muốn thấy lại lần tìm trước.
   ActiveSearchFiltersProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'activeSearchFiltersProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -175,7 +209,19 @@ final class ActiveSearchFiltersProvider
 }
 
 String _$activeSearchFiltersHash() =>
-    r'a2dbc8ef98e2adba6181174b92a30ef61a4823a9';
+    r'49257a5961327724624594befb6d64027e5f6edb';
+
+/// `keepAlive` vì cùng lý do với `checkoutProvider`: bộ lọc được **đặt ở một màn
+/// và đọc ở màn khác**.
+///
+/// Trang Danh mục gọi `setCategory(id)` rồi `context.push('/search')`. Ở chế độ
+/// autoDispose, không widget nào watch provider trong khoảng giữa hai câu đó, nên
+/// nó bị bỏ đi và màn tìm kiếm mở ra với `categoryId` null — chạm vào một danh mục
+/// cho ra *toàn bộ* sàn.
+///
+/// Bộ lọc còn lại giữa hai lần vào là chấp nhận được: trang Danh mục luôn gọi
+/// `reset()` ngay trước khi đặt, nên đường vào đó luôn sạch, còn người vào thẳng
+/// `/search` thường muốn thấy lại lần tìm trước.
 
 abstract class _$ActiveSearchFilters extends $Notifier<CatalogSearchFilters> {
   CatalogSearchFilters build();

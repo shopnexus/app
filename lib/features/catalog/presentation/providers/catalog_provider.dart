@@ -153,7 +153,18 @@ class CatalogProducts extends _$CatalogProducts {
   }
 }
 
-@riverpod
+/// `keepAlive` vì cùng lý do với `checkoutProvider`: bộ lọc được **đặt ở một màn
+/// và đọc ở màn khác**.
+///
+/// Trang Danh mục gọi `setCategory(id)` rồi `context.push('/search')`. Ở chế độ
+/// autoDispose, không widget nào watch provider trong khoảng giữa hai câu đó, nên
+/// nó bị bỏ đi và màn tìm kiếm mở ra với `categoryId` null — chạm vào một danh mục
+/// cho ra *toàn bộ* sàn.
+///
+/// Bộ lọc còn lại giữa hai lần vào là chấp nhận được: trang Danh mục luôn gọi
+/// `reset()` ngay trước khi đặt, nên đường vào đó luôn sạch, còn người vào thẳng
+/// `/search` thường muốn thấy lại lần tìm trước.
+@Riverpod(keepAlive: true)
 class ActiveSearchFilters extends _$ActiveSearchFilters {
   @override
   CatalogSearchFilters build() {

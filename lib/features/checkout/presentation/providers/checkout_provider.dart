@@ -120,9 +120,27 @@ abstract class CheckoutState with _$CheckoutState {
   }
 }
 
-@riverpod
+/// `keepAlive` là bắt buộc, không phải tối ưu.
+///
+/// `initialize()` được gọi bằng `ref.read(checkoutProvider.notifier)` từ **trang
+/// khác** (giỏ hàng, trang tin đăng) ngay trước khi điều hướng, nên có một khoảng
+/// không widget nào watch provider này. Ở chế độ autoDispose, khoảng đó đủ để nó
+/// bị bỏ đi giữa chừng: state quay về `const CheckoutState()` và `ref.mounted`
+/// thành false, nên ba bước còn lại của `initialize` lặng lẽ return. Màn thanh
+/// toán mở ra với danh sách sản phẩm rỗng, không phương thức thanh toán, và câu
+/// "chưa có báo giá vận chuyển cho địa chỉ này" — cả ba từ một nguyên nhân.
+///
+/// `initialize()` đặt lại toàn bộ state, nên lần thanh toán sau không thừa hưởng
+/// gì của lần trước.
+@Riverpod(keepAlive: true)
 class CheckoutNotifier extends _$CheckoutNotifier {
   Timer? _pollingTimer;
+
+  /// Poll tối đa bằng đời của một payment session. Nó tồn tại vì `keepAlive`:
+  /// người dùng rời màn giữa lúc chờ trả tiền thì không còn ai dispose provider,
+  /// và một `Timer.periodic` 2 giây sẽ chạy tới hết đời tiến trình. Quá hạn này
+  /// thì phiên đã bị job dọn, nên hỏi thêm cũng không có câu trả lời mới.
+  static const _pollBudget = Duration(minutes: 15);
 
   @override
   CheckoutState build() {
@@ -134,6 +152,10 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
   /// Khởi tạo luồng thanh toán với các dòng sản phẩm được chọn
   Future<void> initialize({required List<PurchaseLine> lines}) async {
+    // Provider sống xuyên suốt, nên một lần thanh toán mới phải tự dọn cái đồng
+    // hồ của lần trước.
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
     state = CheckoutState(lines: lines, isLoading: true);
 
     await _resolveListings();
@@ -410,7 +432,12 @@ class CheckoutNotifier extends _$CheckoutNotifier {
   /// decline, which is the order screen's business, not the checkout's.
   void _startPolling(String paymentSessionId) {
     _pollingTimer?.cancel();
+    final until = DateTime.now().add(_pollBudget);
     _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      if (DateTime.now().isAfter(until)) {
+        timer.cancel();
+        return;
+      }
       try {
         final session = await ref
             .read(checkoutRepositoryProvider)

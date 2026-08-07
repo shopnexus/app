@@ -5,11 +5,13 @@ import 'package:dio/dio.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/api/common_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
 import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/features/checkout/data/repositories/checkout_repository.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 import 'package:shopnexus_flutter_app/features/ticket/data/repositories/ticket_repository.dart';
 
@@ -40,6 +42,13 @@ class RecordingBackend {
     OrderApi(dio),
     CatalogApi(dio),
     FinanceApi(dio),
+  );
+
+  late final CheckoutRepository checkout = CheckoutRepository(
+    OrderApi(dio),
+    FinanceApi(dio),
+    CatalogApi(dio),
+    CommonApi(dio),
   );
 
   /// Where a party's complaint goes now that neither of them writes a shipment's

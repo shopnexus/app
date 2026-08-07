@@ -8,19 +8,55 @@ part of 'checkout_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// `keepAlive` là bắt buộc, không phải tối ưu.
+///
+/// `initialize()` được gọi bằng `ref.read(checkoutProvider.notifier)` từ **trang
+/// khác** (giỏ hàng, trang tin đăng) ngay trước khi điều hướng, nên có một khoảng
+/// không widget nào watch provider này. Ở chế độ autoDispose, khoảng đó đủ để nó
+/// bị bỏ đi giữa chừng: state quay về `const CheckoutState()` và `ref.mounted`
+/// thành false, nên ba bước còn lại của `initialize` lặng lẽ return. Màn thanh
+/// toán mở ra với danh sách sản phẩm rỗng, không phương thức thanh toán, và câu
+/// "chưa có báo giá vận chuyển cho địa chỉ này" — cả ba từ một nguyên nhân.
+///
+/// `initialize()` đặt lại toàn bộ state, nên lần thanh toán sau không thừa hưởng
+/// gì của lần trước.
 
 @ProviderFor(CheckoutNotifier)
 final checkoutProvider = CheckoutNotifierProvider._();
 
+/// `keepAlive` là bắt buộc, không phải tối ưu.
+///
+/// `initialize()` được gọi bằng `ref.read(checkoutProvider.notifier)` từ **trang
+/// khác** (giỏ hàng, trang tin đăng) ngay trước khi điều hướng, nên có một khoảng
+/// không widget nào watch provider này. Ở chế độ autoDispose, khoảng đó đủ để nó
+/// bị bỏ đi giữa chừng: state quay về `const CheckoutState()` và `ref.mounted`
+/// thành false, nên ba bước còn lại của `initialize` lặng lẽ return. Màn thanh
+/// toán mở ra với danh sách sản phẩm rỗng, không phương thức thanh toán, và câu
+/// "chưa có báo giá vận chuyển cho địa chỉ này" — cả ba từ một nguyên nhân.
+///
+/// `initialize()` đặt lại toàn bộ state, nên lần thanh toán sau không thừa hưởng
+/// gì của lần trước.
 final class CheckoutNotifierProvider
     extends $NotifierProvider<CheckoutNotifier, CheckoutState> {
+  /// `keepAlive` là bắt buộc, không phải tối ưu.
+  ///
+  /// `initialize()` được gọi bằng `ref.read(checkoutProvider.notifier)` từ **trang
+  /// khác** (giỏ hàng, trang tin đăng) ngay trước khi điều hướng, nên có một khoảng
+  /// không widget nào watch provider này. Ở chế độ autoDispose, khoảng đó đủ để nó
+  /// bị bỏ đi giữa chừng: state quay về `const CheckoutState()` và `ref.mounted`
+  /// thành false, nên ba bước còn lại của `initialize` lặng lẽ return. Màn thanh
+  /// toán mở ra với danh sách sản phẩm rỗng, không phương thức thanh toán, và câu
+  /// "chưa có báo giá vận chuyển cho địa chỉ này" — cả ba từ một nguyên nhân.
+  ///
+  /// `initialize()` đặt lại toàn bộ state, nên lần thanh toán sau không thừa hưởng
+  /// gì của lần trước.
   CheckoutNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'checkoutProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -41,7 +77,20 @@ final class CheckoutNotifierProvider
   }
 }
 
-String _$checkoutNotifierHash() => r'1c835653782c4ba73f3054af27f77e31d1070be7';
+String _$checkoutNotifierHash() => r'8ea8c0a8099022ffc2376dc04a63102abde17dcf';
+
+/// `keepAlive` là bắt buộc, không phải tối ưu.
+///
+/// `initialize()` được gọi bằng `ref.read(checkoutProvider.notifier)` từ **trang
+/// khác** (giỏ hàng, trang tin đăng) ngay trước khi điều hướng, nên có một khoảng
+/// không widget nào watch provider này. Ở chế độ autoDispose, khoảng đó đủ để nó
+/// bị bỏ đi giữa chừng: state quay về `const CheckoutState()` và `ref.mounted`
+/// thành false, nên ba bước còn lại của `initialize` lặng lẽ return. Màn thanh
+/// toán mở ra với danh sách sản phẩm rỗng, không phương thức thanh toán, và câu
+/// "chưa có báo giá vận chuyển cho địa chỉ này" — cả ba từ một nguyên nhân.
+///
+/// `initialize()` đặt lại toàn bộ state, nên lần thanh toán sau không thừa hưởng
+/// gì của lần trước.
 
 abstract class _$CheckoutNotifier extends $Notifier<CheckoutState> {
   CheckoutState build();
