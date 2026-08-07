@@ -44,6 +44,13 @@ Future<Ticket> ticketDetail(Ref ref, String id) =>
 
 /// Raising a ticket, from anywhere: the help centre's form, a listing's report
 /// action, a refund the buyer or seller wants staff to decide.
+///
+/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua cái
+/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+/// been disposed" trong khi ticket *đã* được tạo trên server.
+/// Không đổi sang `keepAlive`: annotation đó chỉ có hiệu lực sau khi chạy lại
+/// codegen. Chặn bằng `ref.mounted` là thay đổi thuần source, và đủ — sheet đã
+/// nhận ticket qua giá trị trả về, nên state chỉ còn là thứ để hiển thị.
 @riverpod
 class RaiseTicket extends _$RaiseTicket {
   @override
@@ -69,10 +76,12 @@ class RaiseTicket extends _$RaiseTicket {
             refId: refId,
             reason: reason,
           );
+      if (!ref.mounted) return ticket;
       state = AsyncValue.data(ticket);
       ref.invalidate(ticketListProvider);
       return ticket;
     } catch (e, stack) {
+      if (!ref.mounted) return null;
       state = AsyncValue.error(ErrorHandler.getErrorMessage(e), stack);
       return null;
     }

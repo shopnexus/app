@@ -23,19 +23,27 @@ class WishlistController extends _$WishlistController {
 
   Future<void> removeFavorite(String spuId) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
+    final result = await AsyncValue.guard(() async {
       final accountRepo = ref.read(accountRepositoryProvider);
       await accountRepo.removeFavorite(spuId);
       ref.invalidate(wishlistProductsProvider);
     });
+    // Màn hình có thể đã bị pop giữa lúc request đang bay; ghi state khi đó
+    // ném "Ref ... after it has been disposed" cho một thao tác *đã* thành công.
+    if (!ref.mounted) return;
+    state = result;
   }
 
   Future<void> addFavorite(String spuId) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
+    final result = await AsyncValue.guard(() async {
       final accountRepo = ref.read(accountRepositoryProvider);
       await accountRepo.addFavorite(spuId);
       ref.invalidate(wishlistProductsProvider);
     });
+    // Màn hình có thể đã bị pop giữa lúc request đang bay; ghi state khi đó
+    // ném "Ref ... after it has been disposed" cho một thao tác *đã* thành công.
+    if (!ref.mounted) return;
+    state = result;
   }
 }

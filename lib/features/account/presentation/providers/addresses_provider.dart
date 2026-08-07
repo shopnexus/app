@@ -19,11 +19,15 @@ class AddressesController extends _$AddressesController {
 
   Future<void> createContact(CreateContactRequest request) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
+    final result = await AsyncValue.guard(() async {
       final repository = ref.read(accountRepositoryProvider);
       await repository.createContact(request);
       ref.invalidate(buyerContactsProvider);
     });
+    // Màn hình có thể đã bị pop giữa lúc request đang bay; ghi state khi đó
+    // ném "Ref ... after it has been disposed" cho một thao tác *đã* thành công.
+    if (!ref.mounted) return;
+    state = result;
   }
 
   Future<void> updateContact(
@@ -31,19 +35,27 @@ class AddressesController extends _$AddressesController {
     UpdateContactRequest request,
   ) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
+    final result = await AsyncValue.guard(() async {
       final repository = ref.read(accountRepositoryProvider);
       await repository.updateContact(contactId, request);
       ref.invalidate(buyerContactsProvider);
     });
+    // Màn hình có thể đã bị pop giữa lúc request đang bay; ghi state khi đó
+    // ném "Ref ... after it has been disposed" cho một thao tác *đã* thành công.
+    if (!ref.mounted) return;
+    state = result;
   }
 
   Future<void> deleteContact(String contactId) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
+    final result = await AsyncValue.guard(() async {
       final repository = ref.read(accountRepositoryProvider);
       await repository.deleteContact(contactId);
       ref.invalidate(buyerContactsProvider);
     });
+    // Màn hình có thể đã bị pop giữa lúc request đang bay; ghi state khi đó
+    // ném "Ref ... after it has been disposed" cho một thao tác *đã* thành công.
+    if (!ref.mounted) return;
+    state = result;
   }
 }

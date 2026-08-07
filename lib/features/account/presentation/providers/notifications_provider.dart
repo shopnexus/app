@@ -44,6 +44,9 @@ class NotificationsController extends _$NotificationsController {
       final page = await ref
           .read(accountRepositoryProvider)
           .notifications(cursor: cursor);
+      // Cuộn tới cuối rồi thoát màn ngay là đủ để notifier bị vứt trước khi
+      // trang sau về.
+      if (!ref.mounted) return;
       state = AsyncValue.data(
         NotificationFeed(
           items: [...feed.items, ...page.data],
@@ -52,7 +55,7 @@ class NotificationsController extends _$NotificationsController {
       );
     } catch (_) {
       // The pages already read stay on screen; the caller reports the attempt.
-      state = AsyncValue.data(feed);
+      if (ref.mounted) state = AsyncValue.data(feed);
       rethrow;
     }
   }
@@ -63,6 +66,10 @@ class NotificationsController extends _$NotificationsController {
     await ref
         .read(accountRepositoryProvider)
         .markNotificationsRead(before: upTo);
+    // `ref` sau một `await` cũng là dùng Ref: nếu màn đã đóng, invalidate ở đây
+    // ném đúng lỗi "Ref ... after it has been disposed" — và cái đã đọc thì vẫn
+    // đã đọc trên server, nên không mất gì khi bỏ qua.
+    if (!ref.mounted) return;
     ref.invalidateSelf();
     ref.invalidate(unreadNotificationsCountProvider);
   }

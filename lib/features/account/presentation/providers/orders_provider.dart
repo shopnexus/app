@@ -83,6 +83,9 @@ class Orders extends _$Orders {
       final page = await ref
           .read(accountRepositoryProvider)
           .orders(cursor: feed.nextCursor);
+      // Cuộn tới cuối rồi thoát màn ngay là đủ để notifier bị vứt trước khi
+      // trang sau về.
+      if (!ref.mounted) return;
       state = AsyncData(
         OrdersFeed(
           orders: [...feed.orders, ...page.orders],
@@ -90,6 +93,7 @@ class Orders extends _$Orders {
         ),
       );
     } catch (error) {
+      if (!ref.mounted) return;
       // Không đẩy state sang error: những đơn đã nạp vẫn đúng, và mất cả danh
       // sách vì trang thứ hai hỏng là mất nhiều hơn cái vừa xin.
       state = AsyncData(

@@ -18,12 +18,16 @@ Future<PublicAccount> publicProfile(Ref ref, String accountId) async {
   return repository.getAccountById(accountId);
 }
 
+/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
+/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+/// been disposed" trong khi thay đổi *đã* được lưu trên server.
 @riverpod
 class AccountController extends _$AccountController {
   @override
   FutureOr<void> build() {}
 
   Future<void> updateProfile(UpdateProfileRequest request) async {
+    if (!ref.mounted) return;
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final repository = ref.read(accountRepositoryProvider);
@@ -35,6 +39,7 @@ class AccountController extends _$AccountController {
   /// The identifiers are a second route, so a form that edits both saves twice —
   /// and the profile half must not be lost to a rejected email.
   Future<void> updateAccount(UpdateAccountRequest request) async {
+    if (!ref.mounted) return;
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final repository = ref.read(accountRepositoryProvider);
