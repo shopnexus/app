@@ -14,6 +14,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/start_payment_request.
 import 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/draft_order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact_address_type.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
@@ -36,6 +37,14 @@ abstract class CheckoutState with _$CheckoutState {
     @Default([]) List<Contact> contacts,
     Contact? selectedContact,
     @Default([]) List<PurchaseLine> lines,
+
+    /// Phiên mua đã mở cho tin đăng này. Nó phải tồn tại **trước** khi hỏi phí vận
+    /// chuyển: `POST /shipping-quotes` bắt phải nêu đúng một nguồn — một variant,
+    /// một draft, hay một offer — và trang thanh toán có nhiều dòng nên nguồn của
+    /// nó là draft. Thiếu nó thì route trả 400 `quote_source_invalid`, và màn hình
+    /// chỉ thấy một danh sách rỗng nên nói nhầm thành "chưa có báo giá cho địa chỉ
+    /// này".
+    DraftOrder? draft,
     ShippingQuotes? shippingQuotes,
 
     /// The carrier slug the buyer is buying, always one `POST /shipping-quotes`
@@ -161,7 +170,29 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     await _resolveListings();
     await _loadAddresses();
     await _loadPaymentOptions();
+    await _openDraft();
     await quoteShipping();
+  }
+
+  /// Mở phiên mua cho tin đăng đang thanh toán, đóng băng giá của người bán.
+  ///
+  /// Mở ở đây chứ không ở `placeOrder` vì báo giá vận chuyển cần nó — website làm
+  /// đúng vậy, nó nhận `?draft_id=` từ trang tin đăng rồi mới hỏi giá. Một draft
+  /// bị bỏ dở sẽ tự hết hạn, nên mở sớm không tốn gì; còn hỏi giá mà không có
+  /// nguồn thì không bao giờ có câu trả lời.
+  Future<void> _openDraft() async {
+    final listings = state.listingIds;
+    if (listings.length != 1) return;
+    try {
+      final draft = await ref
+          .read(checkoutRepositoryProvider)
+          .createDraft(listings.single);
+      if (!ref.mounted) return;
+      state = state.copyWith(draft: draft);
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(errorMessage: ErrorHandler.getErrorMessage(e));
+    }
   }
 
   /// The rails, and a default so the common case is one tap. A registry that answers
@@ -302,6 +333,15 @@ class CheckoutNotifier extends _$CheckoutNotifier {
   /// than only when the buyer touches the list.
   Future<void> quoteShipping() async {
     if (!ref.mounted) return;
+    // Không có phiên mua thì không có gì để báo giá. Gửi đi vẫn chỉ nhận 400, và
+    // một lỗi im lặng ở đây đọc ra thành "địa chỉ này không giao được".
+    if (state.draft == null) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Không mở được phiên mua cho tin đăng này.',
+      );
+      return;
+    }
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
@@ -309,8 +349,11 @@ class CheckoutNotifier extends _$CheckoutNotifier {
           .read(checkoutRepositoryProvider)
           .getShippingQuotes(
             ShippingQuotesRequest(
-              // Omitted, the caller's default delivery address is used — which is what
-              // lets a listing page quote before any form is filled in.
+              // Đúng một nguồn, và ở đây là draft: trang này có thể có nhiều dòng
+              // (hai màu của cùng một tin), mà `variant_id` chỉ báo giá được một.
+              draftId: state.draft!.id,
+              // Bỏ trống thì server dùng địa chỉ giao mặc định của người gọi — thứ
+              // cho phép trang tin đăng báo giá trước khi có form nào được điền.
               contactId: state.selectedContact?.id,
               lines: [
                 for (final line in state.lines)
@@ -356,8 +399,10 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     try {
       final checkoutRepo = ref.read(checkoutRepositoryProvider);
 
-      // 1. Mở purchase session (DraftOrder) cho listing, freezing its prices.
-      final draft = await checkoutRepo.createDraft(state.listingIds.single);
+      // Phiên mua đã mở lúc vào trang — cùng cái đã đóng băng giá cho báo giá vận
+      // chuyển. Mở thêm một cái nữa ở đây là đóng băng giá lần hai và bỏ rơi cái
+      // người mua đang nhìn.
+      final draft = state.draft!;
 
       // 2. Checkout draft: the money is what creates the order, so this is the
       //    sale. `currency` has to be the listing's own.
@@ -421,6 +466,12 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     }
     if (state.listingIds.length > 1) {
       return 'Mỗi đơn hàng chỉ thanh toán được sản phẩm của một tin đăng. Vui lòng tách đơn.';
+    }
+    // Sau cùng, vì `placeOrder` đọc thẳng `state.draft!`: không có phiên mua thì
+    // không có giá nào được đóng băng, và đó là một câu từ chối chứ không phải một
+    // cú crash.
+    if (state.draft == null) {
+      return 'Không mở được phiên mua cho tin đăng này. Vui lòng thử lại.';
     }
     return null;
   }
