@@ -79,13 +79,11 @@ void main() {
     });
   });
 
-  test('disputed: staff cầm, hai bên chỉ nộp thêm bằng chứng', () {
-    for (final isBuyer in [true, false]) {
-      expect(
-        refundActionsFor(_refund(RefundStatus.disputed), isBuyer: isBuyer),
-        [RefundAction.addEvidence],
-      );
-    }
+  test('disputed: staff cầm, chỉ người mua còn nộp thêm bằng chứng', () {
+    final refund = _refund(RefundStatus.disputed);
+    expect(refundActionsFor(refund, isBuyer: true), [RefundAction.addEvidence]);
+    // Người bán đã nói phần của mình trong thread ticket họ mở ra.
+    expect(refundActionsFor(refund, isBuyer: false), isEmpty);
   });
 
   test('trạng thái kết thúc thì không còn nút nào', () {
@@ -97,6 +95,18 @@ void main() {
       for (final isBuyer in [true, false]) {
         expect(refundActionsFor(_refund(status), isBuyer: isBuyer), isEmpty);
       }
+    }
+  });
+
+  // Bằng chứng là *lời khiếu nại* của người mua, không phải hồ sơ chung: server
+  // trả 403 cho người bán, và phía họ nói bằng thread ticket `refund-dispute`.
+  test('người bán không bao giờ có nút bổ sung bằng chứng', () {
+    for (final status in RefundStatus.values) {
+      expect(
+        refundActionsFor(_refund(status), isBuyer: false),
+        isNot(contains(RefundAction.addEvidence)),
+        reason: 'status $status',
+      );
     }
   });
 

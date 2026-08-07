@@ -34,7 +34,11 @@ enum RefundAction {
   /// Người bán xác nhận đã nhận lại hàng, mở cửa sổ kiểm hàng 48 giờ.
   confirmReturnReceived,
 
-  /// Bổ sung ảnh bằng chứng. Cả hai bên, mọi trạng thái chưa kết thúc.
+  /// Người mua bổ sung ảnh bằng chứng.
+  ///
+  /// Chỉ của họ: `attachments` là *lời khiếu nại* đang được đưa ra, không phải
+  /// một hồ sơ chung. Người bán trả lời bằng cách mở ticket `refund-dispute`, và
+  /// bằng chứng của họ nằm trong thread đó — nên hai phía đọc tách nhau được.
   addEvidence,
 }
 
@@ -55,11 +59,7 @@ List<RefundAction> refundActionsFor(Refund refund, {required bool isBuyer}) {
     // cũng thành giao cho staff, nên "để đó" không phải lựa chọn thứ ba.
     RefundStatus.awaitingSellerReview => isBuyer
         ? const [RefundAction.withdraw, RefundAction.addEvidence]
-        : const [
-            RefundAction.accept,
-            RefundAction.escalate,
-            RefundAction.addEvidence,
-          ],
+        : const [RefundAction.accept, RefundAction.escalate],
 
     // Chặng hàng về không có đơn vị vận chuyển nào báo hộ, nên hai bên tự báo.
     // Đây cũng là lý do nó phải có mặt: thiếu nó thì vụ việc kẹt ở đây vĩnh viễn
@@ -70,17 +70,17 @@ List<RefundAction> refundActionsFor(Refund refund, {required bool isBuyer}) {
             RefundAction.claimReturnDelivered,
             RefundAction.addEvidence,
           ]
-        : const [RefundAction.confirmReturnReceived, RefundAction.addEvidence],
+        : const [RefundAction.confirmReturnReceived],
 
     // Người bán đang kiểm hàng và còn cãi được cho tới hết cửa sổ; hết hạn là tự
     // động hoàn tiền cho người mua.
     RefundStatus.returned => isBuyer
         ? const [RefundAction.addEvidence]
-        : const [RefundAction.escalate, RefundAction.addEvidence],
+        : const [RefundAction.escalate],
 
-    // Staff đang cầm. Không bên nào quyết được nữa, nhưng vẫn nộp thêm được
-    // bằng chứng cho người sẽ đọc nó.
-    RefundStatus.disputed => const [RefundAction.addEvidence],
+    // Staff đang cầm. Không bên nào quyết được nữa; người mua vẫn nộp thêm được
+    // bằng chứng cho người sẽ đọc nó, người bán đã có thread ticket của mình.
+    RefundStatus.disputed => isBuyer ? const [RefundAction.addEvidence] : const [],
 
     _ => const [],
   };
