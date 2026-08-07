@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart'
@@ -29,6 +28,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request
 import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
+import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
 
 part 'account_repository.g.dart';
 
@@ -65,27 +65,14 @@ class AccountRepository {
     )).data?.data;
     if (reserved == null) throw StateError('empty upload slot');
 
-    // A bare Dio: the signed URL is the storage provider's origin and must not
-    // be sent this platform's bearer token.
-    await Dio().put<void>(
-      reserved.url,
-      data: Stream.fromIterable([bytes]),
-      options: Options(
-        headers: {
-          ...reserved.headers,
-          Headers.contentLengthHeader: bytes.length,
-        },
-        contentType: mime,
-      ),
-    );
+    await putToSlot(reserved, bytes);
 
     await _api.meUploadsIdConfirmationPost(id: reserved.resourceId);
     return reserved.resourceId;
   }
 
   /// Ảnh mở hộp, cho lúc xác nhận đã nhận hàng. Cùng ba bước như mọi upload khác:
-  /// giữ chỗ, PUT bằng Dio trần (URL đã ký là origin của nhà lưu trữ, không được
-  /// mang bearer của sàn), rồi xác nhận — trước khi xác nhận thì resource không
+  /// giữ chỗ, PUT qua [putToSlot], rồi xác nhận — trước khi xác nhận thì resource không
   /// resolve ra gì cả, nên một upload dở dang không bao giờ đính được vào đâu.
   Future<String> uploadOrderEvidence({
     required List<int> bytes,
@@ -101,17 +88,7 @@ class AccountRepository {
     )).data?.data;
     if (reserved == null) throw StateError('empty upload slot');
 
-    await Dio().put<void>(
-      reserved.url,
-      data: Stream.fromIterable([bytes]),
-      options: Options(
-        headers: {
-          ...reserved.headers,
-          Headers.contentLengthHeader: bytes.length,
-        },
-        contentType: mime,
-      ),
-    );
+    await putToSlot(reserved, bytes);
 
     await _orderApi.ordersUploadsIdConfirmationPost(id: reserved.resourceId);
     return reserved.resourceId;

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
+import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
 
 part 'kyc_repository.g.dart';
 
@@ -71,19 +71,7 @@ class KycRepository {
     )).data?.data;
     if (reserved == null) throw StateError('empty upload slot');
 
-    // A bare Dio: the signed URL is the storage provider's origin and must not
-    // be sent this platform's bearer token.
-    await Dio().put<void>(
-      reserved.url,
-      data: Stream.fromIterable([bytes]),
-      options: Options(
-        headers: {
-          ...reserved.headers,
-          Headers.contentLengthHeader: bytes.length,
-        },
-        contentType: mimeType,
-      ),
-    );
+    await putToSlot(reserved, bytes);
 
     await _api.meUploadsIdConfirmationPost(id: reserved.resourceId);
     return reserved.resourceId;

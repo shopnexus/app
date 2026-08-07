@@ -1,8 +1,6 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
@@ -10,6 +8,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
 import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
 import 'package:shopnexus_flutter_app/features/ticket/data/repositories/ticket_repository.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/providers/ticket_provider.dart';
+import 'package:shopnexus_flutter_app/core/widgets/attachment_picker.dart';
+import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
 
 /// The one form that raises a ticket, whatever the kind. A report of a listing, a
 /// refund the buyer wants staff to decide and a feature request are the same
@@ -68,8 +68,7 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
   final _formKey = GlobalKey<FormState>();
   final _subjectController = TextEditingController();
   final _bodyController = TextEditingController();
-  final _picker = ImagePicker();
-  final List<File> _pending = [];
+  List<Attachment> _attachments = const [];
 
   late TicketKind _kind;
   TicketReason _reason = TicketReason.other;
@@ -92,29 +91,14 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
 
   TicketKindInfo get _info => TicketKindInfo.of(_kind);
 
-  Future<void> _pickImages() async {
-    final picked = await _picker.pickMultiImage();
-    if (picked.isEmpty) return;
-    setState(() {
-      for (final file in picked) {
-        if (_pending.length >= 10) break;
-        _pending.add(File(file.path));
-      }
-    });
-  }
-
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _submitting = true);
 
     try {
-      final repository = ref.read(ticketRepositoryProvider);
-      final attachments = <String>[];
-      for (final file in _pending) {
-        attachments.add(
-          await repository.uploadAttachment(file, mime: 'image/jpeg'),
-        );
-      }
+      final attachments = [
+        for (final a in _attachments) a.resourceId,
+      ];
 
       final ticket = await ref
           .read(raiseTicketProvider.notifier)
@@ -139,7 +123,10 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
       Navigator.of(context).pop(ticket);
     } catch (e) {
       if (!mounted) return;
-      _showSnack('Không tải được ảnh đính kèm. Vui lòng thử lại.');
+      // The real message, not a guess: this used to say "không tải được ảnh
+      // đính kèm" for *every* failure — including ones with no photo involved —
+      // which sent people looking at their photos for a problem elsewhere.
+      _showSnack(ErrorHandler.getErrorMessage(e));
       setState(() => _submitting = false);
     }
   }
@@ -253,51 +240,14 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
               ),
 
               const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: OutlinedButton.icon(
-                  onPressed: _submitting || _pending.length >= 10
-                      ? null
-                      : _pickImages,
-                  icon: const Icon(Icons.add_photo_alternate_outlined),
-                  label: Text('Thêm ảnh (${_pending.length}/10)'),
-                ),
+              AttachmentPicker(
+                attachments: _attachments,
+                enabled: !_submitting,
+                onChanged: (next) => setState(() => _attachments = next),
+                upload: (file, mime) => ref
+                    .read(ticketRepositoryProvider)
+                    .uploadAttachment(file, mime: mime),
               ),
-              if (_pending.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 72,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _pending.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: 8),
-                    itemBuilder: (_, index) => Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            _pending[index],
-                            width: 72,
-                            height: 72,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Positioned(
-                          top: -8,
-                          right: -8,
-                          child: IconButton(
-                            icon: const Icon(Icons.close, size: 16),
-                            onPressed: _submitting
-                                ? null
-                                : () =>
-                                      setState(() => _pending.removeAt(index)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
 
               const SizedBox(height: 16),
               FilledButton(

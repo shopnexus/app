@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
@@ -14,6 +13,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/publish_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/suggest_listing_request.dart';
+import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
 
 part 'listing_composer_repository.g.dart';
 
@@ -56,20 +56,7 @@ class ListingComposerRepository {
     );
     final slot = reserved.data!.data;
 
-    // A bare Dio on purpose: the URL is already signed for this key and this
-    // method, and the app's bearer token has no business at an object store
-    // that is not this API — some stores reject a request carrying both.
-    await Dio().put<void>(
-      slot.url,
-      data: Stream<List<int>>.fromIterable([bytes]),
-      options: Options(
-        headers: <String, dynamic>{
-          Headers.contentTypeHeader: mime,
-          Headers.contentLengthHeader: bytes.length,
-          ...slot.headers,
-        },
-      ),
-    );
+    await putToSlot(slot, bytes);
 
     await _catalog.listingsUploadsIdConfirmationPost(id: slot.resourceId);
     return slot.resourceId;

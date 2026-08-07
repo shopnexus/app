@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
@@ -14,6 +13,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/submit_review_reply_re
 import 'package:shopnexus_flutter_app/api/generated/model/submit_review_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_review_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/vote_review_request.dart';
+import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
 
 part 'rating_repository.g.dart';
 
@@ -150,8 +150,7 @@ class RatingRepository {
       _trustApi.reviewsIdVoteDelete(id: reviewId);
 
   /// Ảnh kèm đánh giá. Ba bước như mọi upload khác trong app: giữ chỗ, PUT bằng
-  /// Dio trần (URL đã ký là origin của nhà lưu trữ, không được mang bearer của
-  /// sàn), rồi xác nhận — trước khi xác nhận thì resource không resolve ra gì.
+  /// [putToSlot], rồi xác nhận — trước khi xác nhận thì resource không resolve ra gì.
   Future<String> uploadReviewPhoto(File file, {required String mime}) async {
     final size = await file.length();
     final reserved = (await _trustApi.reviewsUploadsPost(
@@ -163,17 +162,7 @@ class RatingRepository {
     )).data?.data;
     if (reserved == null) throw StateError('empty upload slot');
 
-    await Dio().put<void>(
-      reserved.url,
-      data: file.openRead(),
-      options: Options(
-        headers: {
-          ...reserved.headers,
-          Headers.contentLengthHeader: size,
-        },
-        contentType: mime,
-      ),
-    );
+    await putToSlot(reserved, await file.readAsBytes());
 
     await _trustApi.reviewsUploadsIdConfirmationPost(id: reserved.resourceId);
     return reserved.resourceId;

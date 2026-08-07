@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
@@ -12,6 +11,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
+import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
 
 part 'ticket_repository.g.dart';
 
@@ -103,19 +103,7 @@ class TicketRepository {
     final reserved = slot.data?.data;
     if (reserved == null) throw StateError('empty upload slot');
 
-    // A bare Dio: the signed URL is the storage provider's origin and must not
-    // be sent this platform's bearer token.
-    await Dio().put<void>(
-      reserved.url,
-      data: file.openRead(),
-      options: Options(
-        headers: {
-          ...reserved.headers,
-          Headers.contentLengthHeader: await file.length(),
-        },
-        contentType: mime,
-      ),
-    );
+    await putToSlot(reserved, await file.readAsBytes());
 
     await _chatApi.conversationsUploadsIdConfirmationPost(
       id: reserved.resourceId,
