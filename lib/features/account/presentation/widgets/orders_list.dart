@@ -65,11 +65,7 @@ class _OrdersListState extends ConsumerState<OrdersList> {
     );
   }
 
-  Widget _body(
-    OrdersFeed feed,
-    List<OrderLineView> unsettled,
-    String? me,
-  ) {
+  Widget _body(OrdersFeed feed, List<OrderLineView> unsettled, String? me) {
     final finished = feed.finished;
     if (feed.orders.isEmpty && unsettled.isEmpty) return const _Empty();
 
@@ -374,7 +370,6 @@ class _OrderRow extends ConsumerWidget {
         ),
       );
 
-
   /// Nhận đơn là lúc kiện hàng được đặt cho đơn vị vận chuyển, nên nó được hỏi
   /// lại một lần chứ không đi luôn từ một cái chạm — và hộp thoại nói ra điều
   /// sắp xảy ra, vì tới đây vẫn chưa có gì được gửi.
@@ -408,7 +403,6 @@ class _OrderRow extends ConsumerWidget {
       'Đã xác nhận đơn, đang đặt vận chuyển',
     );
   }
-
 
   /// Từ chối cần một lý do và server từ chối lý do rỗng: người mua được hoàn
   /// toàn bộ, và "đã hủy" không kèm gì thì không nói cho họ biết vì sao.
@@ -460,7 +454,6 @@ class _OrderRow extends ConsumerWidget {
       'Đã từ chối đơn và hoàn tiền cho người mua',
     );
   }
-
 
   Future<void> _cancel(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
@@ -673,62 +666,62 @@ class _UnsettledBlock extends ConsumerWidget {
         if (line.item.sellerId != me) line,
     ];
     return [
-        const _SectionHeader('CHỜ THANH TOÁN'),
-        for (final line in lines)
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurface : Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isDark
-                    ? AppColors.darkPrimary.withAlpha(40)
-                    : const Color(0xFFE2E8F0),
-              ),
-            ),
-            child: Row(
-              children: [
-                _Thumbnail(url: line.imageUrl),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        line.displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Chờ hoàn tất thanh toán · '
-                        '${MoneyUtils.format(line.item.totalAmount, currency: line.item.currency)}',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 12,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => _confirmCancel(context, ref, line),
-                  child: const Text(
-                    'Hủy',
-                    style: TextStyle(color: Color(0xFFE11D48)),
-                  ),
-                ),
-              ],
+      const _SectionHeader('CHỜ THANH TOÁN'),
+      for (final line in lines)
+        Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDark
+                  ? AppColors.darkPrimary.withAlpha(40)
+                  : const Color(0xFFE2E8F0),
             ),
           ),
+          child: Row(
+            children: [
+              _Thumbnail(url: line.imageUrl),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      line.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Chờ hoàn tất thanh toán · '
+                      '${MoneyUtils.format(line.item.totalAmount, currency: line.item.currency)}',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () => _confirmCancel(context, ref, line),
+                child: const Text(
+                  'Hủy',
+                  style: TextStyle(color: Color(0xFFE11D48)),
+                ),
+              ),
+            ],
+          ),
+        ),
     ];
   }
 

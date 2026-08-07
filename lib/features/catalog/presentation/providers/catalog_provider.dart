@@ -1,9 +1,11 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/tag.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 
@@ -64,6 +66,32 @@ Future<List<Category>> categories(Ref ref) {
   return ref.watch(catalogRepositoryProvider).categories();
 }
 
+/// How a keyword is matched. Kept beside the filters rather than inside them
+/// because it is not one: it changes nothing about *which* listings qualify,
+/// only how they are ranked, and the server ignores it without a `q`.
+class SearchModeNotifier extends Notifier<String> {
+  @override
+  String build() => SearchMode.hybrid;
+
+  void set(String mode) => state = mode;
+}
+
+final searchModeProvider = NotifierProvider<SearchModeNotifier, String>(
+  SearchModeNotifier.new,
+);
+
+/// The tag cloud. A tag's id *is* its slug, so what comes back is what `?tag=`
+/// takes — no lookup in between. An empty `q` is the trending list; a keyword
+/// ranks them against it, which is what makes the row on a result page mean
+/// "narrow this search" rather than "here are some tags".
+///
+/// Keyed by the query string rather than by a list, because a family argument
+/// is compared with `==` and a fresh `List` never equals the last one.
+final tagSuggestionsProvider = FutureProvider.autoDispose
+    .family<List<Tag>, String>((ref, q) {
+      return ref.watch(catalogRepositoryProvider).tags(q: q, limit: 20);
+    });
+
 @riverpod
 class CatalogProducts extends _$CatalogProducts {
   Future<List<Listing>> _fetch(
@@ -72,6 +100,10 @@ class CatalogProducts extends _$CatalogProducts {
   ) {
     return repo.listings(
       keyword: filters.keyword,
+      // `read`, not `watch`: `build` watches it, so a mode change already
+      // refetches from page 1 — re-watching here would only add a second
+      // dependency edge from inside `loadNextPage`.
+      mode: ref.read(searchModeProvider),
       categoryId: filters.categoryId,
       priceMin: filters.priceMin,
       priceMax: filters.priceMax,
@@ -93,6 +125,9 @@ class CatalogProducts extends _$CatalogProducts {
     CatalogSearchFilters initialFilters,
   ) async {
     final repo = ref.watch(catalogRepositoryProvider);
+    // Watched, not read: switching lexical/semantic/hybrid re-ranks the whole
+    // result, so it has to restart at page 1 like any other filter change.
+    ref.watch(searchModeProvider);
     final products = await _fetch(repo, initialFilters);
     return CatalogProductsState(
       products: products,
@@ -187,6 +222,12 @@ class ActiveSearchFilters extends _$ActiveSearchFilters {
     state = state.copyWith(sort: sort, page: 1);
   }
 
+  /// One tag at a time — `?tag=` takes a single slug, so a second pick replaces
+  /// the first rather than intersecting with it.
+  void setTag(String? tag) {
+    state = state.copyWith(tag: tag, page: 1);
+  }
+
   /// The administrative area to look in. Pass the narrowest level meant — a ward
   /// is already inside its province — and nothing to clear both.
   void setArea({String? provinceCode, String? wardCode, String? label}) {
@@ -249,6 +290,47 @@ abstract class ProductReviewsState with _$ProductReviewsState {
   bool get hasMore => nextCursor != null && nextCursor!.isNotEmpty;
 }
 
+/// Which reviews of a listing to read, and in what order.
+class ReviewQuery {
+  const ReviewQuery({this.rating, this.sort = ReviewSort.newest});
+
+  /// One star bucket, or null for every rating.
+  final int? rating;
+  final String sort;
+
+  ReviewQuery copyWith({int? rating, String? sort, bool clearRating = false}) {
+    return ReviewQuery(
+      rating: clearRating ? null : (rating ?? this.rating),
+      sort: sort ?? this.sort,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is ReviewQuery && other.rating == rating && other.sort == sort;
+
+  @override
+  int get hashCode => Object.hash(rating, sort);
+}
+
+/// Held apart from [ProductReviews] so that changing it re-runs `build` —
+/// which is also what throws the old cursor away, and a cursor belongs to the
+/// sort it was issued under.
+class ReviewQueryNotifier extends Notifier<ReviewQuery> {
+  @override
+  ReviewQuery build() => const ReviewQuery();
+
+  void setRating(int? rating) =>
+      state = state.copyWith(rating: rating, clearRating: rating == null);
+
+  void setSort(String sort) => state = state.copyWith(sort: sort);
+}
+
+final reviewQueryProvider = NotifierProvider.autoDispose
+    .family<ReviewQueryNotifier, ReviewQuery, String>(
+      (_) => ReviewQueryNotifier(),
+    );
+
 /// Reviews are cursor-paginated, so "show more" carries the cursor the last page
 /// ended on — a page number would re-read rows a new review has already shifted.
 @riverpod
@@ -257,9 +339,15 @@ class ProductReviews extends _$ProductReviews {
 
   @override
   FutureOr<ProductReviewsState> build(String listingId) async {
+    final query = ref.watch(reviewQueryProvider(listingId));
     final page = await ref
         .watch(catalogRepositoryProvider)
-        .reviews(listingId, limit: _pageSize);
+        .reviews(
+          listingId,
+          rating: query.rating,
+          sort: query.sort,
+          limit: _pageSize,
+        );
     return ProductReviewsState(
       reviews: page.reviews,
       nextCursor: page.nextCursor,
@@ -272,10 +360,20 @@ class ProductReviews extends _$ProductReviews {
 
     state = AsyncValue.data(current.copyWith(isLoadingMore: true));
 
+    final query = ref.read(reviewQueryProvider(listingId));
     try {
       final page = await ref
           .read(catalogRepositoryProvider)
-          .reviews(listingId, cursor: current.nextCursor, limit: _pageSize);
+          .reviews(
+            listingId,
+            rating: query.rating,
+            sort: query.sort,
+            cursor: current.nextCursor,
+            limit: _pageSize,
+          );
+      // `read` on the notifier below means nothing holds it alive across the
+      // await; a disposed one must not be written to.
+      if (!ref.mounted) return;
       state = AsyncValue.data(
         current.copyWith(
           reviews: [...current.reviews, ...page.reviews],
@@ -284,6 +382,7 @@ class ProductReviews extends _$ProductReviews {
         ),
       );
     } catch (e) {
+      if (!ref.mounted) return;
       // Keeping the cursor would offer a button that fails again on every press.
       state = AsyncValue.data(
         current.copyWith(isLoadingMore: false, nextCursor: null),

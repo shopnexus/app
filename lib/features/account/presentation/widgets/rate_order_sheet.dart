@@ -83,19 +83,21 @@ class _RateOrderSheetState extends ConsumerState<RateOrderSheet> {
   }
 
   Future<void> _submit() async {
-    final ok = await ref.read(rateOrderProvider.notifier).submit(
-      orderId: widget.orderId,
-      sellerRating: _sellerRating,
-      sellerComment: _sellerComment.text.trim().isEmpty
-          ? null
-          : _sellerComment.text.trim(),
-      listingId: _productRating > 0 ? widget.listingId : null,
-      productRating: _productRating > 0 ? _productRating : null,
-      productBody: _productBody.text.trim().isEmpty
-          ? null
-          : _productBody.text.trim(),
-      photos: _photos,
-    );
+    final ok = await ref
+        .read(rateOrderProvider.notifier)
+        .submit(
+          orderId: widget.orderId,
+          sellerRating: _sellerRating,
+          sellerComment: _sellerComment.text.trim().isEmpty
+              ? null
+              : _sellerComment.text.trim(),
+          listingId: _productRating > 0 ? widget.listingId : null,
+          productRating: _productRating > 0 ? _productRating : null,
+          productBody: _productBody.text.trim().isEmpty
+              ? null
+              : _productBody.text.trim(),
+          photos: _photos,
+        );
     if (!mounted) return;
     if (ok) {
       Navigator.pop(context, true);
@@ -139,7 +141,8 @@ class _RateOrderSheetState extends ConsumerState<RateOrderSheet> {
               // Nói ra tính chất mù, vì đó là lý do người ta dám chấm thật: điểm
               // của hai bên chỉ hiện khi cả hai đã gửi, nên nó không thể là đòn
               // đáp trả.
-              note: 'Chỉ hiện khi cả hai bên đã đánh giá. Người bán không '
+              note:
+                  'Chỉ hiện khi cả hai bên đã đánh giá. Người bán không '
                   'thấy điểm của bạn trước khi họ chấm.',
               icon: Icons.lock_outline_rounded,
             ),
@@ -167,7 +170,8 @@ class _RateOrderSheetState extends ConsumerState<RateOrderSheet> {
               const SizedBox(height: 12),
               _SectionTitle(
                 title: widget.listingName ?? 'Sản phẩm',
-                note: 'Công khai trên trang sản phẩm. Bỏ trống nếu bạn không '
+                note:
+                    'Công khai trên trang sản phẩm. Bỏ trống nếu bạn không '
                     'muốn đánh giá món này.',
                 icon: Icons.public_rounded,
               ),

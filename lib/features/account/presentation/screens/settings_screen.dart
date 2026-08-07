@@ -77,12 +77,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Column(
                 children: [
                   const AccountCenterSection(),
-                  // Ở mục bảo mật, không ở tuỳ chọn ứng dụng: bỏ liên kết Google
-                  // có thể là bỏ cách đăng nhập duy nhất của mình.
+                  // Một dòng, không bốn: mật khẩu, xác minh email, liên kết và
+                  // thiết bị đều trả lời "ai vào được tài khoản của tôi", nên
+                  // chúng ở chung một màn thay vì rải ra đây.
                   _buildSettingRow(
-                    icon: Icons.link_rounded,
-                    label: 'Tài khoản liên kết',
-                    onTap: () => context.push('/account/linked-accounts'),
+                    icon: Icons.lock_outline_rounded,
+                    label: 'Đăng nhập & bảo mật',
+                    onTap: () => context.push('/account/security'),
                   ),
                 ],
               ),

@@ -4,10 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/reputation_role.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_feedback_tab.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/followers_sheet.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_provider.dart';
 
 class SellerProfileScreen extends ConsumerStatefulWidget {
@@ -149,8 +152,8 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                       children: [
                         _buildTabButton(0, 'Giới thiệu'),
                         _buildTabButton(1, 'Sản phẩm'),
-                        _buildTabButton(2, 'Đánh giá'),
-                        _buildTabButton(3, 'Phản hồi'),
+                        _buildTabButton(2, 'Khi bán'),
+                        _buildTabButton(3, 'Khi mua'),
                       ],
                     ),
                   ),
@@ -443,66 +446,22 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
             ),
           ),
         );
-      case 2: // All Reviews
-      case 3: // Feedback
-        // Trang này chưa đọc được đánh giá của một người khác — API công khai
-        // không trả về. Nhưng đánh giá *của chính mình* thì đọc được, và đây là
-        // nơi đúng để xem chúng: đánh giá là thứ người khác đọc về mình, nên nó
-        // thuộc trang công khai chứ không phải một hàng menu trong trang tài
-        // khoản.
-
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFFE2E3E0)),
-          ),
-          child: Column(
-            children: [
-              const Icon(
-                Icons.rate_review_outlined,
-                size: 48,
-                color: Color(0xFFbec9c6),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                _selectedTabIndex == 2
-                    ? 'Chưa có đánh giá nào cho người bán này.'
-                    : 'Chưa có phản hồi nào dành cho người bán này.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  color: Color(0xFF6E7977),
-                ),
-              ),
-              if (ref.watch(profileProvider).value?.id == widget.vendorId &&
-                  _selectedTabIndex == 2) ...[
-                const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  onPressed: () => context.push('/account/reviews'),
-                  icon: const Icon(Icons.star_outline_rounded, size: 18),
-                  label: const Text(
-                    'Xem đánh giá về tôi',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF005049),
-                    side: const BorderSide(color: Color(0xFF005049)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
+      // Cả `GET /accounts/{id}/reputation` lẫn `GET /accounts/{id}/feedback`
+      // đều công khai và nhận id bất kỳ, nên trang của người khác đọc được đúng
+      // những gì họ đã nhận — hai tab là hai *vai*, không phải "đã viết / đã
+      // nhận": chỉ chiều nhận là đọc được, và uy tín người bán với uy tín người
+      // mua vốn là hai câu hỏi khác nhau về cùng một người.
+      case 2: // Đánh giá nhận được khi bán
+        return AccountFeedbackTab(
+          accountId: widget.vendorId,
+          role: ReputationRole.seller,
+          emptyMessage: 'Chưa có đánh giá nào cho người bán này.',
+        );
+      case 3: // Đánh giá nhận được khi mua
+        return AccountFeedbackTab(
+          accountId: widget.vendorId,
+          role: ReputationRole.buyer,
+          emptyMessage: 'Chưa có đánh giá nào cho người này khi họ mua hàng.',
         );
       default:
         return const SizedBox();
@@ -644,12 +603,18 @@ class _TrustRow extends StatelessWidget {
               ),
             ],
           ),
-        Text(
-          '${profile.followerCount} người theo dõi',
-          style: const TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 13,
-            color: Color(0xFF6E7977),
+        // Con số mở ra danh sách: `GET /accounts/{id}/followers` công khai, và
+        // "ai đang theo dõi người này" là câu hỏi mà con số vừa gợi ra.
+        InkWell(
+          onTap: () => showFollowersSheet(context, profile.id),
+          child: Text(
+            '${profile.followerCount} người theo dõi',
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              decoration: TextDecoration.underline,
+              color: Color(0xFF6E7977),
+            ),
           ),
         ),
       ],

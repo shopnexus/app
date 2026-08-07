@@ -15,6 +15,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/confirm_receipt_reques
 import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/device.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_contact_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/mark_notifications_read_request.dart';
@@ -193,6 +194,17 @@ class AccountRepository {
       ],
     ),
   );
+
+  /// Những cài đặt đang đăng ký nhận thông báo đẩy của tài khoản này. Server chỉ
+  /// trả đuôi token — cả token là một khoá gửi tin, không bao giờ đi ngược ra —
+  /// nên đây là thứ duy nhất để nhận ra "cái này là máy tôi".
+  Future<List<Device>> devices() async =>
+      (await _api.meDevicesGet()).data?.data ?? const [];
+
+  /// Gỡ một cài đặt khỏi tài khoản: máy đó ngừng nhận thông báo, phiên đăng nhập
+  /// trên đó không đổi.
+  Future<void> unregisterDevice(String deviceId) =>
+      _api.devicesIdDelete(id: deviceId);
 
   /// Google/Apple đã liên kết. Server giữ luật "ít nhất một cách để đăng nhập",
   /// nên bỏ liên kết cuối cùng khi không có mật khẩu sẽ bị từ chối ở đó.

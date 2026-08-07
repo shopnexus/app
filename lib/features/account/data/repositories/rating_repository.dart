@@ -8,6 +8,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.
 import 'package:shopnexus_flutter_app/api/generated/model/order_feedback.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review_reply.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/review_vote_tally.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/submit_feedback_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/submit_review_reply_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/submit_review_request.dart';
@@ -134,20 +135,34 @@ class RatingRepository {
 
   /// Bình chọn hữu ích. `PUT` là đặt lại chứ không phải cộng thêm, nên bấm hai lần
   /// cùng một phía không đếm hai.
-  Future<void> voteReview(String reviewId, {required bool helpful}) =>
-      _trustApi.reviewsIdVotePut(
-        id: reviewId,
-        voteReviewRequest: VoteReviewRequest(
-          // Enum của contract là số: +1 hữu ích, -1 không. Tên Dart sinh ra khó đọc
-          // nên chỗ này là chỗ duy nhất trong app phải biết chúng.
-          vote: helpful
-              ? VoteReviewRequestVoteEnum.number1
-              : VoteReviewRequestVoteEnum.numberNegative1,
-        ),
-      );
+  ///
+  /// Trả về bảng đếm mới server vừa tính, nên phía gọi không phải tự cộng trừ —
+  /// và không phải tải lại cả trang đánh giá để thấy con số đúng.
+  Future<ReviewVoteTally> voteReview(
+    String reviewId, {
+    required bool helpful,
+  }) async {
+    final tally = (await _trustApi.reviewsIdVotePut(
+      id: reviewId,
+      voteReviewRequest: VoteReviewRequest(
+        // Enum của contract là số: +1 hữu ích, -1 không. Tên Dart sinh ra khó đọc
+        // nên chỗ này là chỗ duy nhất trong app phải biết chúng.
+        vote: helpful
+            ? VoteReviewRequestVoteEnum.number1
+            : VoteReviewRequestVoteEnum.numberNegative1,
+      ),
+    )).data?.data;
+    if (tally == null) throw StateError('empty vote response');
+    return tally;
+  }
 
-  Future<void> clearVote(String reviewId) =>
-      _trustApi.reviewsIdVoteDelete(id: reviewId);
+  Future<ReviewVoteTally> clearVote(String reviewId) async {
+    final tally = (await _trustApi.reviewsIdVoteDelete(
+      id: reviewId,
+    )).data?.data;
+    if (tally == null) throw StateError('empty vote response');
+    return tally;
+  }
 
   /// Ảnh kèm đánh giá. Ba bước như mọi upload khác trong app: giữ chỗ, PUT bằng
   /// [putToSlot], rồi xác nhận — trước khi xác nhận thì resource không resolve ra gì.

@@ -20,6 +20,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/screens/orde
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/order_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/addresses_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/wishlist_screen.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/screens/security_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/settings_screen.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/screens/my_reviews_screen.dart';
 import 'package:shopnexus_flutter_app/features/kyc/presentation/screens/kyc_verification_screen.dart';
@@ -32,6 +33,8 @@ import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listi
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_edit_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_products_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_earnings_screen.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/screens/tax_info_screen.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/screens/wallet_ledger_screen.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/inbox_screen.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/chat_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/help_center/presentation/screens/help_center_screen.dart';
@@ -277,6 +280,26 @@ GoRouter appRouter(Ref ref) {
                 path: 'linked-accounts',
                 name: 'linked_accounts',
                 builder: (context, state) => const LinkedAccountsScreen(),
+              ),
+              GoRoute(
+                path: 'security',
+                name: 'security',
+                builder: (context, state) => const SecurityScreen(),
+              ),
+              GoRoute(
+                path: 'tax-info',
+                name: 'tax_info',
+                builder: (context, state) => const TaxInfoScreen(),
+              ),
+              GoRoute(
+                path: 'wallet-ledger',
+                name: 'wallet_ledger',
+                // VND là loại tiền duy nhất của sàn, nên một link không mang
+                // `?currency=` vẫn mở đúng sổ — cùng mặc định `SellerEarningsState`
+                // dùng cho một tài khoản chưa có dòng ví nào.
+                builder: (context, state) => WalletLedgerScreen(
+                  currency: state.uri.queryParameters['currency'] ?? 'VND',
+                ),
               ),
               GoRoute(
                 path: 'following',

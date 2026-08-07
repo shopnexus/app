@@ -147,6 +147,17 @@ class _SellerEarningsScreenState extends ConsumerState<SellerEarningsScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 24),
+          // Cùng tab với tài khoản nhận tiền vì cùng một câu hỏi: tiền ra khỏi
+          // sàn dưới tên ai, và vào số tài khoản nào.
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.receipt_outlined),
+            title: const Text('Thông tin thuế'),
+            subtitle: const Text('Mã số thuế dùng khi sàn chi trả doanh thu'),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => context.push('/account/tax-info'),
+          ),
         ],
       ),
     );
@@ -476,7 +487,20 @@ class _SellerEarningsScreenState extends ConsumerState<SellerEarningsScreen> {
               ),
             const SizedBox(height: 24),
           ],
-          _buildSectionTitle(context, 'Sổ quỹ'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSectionTitle(context, 'Sổ quỹ'),
+              // Danh sách dưới đây là trang đầu và không có cursor, nên nó dừng
+              // ở giao dịch thứ hai mươi; đây là đường đọc hết sổ.
+              TextButton(
+                onPressed: () => context.push(
+                  '/account/wallet-ledger?currency=${state.currency}',
+                ),
+                child: const Text('Xem tất cả'),
+              ),
+            ],
+          ),
           const SizedBox(height: 10),
           _buildTotalsBar(context, state, isDark),
           const SizedBox(height: 12),

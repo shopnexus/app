@@ -8,6 +8,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/tag.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
@@ -130,6 +131,18 @@ class CatalogRepository {
 
   Future<List<Category>> categories() async {
     final response = await _api.categoriesGet();
+    return response.data?.data ?? const [];
+  }
+
+  /// A tag's id is its slug, so what comes back is directly what `?tag=` takes.
+  /// `q` ranks them by meaning rather than filtering, which is why a listing's
+  /// own tags are the better `near` seed than its title.
+  Future<List<Tag>> tags({String? q, List<String>? near, int? limit}) async {
+    final response = await _api.tagsGet(
+      q: q != null && q.trim().isNotEmpty ? q.trim() : null,
+      near: near != null && near.isNotEmpty ? near : null,
+      limit: limit,
+    );
     return response.data?.data ?? const [];
   }
 

@@ -19,6 +19,23 @@ abstract final class ListingSort {
   static const distance = 'distance';
 }
 
+/// How `GET /listings` matches `q`. Ignored without a query, so the picker is
+/// only offered once there is one.
+abstract final class SearchMode {
+  static const lexical = 'lexical';
+  static const semantic = 'semantic';
+  static const hybrid = 'hybrid';
+}
+
+/// The `sort` values `GET /listings/{id}/reviews` accepts. A cursor belongs to
+/// the sort it was issued under, so changing this restarts the traversal.
+abstract final class ReviewSort {
+  static const newest = 'newest';
+  static const helpful = 'helpful';
+  static const ratingDesc = 'rating-desc';
+  static const ratingAsc = 'rating-asc';
+}
+
 /// What the "vừa xem" carousel draws, cached in Hive. Not a wire type: a
 /// `ListingDetail` carries no card price, so the featured variant's price is
 /// resolved here instead of being stored as if the server had sent one.

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
@@ -17,9 +18,12 @@ import 'package:shopnexus_flutter_app/api/generated/model/decline_order_request.
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/tax_info.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_listing_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/upsert_tax_info_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/wallet.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/wallet_transaction.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/wallet_transaction_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/withdrawal.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 
@@ -40,6 +44,19 @@ class OrderStateCount {
 
   final int count;
   final DateTime? soonestDeadline;
+}
+
+/// Một lượt đọc sổ ví. `totalCount` là tổng số dòng khớp bộ lọc, kể cả những
+/// dòng không nằm trong lượt đọc này.
+class WalletLedgerPage {
+  const WalletLedgerPage({required this.entries, this.totalCount});
+
+  final List<WalletTransaction> entries;
+  final int? totalCount;
+
+  /// Sổ dài hơn những gì vừa đọc được — màn hình phải nói ra thay vì cắt ngang.
+  bool get truncated =>
+      totalCount != null && totalCount! > entries.length;
 }
 
 /// The seller side of the marketplace, read through the same contract the buyer
@@ -243,6 +260,51 @@ class SellerRepository {
       limit: limit,
     )).data;
     return page?.data ?? const [];
+  }
+
+  /// Sổ ví đầy đủ hơn [ledger]: lọc được theo loại giao dịch, và lấy tới trần
+  /// 100 dòng của route thay vì 20.
+  ///
+  /// Không có trang thứ hai để đi tới: hợp đồng khai `cursor` cho route này nhưng
+  /// handler đọc `page`, và `page` lại không có trong spec — nên client sinh ra
+  /// không có tham số nào nhảy trang được. `totalCount` là thứ nói ra khi sổ dài
+  /// hơn những gì màn hình đang hiện, thay vì im lặng cắt ngang.
+  Future<WalletLedgerPage> ledgerPage(
+    String currency, {
+    WalletTransactionKind? kind,
+    int limit = 100,
+  }) async {
+    final page = (await _financeApi.walletsCurrencyTransactionsGet(
+      currency: currency,
+      kind: kind,
+      limit: limit,
+    )).data;
+    return WalletLedgerPage(
+      entries: page?.data ?? const [],
+      totalCount: page?.meta.totalCount,
+    );
+  }
+
+  /// Đăng ký thuế của người nhận tiền, `null` khi chưa khai gì — server trả 404
+  /// cho trường hợp đó, và "chưa khai" là một trạng thái bình thường chứ không
+  /// phải lỗi cần hiện ra.
+  Future<TaxInfo?> taxInfo() async {
+    try {
+      return (await _financeApi.taxInfoGet()).data?.data;
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
+  /// Ghi đè cả bản đăng ký, không sửa từng trường: một mã số thuế mới làm verdict
+  /// cũ hết giá trị, nên server đặt lại trạng thái xác minh về `pending`.
+  Future<TaxInfo> saveTaxInfo(UpsertTaxInfoRequest request) async {
+    final saved = (await _financeApi.taxInfoPut(
+      upsertTaxInfoRequest: request,
+    )).data?.data;
+    if (saved == null) throw StateError('empty tax info response');
+    return saved;
   }
 
   Future<List<Withdrawal>> withdrawals({int limit = 20}) async {

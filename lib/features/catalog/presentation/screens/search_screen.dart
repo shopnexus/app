@@ -5,6 +5,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
@@ -25,11 +26,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _minPriceController = TextEditingController();
   final TextEditingController _maxPriceController = TextEditingController();
 
-  final List<String> _recentSearches = [
-    'Đồng hồ thông minh',
-    'Tai nghe không dây',
-    'Balo da cao cấp',
-  ];
+  /// Bắt đầu rỗng: ba dòng viết cứng trước đây là ba lần tìm chưa ai thực hiện,
+  /// và "Xóa lịch sử" xoá đi thì chúng không bao giờ quay lại — nên chúng chưa
+  /// bao giờ là lịch sử.
+  final List<String> _recentSearches = [];
 
   @override
   void initState() {
@@ -89,6 +89,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   bool _isSearchActive(CatalogSearchFilters filters) {
     return (filters.keyword != null && filters.keyword!.trim().isNotEmpty) ||
         filters.categoryId != null ||
+        // Một chủ đề cũng là một lần tìm: trang sản phẩm đẩy sang đây với đúng
+        // mỗi cái tag, và bỏ sót nó thì màn hình mở ra là trang khám phá.
+        filters.tag != null ||
         filters.priceMin != null ||
         filters.priceMax != null ||
         filters.hasArea ||
@@ -408,7 +411,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
           const SizedBox(height: 24.0),
 
-          // 3. Recommended for you (Masonry Grid)
+          // 3. Chủ đề nổi bật
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Chủ đề nổi bật',
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12.0),
+          const _TagRow(query: '', selected: null),
+          const SizedBox(height: 24.0),
+
+          // 4. Recommended for you (Masonry Grid)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
@@ -501,6 +521,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       children: [
         // Dòng thanh công cụ bộ lọc
         _buildFilterBar(context, activeFilters, categoriesState),
+
+        // Chủ đề để thu hẹp kết quả, xếp hạng theo chính từ khoá đang tìm.
+        _TagRow(
+          query: activeFilters.keyword ?? '',
+          selected: activeFilters.tag,
+        ),
+        const SizedBox(height: 4.0),
 
         // Vùng danh sách sản phẩm kết quả
         Expanded(
@@ -753,6 +780,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     .setSort(sort),
               ),
             ),
+            // Cách khớp từ khoá — chỉ hiện khi có từ khoá, vì server bỏ qua nó
+            // khi không có `q`, và một nút không đổi gì là một nút gây hiểu lầm.
+            if (activeFilters.keyword != null &&
+                activeFilters.keyword!.trim().isNotEmpty) ...[
+              const SizedBox(width: 8.0),
+              _SearchModeChip(
+                background: chipBgColor,
+                foreground: chipTextColor,
+              ),
+            ],
             if (activeFilters.categoryId != null) ...[
               const SizedBox(width: 8.0),
               Chip(
@@ -764,6 +801,25 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ref
                       .read(activeSearchFiltersProvider.notifier)
                       .setCategory(null);
+                },
+              ),
+            ],
+            if (activeFilters.tag != null) ...[
+              const SizedBox(width: 8.0),
+              Chip(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                avatar: Icon(
+                  Icons.tag_rounded,
+                  size: 14,
+                  color: theme.colorScheme.primary,
+                ),
+                label: Text(
+                  activeFilters.tag!,
+                  style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
+                ),
+                onDeleted: () {
+                  ref.read(activeSearchFiltersProvider.notifier).setTag(null);
                 },
               ),
             ],
@@ -1063,6 +1119,117 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           },
         );
       },
+    );
+  }
+}
+
+/// Cách khớp từ khoá: `lexical` dò chữ (chịu được thiếu dấu), `semantic` dò
+/// theo nghĩa, `hybrid` gộp cả hai. Server bỏ qua tham số này khi không có
+/// `q`, nên chip chỉ xuất hiện cùng từ khoá.
+///
+/// Đáng để lộ ra vì một tin chưa kịp tính embedding thì chỉ tìm được bằng
+/// `lexical` — người bán vừa đăng xong mà tìm không ra là chuyện có thật.
+class _SearchModeChip extends ConsumerWidget {
+  const _SearchModeChip({required this.background, required this.foreground});
+
+  final Color background;
+  final Color foreground;
+
+  static const _labels = <String, String>{
+    SearchMode.hybrid: 'Kết hợp',
+    SearchMode.semantic: 'Theo nghĩa',
+    SearchMode.lexical: 'Theo chữ',
+  };
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final mode = ref.watch(searchModeProvider);
+
+    return PopupMenuButton<String>(
+      initialValue: mode,
+      onSelected: (next) => ref.read(searchModeProvider.notifier).set(next),
+      itemBuilder: (context) => [
+        for (final entry in _labels.entries)
+          PopupMenuItem(value: entry.key, child: Text(entry.value)),
+      ],
+      child: Chip(
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
+        avatar: Icon(
+          Icons.auto_awesome_rounded,
+          size: 14,
+          color: theme.colorScheme.primary,
+        ),
+        label: Text(_labels[mode] ?? _labels[SearchMode.hybrid]!),
+        labelStyle: TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 12,
+          color: foreground,
+          fontWeight: FontWeight.w600,
+        ),
+        backgroundColor: background,
+      ),
+    );
+  }
+}
+
+/// Hàng chủ đề. Không từ khoá thì đây là các chủ đề đang nổi; có từ khoá thì
+/// server xếp hạng chúng theo từ khoá đó, nên hàng này nghĩa là "thu hẹp lại".
+///
+/// Slug của tag chính là giá trị `?tag=` nhận, nên chạm vào là lọc được ngay.
+class _TagRow extends ConsumerWidget {
+  const _TagRow({required this.query, required this.selected});
+
+  /// Từ khoá đang tìm, hoặc rỗng cho danh sách đang nổi.
+  final String query;
+
+  /// Chủ đề đang lọc, để bấm lại là bỏ chọn.
+  final String? selected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final tagsState = ref.watch(tagSuggestionsProvider(query));
+
+    return tagsState.maybeWhen(
+      data: (tags) {
+        if (tags.isEmpty) return const SizedBox.shrink();
+        return SizedBox(
+          height: 40,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            itemCount: tags.length,
+            itemBuilder: (context, index) {
+              final tag = tags[index];
+              final isSelected = tag.slug == selected;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: FilterChip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  label: Text('#${tag.slug}'),
+                  tooltip: tag.description,
+                  selected: isSelected,
+                  selectedColor: theme.colorScheme.primary.withAlpha(40),
+                  labelStyle: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  onSelected: (_) => ref
+                      .read(activeSearchFiltersProvider.notifier)
+                      .setTag(isSelected ? null : tag.slug),
+                ),
+              );
+            },
+          ),
+        );
+      },
+      // Một hàng gợi ý hỏng thì không có gì để nói, và cũng không nên chiếm chỗ.
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }
