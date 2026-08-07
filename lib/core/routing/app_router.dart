@@ -29,6 +29,7 @@ import 'package:shopnexus_flutter_app/features/cart/presentation/screens/cart_sc
 import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/checkout_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_profile_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_suggestion_screen.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_edit_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_products_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_earnings_screen.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/inbox_screen.dart';
@@ -182,6 +183,12 @@ GoRouter appRouter(Ref ref) {
               // Đơn hàng. Redirect ở lại vì `context.push` là một string —
               // một link cũ, một thông báo đẩy hay một deep link không compile
               // cùng app này, nên xoá path đi là để chúng vỡ trong tay người dùng.
+              GoRoute(
+                path: 'products/:id/edit',
+                name: 'seller_listing_edit',
+                builder: (context, state) =>
+                    ListingEditScreen(listingId: state.pathParameters['id']!),
+              ),
               GoRoute(
                 path: 'orders',
                 name: 'seller_orders',

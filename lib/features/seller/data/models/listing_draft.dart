@@ -38,8 +38,42 @@ List<String> listingTags(Iterable<String> raw) {
   return slugs;
 }
 
+/// Dấu tiếng Việt gập về ASCII trước khi cắt.
+///
+/// Route chỉ nhận `^[a-z0-9]+(-[a-z0-9]+)*$`, nên chữ có dấu phải được **chuyển
+/// tự**, không phải bị xoá. Trước đây nó bị xoá thẳng: "Nhà Bếp" ra `nh-b-p`,
+/// "đồ dùng" ra `d-ng` — nghĩa là gần như mọi thẻ tiếng Việt đều thành vô nghĩa,
+/// và hai thẻ khác hẳn nhau có thể va vào cùng một slug.
+const _foldings = <String, String>{
+  'aáàảãạăắằẳẵặâấầẩẫậ': 'a',
+  'eéèẻẽẹêếềểễệ': 'e',
+  'iíìỉĩị': 'i',
+  'oóòỏõọôốồổỗộơớờởỡợ': 'o',
+  'uúùủũụưứừửữự': 'u',
+  'yýỳỷỹỵ': 'y',
+  'đ': 'd',
+};
+
+String _foldVietnamese(String raw) {
+  final buffer = StringBuffer();
+  for (final rune in raw.runes) {
+    final char = String.fromCharCode(rune);
+    var folded = char;
+    for (final entry in _foldings.entries) {
+      if (entry.key.contains(char)) {
+        folded = entry.value;
+        break;
+      }
+    }
+    buffer.write(folded);
+  }
+  return buffer.toString();
+}
+
 String _slugify(String raw) {
-  final slug = raw.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+  final slug = _foldVietnamese(
+    raw.trim().toLowerCase(),
+  ).replaceAll(RegExp(r'[^a-z0-9]+'), '-');
   // Cut first, strip after: a cut that lands on a separator would otherwise
   // leave the hyphen dangling, which is not a slug the route accepts.
   final cut = slug.length <= _maxTagLength

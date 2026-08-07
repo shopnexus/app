@@ -636,9 +636,30 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                   context.push('/home/product/${listing.id}');
                 },
               ),
-              // Giá và tồn, không phải "sửa tin": tên/ảnh/mô tả là
-              // `PATCH /listings/{id}`, một màn chưa có. Hai thứ này thì người
-              // bán đổi hằng tuần, và cho tới giờ họ phải xoá rồi đăng lại.
+              // Nội dung tin: tiêu đề, mô tả, danh mục, tình trạng, thẻ. Cho tới
+              // khi màn này có, đổi một chữ trong tiêu đề nghĩa là xoá tin rồi
+              // đăng lại — mất đánh giá, lượt lưu và tuổi của tin.
+              ListTile(
+                leading: Icon(
+                  Icons.edit_outlined,
+                  color: theme.colorScheme.onSurface,
+                ),
+                title: Text(
+                  'Sửa tin',
+                  style: TextStyle(color: theme.colorScheme.onSurface),
+                ),
+                onTap: () async {
+                  Navigator.pop(sheetContext);
+                  final saved = await context.push<bool>(
+                    '/seller/products/${listing.id}/edit',
+                  );
+                  // Sửa một tin đang bán đưa nó về chờ duyệt, nên thẻ và bộ đếm
+                  // theo trạng thái đều không còn đúng.
+                  if (saved == true) await notifier.refresh();
+                },
+              ),
+              // Giá và tồn là của variant, một route khác — nên nó là mục riêng
+              // chứ không nằm trong "Sửa tin". Người bán đổi hai thứ này hằng tuần.
               ListTile(
                 leading: Icon(
                   Icons.sell_outlined,
@@ -661,8 +682,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                 },
               ),
               // No "edit with AI" entry: the AI flow fills in a *new* listing and
-              // `POST /listings` is the only thing it can end in. Editing a live
-              // listing is `PATCH /listings/{id}`, a screen that does not exist yet.
+              // `POST /listings` is the only thing it can end in.
               ListTile(
                 leading: Icon(
                   Icons.delete_outline,

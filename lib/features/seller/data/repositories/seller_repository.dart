@@ -16,6 +16,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/decline_order_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/wallet.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/wallet_transaction.dart';
@@ -194,6 +195,15 @@ class SellerRepository {
   /// actually down ever pays for it.
   Future<String?> takedownReason(String id) async =>
       (await _catalogApi.listingsIdGet(id: id)).data?.data.takedownReason;
+
+  /// The whole listing, which is what an edit form has to start from: the card in
+  /// the list is a `Listing` and carries no description, tags or category, so a
+  /// form built from one would show blanks the seller never wrote and save them.
+  Future<ListingDetail> listingDetail(String id) async {
+    final listing = (await _catalogApi.listingsIdGet(id: id)).data?.data;
+    if (listing == null) throw StateError('empty listing response');
+    return listing;
+  }
 
   Future<void> updateListing(String id, UpdateListingRequest request) =>
       _catalogApi.listingsIdPatch(id: id, updateListingRequest: request);
