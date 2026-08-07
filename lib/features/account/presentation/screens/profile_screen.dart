@@ -10,12 +10,15 @@ import 'package:shopnexus_flutter_app/features/account/data/models/account_model
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_menu_tile.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_earnings_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
 
 /// Trang tài khoản: ba nhóm và một khối việc-cần-làm.
 ///
@@ -153,16 +156,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     title: 'Đơn hàng của tôi',
                     onTap: () => context.push('/account/orders?tab=0'),
                   ),
-                  _buildOrderStatusShortcutRow(context),
+                  _ShortcutWrapper(
+                    child: _buildOrderStatusShortcutRow(context),
+                  ),
                   AccountMenuTile(
                     icon: Icons.inventory_2_outlined,
                     title: 'Sản phẩm của tôi',
                     onTap: () => context.push('/seller/products'),
                   ),
+                  _ShortcutWrapper(
+                    child: _buildProductStatusShortcutRow(context),
+                  ),
                   AccountMenuTile(
                     icon: Icons.storefront_outlined,
                     title: 'Đơn bán của tôi',
                     onTap: () => context.push('/seller/orders'),
+                  ),
+                  _ShortcutWrapper(
+                    child: _buildSellerOrderStatusShortcutRow(context),
                   ),
                   AccountMenuTile(
                     icon: Icons.account_balance_wallet_outlined,
@@ -304,7 +315,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+      padding: const EdgeInsets.only(top: 2, bottom: 14, left: 8, right: 8),
       color: isDarkMode ? AppColors.darkSurface : Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -348,6 +359,276 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     vertical: 1.5,
                                   ),
                                   constraints: const BoxConstraints(minWidth: 16),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.error,
+                                    borderRadius: BorderRadius.circular(9),
+                                    border: Border.all(
+                                      color: isDarkMode
+                                          ? AppColors.darkSurface
+                                          : Colors.white,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    count > 99 ? '99+' : '$count',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: theme.colorScheme.onError,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          item.label,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontFamily: 'Inter',
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductStatusShortcutRow(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final counts = ref.watch(sellerListingCountsProvider).value;
+
+    final statuses = [
+      (
+        icon: Icons.storefront_outlined,
+        label: 'Đang bán',
+        statusKey: ListingStatus.active,
+      ),
+      (
+        icon: Icons.hourglass_top_rounded,
+        label: 'Chờ duyệt',
+        statusKey: ListingStatus.pending,
+      ),
+      (
+        icon: Icons.visibility_off_outlined,
+        label: 'Đã ẩn',
+        statusKey: ListingStatus.hidden,
+      ),
+      (
+        icon: Icons.edit_note_rounded,
+        label: 'Nháp',
+        statusKey: ListingStatus.draft,
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.only(top: 2, bottom: 14, left: 8, right: 8),
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          for (final item in statuses)
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  final count = counts?[item.statusKey] ?? 0;
+                  return GestureDetector(
+                    onTap: () => context.push(
+                      '/seller/products?status=${item.statusKey.value}',
+                    ),
+                    behavior: HitTestBehavior.opaque,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? theme.colorScheme.primary.withAlpha(40)
+                                    : theme.colorScheme.primary.withAlpha(12),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Icon(
+                                item.icon,
+                                size: 22,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            if (count > 0)
+                              Positioned(
+                                top: -4,
+                                right: -6,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 1.5,
+                                  ),
+                                  constraints:
+                                      const BoxConstraints(minWidth: 16),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.error,
+                                    borderRadius: BorderRadius.circular(9),
+                                    border: Border.all(
+                                      color: isDarkMode
+                                          ? AppColors.darkSurface
+                                          : Colors.white,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    count > 99 ? '99+' : '$count',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: theme.colorScheme.onError,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          item.label,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontFamily: 'Inter',
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSellerOrderStatusShortcutRow(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final sellerOrders = ref.watch(sellerAllOrdersProvider).value ?? [];
+
+    int getCount(OrderState stateKey) {
+      return sellerOrders.where((v) {
+        final isCancelled = v.order.state == OrderState.cancelled ||
+            v.order.cancelledAt != null;
+        if (stateKey == OrderState.cancelled) return isCancelled;
+        if (isCancelled) return false;
+
+        final isDelivered =
+            v.order.transport?.status == TransportStatus.delivered;
+        final isCompleted = v.order.state == OrderState.completed ||
+            v.order.receivedAt != null ||
+            v.order.completedAt != null ||
+            isDelivered;
+
+        if (stateKey == OrderState.completed) return isCompleted;
+        if (stateKey == OrderState.open) {
+          return v.order.state == OrderState.open &&
+              !isCompleted &&
+              v.order.transport?.status != TransportStatus.returned;
+        }
+        return v.order.state == stateKey;
+      }).length;
+    }
+
+    final statuses = [
+      (
+        icon: Icons.pending_actions_outlined,
+        label: 'Chờ xác nhận',
+        stateKey: OrderState.awaitingConfirmation,
+      ),
+      (
+        icon: Icons.local_shipping_outlined,
+        label: 'Đang xử lý',
+        stateKey: OrderState.open,
+      ),
+      (
+        icon: Icons.check_circle_outline_rounded,
+        label: 'Hoàn thành',
+        stateKey: OrderState.completed,
+      ),
+      (
+        icon: Icons.cancel_outlined,
+        label: 'Đã hủy',
+        stateKey: OrderState.cancelled,
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.only(top: 2, bottom: 14, left: 8, right: 8),
+      color: isDarkMode ? AppColors.darkSurface : Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          for (final item in statuses)
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  final count = getCount(item.stateKey);
+                  return GestureDetector(
+                    onTap: () => context.push(
+                      '/seller/orders?state=${item.stateKey.value}',
+                    ),
+                    behavior: HitTestBehavior.opaque,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? theme.colorScheme.primary.withAlpha(40)
+                                    : theme.colorScheme.primary.withAlpha(12),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Icon(
+                                item.icon,
+                                size: 22,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            if (count > 0)
+                              Positioned(
+                                top: -4,
+                                right: -6,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 1.5,
+                                  ),
+                                  constraints:
+                                      const BoxConstraints(minWidth: 16),
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.error,
                                     borderRadius: BorderRadius.circular(9),
@@ -578,13 +859,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     // `Material`, không `Container(color:)`: một `ListTile` vẽ nền và vệt mực của
     // nó lên `Material` gần nhất, nên một hộp màu chen vào giữa sẽ che hết —
     // chín dòng menu không có phản hồi khi chạm, và framework assert đúng chỗ đó.
+    final fullDivider = Divider(
+      height: 1,
+      color: isDarkMode
+          ? AppColors.darkPrimary.withAlpha(20)
+          : const Color(0xFFF1F5F9),
+      indent: 0,
+    );
+
     return Material(
       color: isDarkMode ? AppColors.darkSurface : Colors.white,
       child: Column(
         children: [
           for (var i = 0; i < tiles.length; i++) ...[
             tiles[i],
-            if (i < tiles.length - 1) divider,
+            if (i < tiles.length - 1 && tiles[i + 1] is! _ShortcutWrapper)
+              tiles[i] is _ShortcutWrapper ? fullDivider : divider,
           ],
         ],
       ),
@@ -769,4 +1059,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
     );
   }
+}
+
+class _ShortcutWrapper extends StatelessWidget {
+  final Widget child;
+
+  const _ShortcutWrapper({required this.child});
+
+  @override
+  Widget build(BuildContext context) => child;
 }

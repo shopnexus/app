@@ -115,11 +115,6 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
           const SizedBox(width: 4),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/seller/new-listing'),
-        backgroundColor: theme.colorScheme.primary,
-        child: Icon(Icons.add, color: theme.colorScheme.onPrimary, size: 28),
-      ),
       body: RefreshIndicator(
         color: theme.colorScheme.primary,
         onRefresh: notifier.refresh,

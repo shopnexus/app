@@ -186,13 +186,11 @@ GoRouter appRouter(Ref ref) {
                 path: 'orders',
                 name: 'seller_orders',
                 builder: (context, state) {
-                  final orderState =
-                      _enumByValue(
-                        OrderState.values,
-                        state.uri.queryParameters['state'],
-                        (s) => s.value,
-                      ) ??
-                      OrderState.open;
+                  final orderState = _enumByValue(
+                    OrderState.values,
+                    state.uri.queryParameters['state'],
+                    (s) => s.value,
+                  );
                   return SellerOrdersScreen(initialState: orderState);
                 },
               ),

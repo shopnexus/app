@@ -11,9 +11,7 @@ part 'seller_orders_provider.g.dart';
 @freezed
 abstract class SellerOrdersState with _$SellerOrdersState {
   const factory SellerOrdersState({
-    /// The contract's own three states. There is no `processing`/`shipping`/
-    /// `disputing`: where the parcel is comes off `order.transport`.
-    @Default(OrderState.open) OrderState selected,
+    OrderState? selected,
     @Default([]) List<OrderView> orders,
 
     /// Paid lines the money has not turned into an order yet. Only meaningful
@@ -39,8 +37,8 @@ class SellerOrdersNotifier extends _$SellerOrdersNotifier {
       final repository = ref.read(sellerRepositoryProvider);
       final (orders, unsettled) = await (
         repository.orders(state: state.selected),
-        // Only the open tab draws them, so the other two do not pay for the read.
-        state.selected == OrderState.open
+        // Only the open tab or all tab draws them.
+        state.selected == OrderState.open || state.selected == null
             ? repository.unsettledItems()
             : Future.value(const <OrderLineView>[]),
       ).wait;
@@ -54,7 +52,7 @@ class SellerOrdersNotifier extends _$SellerOrdersNotifier {
     }
   }
 
-  void setState(OrderState selected) {
+  void setState(OrderState? selected) {
     state = SellerOrdersState(selected: selected);
     _load();
   }
@@ -93,4 +91,10 @@ class SellerOrdersNotifier extends _$SellerOrdersNotifier {
       return false;
     }
   }
+}
+
+@riverpod
+Future<List<OrderView>> sellerAllOrders(Ref ref) async {
+  final repository = ref.watch(sellerRepositoryProvider);
+  return repository.orders();
 }

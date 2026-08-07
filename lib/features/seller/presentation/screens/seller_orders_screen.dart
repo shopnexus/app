@@ -18,9 +18,9 @@ import 'package:shopnexus_flutter_app/features/seller/presentation/providers/sel
 /// kiện hàng thì không: `POST /orders/{id}/transport/checkpoints` là route của
 /// nhân viên sàn, người bán thấy hàng đi sai thì mở ticket `order-issue`.
 class SellerOrdersScreen extends ConsumerStatefulWidget {
-  final OrderState initialState;
+  final OrderState? initialState;
 
-  const SellerOrdersScreen({super.key, this.initialState = OrderState.open});
+  const SellerOrdersScreen({super.key, this.initialState});
 
   @override
   ConsumerState<SellerOrdersScreen> createState() => _SellerOrdersScreenState();
@@ -30,7 +30,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialState != OrderState.open) {
+    if (widget.initialState != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(sellerOrdersProvider.notifier).setState(widget.initialState);
       });
@@ -95,14 +95,8 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     );
   }
 
-  /// Exactly `OrderState`. A tab the contract has no filter for would be a tab
-  /// that is always empty, which is what the previous five were.
-  ///
-  /// `awaiting-confirmation` đứng đầu vì nó là trạng thái duy nhất có đồng hồ
-  /// chạy: sau 48 giờ im lặng, đơn tự hủy và tiền về người mua. Nó cũng là lý do
-  /// tab này không thể thiếu — không có nó thì đơn chờ xác nhận không nằm trong
-  /// tab nào, và hai nút Xác nhận / Từ chối không có đơn nào để bấm.
-  static const _tabs = {
+  static const Map<OrderState?, String> _tabs = {
+    null: 'Tất cả',
     OrderState.awaitingConfirmation: 'Chờ xác nhận',
     OrderState.open: 'Đang xử lý',
     OrderState.completed: 'Hoàn thành',

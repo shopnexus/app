@@ -14,9 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SellerOrdersState {
 
-/// The contract's own three states. There is no `processing`/`shipping`/
-/// `disputing`: where the parcel is comes off `order.transport`.
- OrderState get selected; List<OrderView> get orders;/// Paid lines the money has not turned into an order yet. Only meaningful
+ OrderState? get selected; List<OrderView> get orders;/// Paid lines the money has not turned into an order yet. Only meaningful
 /// beside the open tab, and nothing here waits on the seller.
  List<OrderLineView> get unsettled; bool get isLoading; bool get isActionLoading; String? get errorMessage;
 /// Create a copy of SellerOrdersState
@@ -49,7 +47,7 @@ abstract mixin class $SellerOrdersStateCopyWith<$Res>  {
   factory $SellerOrdersStateCopyWith(SellerOrdersState value, $Res Function(SellerOrdersState) _then) = _$SellerOrdersStateCopyWithImpl;
 @useResult
 $Res call({
- OrderState selected, List<OrderView> orders, List<OrderLineView> unsettled, bool isLoading, bool isActionLoading, String? errorMessage
+ OrderState? selected, List<OrderView> orders, List<OrderLineView> unsettled, bool isLoading, bool isActionLoading, String? errorMessage
 });
 
 
@@ -66,10 +64,10 @@ class _$SellerOrdersStateCopyWithImpl<$Res>
 
 /// Create a copy of SellerOrdersState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? selected = null,Object? orders = null,Object? unsettled = null,Object? isLoading = null,Object? isActionLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? selected = freezed,Object? orders = null,Object? unsettled = null,Object? isLoading = null,Object? isActionLoading = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
-selected: null == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
-as OrderState,orders: null == orders ? _self.orders : orders // ignore: cast_nullable_to_non_nullable
+selected: freezed == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
+as OrderState?,orders: null == orders ? _self.orders : orders // ignore: cast_nullable_to_non_nullable
 as List<OrderView>,unsettled: null == unsettled ? _self.unsettled : unsettled // ignore: cast_nullable_to_non_nullable
 as List<OrderLineView>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isActionLoading: null == isActionLoading ? _self.isActionLoading : isActionLoading // ignore: cast_nullable_to_non_nullable
@@ -159,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OrderState selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OrderState? selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SellerOrdersState() when $default != null:
 return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
@@ -180,7 +178,7 @@ return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OrderState selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OrderState? selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _SellerOrdersState():
 return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
@@ -200,7 +198,7 @@ return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OrderState selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OrderState? selected,  List<OrderView> orders,  List<OrderLineView> unsettled,  bool isLoading,  bool isActionLoading,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _SellerOrdersState() when $default != null:
 return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_that.isActionLoading,_that.errorMessage);case _:
@@ -215,12 +213,10 @@ return $default(_that.selected,_that.orders,_that.unsettled,_that.isLoading,_tha
 
 
 class _SellerOrdersState implements SellerOrdersState {
-  const _SellerOrdersState({this.selected = OrderState.open, final  List<OrderView> orders = const [], final  List<OrderLineView> unsettled = const [], this.isLoading = true, this.isActionLoading = false, this.errorMessage}): _orders = orders,_unsettled = unsettled;
+  const _SellerOrdersState({this.selected, final  List<OrderView> orders = const [], final  List<OrderLineView> unsettled = const [], this.isLoading = true, this.isActionLoading = false, this.errorMessage}): _orders = orders,_unsettled = unsettled;
   
 
-/// The contract's own three states. There is no `processing`/`shipping`/
-/// `disputing`: where the parcel is comes off `order.transport`.
-@override@JsonKey() final  OrderState selected;
+@override final  OrderState? selected;
  final  List<OrderView> _orders;
 @override@JsonKey() List<OrderView> get orders {
   if (_orders is EqualUnmodifiableListView) return _orders;
@@ -273,7 +269,7 @@ abstract mixin class _$SellerOrdersStateCopyWith<$Res> implements $SellerOrdersS
   factory _$SellerOrdersStateCopyWith(_SellerOrdersState value, $Res Function(_SellerOrdersState) _then) = __$SellerOrdersStateCopyWithImpl;
 @override @useResult
 $Res call({
- OrderState selected, List<OrderView> orders, List<OrderLineView> unsettled, bool isLoading, bool isActionLoading, String? errorMessage
+ OrderState? selected, List<OrderView> orders, List<OrderLineView> unsettled, bool isLoading, bool isActionLoading, String? errorMessage
 });
 
 
@@ -290,10 +286,10 @@ class __$SellerOrdersStateCopyWithImpl<$Res>
 
 /// Create a copy of SellerOrdersState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? selected = null,Object? orders = null,Object? unsettled = null,Object? isLoading = null,Object? isActionLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? selected = freezed,Object? orders = null,Object? unsettled = null,Object? isLoading = null,Object? isActionLoading = null,Object? errorMessage = freezed,}) {
   return _then(_SellerOrdersState(
-selected: null == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
-as OrderState,orders: null == orders ? _self._orders : orders // ignore: cast_nullable_to_non_nullable
+selected: freezed == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
+as OrderState?,orders: null == orders ? _self._orders : orders // ignore: cast_nullable_to_non_nullable
 as List<OrderView>,unsettled: null == unsettled ? _self._unsettled : unsettled // ignore: cast_nullable_to_non_nullable
 as List<OrderLineView>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isActionLoading: null == isActionLoading ? _self.isActionLoading : isActionLoading // ignore: cast_nullable_to_non_nullable

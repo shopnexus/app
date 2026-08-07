@@ -42,7 +42,7 @@ final class SellerOrdersNotifierProvider
 }
 
 String _$sellerOrdersNotifierHash() =>
-    r'e6fd32f4fae35a69d5f6e0c5f765971f20f1572b';
+    r'90e637c6f8f8190609fb08007c2cafb26ebcdb4c';
 
 abstract class _$SellerOrdersNotifier extends $Notifier<SellerOrdersState> {
   SellerOrdersState build();
@@ -62,3 +62,42 @@ abstract class _$SellerOrdersNotifier extends $Notifier<SellerOrdersState> {
     element.handleValue(ref, created);
   }
 }
+
+@ProviderFor(sellerAllOrders)
+const sellerAllOrdersProvider = SellerAllOrdersProvider._();
+
+final class SellerAllOrdersProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<OrderView>>,
+          List<OrderView>,
+          FutureOr<List<OrderView>>
+        >
+    with $FutureModifier<List<OrderView>>, $FutureProvider<List<OrderView>> {
+  const SellerAllOrdersProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sellerAllOrdersProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$sellerAllOrdersHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<OrderView>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<OrderView>> create(Ref ref) {
+    return sellerAllOrders(ref);
+  }
+}
+
+String _$sellerAllOrdersHash() => r'45bb9a9154bf7c53d78fe53c19157f7a0dd6b86f';
