@@ -31,7 +31,11 @@ void main() {
     expect(prefixOf(TicketKind.reportMessage), 'msg_');
     expect(prefixOf(TicketKind.reportReview), 'rvw_');
     expect(prefixOf(TicketKind.reportReviewReply), 'rpl_');
-    expect(prefixOf(TicketKind.refundDispute), 'rfd_');
+    // Both point at the **order**. A refund dispute is filed against the sale —
+    // that is what puts both parties' complaints about it in one thread — so an
+    // `rfd_` here is `invalid_id` before the ticket is ever built. This test
+    // asserted `rfd_` and so protected the bug rather than catching it.
+    expect(prefixOf(TicketKind.refundDispute), 'ord_');
     expect(prefixOf(TicketKind.orderIssue), 'ord_');
   });
 
