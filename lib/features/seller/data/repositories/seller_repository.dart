@@ -17,6 +17,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/decline_order_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/tax_info.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_listing_request.dart';
@@ -71,6 +72,27 @@ class SellerRepository {
   final OrderApi _orderApi;
   final CatalogApi _catalogApi;
   final FinanceApi _financeApi;
+
+  // --- Dashboard ---
+
+  /// The counts, the money and the daily series over one window, all describing
+  /// the orders *placed* in it. [tz] must be the device's IANA zone: UTC buckets
+  /// put a Vietnamese seller's evening sales on the next day. Absent bounds mean
+  /// the last 30 days, and the window may span at most a year.
+  Future<OrderSummary> salesSummary({
+    required String tz,
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    final summary = (await _orderApi.ordersSummaryGet(
+      role: orderRoleSeller,
+      from: from,
+      to: to,
+      tz: tz,
+    )).data?.data;
+    if (summary == null) throw StateError('empty order summary');
+    return summary;
+  }
 
   /// One `total_count` read per status, in parallel. Four questions rather than
   /// one: counting a page client-side would cap the answer at the page size and
