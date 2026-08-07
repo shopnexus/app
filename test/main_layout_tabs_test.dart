@@ -10,11 +10,10 @@ import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/inbox_unread_provider.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/main_layout.dart';
 
-/// The button between "Tìm kiếm" and "Hộp thư" is a compose action, not a tab:
-/// it is the only way into the posting form from anywhere in the app, and the
-/// form ends with `context.pop()`, which needs something under it to pop back
-/// to. Sending it to the seller dashboard instead left the "+" opening a
-/// dashboard and the posting form reachable only from inside the seller area.
+/// Nút giữa "Tìm kiếm" và "Tin nhắn" là tab thứ ba, không phải một hành động: nó
+/// đi tới khu bán hàng bằng `go` như bốn tab kia, và nó sáng lên cho mọi route
+/// `/seller`. Đây cũng là cửa duy nhất vào bảng số liệu — màn Tài khoản chỉ link
+/// tới `/seller/products`, `/seller/orders` và `/seller/earnings`.
 void main() {
   /// [unread] null nghĩa là nguồn chưa trả lời — badge phải vắng, không được làm
   /// thanh nav không vẽ. Tương tự [inbox].
@@ -72,30 +71,33 @@ void main() {
 
   final sellButton = find.byIcon(Icons.add_circle_outline_rounded);
 
-  testWidgets('the + opens the posting form', (tester) async {
+  testWidgets('nút + mở khu bán hàng', (tester) async {
     await tester.pumpWidget(app());
 
     await tester.tap(sellButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('posting form'), findsOneWidget);
+    expect(find.text('seller dashboard'), findsOneWidget);
   });
 
-  testWidgets('the form is pushed, so leaving it lands back where it started', (
+  /// `go`, không `push`: một tab là điểm đến, không phải thứ chồng lên điểm đến
+  /// khác. Nếu nó `push`, khu bán hàng sẽ nằm trên màn trước đó và nút back của
+  /// hệ thống rơi ngược về chỗ vừa rời — không tab nào khác cư xử như vậy.
+  testWidgets('+ điều hướng như một tab, không chồng màn lên nhau', (
     tester,
   ) async {
     await tester.pumpWidget(app(at: '/account'));
 
     await tester.tap(sellButton);
     await tester.pumpAndSettle();
-    expect(find.text('posting form'), findsOneWidget);
+    expect(find.text('seller dashboard'), findsOneWidget);
 
-    // What `_submit` does once the listing is saved.
-    final context = tester.element(find.text('posting form'));
-    GoRouter.of(context).pop();
-    await tester.pumpAndSettle();
-
-    expect(find.text('account'), findsOneWidget);
+    final context = tester.element(find.text('seller dashboard'));
+    expect(
+      GoRouter.of(context).canPop(),
+      isFalse,
+      reason: 'không có màn nào bị chồng dưới',
+    );
   });
 
   testWidgets('the other four tabs still go to their own destination', (
@@ -105,7 +107,7 @@ void main() {
 
     for (final tab in const {
       'Tìm kiếm': 'search',
-      'Hộp thư': 'chat',
+      'Tin nhắn': 'chat',
       'Tài khoản': 'account',
       'Trang chủ': 'home',
     }.entries) {
@@ -154,7 +156,7 @@ void main() {
       expect(find.text('Trang chủ'), findsOneWidget);
       expect(find.text('Tìm kiếm'), findsOneWidget);
       expect(find.byIcon(Icons.add_circle_outline_rounded), findsOneWidget);
-      expect(find.text('Hộp thư'), findsOneWidget);
+      expect(find.text('Tin nhắn'), findsOneWidget);
       expect(find.text('Tài khoản'), findsOneWidget);
       expect(find.text('home'), findsOneWidget);
     });
@@ -221,7 +223,7 @@ void main() {
     expect(find.text('9'), findsNothing);
     expect(_dots(tester), 0);
     // Và thanh nav vẫn đủ 5 chỗ — khách vẫn phải đi lại được trong app.
-    expect(find.text('Hộp thư'), findsOneWidget);
+    expect(find.text('Tin nhắn'), findsOneWidget);
     expect(find.text('Tài khoản'), findsOneWidget);
   });
 }

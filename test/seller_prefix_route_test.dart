@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-/// `/seller` sau khi bảng số liệu bị xoá.
+/// `/seller` sau khi bảng số liệu quay lại.
 ///
-/// Nó không mất đi được: là tiền tố của ba route con, là tab 2 của thanh nav
-/// (`startsWith('/seller')`), và là một deep link đã phát ra ngoài. Nên nó thành
-/// một redirect — và một redirect trên route *cha* là chỗ dễ tạo vòng lặp: nếu nó
-/// cũng nổ khi con được match, `/seller/products` sẽ tự chuyển về chính nó mãi.
-/// Cái chặn là `matchedLocation == '/seller'`, và đây là chỗ kiểm nó.
+/// Nó từng là một redirect sang `/seller/products`, vì màn hình nó trỏ tới đã bị
+/// xoá. Giờ nó lại có màn hình của mình, và đó là cửa *duy nhất*: màn Tài khoản
+/// chỉ link tới ba route con, nên `/seller` mà chuyển đi chỗ khác là bảng số liệu
+/// không ai mở được.
+///
+/// Điều còn phải kiểm là ba route con vẫn mở đúng chỗ dưới một route cha nay đã
+/// có builder — cái cũ dễ vỡ ở đây, vì redirect của cha từng bắn cả khi con được
+/// match và đẩy mọi thứ về "Tin của tôi".
 void main() {
   Widget app(String at) {
     final router = GoRouter(
@@ -19,12 +22,15 @@ void main() {
           routes: [
             GoRoute(
               path: '/seller',
-              redirect: (context, state) =>
-                  state.uri.path == '/seller' ? '/seller/products' : null,
+              builder: (_, _) => const Text('bảng số liệu'),
               routes: [
                 GoRoute(
                   path: 'products',
                   builder: (_, _) => const Text('tin của tôi'),
+                ),
+                GoRoute(
+                  path: 'orders',
+                  builder: (_, _) => const Text('đơn bán'),
                 ),
                 GoRoute(
                   path: 'earnings',
@@ -43,38 +49,32 @@ void main() {
     return MaterialApp.router(routerConfig: router);
   }
 
-  testWidgets('/seller mở "Tin của tôi"', (tester) async {
+  testWidgets('/seller mở bảng số liệu', (tester) async {
     await tester.pumpWidget(app('/seller'));
     await tester.pumpAndSettle();
 
+    // Nút "+" giữa thanh nav đi thẳng vào đây, nên đây là route không được vỡ.
     expect(tester.takeException(), isNull);
-    expect(find.text('tin của tôi'), findsOneWidget);
+    expect(find.text('bảng số liệu'), findsOneWidget);
   });
 
-  testWidgets('/seller/products không tự chuyển về chính nó', (tester) async {
-    await tester.pumpWidget(app('/seller/products'));
-    await tester.pumpAndSettle();
+  testWidgets('bốn route con vẫn mở đúng chỗ của chúng', (tester) async {
+    for (final child in const {
+      '/seller/products': 'tin của tôi',
+      '/seller/orders': 'đơn bán',
+      '/seller/earnings': 'số dư',
+      '/seller/new-listing': 'đăng bán',
+    }.entries) {
+      await tester.pumpWidget(app(child.key));
+      await tester.pumpAndSettle();
 
-    // Redirect của cha không nổ khi con được match; nếu nó nổ, go_router ném
-    // "redirection limit reached" và cả tab Đăng bán chết.
-    expect(tester.takeException(), isNull);
-    expect(find.text('tin của tôi'), findsOneWidget);
-  });
-
-  testWidgets('/seller/earnings vẫn mở đúng chỗ', (tester) async {
-    await tester.pumpWidget(app('/seller/earnings'));
-    await tester.pumpAndSettle();
-
-    expect(tester.takeException(), isNull);
-    expect(find.text('số dư'), findsOneWidget);
-  });
-
-  testWidgets('/seller/new-listing vẫn mở đúng chỗ', (tester) async {
-    await tester.pumpWidget(app('/seller/new-listing'));
-    await tester.pumpAndSettle();
-
-    // Nút "+" giữa thanh nav đẩy thẳng vào đây, nên đây là route không được vỡ.
-    expect(tester.takeException(), isNull);
-    expect(find.text('đăng bán'), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: child.key);
+      expect(find.text(child.value), findsOneWidget, reason: child.key);
+      expect(
+        find.text('bảng số liệu'),
+        findsNothing,
+        reason: '${child.key} không rơi về màn của cha',
+      );
+    }
   });
 }
