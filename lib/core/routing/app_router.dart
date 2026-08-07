@@ -36,7 +36,7 @@ import 'package:shopnexus_flutter_app/features/seller/presentation/screens/selle
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_earnings_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/tax_info_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/wallet_ledger_screen.dart';
-import 'package:shopnexus_flutter_app/features/chat/presentation/screens/inbox_screen.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/screens/chat_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/help_center/presentation/screens/help_center_screen.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_detail_screen.dart';
@@ -208,12 +208,7 @@ GoRouter appRouter(Ref ref) {
           GoRoute(
             path: '/chat',
             name: 'chat',
-            // Tab nằm trong query chứ không phải trong path: `MainLayout` nhận
-            // tab đang mở bằng `startsWith('/chat')`, nên một path mới sẽ làm
-            // thanh nav dưới không sáng ở đâu cả.
-            builder: (context, state) => InboxScreen(
-              initialTab: inboxTabFromQuery(state.uri.queryParameters['tab']),
-            ),
+            builder: (context, state) => const ChatListScreen(),
             routes: [
               GoRoute(
                 path: ':id',

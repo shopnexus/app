@@ -12,38 +12,21 @@ class ChatListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        title: Text(
-          'Tin nhắn',
-          style: TextStyle(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Manrope',
-            fontSize: 20,
-          ),
-        ),
-      ),
-      body: const MessagesTab(),
-    );
-  }
-}
-
-/// Danh sách cuộc trò chuyện và thanh tìm kiếm.
-class MessagesTab extends ConsumerWidget {
-  const MessagesTab({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final chatListAsync = ref.watch(chatListProvider);
 
-    return Column(
-      children: [
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Tin nhắn',
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
         // Search Input Bar
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -191,7 +174,8 @@ class MessagesTab extends ConsumerWidget {
             ),
           ),
         ),
-      ],
+        ],
+      ),
     );
   }
 }
