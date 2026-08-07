@@ -8,7 +8,6 @@ import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offer_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/notification_preference.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/transport.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/o_auth_identity.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_notification_preferences_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_notification_preferences_request_items_inner.dart';
@@ -246,16 +245,6 @@ class AccountRepository {
         limit: limit,
       )).data?.data ??
       const [];
-
-  /// Hành trình của kiện hàng: các mốc đơn vị vận chuyển đã báo. Đây là câu trả lời
-  /// cho "hàng tôi đang ở đâu" — câu hỏi hay gặp nhất của một người vừa trả tiền.
-  Future<Transport> orderTransport(String orderId) async {
-    final transport = (await _orderApi.ordersIdTransportGet(
-      id: orderId,
-    )).data?.data;
-    if (transport == null) throw StateError('empty transport response');
-    return transport;
-  }
 
   Future<void> follow(String accountId) =>
       _api.followsAccountIDPut(accountID: accountId);

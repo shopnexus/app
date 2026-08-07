@@ -24,6 +24,15 @@ part 'checkout_provider.freezed.dart';
 
 part 'checkout_provider.g.dart';
 
+/// Đường cổng thanh toán đẩy người trả tiền về.
+///
+/// Dùng lại trang `/checkout` của website: nó đã nằm trong allowlist
+/// `payment.return_url_hosts` của server, và app thì không có origin web nào của
+/// riêng nó để khai. WebView chỉ cần **nhận ra** địa chỉ này để đóng lại — nội
+/// dung trang không phải bằng chứng gì cả, callback của cổng mới là.
+String paymentReturnUrl(String paymentSessionId) =>
+    'https://shopnexus.hopto.org/checkout?session_id=$paymentSessionId';
+
 /// The single-page form, then what the payment session is doing. There is no
 /// step per section: the buyer fills the page in any order.
 enum CheckoutStep { address, processing, success, failed }
@@ -427,6 +436,11 @@ class CheckoutNotifier extends _$CheckoutNotifier {
         StartPaymentRequest(
           paymentOption: state.paymentOption!,
           amount: checkoutResult.total,
+          // Bắt buộc với rail chuyển hướng — Stripe từ chối thẳng nếu thiếu, nên
+          // trước đây app không trả được bằng thẻ chút nào. Host phải nằm trong
+          // allowlist của server (`payment.return_url_hosts`), vì một đường về
+          // không kiểm là một open redirect mượn uy tín của tên miền này.
+          returnUrl: paymentReturnUrl(checkoutResult.paymentSessionId),
         ),
       );
 

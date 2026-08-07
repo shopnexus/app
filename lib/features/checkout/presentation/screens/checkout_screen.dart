@@ -7,6 +7,7 @@ import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
+import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/payment_webview_screen.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/escrow_notice.dart';
 
 class CheckoutScreen extends ConsumerWidget {
@@ -16,6 +17,25 @@ class CheckoutScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final checkoutState = ref.watch(checkoutProvider);
+
+    // Rail chuyển hướng thì mở trang của cổng ngay khi có URL, không bắt chạm
+    // thêm một nút: người trả tiền vừa bấm "đặt hàng", và trang đó là bước tiếp
+    // theo của chính cái họ vừa bấm. Nút bên dưới là đường quay lại nếu họ đóng.
+    //
+    // `listen` chứ không phải mở trong `build`: build chạy lại nhiều lần, và mỗi
+    // lần chạy lại sẽ chồng thêm một WebView nữa.
+    ref.listen(checkoutProvider, (previous, next) {
+      final url = next.paymentTransaction?.checkoutUrl ?? '';
+      final had = previous?.paymentTransaction?.checkoutUrl ?? '';
+      if (url.isEmpty || url == had) return;
+      final sessionId = next.checkoutResult?.paymentSessionId;
+      if (sessionId == null) return;
+      PaymentWebViewScreen.show(
+        context,
+        checkoutUrl: url,
+        returnUrl: paymentReturnUrl(sessionId),
+      );
+    });
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -972,14 +992,14 @@ class CheckoutScreen extends ConsumerWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            // A rail that redirects hands back a URL instead of an outcome, and the payer has to
-            // go there for anything to happen — waiting on a spinner alone would time out. Shown
-            // as selectable text rather than opened: this app has no url_launcher, and a link it
-            // cannot follow is worse than one the buyer can copy.
+            // Một rail chuyển hướng trả về URL chứ không trả về kết quả, và người
+            // trả tiền phải tới đó thì mới có gì xảy ra. Mở **trong app**: trước
+            // đây chỗ này in URL ra để tự chép sang trình duyệt, nghĩa là rời khỏi
+            // app giữa lúc trả tiền và quay lại bằng cách nào là chuyện của họ.
             if (state.paymentTransaction?.checkoutUrl != null) ...[
               const SizedBox(height: 20),
               Text(
-                'Phương thức này cần hoàn tất trên trang của cổng thanh toán. Mở liên kết sau trên trình duyệt:',
+                'Phương thức này cần hoàn tất trên trang của cổng thanh toán.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -987,15 +1007,17 @@ class CheckoutScreen extends ConsumerWidget {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 8),
-              SelectableText(
-                state.paymentTransaction!.checkoutUrl,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  color: theme.colorScheme.primary,
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: () => PaymentWebViewScreen.show(
+                  context,
+                  checkoutUrl: state.paymentTransaction!.checkoutUrl,
+                  returnUrl: paymentReturnUrl(
+                    state.checkoutResult!.paymentSessionId,
+                  ),
                 ),
+                icon: const Icon(Icons.lock_outline_rounded, size: 18),
+                label: const Text('Mở trang thanh toán'),
               ),
             ],
             const SizedBox(height: 24),
