@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/core/constants/route_constants.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/screens/splash_screen.dart';
@@ -34,6 +35,7 @@ import 'package:shopnexus_flutter_app/features/seller/presentation/screens/selle
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_suggestion_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_edit_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_products_screen.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_orders_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_earnings_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/tax_info_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/wallet_ledger_screen.dart';
@@ -177,10 +179,6 @@ GoRouter appRouter(Ref ref) {
                   return SellerProductsScreen(initialStatus: status);
                 },
               ),
-              // Đơn bán không còn là một màn riêng: nó là vai "Tôi bán" của màn
-              // Đơn hàng. Redirect ở lại vì `context.push` là một string —
-              // một link cũ, một thông báo đẩy hay một deep link không compile
-              // cùng app này, nên xoá path đi là để chúng vỡ trong tay người dùng.
               GoRoute(
                 path: 'products/:id/edit',
                 name: 'seller_listing_edit',
@@ -190,7 +188,16 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: 'orders',
                 name: 'seller_orders',
-                redirect: (context, state) => '/account/orders?role=seller',
+                builder: (context, state) {
+                  final orderState =
+                      _enumByValue(
+                        OrderState.values,
+                        state.uri.queryParameters['state'],
+                        (s) => s.value,
+                      ) ??
+                      OrderState.open;
+                  return SellerOrdersScreen(initialState: orderState);
+                },
               ),
               GoRoute(
                 path: 'earnings',
