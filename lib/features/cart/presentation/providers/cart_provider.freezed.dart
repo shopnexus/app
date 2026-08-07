@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'cart_provider.dart';
@@ -9,6 +9,7 @@ part of 'cart_provider.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -63,7 +64,7 @@ class _$CartStateCopyWithImpl<$Res>
 /// Create a copy of CartState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? items = null,Object? listings = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(CartState(
 items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<CartItem>,listings: null == listings ? _self.listings : listings // ignore: cast_nullable_to_non_nullable
 as Map<String, ListingDetail>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
@@ -209,7 +210,7 @@ return $default(_that.items,_that.listings,_that.isLoading,_that.errorMessage);c
 
 
 class _CartState extends CartState {
-  const _CartState({final  List<CartItem> items = const [], final  Map<String, ListingDetail> listings = const {}, this.isLoading = false, this.errorMessage}): _items = items,_listings = listings,super._();
+  const _CartState({ List<CartItem> items = const [],  Map<String, ListingDetail> listings = const {}, this.isLoading = false, this.errorMessage}): _items = items,_listings = listings,super._();
   
 
  final  List<CartItem> _items;

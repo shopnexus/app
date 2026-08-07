@@ -7,50 +7,45 @@ part of 'listing_suggestion.dart';
 // **************************************************************************
 
 ListingSuggestion _$ListingSuggestionFromJson(Map<String, dynamic> json) =>
-    $checkedCreate(
-      'ListingSuggestion',
-      json,
-      ($checkedConvert) {
-        $checkKeys(
-          json,
-          requiredKeys: const [
-            'category_id',
-            'condition',
-            'description',
-            'name',
-            'price',
-            'specifications',
-            'tags',
-            'transcript',
-            'weight_g',
-          ],
-        );
-        final val = ListingSuggestion(
-          categoryId: $checkedConvert('category_id', (v) => v as String?),
-          condition: $checkedConvert(
-            'condition',
-            (v) => $enumDecode(_$ListingSuggestionConditionEnumEnumMap, v),
+    $checkedCreate('ListingSuggestion', json, ($checkedConvert) {
+      $checkKeys(
+        json,
+        requiredKeys: const [
+          'category_id',
+          'condition',
+          'description',
+          'name',
+          'price',
+          'specifications',
+          'tags',
+          'transcript',
+          'weight_g',
+        ],
+      );
+      final val = ListingSuggestion(
+        categoryId: $checkedConvert('category_id', (v) => v as String?),
+        condition: $checkedConvert(
+          'condition',
+          (v) => $enumDecode(_$ListingSuggestionConditionEnumEnumMap, v),
+        ),
+        description: $checkedConvert('description', (v) => v as String),
+        name: $checkedConvert('name', (v) => v as String),
+        price: $checkedConvert('price', (v) => (v as num?)?.toInt()),
+        specifications: $checkedConvert(
+          'specifications',
+          (v) => (v as Map<String, dynamic>).map(
+            (k, e) => MapEntry(k, e as Object),
           ),
-          description: $checkedConvert('description', (v) => v as String),
-          name: $checkedConvert('name', (v) => v as String),
-          price: $checkedConvert('price', (v) => (v as num?)?.toInt()),
-          specifications: $checkedConvert(
-            'specifications',
-            (v) => (v as Map<String, dynamic>).map(
-              (k, e) => MapEntry(k, e as Object),
-            ),
-          ),
-          tags: $checkedConvert(
-            'tags',
-            (v) => (v as List<dynamic>).map((e) => e as String).toList(),
-          ),
-          transcript: $checkedConvert('transcript', (v) => v as String),
-          weightG: $checkedConvert('weight_g', (v) => (v as num?)?.toInt()),
-        );
-        return val;
-      },
-      fieldKeyMap: const {'categoryId': 'category_id', 'weightG': 'weight_g'},
-    );
+        ),
+        tags: $checkedConvert(
+          'tags',
+          (v) => (v as List<dynamic>).map((e) => e as String).toList(),
+        ),
+        transcript: $checkedConvert('transcript', (v) => v as String),
+        weightG: $checkedConvert('weight_g', (v) => (v as num?)?.toInt()),
+      );
+      return val;
+    }, fieldKeyMap: const {'categoryId': 'category_id', 'weightG': 'weight_g'});
 
 Map<String, dynamic> _$ListingSuggestionToJson(ListingSuggestion instance) =>
     <String, dynamic>{

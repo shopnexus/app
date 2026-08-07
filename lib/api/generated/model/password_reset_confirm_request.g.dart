@@ -8,19 +8,14 @@ part of 'password_reset_confirm_request.dart';
 
 PasswordResetConfirmRequest _$PasswordResetConfirmRequestFromJson(
   Map<String, dynamic> json,
-) => $checkedCreate(
-  'PasswordResetConfirmRequest',
-  json,
-  ($checkedConvert) {
-    $checkKeys(json, requiredKeys: const ['new_password', 'token']);
-    final val = PasswordResetConfirmRequest(
-      newPassword: $checkedConvert('new_password', (v) => v as String),
-      token: $checkedConvert('token', (v) => v as String),
-    );
-    return val;
-  },
-  fieldKeyMap: const {'newPassword': 'new_password'},
-);
+) => $checkedCreate('PasswordResetConfirmRequest', json, ($checkedConvert) {
+  $checkKeys(json, requiredKeys: const ['new_password', 'token']);
+  final val = PasswordResetConfirmRequest(
+    newPassword: $checkedConvert('new_password', (v) => v as String),
+    token: $checkedConvert('token', (v) => v as String),
+  );
+  return val;
+}, fieldKeyMap: const {'newPassword': 'new_password'});
 
 Map<String, dynamic> _$PasswordResetConfirmRequestToJson(
   PasswordResetConfirmRequest instance,

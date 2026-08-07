@@ -8,18 +8,13 @@ part of 'withdrawal_approval_request.dart';
 
 WithdrawalApprovalRequest _$WithdrawalApprovalRequestFromJson(
   Map<String, dynamic> json,
-) => $checkedCreate(
-  'WithdrawalApprovalRequest',
-  json,
-  ($checkedConvert) {
-    final val = WithdrawalApprovalRequest(
-      providerRef: $checkedConvert('provider_ref', (v) => v as String?),
-      reason: $checkedConvert('reason', (v) => v as String?),
-    );
-    return val;
-  },
-  fieldKeyMap: const {'providerRef': 'provider_ref'},
-);
+) => $checkedCreate('WithdrawalApprovalRequest', json, ($checkedConvert) {
+  final val = WithdrawalApprovalRequest(
+    providerRef: $checkedConvert('provider_ref', (v) => v as String?),
+    reason: $checkedConvert('reason', (v) => v as String?),
+  );
+  return val;
+}, fieldKeyMap: const {'providerRef': 'provider_ref'});
 
 Map<String, dynamic> _$WithdrawalApprovalRequestToJson(
   WithdrawalApprovalRequest instance,

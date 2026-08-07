@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'chat_state.dart';
@@ -9,6 +9,7 @@ part of 'chat_state.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -63,7 +64,7 @@ class _$ChatListStateCopyWithImpl<$Res>
 /// Create a copy of ChatListState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? conversations = null,Object? searchQuery = null,Object? nextCursor = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(ChatListState(
 conversations: null == conversations ? _self.conversations : conversations // ignore: cast_nullable_to_non_nullable
 as List<Conversation>,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
 as String,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
@@ -208,7 +209,7 @@ return $default(_that.conversations,_that.searchQuery,_that.nextCursor);case _:
 
 
 class _ChatListState extends ChatListState {
-  const _ChatListState({final  List<Conversation> conversations = const [], this.searchQuery = '', this.nextCursor}): _conversations = conversations,super._();
+  const _ChatListState({ List<Conversation> conversations = const [], this.searchQuery = '', this.nextCursor}): _conversations = conversations,super._();
   
 
  final  List<Conversation> _conversations;
@@ -336,7 +337,7 @@ class _$ChatDetailStateCopyWithImpl<$Res>
 /// Create a copy of ChatDetailState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? conversationId = null,Object? conversation = freezed,Object? messages = null,Object? offers = null,Object? nextCursor = freezed,Object? isSending = null,Object? errorMessage = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(ChatDetailState(
 conversationId: null == conversationId ? _self.conversationId : conversationId // ignore: cast_nullable_to_non_nullable
 as String,conversation: freezed == conversation ? _self.conversation : conversation // ignore: cast_nullable_to_non_nullable
 as Conversation?,messages: null == messages ? _self.messages : messages // ignore: cast_nullable_to_non_nullable
@@ -485,7 +486,7 @@ return $default(_that.conversationId,_that.conversation,_that.messages,_that.off
 
 
 class _ChatDetailState extends ChatDetailState {
-  const _ChatDetailState({required this.conversationId, this.conversation, final  List<ChatMessage> messages = const [], final  Map<String, Offer> offers = const {}, this.nextCursor, this.isSending = false, this.errorMessage}): _messages = messages,_offers = offers,super._();
+  const _ChatDetailState({required this.conversationId, this.conversation,  List<ChatMessage> messages = const [],  Map<String, Offer> offers = const {}, this.nextCursor, this.isSending = false, this.errorMessage}): _messages = messages,_offers = offers,super._();
   
 
 @override final  String conversationId;

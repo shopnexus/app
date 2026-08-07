@@ -8,30 +8,25 @@ part of 'notification_preference.dart';
 
 NotificationPreference _$NotificationPreferenceFromJson(
   Map<String, dynamic> json,
-) => $checkedCreate(
-  'NotificationPreference',
-  json,
-  ($checkedConvert) {
-    $checkKeys(
-      json,
-      requiredKeys: const ['category', 'channel', 'is_default', 'is_enabled'],
-    );
-    final val = NotificationPreference(
-      category: $checkedConvert(
-        'category',
-        (v) => $enumDecode(_$NotificationCategoryEnumMap, v),
-      ),
-      channel: $checkedConvert(
-        'channel',
-        (v) => $enumDecode(_$NotificationChannelEnumMap, v),
-      ),
-      isDefault: $checkedConvert('is_default', (v) => v as bool),
-      isEnabled: $checkedConvert('is_enabled', (v) => v as bool),
-    );
-    return val;
-  },
-  fieldKeyMap: const {'isDefault': 'is_default', 'isEnabled': 'is_enabled'},
-);
+) => $checkedCreate('NotificationPreference', json, ($checkedConvert) {
+  $checkKeys(
+    json,
+    requiredKeys: const ['category', 'channel', 'is_default', 'is_enabled'],
+  );
+  final val = NotificationPreference(
+    category: $checkedConvert(
+      'category',
+      (v) => $enumDecode(_$NotificationCategoryEnumMap, v),
+    ),
+    channel: $checkedConvert(
+      'channel',
+      (v) => $enumDecode(_$NotificationChannelEnumMap, v),
+    ),
+    isDefault: $checkedConvert('is_default', (v) => v as bool),
+    isEnabled: $checkedConvert('is_enabled', (v) => v as bool),
+  );
+  return val;
+}, fieldKeyMap: const {'isDefault': 'is_default', 'isEnabled': 'is_enabled'});
 
 Map<String, dynamic> _$NotificationPreferenceToJson(
   NotificationPreference instance,
