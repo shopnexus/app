@@ -68,7 +68,11 @@ class TicketKindInfo {
       label: 'Khiếu nại hoàn tiền',
       needsRef: true,
       needsReason: false,
-      refPrefix: 'rfd_',
+      // Mã **đơn hàng**, không phải mã yêu cầu hoàn tiền. Khiếu nại được lập
+      // theo đơn — đó là thứ gom khiếu nại của cả hai bên về một sale vào cùng
+      // một thread — nên gửi `rfd_…` bị từ chối `invalid_id` trước khi ticket
+      // kịp được tạo.
+      refPrefix: 'ord_',
     ),
     TicketKindInfo(
       kind: TicketKind.orderIssue,

@@ -280,9 +280,11 @@ class _Body extends ConsumerWidget {
     final ticket = await RaiseTicketSheet.show(
       context,
       kind: TicketKind.refundDispute,
-      refId: refund.id,
+      // Đơn, không phải yêu cầu hoàn tiền: server giải mã ref bằng prefix của
+      // `order`, nên mã `rfd_…` là `invalid_id`.
+      refId: refund.orderId,
       subjectHint: 'Khiếu nại hoàn tiền đơn ${refund.orderId}',
-      refLabel: refund.id,
+      refLabel: refund.orderId,
     );
     if (ticket == null || !context.mounted) return;
     ref.invalidate(refundDetailProvider(refund.id));
