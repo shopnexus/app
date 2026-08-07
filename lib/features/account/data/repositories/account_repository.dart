@@ -89,7 +89,7 @@ class AccountRepository {
   /// giữ chỗ, PUT bằng Dio trần (URL đã ký là origin của nhà lưu trữ, không được
   /// mang bearer của sàn), rồi xác nhận — trước khi xác nhận thì resource không
   /// resolve ra gì cả, nên một upload dở dang không bao giờ đính được vào đâu.
-  Future<String> uploadReceiptPhoto({
+  Future<String> uploadOrderEvidence({
     required List<int> bytes,
     required String filename,
     required String mime,

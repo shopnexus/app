@@ -4,11 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/refund/domain/refund_actions.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refund_evidence_sheet.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refund_status_badge.dart';
 
 class RefundDetailScreen extends ConsumerWidget {
@@ -48,17 +51,16 @@ class _Body extends ConsumerWidget {
 
   final Refund refund;
 
-  bool get _isLive => switch (refund.status) {
-    RefundStatus.accepted ||
-    RefundStatus.rejected ||
-    RefundStatus.cancelled => false,
-    _ => true,
-  };
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+
+    // Vai quyết định gần như mọi nút trên màn này, và `refund.buyerId` là thứ duy
+    // nhất nói ra được: hàng refund chỉ ghi người mua, phía bán suy từ đơn.
+    final me = ref.watch(profileProvider).value?.id;
+    final isBuyer = me != null && refund.buyerId == me;
+    final actions = refundActionsFor(refund, isBuyer: isBuyer);
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -139,33 +141,139 @@ class _Body extends ConsumerWidget {
           ),
         ],
 
-        const SizedBox(height: 28),
-        if (_isLive)
-          // There is no escalate route: opening a `refund-dispute` ticket is what
-          // hands the case to staff, and the verdict comes back as that ticket
-          // closing with `refund-granted` or `refund-refused`.
-          FilledButton.icon(
-            onPressed: () => _escalate(context, ref),
-            icon: const Icon(Icons.support_agent_outlined),
-            label: const Text('Nhờ ShopNexus xử lý'),
-          )
-        else
-          Text(
-            'Yêu cầu đã kết thúc.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+        const SizedBox(height: 24),
+        // Ai đang giữ lượt, nói thành câu. Một cái badge trạng thái trả lời "vụ
+        // này đang ở đâu", không trả lời "có phải tôi đang phải làm gì không".
+        Text(
+          refundWaitingOn(refund.status, isBuyer: isBuyer),
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: refundIsSettled(refund.status)
+                ? theme.colorScheme.onSurfaceVariant
+                : theme.colorScheme.primary,
           ),
+        ),
 
-        if (_isLive) ...[
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () => _withdraw(context, ref),
-            child: const Text('Hủy yêu cầu hoàn tiền'),
-          ),
+        const SizedBox(height: 16),
+        for (final action in actions) ...[
+          _actionButton(context, ref, action),
+          const SizedBox(height: 8),
         ],
       ],
     );
+  }
+
+  /// Một nút cho mỗi việc bên này còn làm được. Nhãn nói ra hệ quả, vì ba trong
+  /// số đó không quay lại được và một cái đẩy vụ việc sang tay người khác.
+  Widget _actionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefundAction action,
+  ) => switch (action) {
+    RefundAction.accept => FilledButton.icon(
+      onPressed: () => _accept(context, ref),
+      icon: const Icon(Icons.check_rounded),
+      label: const Text('Chấp nhận hoàn tiền'),
+    ),
+    RefundAction.escalate => OutlinedButton.icon(
+      onPressed: () => _escalate(context, ref),
+      icon: const Icon(Icons.support_agent_outlined),
+      label: const Text('Nhờ ShopNexus xử lý'),
+    ),
+    RefundAction.withdraw => OutlinedButton(
+      onPressed: () => _withdraw(context, ref),
+      child: const Text('Hủy yêu cầu hoàn tiền'),
+    ),
+    RefundAction.reportReturnSent => OutlinedButton.icon(
+      onPressed: () =>
+          _reportReturn(context, ref, TransportCheckpoint.pickedUp),
+      icon: const Icon(Icons.local_shipping_outlined),
+      label: const Text('Tôi đã gửi hàng trả lại'),
+    ),
+    RefundAction.claimReturnDelivered => OutlinedButton.icon(
+      onPressed: () =>
+          _reportReturn(context, ref, TransportCheckpoint.delivered),
+      icon: const Icon(Icons.report_outlined),
+      label: const Text('Hàng đã tới nhưng người bán chưa xác nhận'),
+    ),
+    RefundAction.confirmReturnReceived => FilledButton.icon(
+      onPressed: () =>
+          _reportReturn(context, ref, TransportCheckpoint.delivered),
+      icon: const Icon(Icons.inventory_2_outlined),
+      label: const Text('Đã nhận lại hàng'),
+    ),
+    RefundAction.addEvidence => TextButton.icon(
+      onPressed: () => _addEvidence(context, ref),
+      icon: const Icon(Icons.add_photo_alternate_outlined),
+      label: const Text('Bổ sung ảnh bằng chứng'),
+    ),
+  };
+
+  Future<void> _accept(BuildContext context, WidgetRef ref) async {
+    final confirmed = await _confirm(
+      context,
+      title: 'Chấp nhận hoàn tiền?',
+      // Đồng ý không trả tiền ngay: hàng phải về trước, và người bán còn một cửa
+      // sổ kiểm hàng sau đó. Nói trước để "đồng ý" không bị đọc thành "mất tiền".
+      body: 'Người mua sẽ gửi hàng trả lại. Sau khi bạn xác nhận đã nhận hàng, '
+          'bạn còn 48 giờ để kiểm tra trước khi tiền được hoàn.',
+      confirmLabel: 'Chấp nhận',
+    );
+    if (confirmed != true || !context.mounted) return;
+    await _run(context, ref, (a) => a.accept(refund.id));
+  }
+
+  Future<void> _reportReturn(
+    BuildContext context,
+    WidgetRef ref,
+    TransportCheckpoint status,
+  ) async {
+    await _run(context, ref, (a) => a.reportReturn(refund.id, status));
+  }
+
+  Future<void> _addEvidence(BuildContext context, WidgetRef ref) async {
+    final added = await RefundEvidenceSheet.show(context, refundId: refund.id);
+    if (added != true || !context.mounted) return;
+    ref.invalidate(refundDetailProvider(refund.id));
+  }
+
+  Future<bool?> _confirm(
+    BuildContext context, {
+    required String title,
+    required String body,
+    required String confirmLabel,
+  }) {
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: Text(body),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Không'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(confirmLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _run(
+    BuildContext context,
+    WidgetRef ref,
+    Future<void> Function(RefundActions) action,
+  ) async {
+    try {
+      await action(ref.read(refundActionsProvider.notifier));
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(ErrorHandler.getErrorMessage(e))));
+    }
   }
 
   Future<void> _escalate(BuildContext context, WidgetRef ref) async {
@@ -184,32 +292,13 @@ class _Body extends ConsumerWidget {
   }
 
   Future<void> _withdraw(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Hủy yêu cầu hoàn tiền?'),
-        content: const Text('Bạn sẽ không thể mở lại yêu cầu này.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Không'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Hủy yêu cầu'),
-          ),
-        ],
-      ),
+    final confirmed = await _confirm(
+      context,
+      title: 'Hủy yêu cầu hoàn tiền?',
+      body: 'Bạn sẽ không thể mở lại yêu cầu này.',
+      confirmLabel: 'Hủy yêu cầu',
     );
     if (confirmed != true || !context.mounted) return;
-
-    try {
-      await ref.read(refundActionsProvider.notifier).withdraw(refund.id);
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(ErrorHandler.getErrorMessage(e))));
-    }
+    await _run(context, ref, (a) => a.withdraw(refund.id));
   }
 }

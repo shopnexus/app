@@ -52,7 +52,7 @@ class OrdersActions extends _$OrdersActions {
         final ids = <String>[];
         for (final photo in photos) {
           ids.add(
-            await repository.uploadReceiptPhoto(
+            await repository.uploadOrderEvidence(
               bytes: photo.bytes,
               filename: photo.filename,
               mime: photo.mime,

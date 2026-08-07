@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
 import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
 
 part 'refund_provider.g.dart';
@@ -30,6 +31,11 @@ class RefundActions extends _$RefundActions {
 
   Future<void> accept(String id) async {
     await ref.read(refundRepositoryProvider).accept(id);
+    _invalidate(id);
+  }
+
+  Future<void> reportReturn(String id, TransportCheckpoint status) async {
+    await ref.read(refundRepositoryProvider).reportReturn(id, status);
     _invalidate(id);
   }
 

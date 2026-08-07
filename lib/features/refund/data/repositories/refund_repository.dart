@@ -8,6 +8,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/admin_refunds_id_verdi
 import 'package:shopnexus_flutter_app/api/generated/model/create_refund_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_checkpoint_request.dart';
 
 part 'refund_repository.g.dart';
 
@@ -83,6 +85,20 @@ class RefundRepository {
   Future<Refund> accept(String id) =>
       _unwrap(_api.refundsIdAcceptancePost(id: id));
 
+  /// Chặng hàng đi ngược về người bán.
+  ///
+  /// Không đơn vị vận chuyển nào được đặt cho chặng này, nên nó là chặng duy
+  /// nhất mà chính hai bên báo vị trí — và ai báo `delivered` quyết định vụ việc
+  /// đi đâu: người bán xác nhận thì mở cửa sổ kiểm hàng, người mua tự khai thì
+  /// vụ việc sang tay staff.
+  Future<Refund> reportReturn(String id, TransportCheckpoint status) {
+    return _unwrap(
+      _api.refundsIdReturnTransportCheckpointsPost(
+        id: id,
+        transportCheckpointRequest: TransportCheckpointRequest(status: status),
+      ),
+    );
+  }
 
   /// The buyer's evidence, topped up until the case closes.
   Future<Refund> addAttachments(String id, List<String> resourceIds) {
