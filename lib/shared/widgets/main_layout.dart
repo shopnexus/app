@@ -34,12 +34,7 @@ class MainLayout extends ConsumerWidget {
         context.go('/search');
         break;
       case 2:
-        // The seller's home, not straight to "post a listing". This tab already
-        // *highlights* for any `/seller` route, but nothing else navigated to the
-        // dashboard itself: the account screen links to products, orders and
-        // earnings, never to `/seller`. `go`, like every other tab — a tab is a
-        // destination, not something pushed on top of one. Đăng tin vào qua mục
-        // Sản phẩm hoặc banner trên dashboard.
+        // Nút "+" ở giữa điều hướng thẳng tới màn hình đăng sản phẩm mới (/seller)
         context.go('/seller');
         break;
       case 3:

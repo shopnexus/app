@@ -59,6 +59,14 @@ class _ListingSuggestionScreenState
     super.dispose();
   }
 
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/home');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -83,61 +91,81 @@ class _ListingSuggestionScreenState
       return _gateShell(_IdentityGate(eligibility: gate));
     }
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Đăng sản phẩm',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        actions: [
-          IconButton(
-            tooltip: 'Làm lại từ đầu',
-            icon: Icon(
-              Icons.refresh_rounded,
-              color: theme.colorScheme.onSurface,
+    return BackButtonListener(
+      onBackButtonPressed: () async {
+        _handleBack();
+        return true;
+      },
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          _handleBack();
+        },
+        child: Scaffold(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          appBar: AppBar(
+            backgroundColor: theme.colorScheme.surface,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_rounded,
+                color: theme.colorScheme.onSurface,
+              ),
+              onPressed: _handleBack,
             ),
-            onPressed: () {
-              notifier.reset();
-              _clearForm();
-            },
+            title: Text(
+              'Đăng sản phẩm',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            actions: [
+              IconButton(
+                tooltip: 'Làm lại từ đầu',
+                icon: Icon(
+                  Icons.refresh_rounded,
+                  color: theme.colorScheme.onSurface,
+                ),
+                onPressed: () {
+                  notifier.reset();
+                  _clearForm();
+                },
+              ),
+              const SizedBox(width: 4),
+            ],
           ),
-          const SizedBox(width: 4),
-        ],
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-          children: [
-            if (state.errorMessage != null) ...[
-              _errorBanner(state.errorMessage!),
-              const SizedBox(height: 12),
-            ],
-            _photoSection(state, notifier),
-            const SizedBox(height: 20),
-            _noteSection(),
-            const SizedBox(height: 12),
-            _suggestButton(state, notifier),
-            const SizedBox(height: 20),
-            if (state.suggesting)
-              _formSkeleton()
-            else ...[
-              if (state.suggestion?.transcript.isNotEmpty ?? false) ...[
-                _transcriptCard(state.suggestion!.transcript),
-                const SizedBox(height: 16),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+              children: [
+                if (state.errorMessage != null) ...[
+                  _errorBanner(state.errorMessage!),
+                  const SizedBox(height: 12),
+                ],
+                _photoSection(state, notifier),
+                const SizedBox(height: 20),
+                _noteSection(),
+                const SizedBox(height: 12),
+                _suggestButton(state, notifier),
+                const SizedBox(height: 20),
+                if (state.suggesting)
+                  _formSkeleton()
+                else ...[
+                  if (state.suggestion?.transcript.isNotEmpty ?? false) ...[
+                    _transcriptCard(state.suggestion!.transcript),
+                    const SizedBox(height: 16),
+                  ],
+                  _listingForm(state),
+                ],
               ],
-              _listingForm(state),
-            ],
-          ],
+            ),
+          ),
+          bottomNavigationBar: _bottomBar(state, notifier),
         ),
       ),
-      bottomNavigationBar: _bottomBar(state, notifier),
     );
   }
 
@@ -147,21 +175,41 @@ class _ListingSuggestionScreenState
   Widget _gateShell(Widget body) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: Text(
-          'Đăng sản phẩm',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
+    return BackButtonListener(
+      onBackButtonPressed: () async {
+        _handleBack();
+        return true;
+      },
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          _handleBack();
+        },
+        child: Scaffold(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          appBar: AppBar(
+            backgroundColor: theme.colorScheme.surface,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_rounded,
+                color: theme.colorScheme.onSurface,
+              ),
+              onPressed: _handleBack,
+            ),
+            title: Text(
+              'Đăng sản phẩm',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+            ),
           ),
+          body: SafeArea(child: body),
         ),
       ),
-      body: SafeArea(child: body),
     );
   }
 

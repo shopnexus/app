@@ -31,7 +31,6 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/prod
 import 'package:shopnexus_flutter_app/features/cart/presentation/screens/cart_screen.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/checkout_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_profile_screen.dart';
-import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_dashboard_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_suggestion_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_edit_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_products_screen.dart';
@@ -152,13 +151,11 @@ GoRouter appRouter(Ref ref) {
               return SellerProfileScreen(vendorId: id);
             },
           ),
-          // Cửa duy nhất vào bảng số liệu: màn Tài khoản chỉ link tới
-          // `/seller/products`, `/seller/orders` và `/seller/earnings`, nên
-          // `/seller` mà redirect đi chỗ khác là dashboard không ai mở được.
+          // Nút + ở thanh điều hướng dưới mở màn hình Đăng sản phẩm mới
           GoRoute(
             path: '/seller',
             name: 'seller',
-            builder: (context, state) => const SellerDashboardScreen(),
+            builder: (context, state) => const ListingSuggestionScreen(),
             routes: [
               GoRoute(
                 path: 'new-listing',
