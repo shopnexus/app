@@ -10,11 +10,11 @@ part of 'notifications_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(NotificationsController)
-final notificationsControllerProvider = NotificationsControllerProvider._();
+const notificationsControllerProvider = NotificationsControllerProvider._();
 
 final class NotificationsControllerProvider
     extends $AsyncNotifierProvider<NotificationsController, NotificationFeed> {
-  NotificationsControllerProvider._()
+  const NotificationsControllerProvider._()
     : super(
         from: null,
         argument: null,
@@ -34,14 +34,15 @@ final class NotificationsControllerProvider
 }
 
 String _$notificationsControllerHash() =>
-    r'fdc35c794476e5b260a1de8358c06f8ee8bb7c95';
+    r'78d71a54bc05cd0a305dc7575034fc97eea1d7a3';
 
 abstract class _$NotificationsController
     extends $AsyncNotifier<NotificationFeed> {
   FutureOr<NotificationFeed> build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref =
         this.ref as $Ref<AsyncValue<NotificationFeed>, NotificationFeed>;
     final element =
@@ -52,17 +53,17 @@ abstract class _$NotificationsController
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }
 
 @ProviderFor(unreadNotificationsCount)
-final unreadNotificationsCountProvider = UnreadNotificationsCountProvider._();
+const unreadNotificationsCountProvider = UnreadNotificationsCountProvider._();
 
 final class UnreadNotificationsCountProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
     with $FutureModifier<int>, $FutureProvider<int> {
-  UnreadNotificationsCountProvider._()
+  const UnreadNotificationsCountProvider._()
     : super(
         from: null,
         argument: null,

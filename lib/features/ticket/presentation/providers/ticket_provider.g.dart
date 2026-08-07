@@ -12,7 +12,7 @@ part of 'ticket_provider.dart';
 /// nor which moderator is working theirs.
 
 @ProviderFor(TicketList)
-final ticketListProvider = TicketListFamily._();
+const ticketListProvider = TicketListFamily._();
 
 /// The caller's own tickets, newest first. A requester never sees anybody else's,
 /// nor which moderator is working theirs.
@@ -20,7 +20,7 @@ final class TicketListProvider
     extends $AsyncNotifierProvider<TicketList, List<Ticket>> {
   /// The caller's own tickets, newest first. A requester never sees anybody else's,
   /// nor which moderator is working theirs.
-  TicketListProvider._({
+  const TicketListProvider._({
     required TicketListFamily super.from,
     required TicketStatus? super.argument,
   }) : super(
@@ -70,7 +70,7 @@ final class TicketListFamily extends $Family
           FutureOr<List<Ticket>>,
           TicketStatus?
         > {
-  TicketListFamily._()
+  const TicketListFamily._()
     : super(
         retry: null,
         name: r'ticketListProvider',
@@ -99,7 +99,8 @@ abstract class _$TicketList extends $AsyncNotifier<List<Ticket>> {
   FutureOr<List<Ticket>> build({TicketStatus? status});
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build(status: _$args);
     final ref = this.ref as $Ref<AsyncValue<List<Ticket>>, List<Ticket>>;
     final element =
         ref.element
@@ -109,7 +110,7 @@ abstract class _$TicketList extends $AsyncNotifier<List<Ticket>> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, () => build(status: _$args));
+    element.handleValue(ref, created);
   }
 }
 
@@ -117,7 +118,7 @@ abstract class _$TicketList extends $AsyncNotifier<List<Ticket>> {
 /// detail screen asks for it rather than reusing the row from the list.
 
 @ProviderFor(ticketDetail)
-final ticketDetailProvider = TicketDetailFamily._();
+const ticketDetailProvider = TicketDetailFamily._();
 
 /// Reading a ticket is also what repairs a missing `conversation_id`, so the
 /// detail screen asks for it rather than reusing the row from the list.
@@ -127,7 +128,7 @@ final class TicketDetailProvider
     with $FutureModifier<Ticket>, $FutureProvider<Ticket> {
   /// Reading a ticket is also what repairs a missing `conversation_id`, so the
   /// detail screen asks for it rather than reusing the row from the list.
-  TicketDetailProvider._({
+  const TicketDetailProvider._({
     required TicketDetailFamily super.from,
     required String super.argument,
   }) : super(
@@ -177,7 +178,7 @@ String _$ticketDetailHash() => r'aedb9be662d41da101ab3853c2086f542460f3f9';
 
 final class TicketDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Ticket>, String> {
-  TicketDetailFamily._()
+  const TicketDetailFamily._()
     : super(
         retry: null,
         name: r'ticketDetailProvider',
@@ -198,17 +199,38 @@ final class TicketDetailFamily extends $Family
 
 /// Raising a ticket, from anywhere: the help centre's form, a listing's report
 /// action, a refund the buyer or seller wants staff to decide.
+///
+/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua cái
+/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+/// been disposed" trong khi ticket *đã* được tạo trên server.
+/// Không đổi sang `keepAlive`: annotation đó chỉ có hiệu lực sau khi chạy lại
+/// codegen. Chặn bằng `ref.mounted` là thay đổi thuần source, và đủ — sheet đã
+/// nhận ticket qua giá trị trả về, nên state chỉ còn là thứ để hiển thị.
 
 @ProviderFor(RaiseTicket)
-final raiseTicketProvider = RaiseTicketProvider._();
+const raiseTicketProvider = RaiseTicketProvider._();
 
 /// Raising a ticket, from anywhere: the help centre's form, a listing's report
 /// action, a refund the buyer or seller wants staff to decide.
+///
+/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua cái
+/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+/// been disposed" trong khi ticket *đã* được tạo trên server.
+/// Không đổi sang `keepAlive`: annotation đó chỉ có hiệu lực sau khi chạy lại
+/// codegen. Chặn bằng `ref.mounted` là thay đổi thuần source, và đủ — sheet đã
+/// nhận ticket qua giá trị trả về, nên state chỉ còn là thứ để hiển thị.
 final class RaiseTicketProvider
     extends $NotifierProvider<RaiseTicket, AsyncValue<Ticket?>> {
   /// Raising a ticket, from anywhere: the help centre's form, a listing's report
   /// action, a refund the buyer or seller wants staff to decide.
-  RaiseTicketProvider._()
+  ///
+  /// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua cái
+  /// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+  /// been disposed" trong khi ticket *đã* được tạo trên server.
+  /// Không đổi sang `keepAlive`: annotation đó chỉ có hiệu lực sau khi chạy lại
+  /// codegen. Chặn bằng `ref.mounted` là thay đổi thuần source, và đủ — sheet đã
+  /// nhận ticket qua giá trị trả về, nên state chỉ còn là thứ để hiển thị.
+  const RaiseTicketProvider._()
     : super(
         from: null,
         argument: null,
@@ -235,16 +257,24 @@ final class RaiseTicketProvider
   }
 }
 
-String _$raiseTicketHash() => r'ec491da591f8c71c5c42b474d5a309fff98edfe6';
+String _$raiseTicketHash() => r'03c3e339ec7f4cb8ef6cd3e85e9e68f104c9969a';
 
 /// Raising a ticket, from anywhere: the help centre's form, a listing's report
 /// action, a refund the buyer or seller wants staff to decide.
+///
+/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua cái
+/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+/// been disposed" trong khi ticket *đã* được tạo trên server.
+/// Không đổi sang `keepAlive`: annotation đó chỉ có hiệu lực sau khi chạy lại
+/// codegen. Chặn bằng `ref.mounted` là thay đổi thuần source, và đủ — sheet đã
+/// nhận ticket qua giá trị trả về, nên state chỉ còn là thứ để hiển thị.
 
 abstract class _$RaiseTicket extends $Notifier<AsyncValue<Ticket?>> {
   AsyncValue<Ticket?> build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<AsyncValue<Ticket?>, AsyncValue<Ticket?>>;
     final element =
         ref.element
@@ -254,6 +284,6 @@ abstract class _$RaiseTicket extends $Notifier<AsyncValue<Ticket?>> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

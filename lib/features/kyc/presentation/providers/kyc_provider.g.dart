@@ -10,11 +10,11 @@ part of 'kyc_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(KycNotifier)
-final kycProvider = KycNotifierProvider._();
+const kycProvider = KycNotifierProvider._();
 
 final class KycNotifierProvider
     extends $NotifierProvider<KycNotifier, KycFormState> {
-  KycNotifierProvider._()
+  const KycNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -47,7 +47,8 @@ abstract class _$KycNotifier extends $Notifier<KycFormState> {
   KycFormState build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<KycFormState, KycFormState>;
     final element =
         ref.element
@@ -57,6 +58,6 @@ abstract class _$KycNotifier extends $Notifier<KycFormState> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

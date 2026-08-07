@@ -14,7 +14,7 @@ part of 'orders_provider.dart';
 /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
 
 @ProviderFor(unsettledItems)
-final unsettledItemsProvider = UnsettledItemsProvider._();
+const unsettledItemsProvider = UnsettledItemsProvider._();
 
 /// Dòng đã trả tiền mà chưa thành đơn — cửa sổ duy nhất còn bỏ được.
 ///
@@ -35,7 +35,7 @@ final class UnsettledItemsProvider
   ///
   /// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
   /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
-  UnsettledItemsProvider._()
+  const UnsettledItemsProvider._()
     : super(
         from: null,
         argument: null,
@@ -67,14 +67,14 @@ String _$unsettledItemsHash() => r'faca7c951210529836df9c145b32d697214904e4';
 /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
 
 @ProviderFor(Orders)
-final ordersProvider = OrdersProvider._();
+const ordersProvider = OrdersProvider._();
 
 /// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
 /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
 final class OrdersProvider extends $AsyncNotifierProvider<Orders, OrdersFeed> {
   /// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
   /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
-  OrdersProvider._()
+  const OrdersProvider._()
     : super(
         from: null,
         argument: null,
@@ -93,7 +93,7 @@ final class OrdersProvider extends $AsyncNotifierProvider<Orders, OrdersFeed> {
   Orders create() => Orders();
 }
 
-String _$ordersHash() => r'51ae073ba6d24eccafb4bd331e168deac09c3e2b';
+String _$ordersHash() => r'99b0848e645717d1f180b91883d38955aa1ca546';
 
 /// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
 /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
@@ -102,7 +102,8 @@ abstract class _$Orders extends $AsyncNotifier<OrdersFeed> {
   FutureOr<OrdersFeed> build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<AsyncValue<OrdersFeed>, OrdersFeed>;
     final element =
         ref.element
@@ -112,6 +113,6 @@ abstract class _$Orders extends $AsyncNotifier<OrdersFeed> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

@@ -12,40 +12,36 @@ dependencies:
     sdk: flutter
 
   dio: ^5.4.0
-  flutter_riverpod: ^3.0.0
-  riverpod_annotation: ^4.0.3
-  retrofit: ^4.9.2
+  flutter_riverpod: ^3.0.0-dev.0
+  riverpod_annotation: ^3.0.0-dev.0
+  retrofit: ^4.1.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  go_router: ^17.4.0
-  freezed_annotation: ^3.0.0
+  go_router: ^14.2.0
+  freezed_annotation: ^3.0.0-dev.0
   json_annotation: ^4.9.0
-  # `@CopyWith()` on the generated DTOs in lib/api/generated. The annotation
-  # only has to resolve: copy_with_extension_gen is deliberately not wired in,
-  # since generating copyWith for 240 edge DTOs buys nothing and its analyzer
-  # pin collides with the other generators'.
-  copy_with_extension: ^16.0.0
+  copy_with_extension: ^5.0.4
 
   cupertino_icons: ^1.0.8
-  google_fonts: ^8.1.0
-  intl: ^0.20.3
+  google_fonts: ^6.2.1
+  intl: ^0.19.0
   cached_network_image: ^3.3.1
   image_picker: ^1.0.7
-  web_socket_channel: ^3.0.3
+  web_socket_channel: ^2.4.5
   shimmer: ^3.0.0
-  webview_flutter: ^4.14.1
+  webview_flutter: ^4.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^6.0.0
+  flutter_lints: ^4.0.0
   flutter_native_splash: ^2.4.0
   build_runner: ^2.4.8
-  freezed: ^4.0.0-dev.3
+  freezed: ^3.0.0
   json_serializable: ^6.7.1
-  retrofit_generator: ^10.2.8
-  riverpod_generator: ^4.0.4
+  retrofit_generator: ^10.2.1
+  riverpod_generator: ^3.0.0-dev.0
 
 flutter:
   uses-material-design: true
@@ -53,4 +49,4 @@ flutter:
     - assets/logo_shopnexus.jpg
 
 dependency_overrides:
-  meta: ^1.18.0
+  meta: ^1.15.0

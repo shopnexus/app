@@ -14,7 +14,7 @@ part of 'wishlist_provider.dart';
 /// `ListingDetail` carries no card price, which is why every row read 0 ₫.
 
 @ProviderFor(wishlistProducts)
-final wishlistProductsProvider = WishlistProductsProvider._();
+const wishlistProductsProvider = WishlistProductsProvider._();
 
 /// The wishlist is a catalog query, not a list of its own: `GET /listings` with
 /// `favorited=true` answers cards, so the screen gets the price and the cover it
@@ -33,7 +33,7 @@ final class WishlistProductsProvider
   /// `favorited=true` answers cards, so the screen gets the price and the cover it
   /// draws. Resolving saved ids one detail request at a time gave neither — a
   /// `ListingDetail` carries no card price, which is why every row read 0 ₫.
-  WishlistProductsProvider._()
+  const WishlistProductsProvider._()
     : super(
         from: null,
         argument: null,
@@ -62,11 +62,11 @@ final class WishlistProductsProvider
 String _$wishlistProductsHash() => r'2ed77c7a3d39e28708fcabe13ec8fd36d315b06a';
 
 @ProviderFor(WishlistController)
-final wishlistControllerProvider = WishlistControllerProvider._();
+const wishlistControllerProvider = WishlistControllerProvider._();
 
 final class WishlistControllerProvider
     extends $AsyncNotifierProvider<WishlistController, void> {
-  WishlistControllerProvider._()
+  const WishlistControllerProvider._()
     : super(
         from: null,
         argument: null,
@@ -86,13 +86,14 @@ final class WishlistControllerProvider
 }
 
 String _$wishlistControllerHash() =>
-    r'df4a111923891b8f517cf18a1c73c47fcb88e888';
+    r'72106fa0429854c706ce4a706cdeeb8ba1e87182';
 
 abstract class _$WishlistController extends $AsyncNotifier<void> {
   FutureOr<void> build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    build();
     final ref = this.ref as $Ref<AsyncValue<void>, void>;
     final element =
         ref.element
@@ -102,6 +103,6 @@ abstract class _$WishlistController extends $AsyncNotifier<void> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, null);
   }
 }

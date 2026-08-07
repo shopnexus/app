@@ -10,7 +10,7 @@ part of 'seller_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(sellerRepository)
-final sellerRepositoryProvider = SellerRepositoryProvider._();
+const sellerRepositoryProvider = SellerRepositoryProvider._();
 
 final class SellerRepositoryProvider
     extends
@@ -20,7 +20,7 @@ final class SellerRepositoryProvider
           SellerRepository
         >
     with $Provider<SellerRepository> {
-  SellerRepositoryProvider._()
+  const SellerRepositoryProvider._()
     : super(
         from: null,
         argument: null,

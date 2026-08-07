@@ -10,7 +10,7 @@ part of 'help_center_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(helpCenterRepository)
-final helpCenterRepositoryProvider = HelpCenterRepositoryProvider._();
+const helpCenterRepositoryProvider = HelpCenterRepositoryProvider._();
 
 final class HelpCenterRepositoryProvider
     extends
@@ -20,7 +20,7 @@ final class HelpCenterRepositoryProvider
           HelpCenterRepository
         >
     with $Provider<HelpCenterRepository> {
-  HelpCenterRepositoryProvider._()
+  const HelpCenterRepositoryProvider._()
     : super(
         from: null,
         argument: null,

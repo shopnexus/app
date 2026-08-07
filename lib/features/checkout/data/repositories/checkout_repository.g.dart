@@ -10,7 +10,7 @@ part of 'checkout_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(checkoutRepository)
-final checkoutRepositoryProvider = CheckoutRepositoryProvider._();
+const checkoutRepositoryProvider = CheckoutRepositoryProvider._();
 
 final class CheckoutRepositoryProvider
     extends
@@ -20,7 +20,7 @@ final class CheckoutRepositoryProvider
           CheckoutRepository
         >
     with $Provider<CheckoutRepository> {
-  CheckoutRepositoryProvider._()
+  const CheckoutRepositoryProvider._()
     : super(
         from: null,
         argument: null,

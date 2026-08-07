@@ -10,11 +10,11 @@ part of 'dio_client.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(dio)
-final dioProvider = DioProvider._();
+const dioProvider = DioProvider._();
 
 final class DioProvider extends $FunctionalProvider<Dio, Dio, Dio>
     with $Provider<Dio> {
-  DioProvider._()
+  const DioProvider._()
     : super(
         from: null,
         argument: null,

@@ -25,7 +25,7 @@ part of 'orders_actions_provider.dart';
 /// báo thất bại.
 
 @ProviderFor(OrdersActions)
-final ordersActionsProvider = OrdersActionsProvider._();
+const ordersActionsProvider = OrdersActionsProvider._();
 
 /// Những gì một người bán trả lời một đơn đã trả tiền: xác nhận, từ chối, hủy.
 ///
@@ -59,7 +59,7 @@ final class OrdersActionsProvider
   /// sẽ vứt notifier ngay khi câu lệnh vừa được gọi, rồi lần ghi state sau `await`
   /// ném lỗi — nên đơn *đã* được xác nhận trên server mà người bán thấy một thông
   /// báo thất bại.
-  OrdersActionsProvider._()
+  const OrdersActionsProvider._()
     : super(
         from: null,
         argument: null,
@@ -108,7 +108,8 @@ abstract class _$OrdersActions extends $Notifier<OrdersActionsState> {
   OrdersActionsState build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<OrdersActionsState, OrdersActionsState>;
     final element =
         ref.element
@@ -118,6 +119,6 @@ abstract class _$OrdersActions extends $Notifier<OrdersActionsState> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

@@ -15,7 +15,7 @@ part of 'listing_edit_provider.dart';
 /// thấy.
 
 @ProviderFor(listingToEdit)
-final listingToEditProvider = ListingToEditFamily._();
+const listingToEditProvider = ListingToEditFamily._();
 
 /// Tin đang sửa, đọc nguyên bản từ server chứ không nhận từ thẻ ở màn danh sách.
 ///
@@ -36,7 +36,7 @@ final class ListingToEditProvider
   /// Thẻ đó là `Listing` — không mang mô tả, tags hay danh mục — nên một form dựng
   /// từ nó sẽ hiện ô trống và người bán bấm Lưu là xoá thật những thứ họ chưa từng
   /// thấy.
-  ListingToEditProvider._({
+  const ListingToEditProvider._({
     required ListingToEditFamily super.from,
     required String super.argument,
   }) : super(
@@ -90,7 +90,7 @@ String _$listingToEditHash() => r'332e141838a36ceb7c7e34bb3d56c74a7ddae795';
 
 final class ListingToEditFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ListingDetail>, String> {
-  ListingToEditFamily._()
+  const ListingToEditFamily._()
     : super(
         retry: null,
         name: r'listingToEditProvider',
@@ -115,7 +115,7 @@ final class ListingToEditFamily extends $Family
 /// Cây danh mục cho ô chọn. Nhỏ và gần như không đổi, nên giữ lại giữa các lần mở.
 
 @ProviderFor(editableCategories)
-final editableCategoriesProvider = EditableCategoriesProvider._();
+const editableCategoriesProvider = EditableCategoriesProvider._();
 
 /// Cây danh mục cho ô chọn. Nhỏ và gần như không đổi, nên giữ lại giữa các lần mở.
 
@@ -128,7 +128,7 @@ final class EditableCategoriesProvider
         >
     with $FutureModifier<List<Category>>, $FutureProvider<List<Category>> {
   /// Cây danh mục cho ô chọn. Nhỏ và gần như không đổi, nên giữ lại giữa các lần mở.
-  EditableCategoriesProvider._()
+  const EditableCategoriesProvider._()
     : super(
         from: null,
         argument: null,
@@ -164,7 +164,7 @@ String _$editableCategoriesHash() =>
 /// lưu trên server mà người bán thấy một thông báo thất bại.
 
 @ProviderFor(ListingEditActions)
-final listingEditActionsProvider = ListingEditActionsProvider._();
+const listingEditActionsProvider = ListingEditActionsProvider._();
 
 /// Việc gửi bản sửa đi.
 ///
@@ -178,7 +178,7 @@ final class ListingEditActionsProvider
   /// `keepAlive` vì nó được gọi bằng `read`: autoDispose sẽ vứt notifier ngay khi
   /// câu lệnh vừa chạy, rồi lần ghi state sau `await` ném lỗi — nên bản sửa *đã*
   /// lưu trên server mà người bán thấy một thông báo thất bại.
-  ListingEditActionsProvider._()
+  const ListingEditActionsProvider._()
     : super(
         from: null,
         argument: null,
@@ -218,7 +218,8 @@ abstract class _$ListingEditActions extends $Notifier<ListingEditState> {
   ListingEditState build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<ListingEditState, ListingEditState>;
     final element =
         ref.element
@@ -228,6 +229,6 @@ abstract class _$ListingEditActions extends $Notifier<ListingEditState> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

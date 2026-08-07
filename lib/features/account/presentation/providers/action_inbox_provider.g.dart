@@ -16,7 +16,7 @@ part of 'action_inbox_provider.dart';
 /// gian của nó, nên một đơn cũ hơn cửa sổ đơn giản là biến mất khỏi badge.
 
 @ProviderFor(actionInbox)
-final actionInboxProvider = ActionInboxProvider._();
+const actionInboxProvider = ActionInboxProvider._();
 
 /// Số việc đang chờ chính người dùng này, gom từ cả hai vai.
 ///
@@ -39,7 +39,7 @@ final class ActionInboxProvider
   /// hàng và sai hai lần: `open` là đơn *đã* được xác nhận — nên việc gấp nhất,
   /// đơn chờ xác nhận, không nằm trong đó — và summary chỉ tính trong cửa sổ thời
   /// gian của nó, nên một đơn cũ hơn cửa sổ đơn giản là biến mất khỏi badge.
-  ActionInboxProvider._()
+  const ActionInboxProvider._()
     : super(
         from: null,
         argument: null,

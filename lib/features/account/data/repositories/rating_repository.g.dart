@@ -22,7 +22,7 @@ part of 'rating_repository.dart';
 /// sinh ra cả hai và cộng chung sẽ tính đơn đó hai lần.
 
 @ProviderFor(ratingRepository)
-final ratingRepositoryProvider = RatingRepositoryProvider._();
+const ratingRepositoryProvider = RatingRepositoryProvider._();
 
 /// Một đơn sinh ra **hai** thứ chấm điểm, và một nhà cho cả hai vì người dùng thấy
 /// một việc:
@@ -57,7 +57,7 @@ final class RatingRepositoryProvider
   ///
   /// Server đếm chúng ở hai cặp cột riêng trên cùng một hàng, đúng vì một đơn có thể
   /// sinh ra cả hai và cộng chung sẽ tính đơn đó hai lần.
-  RatingRepositoryProvider._()
+  const RatingRepositoryProvider._()
     : super(
         from: null,
         argument: null,

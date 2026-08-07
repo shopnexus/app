@@ -10,12 +10,12 @@ part of 'listing_suggestion_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(ListingSuggestionNotifier)
-final listingSuggestionProvider = ListingSuggestionNotifierProvider._();
+const listingSuggestionProvider = ListingSuggestionNotifierProvider._();
 
 final class ListingSuggestionNotifierProvider
     extends
         $NotifierProvider<ListingSuggestionNotifier, ListingSuggestionState> {
-  ListingSuggestionNotifierProvider._()
+  const ListingSuggestionNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -50,7 +50,8 @@ abstract class _$ListingSuggestionNotifier
   ListingSuggestionState build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref =
         this.ref as $Ref<ListingSuggestionState, ListingSuggestionState>;
     final element =
@@ -61,6 +62,6 @@ abstract class _$ListingSuggestionNotifier
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

@@ -10,11 +10,11 @@ part of 'help_center_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(HelpCenterNotifier)
-final helpCenterProvider = HelpCenterNotifierProvider._();
+const helpCenterProvider = HelpCenterNotifierProvider._();
 
 final class HelpCenterNotifierProvider
     extends $NotifierProvider<HelpCenterNotifier, HelpCenterState> {
-  HelpCenterNotifierProvider._()
+  const HelpCenterNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -48,7 +48,8 @@ abstract class _$HelpCenterNotifier extends $Notifier<HelpCenterState> {
   HelpCenterState build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<HelpCenterState, HelpCenterState>;
     final element =
         ref.element
@@ -58,6 +59,6 @@ abstract class _$HelpCenterNotifier extends $Notifier<HelpCenterState> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

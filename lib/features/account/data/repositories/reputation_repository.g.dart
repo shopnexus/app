@@ -10,7 +10,7 @@ part of 'reputation_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(reputationRepository)
-final reputationRepositoryProvider = ReputationRepositoryProvider._();
+const reputationRepositoryProvider = ReputationRepositoryProvider._();
 
 final class ReputationRepositoryProvider
     extends
@@ -20,7 +20,7 @@ final class ReputationRepositoryProvider
           ReputationRepository
         >
     with $Provider<ReputationRepository> {
-  ReputationRepositoryProvider._()
+  const ReputationRepositoryProvider._()
     : super(
         from: null,
         argument: null,

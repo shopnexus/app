@@ -10,12 +10,12 @@ part of 'account_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(profile)
-final profileProvider = ProfileProvider._();
+const profileProvider = ProfileProvider._();
 
 final class ProfileProvider
     extends $FunctionalProvider<AsyncValue<Me>, Me, FutureOr<Me>>
     with $FutureModifier<Me>, $FutureProvider<Me> {
-  ProfileProvider._()
+  const ProfileProvider._()
     : super(
         from: null,
         argument: null,
@@ -43,7 +43,7 @@ final class ProfileProvider
 String _$profileHash() => r'5f4ca96096caad1c75abb32ca4013f387cb76fbb';
 
 @ProviderFor(publicProfile)
-final publicProfileProvider = PublicProfileFamily._();
+const publicProfileProvider = PublicProfileFamily._();
 
 final class PublicProfileProvider
     extends
@@ -53,7 +53,7 @@ final class PublicProfileProvider
           FutureOr<PublicAccount>
         >
     with $FutureModifier<PublicAccount>, $FutureProvider<PublicAccount> {
-  PublicProfileProvider._({
+  const PublicProfileProvider._({
     required PublicProfileFamily super.from,
     required String super.argument,
   }) : super(
@@ -101,7 +101,7 @@ String _$publicProfileHash() => r'34d64cd73a71c9663e0919fc480853985677a1c2';
 
 final class PublicProfileFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<PublicAccount>, String> {
-  PublicProfileFamily._()
+  const PublicProfileFamily._()
     : super(
         retry: null,
         name: r'publicProfileProvider',
@@ -117,12 +117,22 @@ final class PublicProfileFamily extends $Family
   String toString() => r'publicProfileProvider';
 }
 
-@ProviderFor(AccountController)
-final accountControllerProvider = AccountControllerProvider._();
+/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
+/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+/// been disposed" trong khi thay đổi *đã* được lưu trên server.
 
+@ProviderFor(AccountController)
+const accountControllerProvider = AccountControllerProvider._();
+
+/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
+/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+/// been disposed" trong khi thay đổi *đã* được lưu trên server.
 final class AccountControllerProvider
     extends $AsyncNotifierProvider<AccountController, void> {
-  AccountControllerProvider._()
+  /// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
+  /// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+  /// been disposed" trong khi thay đổi *đã* được lưu trên server.
+  const AccountControllerProvider._()
     : super(
         from: null,
         argument: null,
@@ -141,13 +151,18 @@ final class AccountControllerProvider
   AccountController create() => AccountController();
 }
 
-String _$accountControllerHash() => r'7e8f449dc547fcd4ffdd120f6ce6bffc7c2d1a49';
+String _$accountControllerHash() => r'd2699ef1d93203ac21fa2946d816ea5b9460cf17';
+
+/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
+/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
+/// been disposed" trong khi thay đổi *đã* được lưu trên server.
 
 abstract class _$AccountController extends $AsyncNotifier<void> {
   FutureOr<void> build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    build();
     final ref = this.ref as $Ref<AsyncValue<void>, void>;
     final element =
         ref.element
@@ -157,6 +172,6 @@ abstract class _$AccountController extends $AsyncNotifier<void> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, null);
   }
 }

@@ -11,7 +11,7 @@ part of 'hive_storage.dart';
 /// Riverpod Provider cung cấp instance của HiveService
 
 @ProviderFor(hiveService)
-final hiveServiceProvider = HiveServiceProvider._();
+const hiveServiceProvider = HiveServiceProvider._();
 
 /// Riverpod Provider cung cấp instance của HiveService
 
@@ -19,7 +19,7 @@ final class HiveServiceProvider
     extends $FunctionalProvider<HiveService, HiveService, HiveService>
     with $Provider<HiveService> {
   /// Riverpod Provider cung cấp instance của HiveService
-  HiveServiceProvider._()
+  const HiveServiceProvider._()
     : super(
         from: null,
         argument: null,

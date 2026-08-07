@@ -10,11 +10,11 @@ part of 'cart_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(CartNotifier)
-final cartProvider = CartNotifierProvider._();
+const cartProvider = CartNotifierProvider._();
 
 final class CartNotifierProvider
     extends $NotifierProvider<CartNotifier, CartState> {
-  CartNotifierProvider._()
+  const CartNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -47,7 +47,8 @@ abstract class _$CartNotifier extends $Notifier<CartState> {
   CartState build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<CartState, CartState>;
     final element =
         ref.element
@@ -57,6 +58,6 @@ abstract class _$CartNotifier extends $Notifier<CartState> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

@@ -8,7 +8,7 @@ part of 'account_api_service.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main,avoid_redundant_argument_values
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
 class _AccountApiService implements AccountApiService {
   _AccountApiService(this._dio, {this.baseUrl, this.errorLogger}) {
@@ -177,7 +177,7 @@ class _AccountApiService implements AccountApiService {
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(accountApiService)
-final accountApiServiceProvider = AccountApiServiceProvider._();
+const accountApiServiceProvider = AccountApiServiceProvider._();
 
 final class AccountApiServiceProvider
     extends
@@ -187,7 +187,7 @@ final class AccountApiServiceProvider
           AccountApiService
         >
     with $Provider<AccountApiService> {
-  AccountApiServiceProvider._()
+  const AccountApiServiceProvider._()
     : super(
         from: null,
         argument: null,

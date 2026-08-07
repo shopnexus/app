@@ -10,12 +10,12 @@ part of 'chat_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(chatRepository)
-final chatRepositoryProvider = ChatRepositoryProvider._();
+const chatRepositoryProvider = ChatRepositoryProvider._();
 
 final class ChatRepositoryProvider
     extends $FunctionalProvider<ChatRepository, ChatRepository, ChatRepository>
     with $Provider<ChatRepository> {
-  ChatRepositoryProvider._()
+  const ChatRepositoryProvider._()
     : super(
         from: null,
         argument: null,

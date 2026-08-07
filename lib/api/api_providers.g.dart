@@ -16,7 +16,7 @@ part of 'api_providers.dart';
 /// `AdminApi` has no provider — this app has no staff surface.
 
 @ProviderFor(accountApi)
-final accountApiProvider = AccountApiProvider._();
+const accountApiProvider = AccountApiProvider._();
 
 /// The generated endpoint groups, each built on the app's own [dioProvider] so
 /// every call goes through the auth header, the 401 refresh and the logging
@@ -34,7 +34,7 @@ final class AccountApiProvider
   /// it would build a second Dio with none of that.
   ///
   /// `AdminApi` has no provider — this app has no staff surface.
-  AccountApiProvider._()
+  const AccountApiProvider._()
     : super(
         from: null,
         argument: null,
@@ -70,12 +70,12 @@ final class AccountApiProvider
 String _$accountApiHash() => r'6a88a7694ec8c415b62e00a97e21b1b33dccc3e4';
 
 @ProviderFor(catalogApi)
-final catalogApiProvider = CatalogApiProvider._();
+const catalogApiProvider = CatalogApiProvider._();
 
 final class CatalogApiProvider
     extends $FunctionalProvider<CatalogApi, CatalogApi, CatalogApi>
     with $Provider<CatalogApi> {
-  CatalogApiProvider._()
+  const CatalogApiProvider._()
     : super(
         from: null,
         argument: null,
@@ -111,12 +111,12 @@ final class CatalogApiProvider
 String _$catalogApiHash() => r'32c800e9ff4823801461dfbfa53f6b653152fd36';
 
 @ProviderFor(chatApi)
-final chatApiProvider = ChatApiProvider._();
+const chatApiProvider = ChatApiProvider._();
 
 final class ChatApiProvider
     extends $FunctionalProvider<ChatApi, ChatApi, ChatApi>
     with $Provider<ChatApi> {
-  ChatApiProvider._()
+  const ChatApiProvider._()
     : super(
         from: null,
         argument: null,
@@ -155,7 +155,7 @@ String _$chatApiHash() => r'5cb98140944bbcbc38f3578bdb75410a652054e5';
 /// the carriers. Its own group because the endpoint belongs to no single module.
 
 @ProviderFor(commonApi)
-final commonApiProvider = CommonApiProvider._();
+const commonApiProvider = CommonApiProvider._();
 
 /// The registry every module's pluggable choices are read through — the payment rails and
 /// the carriers. Its own group because the endpoint belongs to no single module.
@@ -165,7 +165,7 @@ final class CommonApiProvider
     with $Provider<CommonApi> {
   /// The registry every module's pluggable choices are read through — the payment rails and
   /// the carriers. Its own group because the endpoint belongs to no single module.
-  CommonApiProvider._()
+  const CommonApiProvider._()
     : super(
         from: null,
         argument: null,
@@ -201,12 +201,12 @@ final class CommonApiProvider
 String _$commonApiHash() => r'8f21f95ff4166dee0d58a25f39550f1aaa5340b5';
 
 @ProviderFor(financeApi)
-final financeApiProvider = FinanceApiProvider._();
+const financeApiProvider = FinanceApiProvider._();
 
 final class FinanceApiProvider
     extends $FunctionalProvider<FinanceApi, FinanceApi, FinanceApi>
     with $Provider<FinanceApi> {
-  FinanceApiProvider._()
+  const FinanceApiProvider._()
     : super(
         from: null,
         argument: null,
@@ -242,12 +242,12 @@ final class FinanceApiProvider
 String _$financeApiHash() => r'e93bbdc19c1651833c22a437f01c25d5bb7f510b';
 
 @ProviderFor(orderApi)
-final orderApiProvider = OrderApiProvider._();
+const orderApiProvider = OrderApiProvider._();
 
 final class OrderApiProvider
     extends $FunctionalProvider<OrderApi, OrderApi, OrderApi>
     with $Provider<OrderApi> {
-  OrderApiProvider._()
+  const OrderApiProvider._()
     : super(
         from: null,
         argument: null,
@@ -283,12 +283,12 @@ final class OrderApiProvider
 String _$orderApiHash() => r'a9ae52c081dba9da7eb0869186fee133b27b0cf8';
 
 @ProviderFor(trustApi)
-final trustApiProvider = TrustApiProvider._();
+const trustApiProvider = TrustApiProvider._();
 
 final class TrustApiProvider
     extends $FunctionalProvider<TrustApi, TrustApi, TrustApi>
     with $Provider<TrustApi> {
-  TrustApiProvider._()
+  const TrustApiProvider._()
     : super(
         from: null,
         argument: null,

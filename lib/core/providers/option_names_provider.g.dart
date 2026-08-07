@@ -19,7 +19,7 @@ part of 'option_names_provider.dart';
 /// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
 
 @ProviderFor(optionNames)
-final optionNamesProvider = OptionNamesFamily._();
+const optionNamesProvider = OptionNamesFamily._();
 
 /// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
 ///
@@ -50,7 +50,7 @@ final class OptionNamesProvider
   ///
   /// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
   /// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
-  OptionNamesProvider._({
+  const OptionNamesProvider._({
     required OptionNamesFamily super.from,
     required OptionCategoryName super.argument,
   }) : super(
@@ -112,7 +112,7 @@ final class OptionNamesFamily extends $Family
           FutureOr<Map<String, String>>,
           OptionCategoryName
         > {
-  OptionNamesFamily._()
+  const OptionNamesFamily._()
     : super(
         retry: null,
         name: r'optionNamesProvider',

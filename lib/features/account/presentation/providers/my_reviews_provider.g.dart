@@ -14,7 +14,7 @@ part of 'my_reviews_provider.dart';
 /// một tham số id ở đây chỉ mở đường cho việc gọi nhầm sang tài khoản khác.
 
 @ProviderFor(myFeedback)
-final myFeedbackProvider = MyFeedbackFamily._();
+const myFeedbackProvider = MyFeedbackFamily._();
 
 /// Đánh giá người dùng hiện tại nhận được ở một vai.
 ///
@@ -33,7 +33,7 @@ final class MyFeedbackProvider
   ///
   /// Id lấy từ hồ sơ chứ không truyền vào: màn hình này luôn nói về chính mình, và
   /// một tham số id ở đây chỉ mở đường cho việc gọi nhầm sang tài khoản khác.
-  MyFeedbackProvider._({
+  const MyFeedbackProvider._({
     required MyFeedbackFamily super.from,
     required ReputationRole super.argument,
   }) : super(
@@ -86,7 +86,7 @@ String _$myFeedbackHash() => r'dc1a6efcdd4d3d3285c320336c560901ab176b3f';
 
 final class MyFeedbackFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Feedback>>, ReputationRole> {
-  MyFeedbackFamily._()
+  const MyFeedbackFamily._()
     : super(
         retry: null,
         name: r'myFeedbackProvider',
@@ -111,7 +111,7 @@ final class MyFeedbackFamily extends $Family
 /// người bán bằng, thay cho một câu quảng cáo viết cứng.
 
 @ProviderFor(sellerReputation)
-final sellerReputationProvider = SellerReputationFamily._();
+const sellerReputationProvider = SellerReputationFamily._();
 
 /// Uy tín người bán của một tài khoản bất kỳ — cái trang sản phẩm giới thiệu
 /// người bán bằng, thay cho một câu quảng cáo viết cứng.
@@ -126,7 +126,7 @@ final class SellerReputationProvider
     with $FutureModifier<Reputation>, $FutureProvider<Reputation> {
   /// Uy tín người bán của một tài khoản bất kỳ — cái trang sản phẩm giới thiệu
   /// người bán bằng, thay cho một câu quảng cáo viết cứng.
-  SellerReputationProvider._({
+  const SellerReputationProvider._({
     required SellerReputationFamily super.from,
     required String super.argument,
   }) : super(
@@ -176,7 +176,7 @@ String _$sellerReputationHash() => r'dba7f9d761f633ebcfb4afdca4fd825b6ea133ef';
 
 final class SellerReputationFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Reputation>, String> {
-  SellerReputationFamily._()
+  const SellerReputationFamily._()
     : super(
         retry: null,
         name: r'sellerReputationProvider',

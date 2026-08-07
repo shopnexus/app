@@ -12,7 +12,7 @@ part of 'seller_products_provider.dart';
 /// the dashboard tiles are the same four numbers, so they are read once.
 
 @ProviderFor(sellerListingCounts)
-final sellerListingCountsProvider = SellerListingCountsProvider._();
+const sellerListingCountsProvider = SellerListingCountsProvider._();
 
 /// One total per status, off each page's `meta.total_count`. The filter chips and
 /// the dashboard tiles are the same four numbers, so they are read once.
@@ -29,7 +29,7 @@ final class SellerListingCountsProvider
         $FutureProvider<Map<ListingStatus, int>> {
   /// One total per status, off each page's `meta.total_count`. The filter chips and
   /// the dashboard tiles are the same four numbers, so they are read once.
-  SellerListingCountsProvider._()
+  const SellerListingCountsProvider._()
     : super(
         from: null,
         argument: null,
@@ -62,7 +62,7 @@ String _$sellerListingCountsHash() =>
 /// detail reads at all.
 
 @ProviderFor(listingTakedownReason)
-final listingTakedownReasonProvider = ListingTakedownReasonFamily._();
+const listingTakedownReasonProvider = ListingTakedownReasonFamily._();
 
 /// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
 /// detail reads at all.
@@ -72,7 +72,7 @@ final class ListingTakedownReasonProvider
     with $FutureModifier<String?>, $FutureProvider<String?> {
   /// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
   /// detail reads at all.
-  ListingTakedownReasonProvider._({
+  const ListingTakedownReasonProvider._({
     required ListingTakedownReasonFamily super.from,
     required String super.argument,
   }) : super(
@@ -123,7 +123,7 @@ String _$listingTakedownReasonHash() =>
 
 final class ListingTakedownReasonFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<String?>, String> {
-  ListingTakedownReasonFamily._()
+  const ListingTakedownReasonFamily._()
     : super(
         retry: null,
         name: r'listingTakedownReasonProvider',
@@ -143,11 +143,11 @@ final class ListingTakedownReasonFamily extends $Family
 }
 
 @ProviderFor(SellerProductsNotifier)
-final sellerProductsProvider = SellerProductsNotifierProvider._();
+const sellerProductsProvider = SellerProductsNotifierProvider._();
 
 final class SellerProductsNotifierProvider
     extends $NotifierProvider<SellerProductsNotifier, SellerProductsState> {
-  SellerProductsNotifierProvider._()
+  const SellerProductsNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -181,7 +181,8 @@ abstract class _$SellerProductsNotifier extends $Notifier<SellerProductsState> {
   SellerProductsState build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<SellerProductsState, SellerProductsState>;
     final element =
         ref.element
@@ -191,6 +192,6 @@ abstract class _$SellerProductsNotifier extends $Notifier<SellerProductsState> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

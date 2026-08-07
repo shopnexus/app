@@ -10,7 +10,7 @@ part of 'ticket_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(ticketRepository)
-final ticketRepositoryProvider = TicketRepositoryProvider._();
+const ticketRepositoryProvider = TicketRepositoryProvider._();
 
 final class TicketRepositoryProvider
     extends
@@ -20,7 +20,7 @@ final class TicketRepositoryProvider
           TicketRepository
         >
     with $Provider<TicketRepository> {
-  TicketRepositoryProvider._()
+  const TicketRepositoryProvider._()
     : super(
         from: null,
         argument: null,

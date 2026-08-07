@@ -22,7 +22,7 @@ part of 'checkout_provider.dart';
 /// gì của lần trước.
 
 @ProviderFor(CheckoutNotifier)
-final checkoutProvider = CheckoutNotifierProvider._();
+const checkoutProvider = CheckoutNotifierProvider._();
 
 /// `keepAlive` là bắt buộc, không phải tối ưu.
 ///
@@ -50,7 +50,7 @@ final class CheckoutNotifierProvider
   ///
   /// `initialize()` đặt lại toàn bộ state, nên lần thanh toán sau không thừa hưởng
   /// gì của lần trước.
-  CheckoutNotifierProvider._()
+  const CheckoutNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -96,7 +96,8 @@ abstract class _$CheckoutNotifier extends $Notifier<CheckoutState> {
   CheckoutState build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    final created = build();
     final ref = this.ref as $Ref<CheckoutState, CheckoutState>;
     final element =
         ref.element
@@ -106,6 +107,6 @@ abstract class _$CheckoutNotifier extends $Notifier<CheckoutState> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, created);
   }
 }

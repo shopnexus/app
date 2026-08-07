@@ -17,7 +17,7 @@ import 'package:shopnexus_flutter_app/features/seller/presentation/providers/sel
 /// hai thứ người bán vào xem — và trang số liệu đó cần sáu request thành công mới
 /// vẽ nổi, nên một lỗi là mất luôn cả lối vào ví.
 void main() {
-  final me = Me(
+  const me = Me(
     createdAt: '2026-08-01T00:00:00Z',
     email: 'a@b.c',
     emailVerified: true,

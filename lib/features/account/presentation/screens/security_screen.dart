@@ -114,10 +114,10 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
     final email = profile.email;
 
     if (email == null || email.isEmpty) {
-      return ListTile(
-        leading: const Icon(Icons.email_outlined),
-        title: const Text('Chưa có email'),
-        subtitle: const Text(
+      return const ListTile(
+        leading: Icon(Icons.email_outlined),
+        title: Text('Chưa có email'),
+        subtitle: Text(
           'Thêm email ở Cài đặt để nhận thư khôi phục mật khẩu.',
         ),
       );

@@ -10,7 +10,7 @@ part of 'addresses_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(buyerContacts)
-final buyerContactsProvider = BuyerContactsProvider._();
+const buyerContactsProvider = BuyerContactsProvider._();
 
 final class BuyerContactsProvider
     extends
@@ -20,7 +20,7 @@ final class BuyerContactsProvider
           FutureOr<List<Contact>>
         >
     with $FutureModifier<List<Contact>>, $FutureProvider<List<Contact>> {
-  BuyerContactsProvider._()
+  const BuyerContactsProvider._()
     : super(
         from: null,
         argument: null,
@@ -49,11 +49,11 @@ final class BuyerContactsProvider
 String _$buyerContactsHash() => r'40863f4e9a54616a93002544d796a363b890efc1';
 
 @ProviderFor(AddressesController)
-final addressesControllerProvider = AddressesControllerProvider._();
+const addressesControllerProvider = AddressesControllerProvider._();
 
 final class AddressesControllerProvider
     extends $AsyncNotifierProvider<AddressesController, void> {
-  AddressesControllerProvider._()
+  const AddressesControllerProvider._()
     : super(
         from: null,
         argument: null,
@@ -73,13 +73,14 @@ final class AddressesControllerProvider
 }
 
 String _$addressesControllerHash() =>
-    r'0f80c7823c9545a53f79378ace90cd53a19b3236';
+    r'9c901d09ef1f93bb35bd0d0c499a7b0d172f2e58';
 
 abstract class _$AddressesController extends $AsyncNotifier<void> {
   FutureOr<void> build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    build();
     final ref = this.ref as $Ref<AsyncValue<void>, void>;
     final element =
         ref.element
@@ -89,6 +90,6 @@ abstract class _$AddressesController extends $AsyncNotifier<void> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, null);
   }
 }

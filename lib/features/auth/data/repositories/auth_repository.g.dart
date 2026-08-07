@@ -10,12 +10,12 @@ part of 'auth_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(authRepository)
-final authRepositoryProvider = AuthRepositoryProvider._();
+const authRepositoryProvider = AuthRepositoryProvider._();
 
 final class AuthRepositoryProvider
     extends $FunctionalProvider<AuthRepository, AuthRepository, AuthRepository>
     with $Provider<AuthRepository> {
-  AuthRepositoryProvider._()
+  const AuthRepositoryProvider._()
     : super(
         from: null,
         argument: null,

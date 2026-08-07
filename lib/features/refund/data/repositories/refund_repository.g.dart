@@ -10,7 +10,7 @@ part of 'refund_repository.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(refundRepository)
-final refundRepositoryProvider = RefundRepositoryProvider._();
+const refundRepositoryProvider = RefundRepositoryProvider._();
 
 final class RefundRepositoryProvider
     extends
@@ -20,7 +20,7 @@ final class RefundRepositoryProvider
           RefundRepository
         >
     with $Provider<RefundRepository> {
-  RefundRepositoryProvider._()
+  const RefundRepositoryProvider._()
     : super(
         from: null,
         argument: null,

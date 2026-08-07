@@ -11,7 +11,7 @@ part of 'refund_provider.dart';
 /// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
 
 @ProviderFor(refundList)
-final refundListProvider = RefundListProvider._();
+const refundListProvider = RefundListProvider._();
 
 /// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
 
@@ -24,7 +24,7 @@ final class RefundListProvider
         >
     with $FutureModifier<List<Refund>>, $FutureProvider<List<Refund>> {
   /// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
-  RefundListProvider._()
+  const RefundListProvider._()
     : super(
         from: null,
         argument: null,
@@ -53,12 +53,12 @@ final class RefundListProvider
 String _$refundListHash() => r'31f634536a5f103d39a28dadb9af30f49b399ecd';
 
 @ProviderFor(refundDetail)
-final refundDetailProvider = RefundDetailFamily._();
+const refundDetailProvider = RefundDetailFamily._();
 
 final class RefundDetailProvider
     extends $FunctionalProvider<AsyncValue<Refund>, Refund, FutureOr<Refund>>
     with $FutureModifier<Refund>, $FutureProvider<Refund> {
-  RefundDetailProvider._({
+  const RefundDetailProvider._({
     required RefundDetailFamily super.from,
     required String super.argument,
   }) : super(
@@ -105,7 +105,7 @@ String _$refundDetailHash() => r'd9dcb750000a2fadecf349d53b556c09891d6d3a';
 
 final class RefundDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Refund>, String> {
-  RefundDetailFamily._()
+  const RefundDetailFamily._()
     : super(
         retry: null,
         name: r'refundDetailProvider',
@@ -125,7 +125,7 @@ final class RefundDetailFamily extends $Family
 /// money is staff's, reached by opening a `refund-dispute` ticket.
 
 @ProviderFor(RefundActions)
-final refundActionsProvider = RefundActionsProvider._();
+const refundActionsProvider = RefundActionsProvider._();
 
 /// The moves either party can still make on a live case. Everything that decides
 /// money is staff's, reached by opening a `refund-dispute` ticket.
@@ -133,7 +133,7 @@ final class RefundActionsProvider
     extends $NotifierProvider<RefundActions, void> {
   /// The moves either party can still make on a live case. Everything that decides
   /// money is staff's, reached by opening a `refund-dispute` ticket.
-  RefundActionsProvider._()
+  const RefundActionsProvider._()
     : super(
         from: null,
         argument: null,
@@ -169,7 +169,8 @@ abstract class _$RefundActions extends $Notifier<void> {
   void build();
   @$mustCallSuper
   @override
-  WhenComplete runBuild() {
+  void runBuild() {
+    build();
     final ref = this.ref as $Ref<void, void>;
     final element =
         ref.element
@@ -179,6 +180,6 @@ abstract class _$RefundActions extends $Notifier<void> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    element.handleValue(ref, null);
   }
 }
