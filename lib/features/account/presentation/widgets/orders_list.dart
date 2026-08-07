@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
@@ -14,8 +12,6 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/ac
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/confirm_receipt_sheet.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/waiting_group.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/rate_order_sheet.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/widgets/transport_journey_sheet.dart';
-import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 
 /// Đơn của cả hai chiều, ba nhóm theo lượt, không tab và không segment vai.
 ///
@@ -287,19 +283,29 @@ class _OrderRow extends ConsumerWidget {
     );
   }
 
-  /// Chỉ những gì vai này thật sự làm được với đơn này, tối đa hai nút.
+  /// Chỉ những việc **quyết định tiền hoặc có đồng hồ**, tối đa hai nút.
   ///
-  /// Người mua có đúng **một** nút, và chỉ khi kiện hàng đã tới: xác nhận đã nhận.
-  /// Mọi việc khác của họ — xin hoàn tiền, báo sự cố — sống trong màn chi tiết,
-  /// nơi có đủ thông tin để viết một yêu cầu. Cái này ra ngoài vì nó không phải
-  /// việc của người mua: `received_at` là điều kiện trong câu truy vấn payout, nên
-  /// tới khi họ chạm thì **tiền của người bán vẫn nằm trong escrow**. Chôn nó sau
-  /// một menu là để một khoản tiền chờ một người không biết mình đang giữ nó.
+  /// Danh sách là chỗ để không bỏ sót một việc, không phải chỗ để làm mọi việc:
+  /// xem hành trình kiện hàng, yêu cầu hoàn tiền, báo sự cố đều sống trong màn chi
+  /// tiết, nơi có đủ thông tin để viết một yêu cầu. Nút "Hành trình" từng ở đây và
+  /// đã bỏ vì đúng lý do đó — chạm vào đơn là đã tới chỗ xem được rồi.
+  ///
+  /// Bảng đầy đủ, để cái gì hiện lúc nào là một câu trả lời được chứ không phải
+  /// một chuỗi `if` chồng nhau:
+  ///
+  /// | Trạng thái            | Người bán          | Người mua      |
+  /// |-----------------------|--------------------|----------------|
+  /// | chờ xác nhận          | Xác nhận / Từ chối | Hủy đơn        |
+  /// | đang mở, chưa lấy hàng| Hủy đơn            | Hủy đơn        |
+  /// | đang mở, đang đi      | —                  | —              |
+  /// | đang mở, đã giao      | —                  | Đã nhận hàng   |
+  /// | hoàn thành            | —                  | Đánh giá       |
+  /// | đã hủy                | —                  | —              |
   List<Widget> _actions(BuildContext context, WidgetRef ref) {
-    // Đơn đã xong vẫn còn đúng một việc, và chỉ của người mua: chấm điểm. Nó ở
-    // đây chứ không ở một màn "Đánh giá của tôi" riêng, vì việc thật của người
-    // dùng không phải "xem lại những gì tôi từng viết" mà là "đơn này tôi đánh
-    // giá chưa" — câu đó chỉ trả lời được cạnh chính cái đơn.
+    // Đơn đã xong còn đúng một việc, và chỉ của người mua: chấm điểm. Nó ở đây chứ
+    // không ở một màn "Đánh giá của tôi" riêng, vì câu hỏi thật không phải "xem lại
+    // những gì tôi từng viết" mà là "đơn này tôi đánh giá chưa" — câu đó chỉ trả
+    // lời được cạnh chính cái đơn.
     if (view.order.state == OrderState.completed && !_selling) {
       return [
         Expanded(
@@ -313,86 +319,61 @@ class _OrderRow extends ConsumerWidget {
     if (isFinished) return const [];
 
     final isActing = ref.watch(ordersActionsProvider).isLoading;
-    final order = view.order;
 
-    // "Hàng tôi đang ở đâu" là câu hỏi hay gặp nhất của một người vừa trả tiền, và
-    // nó chỉ có nghĩa khi kiện hàng đã rời `pending` — trước đó không có mốc nào.
-    final moving =
-        (order.transport?.status ?? TransportStatus.pending) !=
-        TransportStatus.pending;
-
-    if (!_selling) {
-      return [
-        if (moving)
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () => TransportJourneySheet.show(
-                context,
-                orderId: order.id,
-              ),
-              child: const Text('Hành trình'),
-            ),
-          ),
-        if (view.canConfirmReceipt) ...[
-          if (moving) const SizedBox(width: 8),
+    if (_selling) {
+      if (view.isAwaitingConfirmation) {
+        return [
           Expanded(
             child: ElevatedButton(
-              onPressed: isActing ? null : () => _confirmReceipt(context, ref),
-              child: const Text('Đã nhận hàng'),
+              onPressed: isActing ? null : () => _confirm(context, ref),
+              child: const Text('Xác nhận'),
             ),
           ),
-        ],
-      ];
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextButton(
+              onPressed: isActing ? null : () => _decline(context, ref),
+              child: const Text(
+                'Từ chối',
+                style: TextStyle(color: Color(0xFFEF4444)),
+              ),
+            ),
+          ),
+        ];
+      }
+      // Đã xác nhận rồi thì việc của người bán là giao hàng, và vị trí kiện hàng
+      // không phải thứ họ ghi được — nên không có nút nào cho tới lúc hủy được.
+      return [if (view.canCancel) _cancelButton(context, ref, isActing)];
     }
 
-    if (view.isAwaitingConfirmation) {
+    // Cái đồng hồ đắt nhất trên sàn: `received_at` là điều kiện trong câu truy vấn
+    // payout, nên tới khi người mua chạm thì tiền người bán vẫn nằm trong escrow.
+    if (view.canConfirmReceipt) {
       return [
         Expanded(
           child: ElevatedButton(
-            onPressed: isActing ? null : () => _confirm(context, ref),
-            child: const Text('Xác nhận'),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: TextButton(
-            onPressed: isActing ? null : () => _decline(context, ref),
-            child: const Text(
-              'Từ chối',
-              style: TextStyle(color: Color(0xFFEF4444)),
-            ),
+            onPressed: isActing ? null : () => _confirmReceipt(context, ref),
+            child: const Text('Đã nhận hàng'),
           ),
         ),
       ];
     }
+    // Người mua cũng hủy được khi hàng chưa đi — kể cả lúc người bán chưa xác
+    // nhận, và lúc đó tiền về đủ cả phí giao hàng.
+    return [if (view.canCancel) _cancelButton(context, ref, isActing)];
+  }
 
-    // Hủy bị từ chối khi kiện hàng đã rời `pending`, nên nút chỉ hiện khi nó còn
-    // là một việc làm được.
-    final canCancel =
-        (order.transport?.status ?? TransportStatus.pending) ==
-        TransportStatus.pending;
-
-    return [
+  Widget _cancelButton(BuildContext context, WidgetRef ref, bool isActing) =>
       Expanded(
         child: OutlinedButton(
-          onPressed: () => _reportIssue(context),
-          child: const Text('Báo vấn đề'),
-        ),
-      ),
-      if (canCancel) ...[
-        const SizedBox(width: 8),
-        Expanded(
-          child: TextButton(
-            onPressed: isActing ? null : () => _cancel(context, ref),
-            child: const Text(
-              'Hủy đơn',
-              style: TextStyle(color: Color(0xFFEF4444)),
-            ),
+          onPressed: isActing ? null : () => _cancel(context, ref),
+          child: const Text(
+            'Hủy đơn',
+            style: TextStyle(color: Color(0xFFEF4444)),
           ),
         ),
-      ],
-    ];
-  }
+      );
+
 
   /// Nhận đơn là lúc kiện hàng được đặt cho đơn vị vận chuyển, nên nó được hỏi
   /// lại một lần chứ không đi luôn từ một cái chạm — và hộp thoại nói ra điều
@@ -427,6 +408,7 @@ class _OrderRow extends ConsumerWidget {
       'Đã xác nhận đơn, đang đặt vận chuyển',
     );
   }
+
 
   /// Từ chối cần một lý do và server từ chối lý do rỗng: người mua được hoàn
   /// toàn bộ, và "đã hủy" không kèm gì thì không nói cho họ biết vì sao.
@@ -479,6 +461,7 @@ class _OrderRow extends ConsumerWidget {
     );
   }
 
+
   Future<void> _cancel(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -510,11 +493,6 @@ class _OrderRow extends ConsumerWidget {
     );
   }
 
-  /// Nơi một người bán nói "chỗ này sai". Vị trí kiện hàng là báo cáo của đơn vị
-  /// giao hàng và chỉ ShopNexus sửa được, nên đường của người bán là mở một yêu
-  /// cầu `order-issue` để có người xem, chứ không phải tự ghi lại trạng thái.
-  /// Ảnh là bắt buộc nên đây là một sheet, không phải hộp thoại — và nó nói ra
-  /// hai điều không hoàn tác được trước khi người mua chạm.
   Future<void> _confirmReceipt(BuildContext context, WidgetRef ref) async {
     final confirmed = await ConfirmReceiptSheet.show(
       context,
@@ -541,19 +519,6 @@ class _OrderRow extends ConsumerWidget {
     );
     if (sent != true) return;
     ref.invalidate(ordersProvider);
-  }
-
-  Future<void> _reportIssue(BuildContext context) async {
-    final orderId = view.order.id;
-    final ticket = await RaiseTicketSheet.show(
-      context,
-      kind: TicketKind.orderIssue,
-      refId: orderId,
-      subjectHint: 'Sự cố vận chuyển đơn $orderId',
-      refLabel: orderId,
-    );
-    if (ticket == null || !context.mounted) return;
-    context.push('/account/help-center/${ticket.id}');
   }
 
   /// Hành động ở một provider, danh sách ở một provider khác: cái nào xong thì

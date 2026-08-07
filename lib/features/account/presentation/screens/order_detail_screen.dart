@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/option_category_name.dart';
-import 'package:shopnexus_flutter_app/core/providers/option_names_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/transport_journey.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/request_refund_sheet.dart';
@@ -548,17 +547,18 @@ class OrderDetailScreen extends ConsumerWidget {
             ),
           ),
           Divider(height: 24, color: dividerColor),
-          _buildPaymentRow(
-            context,
-            'Đơn vị vận chuyển',
-            order.transport == null
-                ? 'Chưa đặt vận chuyển'
-                : ref
-                      .watch(optionNamesProvider(OptionCategoryName.transport))
-                      .nameOf(order.transport!.option),
-          ),
-          const SizedBox(height: 12),
-          _buildPaymentRow(context, 'Trạng thái vận chuyển', view.statusLabel),
+          // Hành trình thay cho hai dòng "đơn vị" + "trạng thái": nó nói cả hai
+          // thứ đó và thêm cái đã qua, ở đúng nơi người ta bấm vào để xem.
+          if (order.transport case final transport?)
+            TransportJourney(transport: transport)
+          else
+            _buildPaymentRow(
+              context,
+              'Đơn vị vận chuyển',
+              // Chưa xác nhận thì chưa có gì được đặt — nói vậy chứ không vẽ một
+              // hành trình rỗng trông như đang chờ lấy hàng.
+              'Chưa đặt vận chuyển',
+            ),
         ],
       ),
     );

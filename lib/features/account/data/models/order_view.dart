@@ -96,15 +96,28 @@ abstract class OrderView with _$OrderView {
   bool get isAwaitingConfirmation =>
       order.state == OrderState.awaitingConfirmation;
 
-  /// Người mua xác nhận được khi kiện hàng đã tới và họ chưa xác nhận.
+  /// Người mua xác nhận được khi đơn đã **mở** và kiện hàng đã tới.
   ///
-  /// Đọc kiện hàng chứ không đọc `state`: `open` chỉ nói người bán đã nhận đơn,
-  /// còn `received_at` mới là thứ điều kiện payout đòi — nên đây đúng là cửa sổ
-  /// duy nhất mà tiền của người bán đang chờ một cái chạm của người mua.
+  /// `state == open` là bắt buộc, không thừa: nó có nghĩa người bán đã xác nhận,
+  /// tức là đã có gì đó được giao cho đơn vị vận chuyển. Trước đây điều kiện chỉ
+  /// đọc kiện hàng, nên một đơn `awaiting-confirmation` mà hàng ghi `delivered` —
+  /// dữ liệu có thật, còn lại từ trước khi có bước xác nhận — mời người mua bấm
+  /// "Đã nhận hàng" cho một đơn người bán còn chưa nhận.
+  ///
+  /// `received_at` mới là thứ điều kiện payout đòi, nên đây đúng là cửa sổ duy
+  /// nhất mà tiền của người bán đang chờ một cái chạm của người mua.
   bool get canConfirmReceipt =>
-      !isFinished &&
+      order.state == OrderState.open &&
       order.receivedAt == null &&
       order.transport?.status == TransportStatus.delivered;
+
+  /// Kiện hàng chưa rời kho. Đây là cửa sổ duy nhất còn hủy được, và nó đúng cho
+  /// **cả hai bên** — server cho bất kỳ ai trong đơn hủy, rồi từ chối nếu hàng đã
+  /// đi (`Cancel(transport.Shipped())`), nên nút hỏi đúng câu server hỏi.
+  bool get canCancel =>
+      !isFinished &&
+      (order.transport?.status ?? TransportStatus.pending) ==
+          TransportStatus.pending;
 
   /// "còn 31 giờ" until the seller's 48 hours run out, or null once they have
   /// answered — the server drops the deadline at that point.

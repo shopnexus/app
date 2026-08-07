@@ -212,16 +212,17 @@ void main() {
       me: sellerID,
     );
 
-    testWidgets('đơn đang đi có Báo vấn đề, và câu giải thích vì sao', (
+    testWidgets('đơn đang đi chỉ còn câu giải thích, không nút nào', (
       tester,
     ) async {
-      await tester.pumpWidget(sellerAt('open'));
+      await tester.pumpWidget(sellerAt('open', transportStatus: 'in-transit'));
       await tester.pumpAndSettle();
 
-      // Nút "Cập nhật vận chuyển" đã bị bỏ: vị trí kiện hàng là báo cáo của đơn
-      // vị giao hàng, và một claim không có gì đằng sau từng cắt mất quyền hủy
-      // của người mua.
-      expect(find.widgetWithText(OutlinedButton, 'Báo vấn đề'), findsOneWidget);
+      // "Cập nhật vận chuyển" đã bỏ từ trước: vị trí kiện hàng là báo cáo của đơn
+      // vị giao hàng. "Báo vấn đề" và "Hành trình" cũng đã bỏ khỏi danh sách —
+      // chúng sống trong màn chi tiết, nơi có đủ thông tin để viết một yêu cầu.
+      expect(find.text('Báo vấn đề'), findsNothing);
+      expect(find.text('Hành trình'), findsNothing);
       expect(
         find.textContaining('do đơn vị giao hàng cập nhật'),
         findsOneWidget,
@@ -232,7 +233,7 @@ void main() {
       await tester.pumpWidget(sellerAt('open'));
       await tester.pumpAndSettle();
 
-      expect(find.widgetWithText(TextButton, 'Hủy đơn'), findsOneWidget);
+      expect(find.widgetWithText(OutlinedButton, 'Hủy đơn'), findsOneWidget);
     });
 
     testWidgets('kiện hàng đã đi rồi thì không mời hủy nữa', (tester) async {
@@ -255,6 +256,84 @@ void main() {
       expect(find.text('Hủy đơn'), findsNothing);
       // Người bán không được mời đánh giá: đánh giá sản phẩm là việc người mua.
       expect(find.text('Đánh giá'), findsNothing);
+    });
+  });
+
+  group('bảng nút: cái gì hiện lúc nào', () {
+    testWidgets('chờ xác nhận + kiện ghi "đã giao" vẫn KHÔNG mời nhận hàng', (
+      tester,
+    ) async {
+      // Dữ liệu có thật: đơn còn `awaiting-confirmation` mà transport đã ghi
+      // `delivered`, còn lại từ trước khi có bước xác nhận. Điều kiện cũ chỉ đọc
+      // kiện hàng, nên nó mời người mua bấm "Đã nhận hàng" cho một đơn người bán
+      // còn chưa nhận — tức là thả escrow cho một sale chưa ai đồng ý.
+      await tester.pumpWidget(
+        app(
+          backend: serving([
+            order(state: 'awaiting-confirmation', transportStatus: 'delivered'),
+          ]),
+          me: buyerID,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Đã nhận hàng'), findsNothing);
+    });
+
+    testWidgets('người mua hủy được khi người bán chưa xác nhận', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        app(
+          backend: serving([order(state: 'awaiting-confirmation')]),
+          me: buyerID,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Server cho bất kỳ bên nào hủy khi hàng chưa đi, và lúc này tiền về đủ cả
+      // phí giao hàng. Người mua trước đây không có nút nào ở trạng thái này.
+      expect(find.widgetWithText(OutlinedButton, 'Hủy đơn'), findsOneWidget);
+    });
+
+    testWidgets('đơn hoàn thành mời người mua đánh giá', (tester) async {
+      await tester.pumpWidget(
+        app(
+          backend: serving([order(state: 'completed')]),
+          me: buyerID,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(OutlinedButton, 'Đánh giá'), findsOneWidget);
+    });
+
+    testWidgets('người bán không được mời đánh giá đơn của mình', (
+      tester,
+    ) async {
+      // Bài riêng chứ không pump lần hai trong cùng một bài: Flutter dùng lại
+      // element cũ, nên override `profileProvider` của lần sau không có tác dụng
+      // và bài test đọc ra kết quả của lần trước.
+      await tester.pumpWidget(
+        app(
+          backend: serving([order(state: 'completed')]),
+          me: sellerID,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Đánh giá'), findsNothing);
+    });
+
+    testWidgets('đơn đã hủy không mời làm gì cả', (tester) async {
+      await tester.pumpWidget(
+        app(
+          backend: serving([order(state: 'cancelled')]),
+          me: buyerID,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Hủy đơn'), findsNothing);
+      expect(find.text('Đã nhận hàng'), findsNothing);
+      expect(find.text('Xác nhận'), findsNothing);
     });
   });
 
