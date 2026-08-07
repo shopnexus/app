@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'seller_earnings_provider.dart';
@@ -9,7 +9,6 @@ part of 'seller_earnings_provider.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -66,7 +65,7 @@ class _$SellerEarningsStateCopyWithImpl<$Res>
 /// Create a copy of SellerEarningsState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? wallet = freezed,Object? ledger = null,Object? withdrawals = null,Object? bankAccounts = null,Object? isWithdrawing = null,Object? errorMessage = freezed,}) {
-  return _then(SellerEarningsState(
+  return _then(_self.copyWith(
 wallet: freezed == wallet ? _self.wallet : wallet // ignore: cast_nullable_to_non_nullable
 as Wallet?,ledger: null == ledger ? _self.ledger : ledger // ignore: cast_nullable_to_non_nullable
 as List<WalletTransaction>,withdrawals: null == withdrawals ? _self.withdrawals : withdrawals // ignore: cast_nullable_to_non_nullable
@@ -214,7 +213,7 @@ return $default(_that.wallet,_that.ledger,_that.withdrawals,_that.bankAccounts,_
 
 
 class _SellerEarningsState extends SellerEarningsState {
-  const _SellerEarningsState({this.wallet,  List<WalletTransaction> ledger = const [],  List<Withdrawal> withdrawals = const [],  List<BankAccount> bankAccounts = const [], this.isWithdrawing = false, this.errorMessage}): _ledger = ledger,_withdrawals = withdrawals,_bankAccounts = bankAccounts,super._();
+  const _SellerEarningsState({this.wallet, final  List<WalletTransaction> ledger = const [], final  List<Withdrawal> withdrawals = const [], final  List<BankAccount> bankAccounts = const [], this.isWithdrawing = false, this.errorMessage}): _ledger = ledger,_withdrawals = withdrawals,_bankAccounts = bankAccounts,super._();
   
 
 /// Null until the platform has credited this account once — a wallet row is

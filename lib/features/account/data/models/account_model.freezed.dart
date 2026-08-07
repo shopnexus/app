@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'account_model.dart';
@@ -9,7 +9,6 @@ part of 'account_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -67,7 +66,7 @@ class _$ProfileCopyWithImpl<$Res>
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? country = null,Object? locale = null,Object? timezone = null,Object? createdAt = null,Object? avatar = freezed,Object? dateOfBirth = freezed,Object? description = freezed,Object? gender = freezed,}) {
-  return _then(Profile(
+  return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
 as String,locale: null == locale ? _self.locale : locale // ignore: cast_nullable_to_non_nullable
@@ -354,7 +353,7 @@ class _$MeCopyWithImpl<$Res>
 /// Create a copy of Me
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdAt = null,Object? email = freezed,Object? emailVerified = null,Object? hasPassword = null,Object? identityVerified = null,Object? phone = freezed,Object? profile = freezed,Object? role = null,Object? status = null,Object? username = freezed,}) {
-  return _then(Me(
+  return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -673,7 +672,7 @@ class _$PublicAccountCopyWithImpl<$Res>
 /// Create a copy of PublicAccount
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? followerCount = null,Object? identityVerified = null,Object? following = null,Object? createdAt = null,Object? description = freezed,Object? avatar = freezed,}) {
-  return _then(PublicAccount(
+  return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,followerCount: null == followerCount ? _self.followerCount : followerCount // ignore: cast_nullable_to_non_nullable

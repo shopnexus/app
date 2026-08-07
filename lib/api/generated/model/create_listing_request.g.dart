@@ -8,53 +8,61 @@ part of 'create_listing_request.dart';
 
 CreateListingRequest _$CreateListingRequestFromJson(
   Map<String, dynamic> json,
-) => $checkedCreate('CreateListingRequest', json, ($checkedConvert) {
-  $checkKeys(
-    json,
-    requiredKeys: const [
-      'category_id',
-      'condition',
-      'currency',
-      'name',
-      'price_mode',
-      'variants',
-    ],
-  );
-  final val = CreateListingRequest(
-    attachments: $checkedConvert(
-      'attachments',
-      (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
-    ),
-    categoryId: $checkedConvert('category_id', (v) => v as String),
-    condition: $checkedConvert(
-      'condition',
-      (v) => $enumDecode(_$ListingConditionEnumMap, v),
-    ),
-    currency: $checkedConvert('currency', (v) => v as String),
-    description: $checkedConvert('description', (v) => v as String?),
-    name: $checkedConvert('name', (v) => v as String),
-    priceMode: $checkedConvert(
-      'price_mode',
-      (v) => $enumDecode(_$PriceModeEnumMap, v),
-    ),
-    specifications: $checkedConvert(
-      'specifications',
-      (v) =>
-          (v as Map<String, dynamic>?)?.map((k, e) => MapEntry(k, e as Object)),
-    ),
-    tags: $checkedConvert(
-      'tags',
-      (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
-    ),
-    variants: $checkedConvert(
-      'variants',
-      (v) => (v as List<dynamic>)
-          .map((e) => CreateVariantRequest.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    ),
-  );
-  return val;
-}, fieldKeyMap: const {'categoryId': 'category_id', 'priceMode': 'price_mode'});
+) => $checkedCreate(
+  'CreateListingRequest',
+  json,
+  ($checkedConvert) {
+    $checkKeys(
+      json,
+      requiredKeys: const [
+        'category_id',
+        'condition',
+        'currency',
+        'name',
+        'price_mode',
+        'variants',
+      ],
+    );
+    final val = CreateListingRequest(
+      attachments: $checkedConvert(
+        'attachments',
+        (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
+      ),
+      categoryId: $checkedConvert('category_id', (v) => v as String),
+      condition: $checkedConvert(
+        'condition',
+        (v) => $enumDecode(_$ListingConditionEnumMap, v),
+      ),
+      currency: $checkedConvert('currency', (v) => v as String),
+      description: $checkedConvert('description', (v) => v as String?),
+      name: $checkedConvert('name', (v) => v as String),
+      priceMode: $checkedConvert(
+        'price_mode',
+        (v) => $enumDecode(_$PriceModeEnumMap, v),
+      ),
+      specifications: $checkedConvert(
+        'specifications',
+        (v) => (v as Map<String, dynamic>?)?.map(
+          (k, e) => MapEntry(k, e as Object),
+        ),
+      ),
+      tags: $checkedConvert(
+        'tags',
+        (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
+      ),
+      variants: $checkedConvert(
+        'variants',
+        (v) => (v as List<dynamic>)
+            .map(
+              (e) => CreateVariantRequest.fromJson(e as Map<String, dynamic>),
+            )
+            .toList(),
+      ),
+    );
+    return val;
+  },
+  fieldKeyMap: const {'categoryId': 'category_id', 'priceMode': 'price_mode'},
+);
 
 Map<String, dynamic> _$CreateListingRequestToJson(
   CreateListingRequest instance,

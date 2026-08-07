@@ -9,23 +9,26 @@ part of 'update_notification_preferences_request_items_inner.dart';
 UpdateNotificationPreferencesRequestItemsInner
 _$UpdateNotificationPreferencesRequestItemsInnerFromJson(
   Map<String, dynamic> json,
-) => $checkedCreate('UpdateNotificationPreferencesRequestItemsInner', json, (
-  $checkedConvert,
-) {
-  $checkKeys(json, requiredKeys: const ['category', 'channel', 'is_enabled']);
-  final val = UpdateNotificationPreferencesRequestItemsInner(
-    category: $checkedConvert(
-      'category',
-      (v) => $enumDecode(_$NotificationCategoryEnumMap, v),
-    ),
-    channel: $checkedConvert(
-      'channel',
-      (v) => $enumDecode(_$NotificationChannelEnumMap, v),
-    ),
-    isEnabled: $checkedConvert('is_enabled', (v) => v as bool),
-  );
-  return val;
-}, fieldKeyMap: const {'isEnabled': 'is_enabled'});
+) => $checkedCreate(
+  'UpdateNotificationPreferencesRequestItemsInner',
+  json,
+  ($checkedConvert) {
+    $checkKeys(json, requiredKeys: const ['category', 'channel', 'is_enabled']);
+    final val = UpdateNotificationPreferencesRequestItemsInner(
+      category: $checkedConvert(
+        'category',
+        (v) => $enumDecode(_$NotificationCategoryEnumMap, v),
+      ),
+      channel: $checkedConvert(
+        'channel',
+        (v) => $enumDecode(_$NotificationChannelEnumMap, v),
+      ),
+      isEnabled: $checkedConvert('is_enabled', (v) => v as bool),
+    );
+    return val;
+  },
+  fieldKeyMap: const {'isEnabled': 'is_enabled'},
+);
 
 Map<String, dynamic> _$UpdateNotificationPreferencesRequestItemsInnerToJson(
   UpdateNotificationPreferencesRequestItemsInner instance,

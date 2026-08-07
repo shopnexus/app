@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'catalog_provider.dart';
@@ -9,7 +9,6 @@ part of 'catalog_provider.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -64,7 +63,7 @@ class _$CatalogSearchFiltersCopyWithImpl<$Res>
 /// Create a copy of CatalogSearchFilters
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? keyword = freezed,Object? categoryId = freezed,Object? priceMin = freezed,Object? priceMax = freezed,Object? tag = freezed,Object? sort = freezed,Object? provinceCode = freezed,Object? wardCode = freezed,Object? areaLabel = freezed,Object? nearContactId = freezed,Object? nearLabel = freezed,Object? lat = freezed,Object? lon = freezed,Object? radiusKm = freezed,Object? page = null,Object? size = null,}) {
-  return _then(CatalogSearchFilters(
+  return _then(_self.copyWith(
 keyword: freezed == keyword ? _self.keyword : keyword // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as String?,priceMin: freezed == priceMin ? _self.priceMin : priceMin // ignore: cast_nullable_to_non_nullable
@@ -366,7 +365,7 @@ class _$CatalogProductsStateCopyWithImpl<$Res>
 /// Create a copy of CatalogProductsState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? products = null,Object? hasMore = null,Object? isLoadingMore = null,Object? filters = null,}) {
-  return _then(CatalogProductsState(
+  return _then(_self.copyWith(
 products: null == products ? _self.products : products // ignore: cast_nullable_to_non_nullable
 as List<Listing>,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
 as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
@@ -521,7 +520,7 @@ return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);
 
 
 class _CatalogProductsState implements CatalogProductsState {
-  const _CatalogProductsState({required  List<Listing> products, required this.hasMore, required this.isLoadingMore, required this.filters}): _products = products;
+  const _CatalogProductsState({required final  List<Listing> products, required this.hasMore, required this.isLoadingMore, required this.filters}): _products = products;
   
 
  final  List<Listing> _products;
@@ -656,7 +655,7 @@ class _$ProductReviewsStateCopyWithImpl<$Res>
 /// Create a copy of ProductReviewsState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? reviews = null,Object? nextCursor = freezed,Object? isLoadingMore = null,}) {
-  return _then(ProductReviewsState(
+  return _then(_self.copyWith(
 reviews: null == reviews ? _self.reviews : reviews // ignore: cast_nullable_to_non_nullable
 as List<Review>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
 as String?,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
@@ -801,7 +800,7 @@ return $default(_that.reviews,_that.nextCursor,_that.isLoadingMore);case _:
 
 
 class _ProductReviewsState extends ProductReviewsState {
-  const _ProductReviewsState({required  List<Review> reviews, this.nextCursor, this.isLoadingMore = false}): _reviews = reviews,super._();
+  const _ProductReviewsState({required final  List<Review> reviews, this.nextCursor, this.isLoadingMore = false}): _reviews = reviews,super._();
   
 
  final  List<Review> _reviews;

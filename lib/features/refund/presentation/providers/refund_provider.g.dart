@@ -160,7 +160,7 @@ final class RefundActionsProvider
   }
 }
 
-String _$refundActionsHash() => r'073d88cf9127eda90371720254260463bc9c099e';
+String _$refundActionsHash() => r'e52e69604ed2898b183baca58dfcaa524e38c509';
 
 /// The moves either party can still make on a live case. Everything that decides
 /// money is staff's, reached by opening a `refund-dispute` ticket.

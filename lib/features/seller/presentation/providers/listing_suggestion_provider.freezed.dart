@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'listing_suggestion_provider.dart';
@@ -9,7 +9,6 @@ part of 'listing_suggestion_provider.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -64,7 +63,7 @@ class _$ListingPhotoCopyWithImpl<$Res>
 /// Create a copy of ListingPhoto
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? resourceId = freezed,Object? uploading = null,Object? errorMessage = freezed,}) {
-  return _then(ListingPhoto(
+  return _then(_self.copyWith(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as String,resourceId: freezed == resourceId ? _self.resourceId : resourceId // ignore: cast_nullable_to_non_nullable
 as String?,uploading: null == uploading ? _self.uploading : uploading // ignore: cast_nullable_to_non_nullable
@@ -334,7 +333,7 @@ class _$ListingSuggestionStateCopyWithImpl<$Res>
 /// Create a copy of ListingSuggestionState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? photos = null,Object? suggesting = null,Object? submitting = null,Object? suggestion = freezed,Object? categories = null,Object? contacts = null,Object? createdListingId = freezed,Object? published = null,Object? errorMessage = freezed,}) {
-  return _then(ListingSuggestionState(
+  return _then(_self.copyWith(
 photos: null == photos ? _self.photos : photos // ignore: cast_nullable_to_non_nullable
 as List<ListingPhoto>,suggesting: null == suggesting ? _self.suggesting : suggesting // ignore: cast_nullable_to_non_nullable
 as bool,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
@@ -485,7 +484,7 @@ return $default(_that.photos,_that.suggesting,_that.submitting,_that.suggestion,
 
 
 class _ListingSuggestionState implements ListingSuggestionState {
-  const _ListingSuggestionState({ List<ListingPhoto> photos = const [], this.suggesting = false, this.submitting = false, this.suggestion,  List<Category> categories = const [],  List<Contact> contacts = const [], this.createdListingId, this.published = false, this.errorMessage}): _photos = photos,_categories = categories,_contacts = contacts;
+  const _ListingSuggestionState({final  List<ListingPhoto> photos = const [], this.suggesting = false, this.submitting = false, this.suggestion, final  List<Category> categories = const [], final  List<Contact> contacts = const [], this.createdListingId, this.published = false, this.errorMessage}): _photos = photos,_categories = categories,_contacts = contacts;
   
 
  final  List<ListingPhoto> _photos;
