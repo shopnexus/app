@@ -39,6 +39,9 @@ class AccountMenuTile extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.tint,
+    this.iconBgColor,
+    this.iconColor,
+    this.tileColor,
     required this.onTap,
   });
 
@@ -53,6 +56,11 @@ class AccountMenuTile extends StatelessWidget {
   /// Màu chữ và icon. Chỉ đặt cho dòng phá vỡ nhịp — hiện chỉ có Đăng xuất.
   final Color? tint;
 
+  /// Tùy chỉnh màu nền icon, màu icon và màu nền tile (phục vụ thiết kế Stitch)
+  final Color? iconBgColor;
+  final Color? iconColor;
+  final Color? tileColor;
+
   final VoidCallback onTap;
 
   @override
@@ -61,19 +69,26 @@ class AccountMenuTile extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final foreground = tint ?? theme.colorScheme.onSurface;
 
+    final resolvedIconBg = iconBgColor ??
+        (tint != null
+            ? tint!.withValues(alpha: 0.12)
+            : (isDark
+                ? theme.colorScheme.surfaceContainerHighest
+                : const Color(0xFFEEEEEC)));
+
+    final resolvedIconColor =
+        iconColor ?? tint ?? theme.colorScheme.onSurfaceVariant;
+
     return ListTile(
+      tileColor: tileColor,
       leading: Container(
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: tint != null
-              ? tint!.withValues(alpha: 0.12)
-              : (isDark
-                    ? theme.colorScheme.surfaceContainerHighest
-                    : const Color(0xFFEEEEEC)),
+          color: resolvedIconBg,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: tint ?? theme.colorScheme.onSurfaceVariant),
+        child: Icon(icon, color: resolvedIconColor),
       ),
       title: Text(
         title,
@@ -96,7 +111,7 @@ class AccountMenuTile extends StatelessWidget {
             ),
       trailing: Icon(
         Icons.chevron_right_rounded,
-        color: theme.colorScheme.onSurfaceVariant,
+        color: iconColor ?? theme.colorScheme.onSurfaceVariant,
         size: 22,
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
@@ -104,3 +119,4 @@ class AccountMenuTile extends StatelessWidget {
     );
   }
 }
+

@@ -31,6 +31,7 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/screens/prod
 import 'package:shopnexus_flutter_app/features/cart/presentation/screens/cart_screen.dart';
 import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/checkout_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_profile_screen.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_dashboard_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_suggestion_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/listing_edit_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/screens/seller_products_screen.dart';
@@ -151,11 +152,11 @@ GoRouter appRouter(Ref ref) {
               return SellerProfileScreen(vendorId: id);
             },
           ),
-          // Nút + ở thanh điều hướng dưới mở màn hình Đăng sản phẩm mới
+          // Trang tổng quan của Người bán (Seller Dashboard)
           GoRoute(
             path: '/seller',
             name: 'seller',
-            builder: (context, state) => const ListingSuggestionScreen(),
+            builder: (context, state) => const SellerDashboardScreen(),
             routes: [
               GoRoute(
                 path: 'new-listing',
@@ -186,12 +187,27 @@ GoRouter appRouter(Ref ref) {
                 path: 'orders',
                 name: 'seller_orders',
                 builder: (context, state) {
-                  final orderState = _enumByValue(
-                    OrderState.values,
-                    state.uri.queryParameters['state'],
-                    (s) => s.value,
-                  );
-                  return SellerOrdersScreen(initialState: orderState);
+                  final tabStr = state.uri.queryParameters['tab'];
+                  int initialTab = 0;
+                  if (tabStr != null) {
+                    initialTab = int.tryParse(tabStr) ?? 0;
+                  } else {
+                    final orderState = _enumByValue(
+                      OrderState.values,
+                      state.uri.queryParameters['state'],
+                      (s) => s.value,
+                    );
+                    if (orderState == OrderState.awaitingConfirmation) {
+                      initialTab = 1;
+                    } else if (orderState == OrderState.open) {
+                      initialTab = 2;
+                    } else if (orderState == OrderState.completed) {
+                      initialTab = 3;
+                    } else if (orderState == OrderState.cancelled) {
+                      initialTab = 5;
+                    }
+                  }
+                  return SellerOrdersScreen(initialTabIndex: initialTab);
                 },
               ),
               GoRoute(

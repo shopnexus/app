@@ -17,221 +17,192 @@ import 'package:shopnexus_flutter_app/features/seller/presentation/providers/sel
 /// tiền, hủy trước khi hàng rời kho, báo sự cố, và nhắn cho người mua. Vị trí
 /// kiện hàng thì không: `POST /orders/{id}/transport/checkpoints` là route của
 /// nhân viên sàn, người bán thấy hàng đi sai thì mở ticket `order-issue`.
-class SellerOrdersScreen extends ConsumerStatefulWidget {
-  final OrderState? initialState;
+class SellerOrdersScreen extends ConsumerWidget {
+  final int initialTabIndex;
 
-  const SellerOrdersScreen({super.key, this.initialState});
+  const SellerOrdersScreen({super.key, this.initialTabIndex = 0});
 
-  @override
-  ConsumerState<SellerOrdersScreen> createState() => _SellerOrdersScreenState();
-}
-
-class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initialState != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(sellerOrdersProvider.notifier).setState(widget.initialState);
-      });
-    }
-  }
+  static const _tabTitles = [
+    'Tất cả',
+    'Chờ xác nhận',
+    'Đang xử lý',
+    'Hoàn thành',
+    'Hoàn tiền',
+    'Đã hủy',
+  ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final state = ref.watch(sellerOrdersProvider);
-    final notifier = ref.read(sellerOrdersProvider.notifier);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          'Đơn hàng bán',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
+    return DefaultTabController(
+      length: _tabTitles.length,
+      initialIndex: initialTabIndex.clamp(0, _tabTitles.length - 1),
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: theme.colorScheme.surface,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+            onPressed: () => context.pop(),
           ),
-        ),
-      ),
-      body: RefreshIndicator(
-        color: theme.colorScheme.primary,
-        onRefresh: notifier.refresh,
-        child: Column(
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  for (final entry in _tabs.entries)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: _buildTabChip(
-                        context,
-                        label: entry.value,
-                        isSelected: state.selected == entry.key,
-                        onTap: () => notifier.setState(entry.key),
-                      ),
+          title: Text(
+            'Đơn hàng bán',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+              fontFamily: 'Manrope',
+            ),
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                dividerColor: Colors.transparent,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicator: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                labelColor: theme.colorScheme.onPrimary,
+                unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 14),
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                ),
+                tabs: [
+                  for (final title in _tabTitles)
+                    Tab(
+                      height: 36,
+                      child: Text(title),
                     ),
                 ],
               ),
             ),
-            Expanded(
-              child: state.isLoading
-                  ? _buildShimmerList(context)
-                  : _buildList(context, state, notifier),
-            ),
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            for (var i = 0; i < _tabTitles.length; i++)
+              _SellerOrdersTabList(selectedTab: i),
           ],
         ),
       ),
     );
   }
+}
 
-  static const Map<OrderState?, String> _tabs = {
-    null: 'Tất cả',
-    OrderState.awaitingConfirmation: 'Chờ xác nhận',
-    OrderState.open: 'Đang xử lý',
-    OrderState.completed: 'Hoàn thành',
-    OrderState.cancelled: 'Đã hủy',
-  };
+bool _matchesSellerTab(OrderView view, int selectedTab) {
+  final isCancelled = view.order.state == OrderState.cancelled ||
+      view.order.cancelledAt != null;
 
-  Widget _buildList(
-    BuildContext context,
-    SellerOrdersState state,
-    SellerOrdersNotifier notifier,
-  ) {
-    if (state.errorMessage != null) {
-      return _buildMessage(
-        context,
-        Icons.error_outline_rounded,
-        'Không thể tải đơn hàng',
-        state.errorMessage,
-      );
-    }
-    if (state.orders.isEmpty && state.unsettled.isEmpty) {
-      return _buildMessage(
-        context,
-        Icons.receipt_long_outlined,
-        'Chưa có đơn hàng nào trong mục này',
-        null,
-      );
-    }
+  final isDelivered =
+      view.order.transport?.status == TransportStatus.delivered;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        if (state.unsettled.isNotEmpty) ...[
-          _buildUnsettledNotice(context, state.unsettled),
-          const SizedBox(height: 16),
-        ],
-        for (final view in state.orders)
-          _buildOrderCard(context, view, notifier, state.isActionLoading),
-      ],
-    );
+  final isCompleted = view.order.state == OrderState.completed ||
+      view.order.receivedAt != null ||
+      view.order.completedAt != null ||
+      isDelivered;
+
+  switch (selectedTab) {
+    case 1: // Chờ xác nhận
+      return view.order.state == OrderState.awaitingConfirmation &&
+          !isCancelled;
+    case 2: // Đang xử lý
+      return view.order.state == OrderState.open &&
+          !isCompleted &&
+          view.order.transport?.status != TransportStatus.returned &&
+          !isCancelled;
+    case 3: // Hoàn thành
+      return isCompleted && !isCancelled;
+    case 4: // Hoàn tiền
+      return (view.order.declineReason != null ||
+              view.order.transport?.status == TransportStatus.returned) &&
+          !isCancelled;
+    case 5: // Đã hủy
+      return isCancelled;
+    case 0: // Tất cả
+    default:
+      return true;
   }
+}
 
-  /// Paid lines whose order the platform has not created yet. Nothing here is
-  /// waiting on the seller — it is a retry list, so it says so and offers nothing.
-  Widget _buildUnsettledNotice(
-    BuildContext context,
-    List<OrderLineView> lines,
-  ) {
+class _SellerOrdersTabList extends ConsumerWidget {
+  final int selectedTab;
+
+  const _SellerOrdersTabList({required this.selectedTab});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final ordersAsync = ref.watch(sellerAllOrdersProvider);
+    final notifier = ref.read(sellerOrdersProvider.notifier);
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF422006) : const Color(0xFFFEF3C7),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return RefreshIndicator(
+      color: theme.colorScheme.primary,
+      onRefresh: () async {
+        ref.invalidate(sellerAllOrdersProvider);
+        ref.invalidate(sellerOrdersProvider);
+      },
+      child: ordersAsync.when(
+        loading: () => _buildShimmerList(context),
+        error: (err, stack) => _buildMessage(
+          context,
+          Icons.error_outline_rounded,
+          'Không thể tải đơn hàng',
+          err.toString(),
+        ),
+        data: (allOrders) {
+          final matchingOrders = allOrders
+              .where((view) => _matchesSellerTab(view, selectedTab))
+              .toList();
+
+          if (matchingOrders.isEmpty) {
+            return _buildMessage(
+              context,
+              Icons.receipt_long_outlined,
+              'Chưa có đơn hàng nào trong mục này',
+              null,
+            );
+          }
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              const Icon(
-                Icons.hourglass_top,
-                size: 18,
-                color: Color(0xFFD97706),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  '${lines.length} sản phẩm đã thanh toán đang chờ hệ thống tạo đơn',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: isDark
-                        ? const Color(0xFFFBBF24)
-                        : const Color(0xFF92400E),
-                  ),
-                ),
-              ),
+              for (final view in matchingOrders)
+                _buildOrderCard(context, view, notifier, false, ref),
             ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Bạn không cần làm gì — đơn sẽ xuất hiện ngay khi hệ thống xử lý xong.',
-            style: TextStyle(
-              fontSize: 12,
-              color: isDark ? const Color(0xFFFDE68A) : const Color(0xFF92400E),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
+}
 
-  Widget _buildTabChip(
-    BuildContext context, {
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
-    final unselectedBg = isDark
-        ? theme.colorScheme.surfaceContainerHighest
-        : const Color(0xFFECEEED);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary : unselectedBg,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildOrderCard(
     BuildContext context,
     OrderView view,
     SellerOrdersNotifier notifier,
     bool isActionLoading,
+    WidgetRef ref,
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -422,7 +393,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   child: ElevatedButton(
                     onPressed: isActionLoading
                         ? null
-                        : () => _confirmOrder(context, order.id, notifier),
+                        : () => _confirmOrder(context, order.id, notifier, ref),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
@@ -438,7 +409,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
                   child: OutlinedButton(
                     onPressed: isActionLoading
                         ? null
-                        : () => _declineOrder(context, order.id, notifier),
+                        : () => _declineOrder(context, order.id, notifier, ref),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFFEF4444),
                       side: const BorderSide(color: Color(0xFFEF4444)),
@@ -494,7 +465,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
               child: TextButton(
                 onPressed: isActionLoading
                     ? null
-                    : () => _confirmCancel(context, order.id, notifier),
+                    : () => _confirmCancel(context, order.id, notifier, ref),
                 child: const Text(
                   'Hủy đơn',
                   style: TextStyle(color: Color(0xFFEF4444)),
@@ -511,6 +482,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     BuildContext context,
     String orderId,
     SellerOrdersNotifier notifier,
+    WidgetRef ref,
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -536,7 +508,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
 
     final ok = await notifier.confirmOrder(orderId);
     if (!context.mounted) return;
-    _report(context, ok, 'Đã xác nhận đơn hàng');
+    _report(context, ref, notifier, ok, 'Đã xác nhận đơn hàng');
   }
 
   /// Lý do là bắt buộc và server từ chối chuỗi rỗng: người mua đã trả tiền, nên
@@ -546,6 +518,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     BuildContext context,
     String orderId,
     SellerOrdersNotifier notifier,
+    WidgetRef ref,
   ) async {
     final controller = TextEditingController();
     final reason = await showDialog<String>(
@@ -594,7 +567,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
 
     final ok = await notifier.declineOrder(orderId, reason);
     if (!context.mounted) return;
-    _report(context, ok, 'Đã từ chối đơn hàng');
+    _report(context, ref, notifier, ok, 'Đã từ chối đơn hàng');
   }
 
   /// Thread của ticket là nơi việc này tiếp diễn, nên màn hình đi theo nó.
@@ -614,6 +587,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
     BuildContext context,
     String orderId,
     SellerOrdersNotifier notifier,
+    WidgetRef ref,
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -639,15 +613,25 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
 
     final ok = await notifier.cancelOrder(orderId);
     if (!context.mounted) return;
-    _report(context, ok, 'Đã hủy đơn hàng');
+    _report(context, ref, notifier, ok, 'Đã hủy đơn hàng');
   }
 
   /// A failure is shown as one, not swallowed: the old buttons reported success
   /// whatever the server said, because the route they called did not exist.
-  void _report(BuildContext context, bool ok, String success) {
+  void _report(
+    BuildContext context,
+    WidgetRef ref,
+    SellerOrdersNotifier notifier,
+    bool ok,
+    String success,
+  ) {
+    if (ok) {
+      ref.invalidate(sellerAllOrdersProvider);
+    }
     final message = ok
         ? success
-        : ref.read(sellerOrdersProvider).errorMessage ?? 'Không thực hiện được';
+        : ref.read(sellerOrdersProvider).errorMessage ??
+            'Không thực hiện được';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -719,4 +703,3 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> {
       ),
     );
   }
-}

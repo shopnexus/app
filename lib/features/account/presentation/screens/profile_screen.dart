@@ -10,15 +10,12 @@ import 'package:shopnexus_flutter_app/features/account/data/models/account_model
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_menu_tile.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_earnings_provider.dart';
-import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
-import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
 
 /// Trang tài khoản: ba nhóm và một khối việc-cần-làm.
 ///
@@ -149,31 +146,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       : const Color(0xFFEEEEEE),
                 ),
 
-                const AccountSectionHeader(title: 'MUA BÁN & GIAO DỊCH'),
+                const AccountSectionHeader(title: 'KINH DOANH'),
                 _buildGroup(context, [
                   AccountMenuTile(
-                    icon: Icons.receipt_long_outlined,
+                    icon: Icons.storefront_rounded,
+                    title: 'Chuyển sang Kênh Người Bán',
+                    subtitle: 'Quản lý cửa hàng, đơn bán & sản phẩm',
+                    iconBgColor: isDarkMode
+                        ? AppColors.darkPrimary.withValues(alpha: 0.3)
+                        : theme.colorScheme.primary,
+                    iconColor: isDarkMode
+                        ? AppColors.darkPrimary
+                        : theme.colorScheme.onPrimary,
+                    tileColor: isDarkMode
+                        ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2)
+                        : theme.colorScheme.primary.withValues(alpha: 0.06),
+                    onTap: () => context.push('/seller'),
+                  ),
+                ]),
+
+                const AccountSectionHeader(title: 'MUA SẮM & ĐƠN HÀNG'),
+                _buildGroup(context, [
+                  AccountMenuTile(
+                    icon: Icons.local_mall_outlined,
                     title: 'Đơn hàng của tôi',
                     onTap: () => context.push('/account/orders?tab=0'),
                   ),
                   _ShortcutWrapper(
                     child: _buildOrderStatusShortcutRow(context),
-                  ),
-                  AccountMenuTile(
-                    icon: Icons.inventory_2_outlined,
-                    title: 'Sản phẩm của tôi',
-                    onTap: () => context.push('/seller/products'),
-                  ),
-                  _ShortcutWrapper(
-                    child: _buildProductStatusShortcutRow(context),
-                  ),
-                  AccountMenuTile(
-                    icon: Icons.storefront_outlined,
-                    title: 'Đơn bán của tôi',
-                    onTap: () => context.push('/seller/orders'),
-                  ),
-                  _ShortcutWrapper(
-                    child: _buildSellerOrderStatusShortcutRow(context),
                   ),
                   AccountMenuTile(
                     icon: Icons.account_balance_wallet_outlined,
@@ -359,276 +359,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     vertical: 1.5,
                                   ),
                                   constraints: const BoxConstraints(minWidth: 16),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.error,
-                                    borderRadius: BorderRadius.circular(9),
-                                    border: Border.all(
-                                      color: isDarkMode
-                                          ? AppColors.darkSurface
-                                          : Colors.white,
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    count > 99 ? '99+' : '$count',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: theme.colorScheme.onError,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Inter',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          item.label,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontFamily: 'Inter',
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductStatusShortcutRow(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
-    final counts = ref.watch(sellerListingCountsProvider).value;
-
-    final statuses = [
-      (
-        icon: Icons.storefront_outlined,
-        label: 'Đang bán',
-        statusKey: ListingStatus.active,
-      ),
-      (
-        icon: Icons.hourglass_top_rounded,
-        label: 'Chờ duyệt',
-        statusKey: ListingStatus.pending,
-      ),
-      (
-        icon: Icons.visibility_off_outlined,
-        label: 'Đã ẩn',
-        statusKey: ListingStatus.hidden,
-      ),
-      (
-        icon: Icons.edit_note_rounded,
-        label: 'Nháp',
-        statusKey: ListingStatus.draft,
-      ),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.only(top: 2, bottom: 14, left: 8, right: 8),
-      color: isDarkMode ? AppColors.darkSurface : Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          for (final item in statuses)
-            Expanded(
-              child: Builder(
-                builder: (context) {
-                  final count = counts?[item.statusKey] ?? 0;
-                  return GestureDetector(
-                    onTap: () => context.push(
-                      '/seller/products?status=${item.statusKey.value}',
-                    ),
-                    behavior: HitTestBehavior.opaque,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: isDarkMode
-                                    ? theme.colorScheme.primary.withAlpha(40)
-                                    : theme.colorScheme.primary.withAlpha(12),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Icon(
-                                item.icon,
-                                size: 22,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                            if (count > 0)
-                              Positioned(
-                                top: -4,
-                                right: -6,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 1.5,
-                                  ),
-                                  constraints:
-                                      const BoxConstraints(minWidth: 16),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.error,
-                                    borderRadius: BorderRadius.circular(9),
-                                    border: Border.all(
-                                      color: isDarkMode
-                                          ? AppColors.darkSurface
-                                          : Colors.white,
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    count > 99 ? '99+' : '$count',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: theme.colorScheme.onError,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Inter',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          item.label,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontFamily: 'Inter',
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSellerOrderStatusShortcutRow(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
-    final sellerOrders = ref.watch(sellerAllOrdersProvider).value ?? [];
-
-    int getCount(OrderState stateKey) {
-      return sellerOrders.where((v) {
-        final isCancelled = v.order.state == OrderState.cancelled ||
-            v.order.cancelledAt != null;
-        if (stateKey == OrderState.cancelled) return isCancelled;
-        if (isCancelled) return false;
-
-        final isDelivered =
-            v.order.transport?.status == TransportStatus.delivered;
-        final isCompleted = v.order.state == OrderState.completed ||
-            v.order.receivedAt != null ||
-            v.order.completedAt != null ||
-            isDelivered;
-
-        if (stateKey == OrderState.completed) return isCompleted;
-        if (stateKey == OrderState.open) {
-          return v.order.state == OrderState.open &&
-              !isCompleted &&
-              v.order.transport?.status != TransportStatus.returned;
-        }
-        return v.order.state == stateKey;
-      }).length;
-    }
-
-    final statuses = [
-      (
-        icon: Icons.pending_actions_outlined,
-        label: 'Chờ xác nhận',
-        stateKey: OrderState.awaitingConfirmation,
-      ),
-      (
-        icon: Icons.local_shipping_outlined,
-        label: 'Đang xử lý',
-        stateKey: OrderState.open,
-      ),
-      (
-        icon: Icons.check_circle_outline_rounded,
-        label: 'Hoàn thành',
-        stateKey: OrderState.completed,
-      ),
-      (
-        icon: Icons.cancel_outlined,
-        label: 'Đã hủy',
-        stateKey: OrderState.cancelled,
-      ),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.only(top: 2, bottom: 14, left: 8, right: 8),
-      color: isDarkMode ? AppColors.darkSurface : Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          for (final item in statuses)
-            Expanded(
-              child: Builder(
-                builder: (context) {
-                  final count = getCount(item.stateKey);
-                  return GestureDetector(
-                    onTap: () => context.push(
-                      '/seller/orders?state=${item.stateKey.value}',
-                    ),
-                    behavior: HitTestBehavior.opaque,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: isDarkMode
-                                    ? theme.colorScheme.primary.withAlpha(40)
-                                    : theme.colorScheme.primary.withAlpha(12),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Icon(
-                                item.icon,
-                                size: 22,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                            if (count > 0)
-                              Positioned(
-                                top: -4,
-                                right: -6,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 1.5,
-                                  ),
-                                  constraints:
-                                      const BoxConstraints(minWidth: 16),
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.error,
                                     borderRadius: BorderRadius.circular(9),
