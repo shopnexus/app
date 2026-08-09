@@ -261,10 +261,10 @@ class _Thread extends StatelessWidget {
 
         if (offerId != null) {
           final offer = state.offers[offerId];
+          final isMine = message.isMine ||
+              (offer != null && state.viewerIsAuthor(offer));
           return Align(
-            alignment: message.isMine
-                ? Alignment.centerRight
-                : Alignment.centerLeft,
+            alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: ChatOfferCard(
