@@ -658,7 +658,7 @@ class ChatApi {
   }
 
   /// Confirm the bytes are at the store
-  /// Until this lands the resource resolves to nothing, so a half-finished upload cannot be attached to a message. The recorded size is the store&#39;s, not the one declared when the slot was reserved.
+  /// Until this lands the resource resolves to nothing, so a half-finished upload cannot be attached to a message. The recorded size is the store&#39;s, not the one declared when the slot was reserved. The answer carries a signed &#x60;url&#x60; for the bytes just uploaded. That is the only time it is handed over unasked: a second confirmation is refused, and the resource is otherwise only seen through whatever it gets attached to.
   ///
   /// Parameters:
   /// * [id]

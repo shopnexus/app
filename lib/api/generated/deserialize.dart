@@ -85,6 +85,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/identity_document.dart
 import 'package:shopnexus_flutter_app/api/generated/model/identity_document_list.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/identity_document_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/identity_documents_post201_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/identity_scans.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/identity_verdict_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/identity_verification_ticket.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/items_id_cancellation_post200_response.dart';
@@ -527,6 +528,9 @@ ReturnType deserialize<ReturnType, BaseType>(
       return IdentityDocumentsPost201Response.fromJson(
             value as Map<String, dynamic>,
           )
+          as ReturnType;
+    case 'IdentityScans':
+      return IdentityScans.fromJson(value as Map<String, dynamic>)
           as ReturnType;
     case 'IdentityStatus':
     case 'IdentityVerdictRequest':

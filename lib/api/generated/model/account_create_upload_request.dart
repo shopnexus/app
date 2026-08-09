@@ -20,19 +20,16 @@ class AccountCreateUploadRequest {
   AccountCreateUploadRequest({
     required this.filename,
 
-    required this.kind,
-
     required this.mime,
 
     required this.size,
+
+    required this.kind,
   });
 
   /// Kept only for its extension. The stored key is generated — a path a client chose is a directory traversal waiting for a backend that resolves one.
   @JsonKey(name: r'filename', required: true, includeIfNull: false)
   final String filename;
-
-  @JsonKey(name: r'kind', required: true, includeIfNull: false)
-  final AccountCreateUploadRequestKindEnum kind;
 
   /// One of the types this platform stores: `image/jpeg`, `image/png`, `image/webp`, `application/pdf`, `video/mp4`, `video/quicktime` (an iPhone's `.mov`), `video/webm`. Anything else is 422 whatever its size. The allowlist is the store's, so every upload route accepts the same set — which of them a client offers is its own choice.
   @JsonKey(name: r'mime', required: true, includeIfNull: false)
@@ -44,18 +41,21 @@ class AccountCreateUploadRequest {
   @JsonKey(name: r'size', required: true, includeIfNull: false)
   final int size;
 
+  @JsonKey(name: r'kind', required: true, includeIfNull: false)
+  final AccountCreateUploadRequestKindEnum kind;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is AccountCreateUploadRequest &&
           other.filename == filename &&
-          other.kind == kind &&
           other.mime == mime &&
-          other.size == size;
+          other.size == size &&
+          other.kind == kind;
 
   @override
   int get hashCode =>
-      filename.hashCode + kind.hashCode + mime.hashCode + size.hashCode;
+      filename.hashCode + mime.hashCode + size.hashCode + kind.hashCode;
 
   factory AccountCreateUploadRequest.fromJson(Map<String, dynamic> json) =>
       _$AccountCreateUploadRequestFromJson(json);

@@ -1225,7 +1225,7 @@ class AdminApi {
   /// * [accountId]
   /// * [from] - Inclusive lower bound on creation time
   /// * [to] - Exclusive upper bound on creation time
-  /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
+  /// * [page] - 1-based page number.
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
@@ -1242,7 +1242,7 @@ class AdminApi {
     String? accountId,
     DateTime? from,
     DateTime? to,
-    String? cursor,
+    int? page = 1,
     int? limit = 20,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1270,7 +1270,7 @@ class AdminApi {
       if (accountId != null) r'account_id': accountId,
       if (from != null) r'from': from,
       if (to != null) r'to': to,
-      if (cursor != null) r'cursor': cursor,
+      if (page != null) r'page': page,
       if (limit != null) r'limit': limit,
     };
 

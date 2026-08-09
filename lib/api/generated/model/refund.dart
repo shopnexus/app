@@ -41,7 +41,7 @@ class Refund {
     required this.status,
   });
 
-  /// The buyer's evidence, topped up until the case closes.
+  /// The buyer's evidence, topped up until the case closes. Theirs alone: this is the claim being made, not a shared file — the seller's answer lives on the `refund-dispute` ticket they open, so the two sides stay legible apart.
   @JsonKey(name: r'attachments', required: true, includeIfNull: false)
   final List<Resource> attachments;
 

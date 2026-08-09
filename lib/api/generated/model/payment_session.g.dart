@@ -15,6 +15,7 @@ PaymentSession _$PaymentSessionFromJson(
     $checkKeys(
       json,
       requiredKeys: const [
+        'checkout_url',
         'created_at',
         'currency',
         'expired_at',
@@ -28,6 +29,7 @@ PaymentSession _$PaymentSessionFromJson(
       ],
     );
     final val = PaymentSession(
+      checkoutUrl: $checkedConvert('checkout_url', (v) => v as String? ?? ''),
       createdAt: $checkedConvert(
         'created_at',
         (v) => DateTime.parse(v as String),

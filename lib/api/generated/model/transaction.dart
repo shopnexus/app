@@ -50,7 +50,7 @@ class Transaction {
   @JsonKey(name: r'amount', required: true, includeIfNull: false)
   final int amount;
 
-  /// Where to send the payer for this leg. Empty once the rail no longer needs it, or for rails that have none.
+  /// Where to send the payer for this leg, answered for as long as the leg can still be paid. Empty once it has settled or expired, and for rails that redirect nowhere.
   @JsonKey(name: r'checkout_url', required: true, includeIfNull: false)
   final String checkoutUrl;
 

@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/widgets/seller_menu_item_tile.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
@@ -18,6 +21,41 @@ class SellerDashboardScreen extends ConsumerWidget {
 
     final dashboardAsync = ref.watch(sellerDashboardProvider);
     final profileAsync = ref.watch(profileProvider);
+    final sellerOrders = ref.watch(sellerAllOrdersProvider).value ?? [];
+
+    int getSellerOrderCount(int tabIndex) {
+      return sellerOrders.where((v) {
+        final isCancelled = v.order.state == OrderState.cancelled ||
+            v.order.cancelledAt != null;
+        final isDelivered =
+            v.order.transport?.status == TransportStatus.delivered;
+        final isCompleted = v.order.state == OrderState.completed ||
+            v.order.receivedAt != null ||
+            v.order.completedAt != null ||
+            isDelivered;
+
+        switch (tabIndex) {
+          case 1: // Chờ xác nhận
+            return v.order.state == OrderState.awaitingConfirmation &&
+                !isCancelled;
+          case 2: // Đang xử lý
+            return v.order.state == OrderState.open &&
+                !isCompleted &&
+                v.order.transport?.status != TransportStatus.returned &&
+                !isCancelled;
+          case 3: // Hoàn thành
+            return isCompleted && !isCancelled;
+          case 4: // Hoàn tiền
+            return (v.order.declineReason != null ||
+                    v.order.transport?.status == TransportStatus.returned) &&
+                !isCancelled;
+          case 5: // Đã hủy
+            return isCancelled;
+          default:
+            return false;
+        }
+      }).length;
+    }
 
     return Scaffold(
       backgroundColor: isDark
@@ -120,6 +158,17 @@ class SellerDashboardScreen extends ConsumerWidget {
                 Column(
                   children: [
                     SellerMenuItemTile(
+                      title: 'Chờ xác nhận',
+                      icon: Icons.hourglass_top_rounded,
+                      iconColor: const Color(0xFF3B82F6),
+                      iconBgColor: const Color(
+                        0xFF3B82F6,
+                      ).withValues(alpha: 0.12),
+                      count: getSellerOrderCount(1),
+                      onTap: () => context.push('/seller/orders?tab=1'),
+                    ),
+                    const SizedBox(height: 8),
+                    SellerMenuItemTile(
                       title: 'Đang xử lý',
                       icon: Icons.pending_actions,
                       iconColor: const Color(0xFFF59E0B),
@@ -140,6 +189,17 @@ class SellerDashboardScreen extends ConsumerWidget {
                       count: dashboard.summary.completed,
                       onTap: () =>
                           context.push('/seller/orders?state=completed'),
+                    ),
+                    const SizedBox(height: 8),
+                    SellerMenuItemTile(
+                      title: 'Hoàn tiền',
+                      icon: Icons.assignment_return_outlined,
+                      iconColor: const Color(0xFF8B5CF6),
+                      iconBgColor: const Color(
+                        0xFF8B5CF6,
+                      ).withValues(alpha: 0.12),
+                      count: getSellerOrderCount(4),
+                      onTap: () => context.push('/seller/orders?tab=4'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
@@ -166,6 +226,9 @@ class SellerDashboardScreen extends ConsumerWidget {
                   },
                 ),
                 const SizedBox(height: 10),
+                // --- AI Video & Voice Description Wizard Banner ---
+                _buildAiPostingBanner(context),
+                const SizedBox(height: 12),
                 Column(
                   children: [
                     SellerMenuItemTile(
@@ -212,38 +275,6 @@ class SellerDashboardScreen extends ConsumerWidget {
                       count: dashboard.listingsWith(ListingStatus.draft),
                       onTap: () =>
                           context.push('/seller/products?status=draft'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // --- AI Video & Voice Description Wizard Banner ---
-                _buildAiPostingBanner(context),
-                const SizedBox(height: 24),
-
-                // --- Inventory & Logistics Section ---
-                _buildSectionHeader(context, title: 'Kho & vận chuyển'),
-                const SizedBox(height: 10),
-                Column(
-                  children: [
-                    SellerMenuItemTile(
-                      title: 'Địa chỉ lấy hàng',
-                      icon: Icons.location_on_outlined,
-                      iconColor: const Color(0xFF0EA5E9),
-                      iconBgColor: const Color(
-                        0xFF0EA5E9,
-                      ).withValues(alpha: 0.12),
-                      onTap: () => context.push('/account/addresses'),
-                    ),
-                    const SizedBox(height: 8),
-                    SellerMenuItemTile(
-                      title: 'Thu nhập & rút tiền',
-                      icon: Icons.payments_outlined,
-                      iconColor: const Color(0xFF10B981),
-                      iconBgColor: const Color(
-                        0xFF10B981,
-                      ).withValues(alpha: 0.12),
-                      onTap: () => context.push('/seller/earnings'),
                     ),
                   ],
                 ),

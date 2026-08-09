@@ -20,6 +20,8 @@ part 'payment_session.g.dart';
 class PaymentSession {
   /// Returns a new [PaymentSession] instance.
   PaymentSession({
+    required this.checkoutUrl,
+
     required this.createdAt,
 
     required this.currency,
@@ -40,6 +42,10 @@ class PaymentSession {
 
     required this.totalAmount,
   });
+
+  /// The gateway page an unfinished payment attempt is still waiting at — send the payer straight back to it. Empty when there is nothing to return to: no attempt yet, a rail that redirects nowhere, or a session past its deadline. A client that finds it empty has to ask for a rail first, through `POST /payment-sessions/{id}/payments`.
+  @JsonKey(name: r'checkout_url', required: true, includeIfNull: false)
+  final String checkoutUrl;
 
   @JsonKey(name: r'created_at', required: true, includeIfNull: false)
   final DateTime createdAt;
@@ -81,6 +87,7 @@ class PaymentSession {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PaymentSession &&
+          other.checkoutUrl == checkoutUrl &&
           other.createdAt == createdAt &&
           other.currency == currency &&
           other.expiredAt == expiredAt &&
@@ -94,6 +101,7 @@ class PaymentSession {
 
   @override
   int get hashCode =>
+      checkoutUrl.hashCode +
       createdAt.hashCode +
       currency.hashCode +
       expiredAt.hashCode +

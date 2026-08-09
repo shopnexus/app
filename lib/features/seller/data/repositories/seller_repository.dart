@@ -278,7 +278,7 @@ class SellerRepository {
   }) async {
     final page = (await _financeApi.walletsCurrencyTransactionsGet(
       currency: currency,
-      cursor: cursor,
+      page: cursor != null ? int.tryParse(cursor) : 1,
       limit: limit,
     )).data;
     return page?.data ?? const [];

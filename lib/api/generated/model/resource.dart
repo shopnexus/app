@@ -58,7 +58,7 @@ class Resource {
   @JsonKey(name: r'size', required: true, includeIfNull: false)
   final int size;
 
-  /// Short-lived URL to fetch the bytes. Empty until a module can presign one, so a consumer that needs the bytes has to treat an empty string as \"not available yet\". Not a stable address: store the id, not this.
+  /// Short-lived URL to fetch the bytes, signed by the store that actually holds them — answered by the confirmation and by every response that carries a resource. Empty only when no link could be produced, so a consumer that needs the bytes has to treat an empty string as \"not available\" rather than as an empty object. Not a stable address: store the id, not this.
   @JsonKey(name: r'url', required: true, includeIfNull: false)
   final String url;
 

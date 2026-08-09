@@ -610,7 +610,7 @@ class FinanceApi {
   }
 
   /// Pay a session through one rail
-  /// Creates a ledger leg on the chosen rail and returns it with the gateway redirect in &#x60;checkout_url&#x60;. Omit &#x60;amount&#x60; to tender the whole outstanding balance; pass it to split the session across several rails, calling this again per rail until the total is covered.  The leg starts &#x60;pending&#x60; and only the provider&#39;s webhook settles it — this response is not a receipt. Poll the session or the leg for the outcome.
+  /// Creates a ledger leg on the chosen rail and returns it with the gateway redirect in &#x60;checkout_url&#x60;. Omit &#x60;amount&#x60; to tender the whole outstanding balance; pass it to split the session across several rails, calling this again per rail until the total is covered.  Tendering a rail that already has an unfinished attempt **resumes** it: the same leg comes back with the same &#x60;checkout_url&#x60;, and &#x60;amount&#x60; is ignored. A redirect rail reports nothing when the payer closes its tab, so a second live gateway page would be one the session cannot account for — whichever payment landed second would have no outstanding balance left to settle against.  The leg starts &#x60;pending&#x60; and only the provider&#39;s webhook settles it — this response is not a receipt. Poll the session or the leg for the outcome.
   ///
   /// Parameters:
   /// * [id]
@@ -1061,7 +1061,7 @@ class FinanceApi {
   /// Parameters:
   /// * [currency]
   /// * [kind]
-  /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
+  /// * [page] - 1-based page number.
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
@@ -1075,7 +1075,7 @@ class FinanceApi {
   Future<Response<WalletTransactionPage>> walletsCurrencyTransactionsGet({
     required String currency,
     WalletTransactionKind? kind,
-    String? cursor,
+    int? page = 1,
     int? limit = 20,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1104,7 +1104,7 @@ class FinanceApi {
 
     final _queryParameters = <String, dynamic>{
       if (kind != null) r'kind': kind,
-      if (cursor != null) r'cursor': cursor,
+      if (page != null) r'page': page,
       if (limit != null) r'limit': limit,
     };
 

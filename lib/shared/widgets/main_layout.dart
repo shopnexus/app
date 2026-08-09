@@ -34,8 +34,8 @@ class MainLayout extends ConsumerWidget {
         context.go('/search');
         break;
       case 2:
-        // Nút "+" ở giữa điều hướng tới Kênh bán hàng (/seller)
-        context.go('/seller');
+        // Nút "+" ở giữa điều hướng tới màn hình tạo sản phẩm (/seller/new-listing)
+        context.push('/seller/new-listing');
         break;
       case 3:
         context.go('/chat');

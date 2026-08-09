@@ -110,6 +110,7 @@ export 'package:shopnexus_flutter_app/api/generated/model/identity_document_list
 export 'package:shopnexus_flutter_app/api/generated/model/identity_document_page.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/identity_document_type.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/identity_documents_post201_response.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/identity_scans.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/identity_status.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/identity_verdict_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/identity_verification_ticket.dart';

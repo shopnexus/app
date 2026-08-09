@@ -9,7 +9,7 @@ part of 'admin_identity_document.dart';
 AdminIdentityDocument _$AdminIdentityDocumentFromJson(
   Map<String, dynamic> json,
 ) => $checkedCreate('AdminIdentityDocument', json, ($checkedConvert) {
-  $checkKeys(json, requiredKeys: const ['account', 'document']);
+  $checkKeys(json, requiredKeys: const ['account', 'document', 'scans']);
   final val = AdminIdentityDocument(
     account: $checkedConvert(
       'account',
@@ -18,6 +18,10 @@ AdminIdentityDocument _$AdminIdentityDocumentFromJson(
     document: $checkedConvert(
       'document',
       (v) => IdentityDocument.fromJson(v as Map<String, dynamic>),
+    ),
+    scans: $checkedConvert(
+      'scans',
+      (v) => IdentityScans.fromJson(v as Map<String, dynamic>),
     ),
   );
   return val;
