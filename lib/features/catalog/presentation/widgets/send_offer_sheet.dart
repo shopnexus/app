@@ -8,6 +8,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/variant.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 /// Opens a negotiation on a variant: `POST /offers`. Agreeing charges nothing —
@@ -96,12 +98,78 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
 
     setState(() => _isSending = true);
     final reason = _reasonController.text.trim();
-    // Captured before the sheet closes: this element is gone by the time the
-    // snack bar goes up.
     final messenger = ScaffoldMessenger.of(context);
     final router = GoRouter.of(context);
+    final theme = Theme.of(context);
 
     try {
+      final currentUserId = ref.read(profileProvider).value?.id;
+      final sellerId = widget.detail.seller.id;
+
+      if (currentUserId != null && sellerId == currentUserId) {
+        messenger.showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            backgroundColor: theme.colorScheme.surfaceContainerHigh,
+            elevation: 4,
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            content: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withAlpha(30),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.orange,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Không thể thương lượng',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Bạn không thể thương lượng sản phẩm của chính mình.',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        setState(() => _isSending = false);
+        return;
+      }
+
       await ref
           .read(orderApiProvider)
           .offersPost(
@@ -115,17 +183,73 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
           );
 
       if (!mounted) return;
+
+      // Start/fetch conversation with the seller
+      final conversation = await ref
+          .read(chatRepositoryProvider)
+          .startConversation(sellerId);
+
+      if (!mounted) return;
       Navigator.pop(context);
+
+      // Chuyển hướng trực tiếp sang màn hình chat detail của cuộc trò chuyện này
+      router.go('/chat/${conversation.id}');
+
+      // Hiển thị thông báo SnackBar thiết kế chuẩn theo Theme của ứng dụng
       messenger.showSnackBar(
         SnackBar(
-          content: const Text(
-            'Đã gửi đề xuất. Người bán sẽ trả lời trong tin nhắn.',
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: theme.colorScheme.surfaceContainerHigh,
+          elevation: 4,
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          content: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.green.withAlpha(30),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.green,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Đã gửi thương lượng thành công!',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Đề xuất ${MoneyUtils.format(unitPrice * widget.quantity)} đã được gửi đến người bán.',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           duration: const Duration(seconds: 4),
-          action: SnackBarAction(
-            label: 'Xem tin nhắn',
-            onPressed: () => router.push('/chat'),
-          ),
         ),
       );
     } catch (error) {

@@ -1078,7 +1078,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           OutlinedButton.icon(
             icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
             label: const Text('Chat ngay'),
-            onPressed: () => _navigateToChatDetail(context, ref),
+            onPressed: () => _navigateToChatDetail(context, ref, seller.id),
             style: OutlinedButton.styleFrom(
               foregroundColor: theme.colorScheme.primary,
               side: BorderSide(color: theme.colorScheme.primary),
@@ -1398,7 +1398,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 Icons.chat_bubble_outline_rounded,
                 color: theme.colorScheme.onSurface,
               ),
-              onPressed: () => _navigateToChatDetail(context, ref),
+              onPressed: () => _navigateToChatDetail(context, ref, detail.seller.id),
             ),
           ),
           const SizedBox(width: 10.0),
@@ -1588,21 +1588,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: theme.colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   elevation: 0,
                 ),
-                // Một hành động, một nhãn. Tin thương lượng được mở thêm một
-                // lựa chọn *sau* khi bấm, chứ không phải một hành động khác —
-                // hai tên cho cùng một nút chỉ làm người mua tưởng có hai đường
-                // mua khác nhau.
-                child: Text(
-                  isOutOfStock ? 'HẾT HÀNG' : 'MUA NGAY',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    isOutOfStock
+                        ? 'HẾT HÀNG'
+                        : (detail.priceMode == PriceMode.negotiable
+                            ? 'MUA NGAY HOẶC THƯƠNG LƯỢNG'
+                            : 'MUA NGAY'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ),
@@ -1615,22 +1620,161 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   Future<void> _navigateToChatDetail(
     BuildContext context,
-    WidgetRef ref,
-  ) async {
+    WidgetRef ref, [
+    String? sellerAccountId,
+  ]) async {
     try {
+      final currentUserId = ref.read(profileProvider).value?.id;
+      if (sellerAccountId != null && sellerAccountId.isNotEmpty) {
+        if (currentUserId != null && sellerAccountId == currentUserId) {
+          if (context.mounted) {
+            final theme = Theme.of(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                backgroundColor: theme.colorScheme.surfaceContainerHigh,
+                elevation: 4,
+                margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                content: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withAlpha(30),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.info_outline_rounded,
+                        color: Colors.orange,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Không thể gửi tin nhắn',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Bạn không thể trò chuyện với chính mình.',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+          return;
+        }
+
+        final conversation = await ref
+            .read(chatRepositoryProvider)
+            .startConversation(sellerAccountId);
+        if (!context.mounted) return;
+        context.go('/chat/${conversation.id}');
+        return;
+      }
       final page = await ref
           .read(chatRepositoryProvider)
           .conversations(limit: 1);
       if (!context.mounted) return;
-      // No thread yet is the inbox, not a fabricated id: chat has one thread per
-      // pair of accounts and it is opened by starting one, never by guessing.
       if (page.items.isEmpty) {
-        context.push('/chat');
+        context.go('/chat');
         return;
       }
-      context.push('/chat/${page.items.first.id}');
-    } catch (_) {
-      if (context.mounted) context.push('/chat');
+      context.go('/chat/${page.items.first.id}');
+    } catch (e) {
+      if (!context.mounted) return;
+      final errorStr = e.toString();
+      if (errorStr.contains('self_conversation') || errorStr.contains('422')) {
+        final theme = Theme.of(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            backgroundColor: theme.colorScheme.surfaceContainerHigh,
+            elevation: 4,
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            content: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withAlpha(30),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.info_outline_rounded,
+                    color: Colors.orange,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Không thể gửi tin nhắn',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Bạn không thể trò chuyện với chính mình.',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+      context.go('/chat');
     }
   }
 

@@ -14,7 +14,12 @@ class MainLayout extends ConsumerWidget {
   const MainLayout({super.key, required this.child});
 
   int _getCurrentIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).matchedLocation;
+    String location = '';
+    try {
+      location = GoRouter.of(context).routerDelegate.currentConfiguration.uri.path;
+    } catch (_) {
+      location = GoRouterState.of(context).matchedLocation;
+    }
     if (location.startsWith('/home')) return 0;
     if (location.startsWith('/search') || location.startsWith('/categories')) {
       return 1;
