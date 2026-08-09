@@ -15,6 +15,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart'
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_menu_tile.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_earnings_provider.dart';
 
 /// Trang tài khoản: ba nhóm và một khối việc-cần-làm.
@@ -181,11 +182,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     subtitle: _balanceLine(),
                     onTap: () => context.push('/seller/earnings'),
                   ),
-                  AccountMenuTile(
-                    icon: Icons.assignment_return_outlined,
-                    title: 'Yêu cầu hoàn tiền',
-                    onTap: () => context.push('/account/refunds'),
-                  ),
                 ]),
 
                 const AccountSectionHeader(title: 'HỒ SƠ CÁ NHÂN'),
@@ -251,6 +247,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final ordersFeed = ref.watch(ordersProvider).value;
     final orders = ordersFeed?.orders ?? [];
+    final me = ref.watch(profileProvider).value?.id;
+    final refundsAsync = ref.watch(refundListProvider);
+    final buyerRefunds = refundsAsync.value
+            ?.where((r) => r.buyerId == me)
+            .toList() ??
+        const [];
+    final buyerRefundedOrderIds = buyerRefunds.map((r) => r.orderId).toSet();
 
     int getCount(int tabIndex) {
       return orders.where((v) {
@@ -276,7 +279,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             return isCompleted && !isCancelled;
           case 4: // Hoàn tiền
             return (v.order.declineReason != null ||
-                    v.order.transport?.status == TransportStatus.returned) &&
+                    v.order.transport?.status == TransportStatus.returned ||
+                    buyerRefundedOrderIds.contains(v.order.id)) &&
                 !isCancelled;
           case 5: // Đã hủy
             return isCancelled;

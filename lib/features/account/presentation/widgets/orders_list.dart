@@ -10,9 +10,12 @@ import 'package:shopnexus_flutter_app/features/account/data/models/order_view.da
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_actions_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/confirm_receipt_sheet.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/waiting_group.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/rate_order_sheet.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refund_status_badge.dart';
 
 /// Đơn của cả hai chiều, ba nhóm theo lượt, không tab và không segment vai.
 ///
@@ -31,7 +34,11 @@ class OrdersList extends ConsumerStatefulWidget {
 }
 
 class _OrdersListState extends ConsumerState<OrdersList> {
-  bool _matchesTab(OrderView view, int selectedTab) {
+  bool _matchesTab(
+    OrderView view,
+    int selectedTab,
+    Set<String> refundedOrderIds,
+  ) {
     final isCancelled = view.order.state == OrderState.cancelled ||
         view.order.cancelledAt != null;
 
@@ -56,7 +63,8 @@ class _OrdersListState extends ConsumerState<OrdersList> {
         return isCompleted && !isCancelled;
       case 4: // Hoàn tiền
         return (view.order.declineReason != null ||
-                view.order.transport?.status == TransportStatus.returned) &&
+                view.order.transport?.status == TransportStatus.returned ||
+                refundedOrderIds.contains(view.order.id)) &&
             !isCancelled;
       case 5: // Đã hủy
         return isCancelled;
@@ -71,12 +79,20 @@ class _OrdersListState extends ConsumerState<OrdersList> {
     final feed = ref.watch(ordersProvider);
     final unsettled = ref.watch(unsettledItemsProvider);
     final me = ref.watch(profileProvider).value?.id;
+    final refundsAsync = ref.watch(refundListProvider);
+    final buyerRefunds = refundsAsync.value
+            ?.where((r) => r.buyerId == me)
+            .toList() ??
+        const <Refund>[];
+    final buyerRefundMap = {for (final r in buyerRefunds) r.orderId: r};
+    final refundedOrderIds = buyerRefundMap.keys.toSet();
 
     return RefreshIndicator(
       color: Theme.of(context).colorScheme.primary,
       onRefresh: () async {
         ref.invalidate(ordersProvider);
         ref.invalidate(unsettledItemsProvider);
+        ref.invalidate(refundListProvider);
       },
       child: switch (feed) {
         AsyncError(:final error) => _Retry(
@@ -87,15 +103,23 @@ class _OrdersListState extends ConsumerState<OrdersList> {
           value,
           unsettled.value ?? const [],
           me,
+          refundedOrderIds,
+          buyerRefundMap,
         ),
         _ => const _OrdersShimmer(),
       },
     );
   }
 
-  Widget _body(OrdersFeed feed, List<OrderLineView> unsettled, String? me) {
+  Widget _body(
+    OrdersFeed feed,
+    List<OrderLineView> unsettled,
+    String? me,
+    Set<String> refundedOrderIds,
+    Map<String, Refund> refundMap,
+  ) {
     final matchingOrders = feed.orders
-        .where((view) => _matchesTab(view, widget.selectedTab))
+        .where((view) => _matchesTab(view, widget.selectedTab, refundedOrderIds))
         .toList();
 
     if (matchingOrders.isEmpty && (widget.selectedTab != 0 || unsettled.isEmpty)) {
@@ -114,7 +138,12 @@ class _OrdersListState extends ConsumerState<OrdersList> {
         ],
         if (selling) const _CarrierNote(),
         for (final view in matchingOrders) ...[
-          _OrderRow(view: view, me: me, isFinished: view.isFinished),
+          _OrderRow(
+            view: view,
+            me: me,
+            isFinished: view.isFinished,
+            refund: refundMap[view.order.id],
+          ),
           const SizedBox(height: 12),
         ],
         if (widget.selectedTab == 0 && feed.hasMore)
@@ -141,10 +170,12 @@ class _OrderRow extends ConsumerWidget {
     required this.view,
     required this.me,
     required this.isFinished,
+    this.refund,
   });
 
   final OrderView view;
   final String? me;
+  final Refund? refund;
 
   /// Mình là bên bán của đơn này. Một đơn tự mua tự bán thì `true` — bên bán có
   /// nhiều việc hơn, nên hiện nó là phía đúng để nghiêng về.
@@ -179,7 +210,13 @@ class _OrderRow extends ConsumerWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          onTap: () => context.push('/account/order-detail/${order.id}'),
+          onTap: () {
+            if (refund != null) {
+              context.push('/account/refunds/${refund!.id}');
+            } else {
+              context.push('/account/order-detail/${order.id}');
+            }
+          },
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -244,6 +281,57 @@ class _OrderRow extends ConsumerWidget {
                     ),
                   ],
                 ),
+                if (refund != null) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? AppColors.darkSurface
+                          : const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isDark
+                            ? AppColors.darkPrimary.withAlpha(30)
+                            : const Color(0xFFE2E8F0),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Trạng thái hoàn tiền',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            RefundStatusBadge(status: refund!.status),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Lý do hoàn tiền: ${refund!.reason}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 if (actions.isNotEmpty) ...[
                   const SizedBox(height: 10),
                   Row(children: actions),

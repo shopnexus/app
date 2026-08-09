@@ -8,8 +8,12 @@ import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart'
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refund_status_badge.dart';
 
 /// A seller's sales, read through `GET /orders?role=seller&state=…`.
 ///
@@ -105,7 +109,11 @@ class SellerOrdersScreen extends ConsumerWidget {
   }
 }
 
-bool _matchesSellerTab(OrderView view, int selectedTab) {
+bool _matchesSellerTab(
+  OrderView view,
+  int selectedTab,
+  Set<String> refundedOrderIds,
+) {
   final isCancelled = view.order.state == OrderState.cancelled ||
       view.order.cancelledAt != null;
 
@@ -130,7 +138,8 @@ bool _matchesSellerTab(OrderView view, int selectedTab) {
       return isCompleted && !isCancelled;
     case 4: // Hoàn tiền
       return (view.order.declineReason != null ||
-              view.order.transport?.status == TransportStatus.returned) &&
+              view.order.transport?.status == TransportStatus.returned ||
+              refundedOrderIds.contains(view.order.id)) &&
           !isCancelled;
     case 5: // Đã hủy
       return isCancelled;
@@ -149,6 +158,14 @@ class _SellerOrdersTabList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final ordersAsync = ref.watch(sellerAllOrdersProvider);
+    final me = ref.watch(profileProvider).value?.id;
+    final refundsAsync = ref.watch(refundListProvider);
+    final sellerRefunds = refundsAsync.value
+            ?.where((r) => r.buyerId != me)
+            .toList() ??
+        const <Refund>[];
+    final sellerRefundMap = {for (final r in sellerRefunds) r.orderId: r};
+    final refundedOrderIds = sellerRefundMap.keys.toSet();
     final notifier = ref.read(sellerOrdersProvider.notifier);
 
     return RefreshIndicator(
@@ -156,6 +173,7 @@ class _SellerOrdersTabList extends ConsumerWidget {
       onRefresh: () async {
         ref.invalidate(sellerAllOrdersProvider);
         ref.invalidate(sellerOrdersProvider);
+        ref.invalidate(refundListProvider);
       },
       child: ordersAsync.when(
         loading: () => _buildShimmerList(context),
@@ -167,7 +185,7 @@ class _SellerOrdersTabList extends ConsumerWidget {
         ),
         data: (allOrders) {
           final matchingOrders = allOrders
-              .where((view) => _matchesSellerTab(view, selectedTab))
+              .where((view) => _matchesSellerTab(view, selectedTab, refundedOrderIds))
               .toList();
 
           if (matchingOrders.isEmpty) {
@@ -184,7 +202,14 @@ class _SellerOrdersTabList extends ConsumerWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
               for (final view in matchingOrders)
-                _buildOrderCard(context, view, notifier, false, ref),
+                _buildOrderCard(
+                  context,
+                  view,
+                  notifier,
+                  false,
+                  ref,
+                  refund: sellerRefundMap[view.order.id],
+                ),
             ],
           );
         },
@@ -202,8 +227,9 @@ class _SellerOrdersTabList extends ConsumerWidget {
     OrderView view,
     SellerOrdersNotifier notifier,
     bool isActionLoading,
-    WidgetRef ref,
-  ) {
+    WidgetRef ref, {
+    Refund? refund,
+  }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final order = view.order;
@@ -362,6 +388,51 @@ class _SellerOrdersTabList extends ConsumerWidget {
                 ),
               ],
             ),
+          if (refund != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.darkPrimary.withAlpha(30)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Trạng thái hoàn tiền',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      RefundStatusBadge(status: refund.status),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Lý do hoàn tiền: ${refund.reason}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           // Đồng hồ đứng riêng một dòng phía trên hai nút nó nói về: một cái hạn
           // nằm cạnh nút bấm thì đọc như nhãn của nút, chứ không như thời gian
           // còn lại của cả đơn.
@@ -458,6 +529,17 @@ class _SellerOrdersTabList extends ConsumerWidget {
               ],
             ],
           ),
+          if (refund != null) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => context.push('/account/refunds/${refund.id}'),
+                icon: const Icon(Icons.assignment_return_outlined, size: 16),
+                label: const Text('Xem chi tiết hoàn tiền'),
+              ),
+            ),
+          ],
           if (canCancel) ...[
             const SizedBox(height: 8),
             SizedBox(

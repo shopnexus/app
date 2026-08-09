@@ -10,6 +10,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/ac
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_dashboard_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/widgets/seller_menu_item_tile.dart';
+import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
   const SellerDashboardScreen({super.key});
@@ -22,6 +23,13 @@ class SellerDashboardScreen extends ConsumerWidget {
     final dashboardAsync = ref.watch(sellerDashboardProvider);
     final profileAsync = ref.watch(profileProvider);
     final sellerOrders = ref.watch(sellerAllOrdersProvider).value ?? [];
+    final me = ref.watch(profileProvider).value?.id;
+    final refundsAsync = ref.watch(refundListProvider);
+    final sellerRefunds = refundsAsync.value
+            ?.where((r) => r.buyerId != me)
+            .toList() ??
+        const [];
+    final sellerRefundedOrderIds = sellerRefunds.map((r) => r.orderId).toSet();
 
     int getSellerOrderCount(int tabIndex) {
       return sellerOrders.where((v) {
@@ -47,7 +55,8 @@ class SellerDashboardScreen extends ConsumerWidget {
             return isCompleted && !isCancelled;
           case 4: // Hoàn tiền
             return (v.order.declineReason != null ||
-                    v.order.transport?.status == TransportStatus.returned) &&
+                    v.order.transport?.status == TransportStatus.returned ||
+                    sellerRefundedOrderIds.contains(v.order.id)) &&
                 !isCancelled;
           case 5: // Đã hủy
             return isCancelled;
