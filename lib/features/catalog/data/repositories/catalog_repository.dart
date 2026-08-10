@@ -204,6 +204,55 @@ class CatalogRepository {
       return [];
     }
   }
+
+  /// Search History (lịch sử từ khóa tìm kiếm)
+  List<String> getSearchHistory() {
+    try {
+      final box = _hiveService.recentBox;
+      final rawList = box.get('search_history') as List?;
+      if (rawList == null) return [];
+      return List<String>.from(rawList);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> saveSearchKeyword(String keyword) async {
+    try {
+      final trimmed = keyword.trim();
+      if (trimmed.isEmpty) return;
+      final box = _hiveService.recentBox;
+      final list = getSearchHistory();
+      list.removeWhere((item) => item.toLowerCase() == trimmed.toLowerCase());
+      list.insert(0, trimmed);
+      if (list.length > 10) {
+        list.removeRange(10, list.length);
+      }
+      await box.put('search_history', list);
+    } catch (e) {
+      // Ignored
+    }
+  }
+
+  Future<void> removeSearchKeyword(String keyword) async {
+    try {
+      final box = _hiveService.recentBox;
+      final list = getSearchHistory();
+      list.removeWhere((item) => item.toLowerCase() == keyword.toLowerCase());
+      await box.put('search_history', list);
+    } catch (e) {
+      // Ignored
+    }
+  }
+
+  Future<void> clearSearchHistory() async {
+    try {
+      final box = _hiveService.recentBox;
+      await box.delete('search_history');
+    } catch (e) {
+      // Ignored
+    }
+  }
 }
 
 @riverpod

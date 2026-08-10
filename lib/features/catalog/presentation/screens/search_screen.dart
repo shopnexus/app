@@ -26,10 +26,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _minPriceController = TextEditingController();
   final TextEditingController _maxPriceController = TextEditingController();
 
-  /// Bắt đầu rỗng: ba dòng viết cứng trước đây là ba lần tìm chưa ai thực hiện,
-  /// và "Xóa lịch sử" xoá đi thì chúng không bao giờ quay lại — nên chúng chưa
-  /// bao giờ là lịch sử.
-  final List<String> _recentSearches = [];
 
   @override
   void initState() {
@@ -72,13 +68,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     // Lưu vào lịch sử tìm kiếm gần đây
     if (keyword.trim().isNotEmpty) {
-      setState(() {
-        _recentSearches.remove(keyword);
-        _recentSearches.insert(0, keyword);
-        if (_recentSearches.length > 5) {
-          _recentSearches.removeLast();
-        }
-      });
+      ref.read(recentSearchesProvider.notifier).add(keyword);
     }
 
     ref
@@ -249,6 +239,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       catalogProductsProvider(const CatalogSearchFilters(page: 1, size: 10)),
     );
 
+    final recentSearches = ref.watch(recentSearchesProvider);
+
     return SingleChildScrollView(
       controller: _scrollController,
       child: Column(
@@ -257,7 +249,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           const SizedBox(height: 16.0),
 
           // 1. Recent Searches
-          if (_recentSearches.isNotEmpty) ...[
+          if (recentSearches.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -274,9 +266,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      setState(() {
-                        _recentSearches.clear();
-                      });
+                      ref.read(recentSearchesProvider.notifier).clear();
                     },
                     child: Text(
                       'Xóa lịch sử',
@@ -295,7 +285,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               child: Wrap(
                 spacing: 8.0,
                 runSpacing: 8.0,
-                children: _recentSearches.map((search) {
+                children: recentSearches.map((search) {
                   return ActionChip(
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     visualDensity: VisualDensity.compact,

@@ -466,3 +466,49 @@ final class RecentlyViewedProductsProvider
 
 String _$recentlyViewedProductsHash() =>
     r'68c7dc7488a27863e028794280585cd3046ddbdc';
+
+@ProviderFor(RecentSearches)
+const recentSearchesProvider = RecentSearchesProvider._();
+
+final class RecentSearchesProvider
+    extends $NotifierProvider<RecentSearches, List<String>> {
+  const RecentSearchesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recentSearchesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recentSearchesHash();
+
+  @$internal
+  @override
+  RecentSearches create() => RecentSearches();
+}
+
+String _$recentSearchesHash() => r'recentSearchesHash';
+
+abstract class _$RecentSearches extends $Notifier<List<String>> {
+  List<String> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<List<String>, List<String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<List<String>, List<String>>,
+              List<String>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+

@@ -395,3 +395,26 @@ class ProductReviews extends _$ProductReviews {
 Future<List<RecentListing>> recentlyViewedProducts(Ref ref) {
   return ref.watch(catalogRepositoryProvider).recentlyViewed();
 }
+
+@riverpod
+class RecentSearches extends _$RecentSearches {
+  @override
+  List<String> build() {
+    return ref.watch(catalogRepositoryProvider).getSearchHistory();
+  }
+
+  Future<void> add(String keyword) async {
+    await ref.read(catalogRepositoryProvider).saveSearchKeyword(keyword);
+    ref.invalidateSelf();
+  }
+
+  Future<void> remove(String keyword) async {
+    await ref.read(catalogRepositoryProvider).removeSearchKeyword(keyword);
+    ref.invalidateSelf();
+  }
+
+  Future<void> clear() async {
+    await ref.read(catalogRepositoryProvider).clearSearchHistory();
+    ref.invalidateSelf();
+  }
+}
