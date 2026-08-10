@@ -6,6 +6,8 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/ca
 /// A null sort is the API's default, which is `relevance` when there is a search query.
 String sortLabel(String? sort) {
   switch (sort) {
+    case ListingSort.recommended:
+      return 'Gợi ý cho bạn';
     case ListingSort.relevance:
       return 'Liên quan nhất';
     case ListingSort.newest:
@@ -37,6 +39,7 @@ void showSortOptionsSheet(
 
   final options = <String?>[
     null,
+    ListingSort.recommended,
     ListingSort.newest,
     ListingSort.bestSelling,
     ListingSort.priceAsc,

@@ -82,32 +82,74 @@ class CatalogRepository {
       effectiveSort = null;
     }
 
-    final response = await _api.listingsGet(
-      q: hasQuery ? keyword.trim() : null,
-      mode: hasQuery ? mode : null,
-      mine: isMine ? true : null,
-      favorited: isFavorited ? true : null,
-      // Only honoured together with mine=true, and refused without it.
-      status: isMine ? status : null,
-      categoryId: categoryId,
-      tag: tag,
-      sellerId: vendorId,
-      condition: condition,
-      minPrice: priceMin,
-      maxPrice: priceMax,
-      provinceCode: provinceCode,
-      // No district_code: Vietnam has two tiers, so the backend drops it and a
-      // listing's address snapshot has none to match.
-      wardCode: wardCode,
-      lat: nearContactId == null ? lat : null,
-      lon: nearContactId == null ? lon : null,
-      nearContactId: nearContactId,
-      radiusKm: hasPosition ? radiusKm : null,
-      sort: effectiveSort,
-      page: page,
-      limit: size,
-    );
-    return response.data?.data ?? const [];
+    try {
+      final response = await _api.listingsGet(
+        q: hasQuery ? keyword.trim() : null,
+        mode: hasQuery ? mode : null,
+        mine: isMine ? true : null,
+        favorited: isFavorited ? true : null,
+        // Only honoured together with mine=true, and refused without it.
+        status: isMine ? status : null,
+        categoryId: categoryId,
+        tag: tag,
+        sellerId: vendorId,
+        condition: condition,
+        minPrice: priceMin,
+        maxPrice: priceMax,
+        provinceCode: provinceCode,
+        // No district_code: Vietnam has two tiers, so the backend drops it and a
+        // listing's address snapshot has none to match.
+        wardCode: wardCode,
+        lat: nearContactId == null ? lat : null,
+        lon: nearContactId == null ? lon : null,
+        nearContactId: nearContactId,
+        radiusKm: hasPosition ? radiusKm : null,
+        sort: effectiveSort,
+        page: page,
+        limit: size,
+      );
+      final listings = response.data?.data ?? const [];
+      if (listings.isNotEmpty && (page == null || page <= 1)) {
+        await _saveCachedListings(listings);
+      }
+      return listings;
+    } catch (e) {
+      // Offline fallback: load cached listings or recently viewed products
+      if (page == null || page <= 1) {
+        final cached = await _getCachedListings();
+        if (cached.isNotEmpty) return cached;
+        final recent = await recentlyViewed();
+        if (recent.isNotEmpty) {
+          return recent.map((r) => r.toListing()).toList();
+        }
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> _saveCachedListings(List<Listing> listings) async {
+    try {
+      final box = _hiveService.recentBox;
+      final jsonList =
+          listings.map((l) => RecentListing.fromListing(l).toJson()).toList();
+      await box.put('cached_listings', jsonList);
+    } catch (_) {}
+  }
+
+  Future<List<Listing>> _getCachedListings() async {
+    try {
+      final box = _hiveService.recentBox;
+      final rawList = box.get('cached_listings') as List?;
+      if (rawList == null) return [];
+      return rawList
+          .map(
+            (e) => RecentListing.fromJson(Map<String, dynamic>.from(e as Map))
+                .toListing(),
+          )
+          .toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   /// Also records the listing in the "vừa xem" carousel. A failure to cache is

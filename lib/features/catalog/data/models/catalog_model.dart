@@ -1,6 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/variant.dart';
 
 part 'catalog_model.freezed.dart';
@@ -64,6 +69,55 @@ abstract class RecentListing with _$RecentListing {
     sellerName: detail.seller.name,
     rating: detail.rating,
     negotiable: detail.priceMode == PriceMode.negotiable,
+  );
+
+  factory RecentListing.fromListing(Listing listing) => RecentListing(
+    id: listing.id,
+    name: listing.name,
+    price: listing.price,
+    coverUrl: listing.cover?.url,
+    sellerName: listing.seller.name,
+    rating: listing.rating,
+    negotiable: listing.priceMode == PriceMode.negotiable,
+  );
+
+  Listing toListing() => Listing(
+    id: id,
+    name: name,
+    price: price,
+    rating: rating,
+    reviewCount: 0,
+    score: null,
+    slug: id,
+    sold: 0,
+    status: ListingStatus.active,
+    tags: const [],
+    takenDownAt: null,
+    categoryId: '',
+    condition: ListingCondition.used,
+    cover: coverUrl != null
+        ? Resource(
+            checksum: '',
+            id: '',
+            mime: 'image/jpeg',
+            objectKey: '',
+            provider: 'local',
+            size: 0,
+            url: coverUrl!,
+            urlExpiresAt: DateTime.now(),
+          )
+        : null,
+    createdAt: DateTime.now(),
+    currency: 'VND',
+    deletedAt: null,
+    favorited: false,
+    location: null,
+    priceMode: negotiable ? PriceMode.negotiable : PriceMode.fixed,
+    seller: AccountSummary(
+      avatar: null,
+      id: '',
+      name: sellerName ?? 'ShopNexus Seller',
+    ),
   );
 }
 

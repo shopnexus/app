@@ -6,6 +6,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
@@ -38,11 +40,23 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     super.dispose();
   }
 
-  void _onScroll() {
+  CatalogSearchFilters _getHomeFilters() {
     final activeFilters = ref.read(activeSearchFiltersProvider);
+    final isAuthenticated = ref.read(authProvider).maybeWhen(
+          authenticated: (_, __) => true,
+          orElse: () => false,
+        );
+
+    return (activeFilters.sort == null && isAuthenticated)
+        ? activeFilters.copyWith(sort: ListingSort.recommended)
+        : activeFilters;
+  }
+
+  void _onScroll() {
+    final homeFilters = _getHomeFilters();
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      ref.read(catalogProductsProvider(activeFilters).notifier).loadNextPage();
+      ref.read(catalogProductsProvider(homeFilters).notifier).loadNextPage();
     }
   }
 
@@ -52,8 +66,17 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     final activeFilters = ref.watch(activeSearchFiltersProvider);
+    final isAuthenticated = ref.watch(authProvider).maybeWhen(
+          authenticated: (_, __) => true,
+          orElse: () => false,
+        );
+
+    final homeFilters = (activeFilters.sort == null && isAuthenticated)
+        ? activeFilters.copyWith(sort: ListingSort.recommended)
+        : activeFilters;
+
     final categoriesState = ref.watch(categoriesProvider);
-    final productsState = ref.watch(catalogProductsProvider(activeFilters));
+    final productsState = ref.watch(catalogProductsProvider(homeFilters));
 
     final isFiltered =
         activeFilters.hasArea ||
@@ -73,7 +96,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         child: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(categoriesProvider);
-            ref.invalidate(catalogProductsProvider(activeFilters));
+            ref.invalidate(catalogProductsProvider(homeFilters));
             ref.invalidate(unreadNotificationsCountProvider);
           },
           color: theme.colorScheme.primary,
@@ -82,7 +105,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
               if (scrollInfo.metrics.pixels >=
                   scrollInfo.metrics.maxScrollExtent - 300) {
                 ref
-                    .read(catalogProductsProvider(activeFilters).notifier)
+                    .read(catalogProductsProvider(homeFilters).notifier)
                     .loadNextPage();
               }
               return false;
