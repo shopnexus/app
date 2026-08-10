@@ -25,19 +25,19 @@ class SellerDashboardScreen extends ConsumerWidget {
     final sellerOrders = ref.watch(sellerAllOrdersProvider).value ?? [];
     final me = ref.watch(profileProvider).value?.id;
     final refundsAsync = ref.watch(refundListProvider);
-    final sellerRefunds = refundsAsync.value
-            ?.where((r) => r.buyerId != me)
-            .toList() ??
-        const [];
+    final sellerRefunds =
+        refundsAsync.value?.where((r) => r.buyerId != me).toList() ?? const [];
     final sellerRefundedOrderIds = sellerRefunds.map((r) => r.orderId).toSet();
 
     int getSellerOrderCount(int tabIndex) {
       return sellerOrders.where((v) {
-        final isCancelled = v.order.state == OrderState.cancelled ||
+        final isCancelled =
+            v.order.state == OrderState.cancelled ||
             v.order.cancelledAt != null;
         final isDelivered =
             v.order.transport?.status == TransportStatus.delivered;
-        final isCompleted = v.order.state == OrderState.completed ||
+        final isCompleted =
+            v.order.state == OrderState.completed ||
             v.order.receivedAt != null ||
             v.order.completedAt != null ||
             isDelivered;

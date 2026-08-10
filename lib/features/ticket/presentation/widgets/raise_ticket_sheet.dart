@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -96,9 +95,7 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
     setState(() => _submitting = true);
 
     try {
-      final attachments = [
-        for (final a in _attachments) a.resourceId,
-      ];
+      final attachments = [for (final a in _attachments) a.resourceId];
 
       final ticket = await ref
           .read(raiseTicketProvider.notifier)

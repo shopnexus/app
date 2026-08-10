@@ -16,7 +16,9 @@ class MainLayout extends ConsumerWidget {
   int _getCurrentIndex(BuildContext context) {
     String location = '';
     try {
-      location = GoRouter.of(context).routerDelegate.currentConfiguration.uri.path;
+      location = GoRouter.of(
+        context,
+      ).routerDelegate.currentConfiguration.uri.path;
     } catch (_) {
       location = GoRouterState.of(context).matchedLocation;
     }

@@ -293,8 +293,8 @@ class _Thread extends StatelessWidget {
 
         if (offerId != null) {
           final offer = state.offers[offerId];
-          final isMine = message.isMine ||
-              (offer != null && state.viewerIsAuthor(offer));
+          final isMine =
+              message.isMine || (offer != null && state.viewerIsAuthor(offer));
           return Align(
             alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
             child: Padding(
@@ -367,7 +367,9 @@ class _ComposerState extends State<_Composer> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.4,
+                  ),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -419,8 +421,12 @@ class _ComposerState extends State<_Composer> {
                   ),
                 ),
                 onTap: () async {
-                  final image = await _picker.pickImage(source: ImageSource.camera);
-                  if (ctx.mounted) Navigator.pop(ctx, image != null ? [image] : <XFile>[]);
+                  final image = await _picker.pickImage(
+                    source: ImageSource.camera,
+                  );
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx, image != null ? [image] : <XFile>[]);
+                  }
                 },
               ),
             ],
@@ -506,9 +512,8 @@ class _ComposerState extends State<_Composer> {
                         top: -4,
                         right: -4,
                         child: InkWell(
-                          onTap: () => setState(
-                            () => _selectedImages.removeAt(index),
-                          ),
+                          onTap: () =>
+                              setState(() => _selectedImages.removeAt(index)),
                           child: Container(
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
@@ -550,11 +555,14 @@ class _ComposerState extends State<_Composer> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.5),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.3,
+                      ),
                     ),
                   ),
                   child: TextField(
@@ -572,7 +580,9 @@ class _ComposerState extends State<_Composer> {
                       hintStyle: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 14,
-                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,

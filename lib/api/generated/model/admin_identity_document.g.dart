@@ -32,4 +32,5 @@ Map<String, dynamic> _$AdminIdentityDocumentToJson(
 ) => <String, dynamic>{
   'account': instance.account.toJson(),
   'document': instance.document.toJson(),
+  'scans': instance.scans.toJson(),
 };

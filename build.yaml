@@ -1,0 +1,21 @@
+targets:
+  $default:
+    builders:
+      riverpod_generator:
+        generate_for:
+          include:
+            - lib/**
+          exclude:
+            - lib/api/generated/**
+      retrofit_generator:retrofit_generator:
+        generate_for:
+          include:
+            - lib/**
+          exclude:
+            - lib/api/generated/**
+      freezed:
+        generate_for:
+          include:
+            - lib/**
+          exclude:
+            - lib/api/generated/**

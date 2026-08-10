@@ -62,7 +62,10 @@ class EscrowNotice extends StatelessWidget {
                     text:
                         'ShopNexus đang giữ '
                         '${MoneyUtils.format(amount, currency: currency)}.',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: accent),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: accent,
+                    ),
                   ),
                   TextSpan(text: ' $window '),
                   const TextSpan(

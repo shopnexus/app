@@ -53,9 +53,9 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
     if (!mounted) return;
 
     if (saved == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bạn chưa thay đổi gì.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Bạn chưa thay đổi gì.')));
       return;
     }
     if (saved) {
@@ -209,10 +209,7 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
         ),
         const SizedBox(height: 20),
 
-        Text(
-          'Thẻ (tối đa $maxListingTags)',
-          style: theme.textTheme.titleSmall,
-        ),
+        Text('Thẻ (tối đa $maxListingTags)', style: theme.textTheme.titleSmall),
         const SizedBox(height: 6),
         _TagField(
           tags: draft.tags,

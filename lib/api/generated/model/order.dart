@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:shopnexus_flutter_app/api/generated/model/order_address_snapshot.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport.dart';
@@ -59,6 +60,8 @@ class Order {
     required this.receiptAttachments,
 
     required this.receivedAt,
+
+    required this.refund,
 
     required this.seller,
 
@@ -138,6 +141,10 @@ class Order {
   @JsonKey(name: r'received_at', required: true, includeIfNull: true)
   final DateTime? receivedAt;
 
+  /// The most recent refund case raised on this sale, settled or not; null when there has never been one. Read it rather than searching the caller's own refund list: only one unsettled case may exist at a time, so a screen that offers a second one is offering a 409.
+  @JsonKey(name: r'refund', required: true, includeIfNull: true)
+  final RefundSummary? refund;
+
   @JsonKey(name: r'seller', required: true, includeIfNull: false)
   final AccountSummary seller;
 
@@ -175,6 +182,7 @@ class Order {
           other.pickupAddress == pickupAddress &&
           other.receiptAttachments == receiptAttachments &&
           other.receivedAt == receivedAt &&
+          other.refund == refund &&
           other.seller == seller &&
           other.state == state &&
           other.total == total &&
@@ -200,6 +208,7 @@ class Order {
       pickupAddress.hashCode +
       receiptAttachments.hashCode +
       (receivedAt == null ? 0 : receivedAt.hashCode) +
+      (refund == null ? 0 : refund.hashCode) +
       seller.hashCode +
       state.hashCode +
       total.hashCode +

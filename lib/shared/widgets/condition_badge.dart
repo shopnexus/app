@@ -23,7 +23,11 @@ extension ListingConditionLabel on ListingCondition {
 /// Nhãn tình trạng hàng. `damaged` vẽ màu cảnh báo vì đó là thứ người mua hàng
 /// cũ cần thấy trước khi bấm mua, không phải sau khi mở kiện.
 class ConditionBadge extends StatelessWidget {
-  const ConditionBadge({super.key, required this.condition, this.dense = false});
+  const ConditionBadge({
+    super.key,
+    required this.condition,
+    this.dense = false,
+  });
 
   final ListingCondition condition;
 

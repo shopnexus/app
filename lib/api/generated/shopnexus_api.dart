@@ -191,6 +191,7 @@ export 'package:shopnexus_flutter_app/api/generated/model/refresh_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/refund_page.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/refund_status.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/refund_summary.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/refund_verdict_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/register_device_request.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/register_request.dart';

@@ -1398,7 +1398,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 Icons.chat_bubble_outline_rounded,
                 color: theme.colorScheme.onSurface,
               ),
-              onPressed: () => _navigateToChatDetail(context, ref, detail.seller.id),
+              onPressed: () =>
+                  _navigateToChatDetail(context, ref, detail.seller.id),
             ),
           ),
           const SizedBox(width: 10.0),
@@ -1600,8 +1601,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     isOutOfStock
                         ? 'HẾT HÀNG'
                         : (detail.priceMode == PriceMode.negotiable
-                            ? 'MUA NGAY HOẶC THƯƠNG LƯỢNG'
-                            : 'MUA NGAY'),
+                              ? 'MUA NGAY HOẶC THƯƠNG LƯỢNG'
+                              : 'MUA NGAY'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontFamily: 'Inter',
@@ -1722,10 +1723,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             backgroundColor: theme.colorScheme.surfaceContainerHigh,
             elevation: 4,
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             content: Row(
               children: [
                 Container(

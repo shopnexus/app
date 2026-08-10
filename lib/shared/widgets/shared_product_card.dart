@@ -39,14 +39,14 @@ class ProductCardView {
   });
 
   factory ProductCardView.fromListing(Listing listing) => ProductCardView(
-        name: listing.name,
-        price: listing.price,
-        coverUrl: listing.cover?.url,
-        sellerName: listing.seller.name,
-        rating: listing.rating,
-        negotiable: listing.priceMode == PriceMode.negotiable,
-        condition: listing.condition,
-      );
+    name: listing.name,
+    price: listing.price,
+    coverUrl: listing.cover?.url,
+    sellerName: listing.seller.name,
+    rating: listing.rating,
+    negotiable: listing.priceMode == PriceMode.negotiable,
+    condition: listing.condition,
+  );
 }
 
 class SharedProductCard extends StatelessWidget {
@@ -115,7 +115,8 @@ class SharedProductCard extends StatelessWidget {
                         color: isDarkMode
                             ? theme.colorScheme.surfaceContainerHighest
                             : const Color(0xFFF1F5F9),
-                        child: product.coverUrl != null &&
+                        child:
+                            product.coverUrl != null &&
                                 product.coverUrl!.isNotEmpty
                             ? CachedNetworkImage(
                                 imageUrl: product.coverUrl!,

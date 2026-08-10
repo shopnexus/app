@@ -374,7 +374,9 @@ class AddressesScreen extends ConsumerWidget {
                         else if (!selectMode)
                           TextButton(
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
                               minimumSize: const Size(0, 28),
                               visualDensity: VisualDensity.compact,
                             ),
@@ -557,9 +559,9 @@ class AddressesScreen extends ConsumerWidget {
       await repository.verifyPhone(contact.id, code);
       ref.invalidate(buyerContactsProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Đã xác thực số điện thoại')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đã xác thực số điện thoại')),
+      );
     } catch (_) {
       if (!context.mounted) return;
       // Mã được đọc một lần rồi mất, nên sai mã là phải gửi lại — nói ra điều đó

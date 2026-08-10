@@ -117,9 +117,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
       return const ListTile(
         leading: Icon(Icons.email_outlined),
         title: Text('Chưa có email'),
-        subtitle: Text(
-          'Thêm email ở Cài đặt để nhận thư khôi phục mật khẩu.',
-        ),
+        subtitle: Text('Thêm email ở Cài đặt để nhận thư khôi phục mật khẩu.'),
       );
     }
 

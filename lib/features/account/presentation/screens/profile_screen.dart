@@ -160,7 +160,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ? AppColors.darkPrimary
                         : theme.colorScheme.onPrimary,
                     tileColor: isDarkMode
-                        ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2)
+                        ? theme.colorScheme.surfaceContainerHighest.withValues(
+                            alpha: 0.2,
+                          )
                         : theme.colorScheme.primary.withValues(alpha: 0.06),
                     onTap: () => context.push('/seller'),
                   ),
@@ -249,19 +251,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final orders = ordersFeed?.orders ?? [];
     final me = ref.watch(profileProvider).value?.id;
     final refundsAsync = ref.watch(refundListProvider);
-    final buyerRefunds = refundsAsync.value
-            ?.where((r) => r.buyerId == me)
-            .toList() ??
-        const [];
+    final buyerRefunds =
+        refundsAsync.value?.where((r) => r.buyerId == me).toList() ?? const [];
     final buyerRefundedOrderIds = buyerRefunds.map((r) => r.orderId).toSet();
 
     int getCount(int tabIndex) {
       return orders.where((v) {
-        final isCancelled = v.order.state == OrderState.cancelled ||
+        final isCancelled =
+            v.order.state == OrderState.cancelled ||
             v.order.cancelledAt != null;
         final isDelivered =
             v.order.transport?.status == TransportStatus.delivered;
-        final isCompleted = v.order.state == OrderState.completed ||
+        final isCompleted =
+            v.order.state == OrderState.completed ||
             v.order.receivedAt != null ||
             v.order.completedAt != null ||
             isDelivered;
@@ -296,26 +298,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         label: 'Chờ xác nhận',
         tabIndex: 1,
       ),
-      (
-        icon: Icons.local_shipping_outlined,
-        label: 'Đang xử lý',
-        tabIndex: 2,
-      ),
+      (icon: Icons.local_shipping_outlined, label: 'Đang xử lý', tabIndex: 2),
       (
         icon: Icons.check_circle_outline_rounded,
         label: 'Hoàn thành',
         tabIndex: 3,
       ),
-      (
-        icon: Icons.assignment_return_outlined,
-        label: 'Hoàn tiền',
-        tabIndex: 4,
-      ),
-      (
-        icon: Icons.cancel_outlined,
-        label: 'Đã hủy',
-        tabIndex: 5,
-      ),
+      (icon: Icons.assignment_return_outlined, label: 'Hoàn tiền', tabIndex: 4),
+      (icon: Icons.cancel_outlined, label: 'Đã hủy', tabIndex: 5),
     ];
 
     return Container(
@@ -362,7 +352,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     horizontal: 5,
                                     vertical: 1.5,
                                   ),
-                                  constraints: const BoxConstraints(minWidth: 16),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 16,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: theme.colorScheme.error,
                                     borderRadius: BorderRadius.circular(9),

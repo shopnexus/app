@@ -221,7 +221,10 @@ class AccountRepository {
       _api.followsAccountIDDelete(accountID: accountId);
 
   /// Những người tôi theo dõi. Cursor-less: route này phân trang bằng page/limit.
-  Future<List<AccountSummary>> following({int page = 1, int limit = 20}) async =>
+  Future<List<AccountSummary>> following({
+    int page = 1,
+    int limit = 20,
+  }) async =>
       (await _api.meFollowingGet(page: page, limit: limit)).data?.data ??
       const [];
 

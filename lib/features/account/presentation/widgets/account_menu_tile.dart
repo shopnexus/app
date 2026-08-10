@@ -69,12 +69,13 @@ class AccountMenuTile extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final foreground = tint ?? theme.colorScheme.onSurface;
 
-    final resolvedIconBg = iconBgColor ??
+    final resolvedIconBg =
+        iconBgColor ??
         (tint != null
             ? tint!.withValues(alpha: 0.12)
             : (isDark
-                ? theme.colorScheme.surfaceContainerHighest
-                : const Color(0xFFEEEEEC)));
+                  ? theme.colorScheme.surfaceContainerHighest
+                  : const Color(0xFFEEEEEC)));
 
     final resolvedIconColor =
         iconColor ?? tint ?? theme.colorScheme.onSurfaceVariant;
@@ -119,4 +120,3 @@ class AccountMenuTile extends StatelessWidget {
     );
   }
 }
-

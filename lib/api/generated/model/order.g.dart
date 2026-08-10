@@ -31,6 +31,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => $checkedCreate(
         'pickup_address',
         'receipt_attachments',
         'received_at',
+        'refund',
         'seller',
         'state',
         'total',
@@ -99,6 +100,12 @@ Order _$OrderFromJson(Map<String, dynamic> json) => $checkedCreate(
         'received_at',
         (v) => v == null ? null : DateTime.parse(v as String),
       ),
+      refund: $checkedConvert(
+        'refund',
+        (v) => v == null
+            ? null
+            : RefundSummary.fromJson(v as Map<String, dynamic>),
+      ),
       seller: $checkedConvert(
         'seller',
         (v) => AccountSummary.fromJson(v as Map<String, dynamic>),
@@ -154,6 +161,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       .map((e) => e.toJson())
       .toList(),
   'received_at': instance.receivedAt?.toIso8601String(),
+  'refund': instance.refund?.toJson(),
   'seller': instance.seller.toJson(),
   'state': _$OrderStateEnumMap[instance.state]!,
   'total': instance.total,

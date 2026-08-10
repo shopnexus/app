@@ -65,7 +65,10 @@ class ListingEdit {
 /// kiểm duyệt. Gửi cả form mỗi lần bấm Lưu sẽ đẩy tin vào hàng đợi duyệt kể cả
 /// khi người bán chỉ mở ra xem rồi đóng lại, và tin của họ biến mất khỏi sàn vì
 /// một thao tác không thay đổi gì.
-UpdateListingRequest? listingEditRequest(ListingEdit before, ListingEdit after) {
+UpdateListingRequest? listingEditRequest(
+  ListingEdit before,
+  ListingEdit after,
+) {
   final tags = listingTags(after.tags);
   final tagsChanged = !_sameOrder(listingTags(before.tags), tags);
 

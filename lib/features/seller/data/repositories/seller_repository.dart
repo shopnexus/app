@@ -56,8 +56,7 @@ class WalletLedgerPage {
   final int? totalCount;
 
   /// Sổ dài hơn những gì vừa đọc được — màn hình phải nói ra thay vì cắt ngang.
-  bool get truncated =>
-      totalCount != null && totalCount! > entries.length;
+  bool get truncated => totalCount != null && totalCount! > entries.length;
 }
 
 /// The seller side of the marketplace, read through the same contract the buyer
@@ -400,10 +399,11 @@ class SellerRepository {
   /// Đặt một tài khoản làm mặc định. Chỉ có `is_default` đổi được: số tài khoản và
   /// tên thụ hưởng là thứ một lệnh rút đã settle trỏ tới, nên sửa chúng sẽ viết lại
   /// nơi mà tiền cũ đã đi — muốn đổi thì thêm tài khoản mới.
-  Future<void> setDefaultBankAccount(String id) => _financeApi.bankAccountsIdPatch(
-    id: id,
-    updateBankAccountRequest: UpdateBankAccountRequest(isDefault: true),
-  );
+  Future<void> setDefaultBankAccount(String id) =>
+      _financeApi.bankAccountsIdPatch(
+        id: id,
+        updateBankAccountRequest: UpdateBankAccountRequest(isDefault: true),
+      );
 
   Future<void> deleteBankAccount(String id) =>
       _financeApi.bankAccountsIdDelete(id: id);

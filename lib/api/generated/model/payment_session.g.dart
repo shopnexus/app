@@ -29,7 +29,7 @@ PaymentSession _$PaymentSessionFromJson(
       ],
     );
     final val = PaymentSession(
-      checkoutUrl: $checkedConvert('checkout_url', (v) => v as String? ?? ''),
+      checkoutUrl: $checkedConvert('checkout_url', (v) => v as String),
       createdAt: $checkedConvert(
         'created_at',
         (v) => DateTime.parse(v as String),
@@ -59,6 +59,7 @@ PaymentSession _$PaymentSessionFromJson(
     return val;
   },
   fieldKeyMap: const {
+    'checkoutUrl': 'checkout_url',
     'createdAt': 'created_at',
     'expiredAt': 'expired_at',
     'paidAt': 'paid_at',
@@ -68,6 +69,7 @@ PaymentSession _$PaymentSessionFromJson(
 
 Map<String, dynamic> _$PaymentSessionToJson(PaymentSession instance) =>
     <String, dynamic>{
+      'checkout_url': instance.checkoutUrl,
       'created_at': instance.createdAt.toIso8601String(),
       'currency': instance.currency,
       'expired_at': instance.expiredAt.toIso8601String(),

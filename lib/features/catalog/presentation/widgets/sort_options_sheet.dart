@@ -75,7 +75,8 @@ void showSortOptionsSheet(
               for (final option in options) ...[
                 Builder(
                   builder: (_) {
-                    final selected = option == filters.sort ||
+                    final selected =
+                        option == filters.sort ||
                         ((option == null || option == ListingSort.relevance) &&
                             (filters.sort == null ||
                                 filters.sort == ListingSort.relevance));

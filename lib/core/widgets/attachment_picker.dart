@@ -65,9 +65,9 @@ class _AttachmentPickerState extends State<AttachmentPicker> {
         ]);
       } catch (_) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Không tải được ${file.name}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Không tải được ${file.name}')));
       } finally {
         if (mounted) setState(() => _uploading--);
       }

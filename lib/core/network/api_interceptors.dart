@@ -191,10 +191,7 @@ class LoggingInterceptor extends Interceptor {
 /// every route, including the ones a future contract change adds.
 class DateTimeQueryInterceptor extends Interceptor {
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.queryParameters = options.queryParameters.map(
       (key, value) => MapEntry(key, _iso(value)),
     );

@@ -65,8 +65,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         (activeFilters.keyword != null &&
             activeFilters.keyword!.trim().isNotEmpty);
 
-    final unreadNotifs =
-        ref.watch(unreadNotificationsCountProvider).value ?? 0;
+    final unreadNotifs = ref.watch(unreadNotificationsCountProvider).value ?? 0;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -151,8 +150,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: theme.colorScheme.error,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                           border: Border.all(
                                             color: theme.colorScheme.surface,
                                             width: 1.5,

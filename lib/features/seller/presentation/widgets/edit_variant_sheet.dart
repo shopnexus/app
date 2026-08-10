@@ -106,10 +106,12 @@ class _EditVariantSheetState extends ConsumerState<EditVariantSheet> {
       _error = null;
     });
     try {
-      await ref.read(sellerRepositoryProvider).updateVariant(
-        variant.id,
-        UpdateVariantRequest(price: price, quantity: quantity),
-      );
+      await ref
+          .read(sellerRepositoryProvider)
+          .updateVariant(
+            variant.id,
+            UpdateVariantRequest(price: price, quantity: quantity),
+          );
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (error) {
@@ -206,9 +208,7 @@ class _EditVariantSheetState extends ConsumerState<EditVariantSheet> {
                         ChoiceChip(
                           label: Text(_label(variant)),
                           selected: _variant?.id == variant.id,
-                          onSelected: _saving
-                              ? null
-                              : (_) => _select(variant),
+                          onSelected: _saving ? null : (_) => _select(variant),
                         ),
                     ],
                   ),

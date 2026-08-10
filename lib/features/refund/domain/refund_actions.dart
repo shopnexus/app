@@ -57,30 +57,34 @@ List<RefundAction> refundActionsFor(Refund refund, {required bool isBuyer}) {
   return switch (refund.status) {
     // Người bán cấp hoặc giao cho staff; người mua rút lui. Im lặng hết 48 giờ
     // cũng thành giao cho staff, nên "để đó" không phải lựa chọn thứ ba.
-    RefundStatus.awaitingSellerReview => isBuyer
-        ? const [RefundAction.withdraw, RefundAction.addEvidence]
-        : const [RefundAction.accept, RefundAction.escalate],
+    RefundStatus.awaitingSellerReview =>
+      isBuyer
+          ? const [RefundAction.withdraw, RefundAction.addEvidence]
+          : const [RefundAction.accept, RefundAction.escalate],
 
     // Chặng hàng về không có đơn vị vận chuyển nào báo hộ, nên hai bên tự báo.
     // Đây cũng là lý do nó phải có mặt: thiếu nó thì vụ việc kẹt ở đây vĩnh viễn
     // — `returning` không mang deadline nên không có vòng quét nào gỡ ra.
-    RefundStatus.returning => isBuyer
-        ? const [
-            RefundAction.reportReturnSent,
-            RefundAction.claimReturnDelivered,
-            RefundAction.addEvidence,
-          ]
-        : const [RefundAction.confirmReturnReceived],
+    RefundStatus.returning =>
+      isBuyer
+          ? const [
+              RefundAction.reportReturnSent,
+              RefundAction.claimReturnDelivered,
+              RefundAction.addEvidence,
+            ]
+          : const [RefundAction.confirmReturnReceived],
 
     // Người bán đang kiểm hàng và còn cãi được cho tới hết cửa sổ; hết hạn là tự
     // động hoàn tiền cho người mua.
-    RefundStatus.returned => isBuyer
-        ? const [RefundAction.addEvidence]
-        : const [RefundAction.escalate],
+    RefundStatus.returned =>
+      isBuyer
+          ? const [RefundAction.addEvidence]
+          : const [RefundAction.escalate],
 
     // Staff đang cầm. Không bên nào quyết được nữa; người mua vẫn nộp thêm được
     // bằng chứng cho người sẽ đọc nó, người bán đã có thread ticket của mình.
-    RefundStatus.disputed => isBuyer ? const [RefundAction.addEvidence] : const [],
+    RefundStatus.disputed =>
+      isBuyer ? const [RefundAction.addEvidence] : const [],
 
     _ => const [],
   };
@@ -89,15 +93,16 @@ List<RefundAction> refundActionsFor(Refund refund, {required bool isBuyer}) {
 /// Ai đang bị đồng hồ chỉ vào, để màn hình nói ra thay vì bắt người đọc suy.
 String refundWaitingOn(RefundStatus status, {required bool isBuyer}) =>
     switch (status) {
-      RefundStatus.awaitingSellerReview => isBuyer
-          ? 'Đang chờ người bán trả lời'
-          : 'Đang chờ bạn trả lời',
-      RefundStatus.returning => isBuyer
-          ? 'Bạn cần gửi hàng trả lại người bán'
-          : 'Đang chờ hàng được trả về',
-      RefundStatus.returned => isBuyer
-          ? 'Người bán đang kiểm tra hàng trả về'
-          : 'Bạn đang kiểm tra hàng trả về',
+      RefundStatus.awaitingSellerReview =>
+        isBuyer ? 'Đang chờ người bán trả lời' : 'Đang chờ bạn trả lời',
+      RefundStatus.returning =>
+        isBuyer
+            ? 'Bạn cần gửi hàng trả lại người bán'
+            : 'Đang chờ hàng được trả về',
+      RefundStatus.returned =>
+        isBuyer
+            ? 'Người bán đang kiểm tra hàng trả về'
+            : 'Bạn đang kiểm tra hàng trả về',
       RefundStatus.disputed => 'ShopNexus đang xem xét vụ việc',
       RefundStatus.accepted => 'Đã hoàn tiền cho người mua',
       RefundStatus.rejected => 'Yêu cầu không được chấp nhận',

@@ -489,9 +489,17 @@ final class RecentSearchesProvider
   @$internal
   @override
   RecentSearches create() => RecentSearches();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
+  }
 }
 
-String _$recentSearchesHash() => r'recentSearchesHash';
+String _$recentSearchesHash() => r'9b8f4aaf5633d5c8ac0b635e6bda1f5898cf7103';
 
 abstract class _$RecentSearches extends $Notifier<List<String>> {
   List<String> build();
@@ -511,4 +519,3 @@ abstract class _$RecentSearches extends $Notifier<List<String>> {
     element.handleValue(ref, created);
   }
 }
-

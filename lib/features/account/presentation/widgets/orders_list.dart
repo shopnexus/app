@@ -39,13 +39,15 @@ class _OrdersListState extends ConsumerState<OrdersList> {
     int selectedTab,
     Set<String> refundedOrderIds,
   ) {
-    final isCancelled = view.order.state == OrderState.cancelled ||
+    final isCancelled =
+        view.order.state == OrderState.cancelled ||
         view.order.cancelledAt != null;
 
     final isDelivered =
         view.order.transport?.status == TransportStatus.delivered;
 
-    final isCompleted = view.order.state == OrderState.completed ||
+    final isCompleted =
+        view.order.state == OrderState.completed ||
         view.order.receivedAt != null ||
         view.order.completedAt != null ||
         isDelivered;
@@ -80,9 +82,8 @@ class _OrdersListState extends ConsumerState<OrdersList> {
     final unsettled = ref.watch(unsettledItemsProvider);
     final me = ref.watch(profileProvider).value?.id;
     final refundsAsync = ref.watch(refundListProvider);
-    final buyerRefunds = refundsAsync.value
-            ?.where((r) => r.buyerId == me)
-            .toList() ??
+    final buyerRefunds =
+        refundsAsync.value?.where((r) => r.buyerId == me).toList() ??
         const <Refund>[];
     final buyerRefundMap = {for (final r in buyerRefunds) r.orderId: r};
     final refundedOrderIds = buyerRefundMap.keys.toSet();
@@ -119,10 +120,13 @@ class _OrdersListState extends ConsumerState<OrdersList> {
     Map<String, Refund> refundMap,
   ) {
     final matchingOrders = feed.orders
-        .where((view) => _matchesTab(view, widget.selectedTab, refundedOrderIds))
+        .where(
+          (view) => _matchesTab(view, widget.selectedTab, refundedOrderIds),
+        )
         .toList();
 
-    if (matchingOrders.isEmpty && (widget.selectedTab != 0 || unsettled.isEmpty)) {
+    if (matchingOrders.isEmpty &&
+        (widget.selectedTab != 0 || unsettled.isEmpty)) {
       return const _Empty();
     }
 
@@ -155,7 +159,6 @@ class _OrdersListState extends ConsumerState<OrdersList> {
       ],
     );
   }
-
 }
 
 /// Một đơn, một dòng: ảnh, tên, chuyện đang xảy ra, số tiền.

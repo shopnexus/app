@@ -152,6 +152,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/put_tag_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refresh_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_page.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_verdict_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/register_device_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/register_request.dart';
@@ -742,6 +743,9 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'RefundPage':
       return RefundPage.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'RefundStatus':
+    case 'RefundSummary':
+      return RefundSummary.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'RefundVerdictRequest':
       return RefundVerdictRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;

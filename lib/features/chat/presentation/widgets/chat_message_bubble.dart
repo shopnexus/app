@@ -43,8 +43,9 @@ class ChatMessageBubble extends StatelessWidget {
       );
     }
 
-    final validAttachments =
-        message.attachments.where((a) => a.url.isNotEmpty).toList();
+    final validAttachments = message.attachments
+        .where((a) => a.url.isNotEmpty)
+        .toList();
     final hasAttachments = validAttachments.isNotEmpty;
     final hasBody = message.body.trim().isNotEmpty;
 
@@ -214,10 +215,7 @@ class ChatMessageBubble extends StatelessWidget {
               ),
           if (hasBody)
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               child: Text(
                 message.body,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -257,10 +255,7 @@ class _ImageAttachment extends StatelessWidget {
         child: Container(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxHeight: 280,
-              minHeight: 120,
-            ),
+            constraints: const BoxConstraints(maxHeight: 280, minHeight: 120),
             child: CachedNetworkImage(
               imageUrl: url,
               width: imageWidth,
@@ -384,7 +379,9 @@ class _Notice extends StatelessWidget {
             margin: const EdgeInsets.only(top: 4),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.6,
+              ),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(

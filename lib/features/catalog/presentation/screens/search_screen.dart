@@ -26,7 +26,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _minPriceController = TextEditingController();
   final TextEditingController _maxPriceController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();

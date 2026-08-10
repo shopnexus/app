@@ -78,10 +78,7 @@ class OrdersScreen extends ConsumerWidget {
                 ),
                 tabs: [
                   for (final title in _tabTitles)
-                    Tab(
-                      height: 36,
-                      child: Text(title),
-                    ),
+                    Tab(height: 36, child: Text(title)),
                 ],
               ),
             ),

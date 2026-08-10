@@ -753,7 +753,8 @@ class _SellerEarningsScreenState extends ConsumerState<SellerEarningsScreen> {
                     minimumSize: const Size(0, 32),
                     visualDensity: VisualDensity.compact,
                   ),
-                  onPressed: () => _confirmCancelWithdrawal(context, withdrawal),
+                  onPressed: () =>
+                      _confirmCancelWithdrawal(context, withdrawal),
                   child: const Text(
                     'Huỷ lệnh',
                     style: TextStyle(fontSize: 12, color: Color(0xFFEF4444)),

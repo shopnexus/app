@@ -214,7 +214,8 @@ class _Body extends ConsumerWidget {
       title: 'Chấp nhận hoàn tiền?',
       // Đồng ý không trả tiền ngay: hàng phải về trước, và người bán còn một cửa
       // sổ kiểm hàng sau đó. Nói trước để "đồng ý" không bị đọc thành "mất tiền".
-      body: 'Người mua sẽ gửi hàng trả lại. Sau khi bạn xác nhận đã nhận hàng, '
+      body:
+          'Người mua sẽ gửi hàng trả lại. Sau khi bạn xác nhận đã nhận hàng, '
           'bạn còn 48 giờ để kiểm tra trước khi tiền được hoàn.',
       confirmLabel: 'Chấp nhận',
     );

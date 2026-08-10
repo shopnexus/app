@@ -9,7 +9,7 @@ class ErrorHandler {
   static const _messages = <String, String>{
     'identity_required':
         'Bạn cần định danh trước khi đăng bán. Mọi người bán trên ShopNexus '
-            'đều đã định danh — đó là lý do người mua dám mua.',
+        'đều đã định danh — đó là lý do người mua dám mua.',
   };
 
   static String getErrorMessage(dynamic error) {

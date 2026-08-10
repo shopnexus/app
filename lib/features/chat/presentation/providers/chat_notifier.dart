@@ -424,10 +424,7 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
 
   Future<bool> sendTextMessage(String content) => sendMessage(text: content);
 
-  Future<bool> sendMessage({
-    String? text,
-    List<XFile>? files,
-  }) async {
+  Future<bool> sendMessage({String? text, List<XFile>? files}) async {
     final body = text?.trim() ?? '';
     final hasFiles = files != null && files.isNotEmpty;
     if (body.isEmpty && !hasFiles) return false;

@@ -116,10 +116,7 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
             backgroundColor: theme.colorScheme.surfaceContainerHigh,
             elevation: 4,
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             content: Row(
               children: [
                 Container(
