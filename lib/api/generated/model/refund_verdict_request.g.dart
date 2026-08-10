@@ -21,5 +21,5 @@ Map<String, dynamic> _$RefundVerdictRequestToJson(
   RefundVerdictRequest instance,
 ) => <String, dynamic>{
   'buyer_wins': instance.buyerWins,
-  'note': ?instance.note,
+  if (instance.note case final value?) 'note': value,
 };

@@ -22,6 +22,6 @@ CreateRefundRequest _$CreateRefundRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$CreateRefundRequestToJson(
   CreateRefundRequest instance,
 ) => <String, dynamic>{
-  'attachments': ?instance.attachments,
+  if (instance.attachments case final value?) 'attachments': value,
   'reason': instance.reason,
 };

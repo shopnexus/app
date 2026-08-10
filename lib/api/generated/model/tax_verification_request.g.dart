@@ -24,7 +24,7 @@ TaxVerificationRequest _$TaxVerificationRequestFromJson(
 Map<String, dynamic> _$TaxVerificationRequestToJson(
   TaxVerificationRequest instance,
 ) => <String, dynamic>{
-  'note': ?instance.note,
+  if (instance.note case final value?) 'note': value,
   'source': instance.source_,
   'status': _$TaxVerificationRequestStatusEnumEnumMap[instance.status]!,
 };

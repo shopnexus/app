@@ -35,8 +35,9 @@ IdentityVerdictRequest _$IdentityVerdictRequestFromJson(
 Map<String, dynamic> _$IdentityVerdictRequestToJson(
   IdentityVerdictRequest instance,
 ) => <String, dynamic>{
-  'expires_at': ?instance.expiresAt?.toIso8601String(),
-  'rejection_reason': ?instance.rejectionReason,
+  if (instance.expiresAt?.toIso8601String() case final value?)
+    'expires_at': value,
+  if (instance.rejectionReason case final value?) 'rejection_reason': value,
   'status': _$IdentityVerdictRequestStatusEnumEnumMap[instance.status]!,
 };
 

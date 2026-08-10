@@ -21,9 +21,9 @@ OAuthLoginRequest _$OAuthLoginRequestFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$OAuthLoginRequestToJson(OAuthLoginRequest instance) =>
     <String, dynamic>{
-      'country': ?instance.country,
+      if (instance.country case final value?) 'country': value,
       'credential': instance.credential,
-      'locale': ?instance.locale,
+      if (instance.locale case final value?) 'locale': value,
       'provider': instance.provider,
-      'timezone': ?instance.timezone,
+      if (instance.timezone case final value?) 'timezone': value,
     };

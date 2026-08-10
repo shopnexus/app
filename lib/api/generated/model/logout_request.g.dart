@@ -15,4 +15,6 @@ LogoutRequest _$LogoutRequestFromJson(Map<String, dynamic> json) =>
     }, fieldKeyMap: const {'deviceId': 'device_id'});
 
 Map<String, dynamic> _$LogoutRequestToJson(LogoutRequest instance) =>
-    <String, dynamic>{'device_id': ?instance.deviceId};
+    <String, dynamic>{
+      if (instance.deviceId case final value?) 'device_id': value,
+    };

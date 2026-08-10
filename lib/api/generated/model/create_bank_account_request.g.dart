@@ -38,5 +38,5 @@ Map<String, dynamic> _$CreateBankAccountRequestToJson(
   'account_holder': instance.accountHolder,
   'account_number': instance.accountNumber,
   'bank_code': instance.bankCode,
-  'is_default': ?instance.isDefault,
+  if (instance.isDefault case final value?) 'is_default': value,
 };

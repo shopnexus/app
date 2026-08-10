@@ -6,150 +6,183 @@ part of 'administrative_areas_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
+String _$provincesHash() => r'16b1ef34563787d7207fe02cb9bb2d4a97327da3';
+
 /// The area vocabulary the address form writes an address in and the browse
 /// filter narrows by. It is public, unauthenticated and changes about once a
 /// decade, so each level is held for the session instead of refetched every time
 /// a picker opens.
-
+///
+/// Copied from [provinces].
 @ProviderFor(provinces)
-const provincesProvider = ProvincesProvider._();
+final provincesProvider = FutureProvider<List<AdministrativeArea>>.internal(
+  provinces,
+  name: r'provincesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$provincesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-/// The area vocabulary the address form writes an address in and the browse
-/// filter narrows by. It is public, unauthenticated and changes about once a
-/// decade, so each level is held for the session instead of refetched every time
-/// a picker opens.
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ProvincesRef = FutureProviderRef<List<AdministrativeArea>>;
+String _$wardsHash() => r'c51d90dc5ac1fa93bef845684e53709185d254c7';
 
-final class ProvincesProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<AdministrativeArea>>,
-          List<AdministrativeArea>,
-          FutureOr<List<AdministrativeArea>>
-        >
-    with
-        $FutureModifier<List<AdministrativeArea>>,
-        $FutureProvider<List<AdministrativeArea>> {
-  /// The area vocabulary the address form writes an address in and the browse
-  /// filter narrows by. It is public, unauthenticated and changes about once a
-  /// decade, so each level is held for the session instead of refetched every time
-  /// a picker opens.
-  const ProvincesProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'provincesProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
 
-  @override
-  String debugGetCreateSourceHash() => _$provincesHash();
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
 
-  @$internal
-  @override
-  $FutureProviderElement<List<AdministrativeArea>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<AdministrativeArea>> create(Ref ref) {
-    return provinces(ref);
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
 
-String _$provincesHash() => r'16b1ef34563787d7207fe02cb9bb2d4a97327da3';
-
 /// A province answers every one of its wards in one response — up to 549 — which
 /// is why the picker searches the list rather than scrolling it.
-
+///
+/// Copied from [wards].
 @ProviderFor(wards)
-const wardsProvider = WardsFamily._();
+const wardsProvider = WardsFamily();
 
 /// A province answers every one of its wards in one response — up to 549 — which
 /// is why the picker searches the list rather than scrolling it.
-
-final class WardsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<AdministrativeArea>>,
-          List<AdministrativeArea>,
-          FutureOr<List<AdministrativeArea>>
-        >
-    with
-        $FutureModifier<List<AdministrativeArea>>,
-        $FutureProvider<List<AdministrativeArea>> {
+///
+/// Copied from [wards].
+class WardsFamily extends Family<AsyncValue<List<AdministrativeArea>>> {
   /// A province answers every one of its wards in one response — up to 549 — which
   /// is why the picker searches the list rather than scrolling it.
-  const WardsProvider._({
-    required WardsFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'wardsProvider',
-         isAutoDispose: false,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+  ///
+  /// Copied from [wards].
+  const WardsFamily();
 
-  @override
-  String debugGetCreateSourceHash() => _$wardsHash();
-
-  @override
-  String toString() {
-    return r'wardsProvider'
-        ''
-        '($argument)';
+  /// A province answers every one of its wards in one response — up to 549 — which
+  /// is why the picker searches the list rather than scrolling it.
+  ///
+  /// Copied from [wards].
+  WardsProvider call(String provinceCode) {
+    return WardsProvider(provinceCode);
   }
 
-  @$internal
   @override
-  $FutureProviderElement<List<AdministrativeArea>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  WardsProvider getProviderOverride(covariant WardsProvider provider) {
+    return call(provider.provinceCode);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
-  FutureOr<List<AdministrativeArea>> create(Ref ref) {
-    final argument = this.argument as String;
-    return wards(ref, argument);
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'wardsProvider';
+}
+
+/// A province answers every one of its wards in one response — up to 549 — which
+/// is why the picker searches the list rather than scrolling it.
+///
+/// Copied from [wards].
+class WardsProvider extends FutureProvider<List<AdministrativeArea>> {
+  /// A province answers every one of its wards in one response — up to 549 — which
+  /// is why the picker searches the list rather than scrolling it.
+  ///
+  /// Copied from [wards].
+  WardsProvider(String provinceCode)
+    : this._internal(
+        (ref) => wards(ref as WardsRef, provinceCode),
+        from: wardsProvider,
+        name: r'wardsProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$wardsHash,
+        dependencies: WardsFamily._dependencies,
+        allTransitiveDependencies: WardsFamily._allTransitiveDependencies,
+        provinceCode: provinceCode,
+      );
+
+  WardsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.provinceCode,
+  }) : super.internal();
+
+  final String provinceCode;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<AdministrativeArea>> Function(WardsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: WardsProvider._internal(
+        (ref) => create(ref as WardsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        provinceCode: provinceCode,
+      ),
+    );
+  }
+
+  @override
+  FutureProviderElement<List<AdministrativeArea>> createElement() {
+    return _WardsProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WardsProvider && other.argument == argument;
+    return other is WardsProvider && other.provinceCode == provinceCode;
   }
 
   @override
   int get hashCode {
-    return argument.hashCode;
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, provinceCode.hashCode);
+
+    return _SystemHash.finish(hash);
   }
 }
 
-String _$wardsHash() => r'c51d90dc5ac1fa93bef845684e53709185d254c7';
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin WardsRef on FutureProviderRef<List<AdministrativeArea>> {
+  /// The parameter `provinceCode` of this provider.
+  String get provinceCode;
+}
 
-/// A province answers every one of its wards in one response — up to 549 — which
-/// is why the picker searches the list rather than scrolling it.
-
-final class WardsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<AdministrativeArea>>, String> {
-  const WardsFamily._()
-    : super(
-        retry: null,
-        name: r'wardsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: false,
-      );
-
-  /// A province answers every one of its wards in one response — up to 549 — which
-  /// is why the picker searches the list rather than scrolling it.
-
-  WardsProvider call(String provinceCode) =>
-      WardsProvider._(argument: provinceCode, from: this);
+class _WardsProviderElement
+    extends FutureProviderElement<List<AdministrativeArea>>
+    with WardsRef {
+  _WardsProviderElement(super.provider);
 
   @override
-  String toString() => r'wardsProvider';
+  String get provinceCode => (origin as WardsProvider).provinceCode;
 }
+
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

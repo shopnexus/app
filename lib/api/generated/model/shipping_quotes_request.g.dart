@@ -38,10 +38,11 @@ ShippingQuotesRequest _$ShippingQuotesRequestFromJson(
 Map<String, dynamic> _$ShippingQuotesRequestToJson(
   ShippingQuotesRequest instance,
 ) => <String, dynamic>{
-  'contact_id': ?instance.contactId,
-  'draft_id': ?instance.draftId,
-  'lines': ?instance.lines?.map((e) => e.toJson()).toList(),
-  'offer_id': ?instance.offerId,
-  'quantity': ?instance.quantity,
-  'variant_id': ?instance.variantId,
+  if (instance.contactId case final value?) 'contact_id': value,
+  if (instance.draftId case final value?) 'draft_id': value,
+  if (instance.lines?.map((e) => e.toJson()).toList() case final value?)
+    'lines': value,
+  if (instance.offerId case final value?) 'offer_id': value,
+  if (instance.quantity case final value?) 'quantity': value,
+  if (instance.variantId case final value?) 'variant_id': value,
 };

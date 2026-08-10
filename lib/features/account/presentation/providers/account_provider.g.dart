@@ -6,149 +6,162 @@ part of 'account_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
+String _$profileHash() => r'5f4ca96096caad1c75abb32ca4013f387cb76fbb';
 
+/// See also [profile].
 @ProviderFor(profile)
-const profileProvider = ProfileProvider._();
+final profileProvider = AutoDisposeFutureProvider<Me>.internal(
+  profile,
+  name: r'profileProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$profileHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-final class ProfileProvider
-    extends $FunctionalProvider<AsyncValue<Me>, Me, FutureOr<Me>>
-    with $FutureModifier<Me>, $FutureProvider<Me> {
-  const ProfileProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'profileProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ProfileRef = AutoDisposeFutureProviderRef<Me>;
+String _$publicProfileHash() => r'34d64cd73a71c9663e0919fc480853985677a1c2';
 
-  @override
-  String debugGetCreateSourceHash() => _$profileHash();
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
 
-  @$internal
-  @override
-  $FutureProviderElement<Me> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
 
-  @override
-  FutureOr<Me> create(Ref ref) {
-    return profile(ref);
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
 
-String _$profileHash() => r'5f4ca96096caad1c75abb32ca4013f387cb76fbb';
-
+/// See also [publicProfile].
 @ProviderFor(publicProfile)
-const publicProfileProvider = PublicProfileFamily._();
+const publicProfileProvider = PublicProfileFamily();
 
-final class PublicProfileProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<PublicAccount>,
-          PublicAccount,
-          FutureOr<PublicAccount>
-        >
-    with $FutureModifier<PublicAccount>, $FutureProvider<PublicAccount> {
-  const PublicProfileProvider._({
-    required PublicProfileFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'publicProfileProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+/// See also [publicProfile].
+class PublicProfileFamily extends Family<AsyncValue<PublicAccount>> {
+  /// See also [publicProfile].
+  const PublicProfileFamily();
 
-  @override
-  String debugGetCreateSourceHash() => _$publicProfileHash();
-
-  @override
-  String toString() {
-    return r'publicProfileProvider'
-        ''
-        '($argument)';
+  /// See also [publicProfile].
+  PublicProfileProvider call(String accountId) {
+    return PublicProfileProvider(accountId);
   }
 
-  @$internal
   @override
-  $FutureProviderElement<PublicAccount> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  PublicProfileProvider getProviderOverride(
+    covariant PublicProfileProvider provider,
+  ) {
+    return call(provider.accountId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
-  FutureOr<PublicAccount> create(Ref ref) {
-    final argument = this.argument as String;
-    return publicProfile(ref, argument);
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'publicProfileProvider';
+}
+
+/// See also [publicProfile].
+class PublicProfileProvider extends AutoDisposeFutureProvider<PublicAccount> {
+  /// See also [publicProfile].
+  PublicProfileProvider(String accountId)
+    : this._internal(
+        (ref) => publicProfile(ref as PublicProfileRef, accountId),
+        from: publicProfileProvider,
+        name: r'publicProfileProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$publicProfileHash,
+        dependencies: PublicProfileFamily._dependencies,
+        allTransitiveDependencies:
+            PublicProfileFamily._allTransitiveDependencies,
+        accountId: accountId,
+      );
+
+  PublicProfileProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.accountId,
+  }) : super.internal();
+
+  final String accountId;
+
+  @override
+  Override overrideWith(
+    FutureOr<PublicAccount> Function(PublicProfileRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: PublicProfileProvider._internal(
+        (ref) => create(ref as PublicProfileRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        accountId: accountId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<PublicAccount> createElement() {
+    return _PublicProfileProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is PublicProfileProvider && other.argument == argument;
+    return other is PublicProfileProvider && other.accountId == accountId;
   }
 
   @override
   int get hashCode {
-    return argument.hashCode;
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, accountId.hashCode);
+
+    return _SystemHash.finish(hash);
   }
 }
 
-String _$publicProfileHash() => r'34d64cd73a71c9663e0919fc480853985677a1c2';
-
-final class PublicProfileFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<PublicAccount>, String> {
-  const PublicProfileFamily._()
-    : super(
-        retry: null,
-        name: r'publicProfileProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  PublicProfileProvider call(String accountId) =>
-      PublicProfileProvider._(argument: accountId, from: this);
-
-  @override
-  String toString() => r'publicProfileProvider';
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin PublicProfileRef on AutoDisposeFutureProviderRef<PublicAccount> {
+  /// The parameter `accountId` of this provider.
+  String get accountId;
 }
 
-/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
-/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
-/// been disposed" trong khi thay đổi *đã* được lưu trên server.
-
-@ProviderFor(AccountController)
-const accountControllerProvider = AccountControllerProvider._();
-
-/// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
-/// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
-/// been disposed" trong khi thay đổi *đã* được lưu trên server.
-final class AccountControllerProvider
-    extends $AsyncNotifierProvider<AccountController, void> {
-  /// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
-  /// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
-  /// been disposed" trong khi thay đổi *đã* được lưu trên server.
-  const AccountControllerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'accountControllerProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+class _PublicProfileProviderElement
+    extends AutoDisposeFutureProviderElement<PublicAccount>
+    with PublicProfileRef {
+  _PublicProfileProviderElement(super.provider);
 
   @override
-  String debugGetCreateSourceHash() => _$accountControllerHash();
-
-  @$internal
-  @override
-  AccountController create() => AccountController();
+  String get accountId => (origin as PublicProfileProvider).accountId;
 }
 
 String _$accountControllerHash() => r'd2699ef1d93203ac21fa2946d816ea5b9460cf17';
@@ -156,22 +169,20 @@ String _$accountControllerHash() => r'd2699ef1d93203ac21fa2946d816ea5b9460cf17';
 /// Gọi bằng `read` chứ không `watch`, nên không gì giữ notifier sống qua các
 /// `await` bên dưới: ghi `state` sau đó ném "Cannot use the Ref ... after it has
 /// been disposed" trong khi thay đổi *đã* được lưu trên server.
+///
+/// Copied from [AccountController].
+@ProviderFor(AccountController)
+final accountControllerProvider =
+    AutoDisposeAsyncNotifierProvider<AccountController, void>.internal(
+      AccountController.new,
+      name: r'accountControllerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$accountControllerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-abstract class _$AccountController extends $AsyncNotifier<void> {
-  FutureOr<void> build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    build();
-    final ref = this.ref as $Ref<AsyncValue<void>, void>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<void>, void>,
-              AsyncValue<void>,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, null);
-  }
-}
+typedef _$AccountController = AutoDisposeAsyncNotifier<void>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

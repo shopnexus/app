@@ -6,180 +6,184 @@ part of 'refund_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-/// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
+String _$refundListHash() => r'31f634536a5f103d39a28dadb9af30f49b399ecd';
 
+/// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
+///
+/// Copied from [refundList].
 @ProviderFor(refundList)
-const refundListProvider = RefundListProvider._();
+final refundListProvider = AutoDisposeFutureProvider<List<Refund>>.internal(
+  refundList,
+  name: r'refundListProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$refundListHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-/// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef RefundListRef = AutoDisposeFutureProviderRef<List<Refund>>;
+String _$refundDetailHash() => r'd9dcb750000a2fadecf349d53b556c09891d6d3a';
 
-final class RefundListProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<Refund>>,
-          List<Refund>,
-          FutureOr<List<Refund>>
-        >
-    with $FutureModifier<List<Refund>>, $FutureProvider<List<Refund>> {
-  /// Cả hai chiều trong một danh sách — không tham số vai. Xem [RefundListScreen].
-  const RefundListProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'refundListProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
 
-  @override
-  String debugGetCreateSourceHash() => _$refundListHash();
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
 
-  @$internal
-  @override
-  $FutureProviderElement<List<Refund>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<Refund>> create(Ref ref) {
-    return refundList(ref);
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
 
-String _$refundListHash() => r'31f634536a5f103d39a28dadb9af30f49b399ecd';
-
+/// See also [refundDetail].
 @ProviderFor(refundDetail)
-const refundDetailProvider = RefundDetailFamily._();
+const refundDetailProvider = RefundDetailFamily();
 
-final class RefundDetailProvider
-    extends $FunctionalProvider<AsyncValue<Refund>, Refund, FutureOr<Refund>>
-    with $FutureModifier<Refund>, $FutureProvider<Refund> {
-  const RefundDetailProvider._({
-    required RefundDetailFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'refundDetailProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+/// See also [refundDetail].
+class RefundDetailFamily extends Family<AsyncValue<Refund>> {
+  /// See also [refundDetail].
+  const RefundDetailFamily();
 
-  @override
-  String debugGetCreateSourceHash() => _$refundDetailHash();
-
-  @override
-  String toString() {
-    return r'refundDetailProvider'
-        ''
-        '($argument)';
+  /// See also [refundDetail].
+  RefundDetailProvider call(String id) {
+    return RefundDetailProvider(id);
   }
 
-  @$internal
   @override
-  $FutureProviderElement<Refund> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  RefundDetailProvider getProviderOverride(
+    covariant RefundDetailProvider provider,
+  ) {
+    return call(provider.id);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
-  FutureOr<Refund> create(Ref ref) {
-    final argument = this.argument as String;
-    return refundDetail(ref, argument);
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'refundDetailProvider';
+}
+
+/// See also [refundDetail].
+class RefundDetailProvider extends AutoDisposeFutureProvider<Refund> {
+  /// See also [refundDetail].
+  RefundDetailProvider(String id)
+    : this._internal(
+        (ref) => refundDetail(ref as RefundDetailRef, id),
+        from: refundDetailProvider,
+        name: r'refundDetailProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$refundDetailHash,
+        dependencies: RefundDetailFamily._dependencies,
+        allTransitiveDependencies:
+            RefundDetailFamily._allTransitiveDependencies,
+        id: id,
+      );
+
+  RefundDetailProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.id,
+  }) : super.internal();
+
+  final String id;
+
+  @override
+  Override overrideWith(
+    FutureOr<Refund> Function(RefundDetailRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: RefundDetailProvider._internal(
+        (ref) => create(ref as RefundDetailRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        id: id,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<Refund> createElement() {
+    return _RefundDetailProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is RefundDetailProvider && other.argument == argument;
+    return other is RefundDetailProvider && other.id == id;
   }
 
   @override
   int get hashCode {
-    return argument.hashCode;
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, id.hashCode);
+
+    return _SystemHash.finish(hash);
   }
 }
 
-String _$refundDetailHash() => r'd9dcb750000a2fadecf349d53b556c09891d6d3a';
-
-final class RefundDetailFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<Refund>, String> {
-  const RefundDetailFamily._()
-    : super(
-        retry: null,
-        name: r'refundDetailProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  RefundDetailProvider call(String id) =>
-      RefundDetailProvider._(argument: id, from: this);
-
-  @override
-  String toString() => r'refundDetailProvider';
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin RefundDetailRef on AutoDisposeFutureProviderRef<Refund> {
+  /// The parameter `id` of this provider.
+  String get id;
 }
 
-/// The moves either party can still make on a live case. Everything that decides
-/// money is staff's, reached by opening a `refund-dispute` ticket.
-
-@ProviderFor(RefundActions)
-const refundActionsProvider = RefundActionsProvider._();
-
-/// The moves either party can still make on a live case. Everything that decides
-/// money is staff's, reached by opening a `refund-dispute` ticket.
-final class RefundActionsProvider
-    extends $NotifierProvider<RefundActions, void> {
-  /// The moves either party can still make on a live case. Everything that decides
-  /// money is staff's, reached by opening a `refund-dispute` ticket.
-  const RefundActionsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'refundActionsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+class _RefundDetailProviderElement
+    extends AutoDisposeFutureProviderElement<Refund>
+    with RefundDetailRef {
+  _RefundDetailProviderElement(super.provider);
 
   @override
-  String debugGetCreateSourceHash() => _$refundActionsHash();
-
-  @$internal
-  @override
-  RefundActions create() => RefundActions();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(void value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<void>(value),
-    );
-  }
+  String get id => (origin as RefundDetailProvider).id;
 }
 
 String _$refundActionsHash() => r'e52e69604ed2898b183baca58dfcaa524e38c509';
 
 /// The moves either party can still make on a live case. Everything that decides
 /// money is staff's, reached by opening a `refund-dispute` ticket.
+///
+/// Copied from [RefundActions].
+@ProviderFor(RefundActions)
+final refundActionsProvider =
+    AutoDisposeNotifierProvider<RefundActions, void>.internal(
+      RefundActions.new,
+      name: r'refundActionsProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$refundActionsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-abstract class _$RefundActions extends $Notifier<void> {
-  void build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    build();
-    final ref = this.ref as $Ref<void, void>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<void, void>,
-              void,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, null);
-  }
-}
+typedef _$RefundActions = AutoDisposeNotifier<void>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -2,13 +2,11 @@
 
 part of 'account_api_service.dart';
 
-// dart format off
-
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
 class _AccountApiService implements AccountApiService {
   _AccountApiService(this._dio, {this.baseUrl, this.errorLogger}) {
@@ -45,7 +43,7 @@ class _AccountApiService implements AccountApiService {
         (json) => Me.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
+      errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
@@ -95,7 +93,7 @@ class _AccountApiService implements AccountApiService {
         (json) => PublicAccount.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
+      errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
@@ -167,58 +165,27 @@ class _AccountApiService implements AccountApiService {
   }
 }
 
-// dart format on
-
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-
-@ProviderFor(accountApiService)
-const accountApiServiceProvider = AccountApiServiceProvider._();
-
-final class AccountApiServiceProvider
-    extends
-        $FunctionalProvider<
-          AccountApiService,
-          AccountApiService,
-          AccountApiService
-        >
-    with $Provider<AccountApiService> {
-  const AccountApiServiceProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'accountApiServiceProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$accountApiServiceHash();
-
-  @$internal
-  @override
-  $ProviderElement<AccountApiService> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
-
-  @override
-  AccountApiService create(Ref ref) {
-    return accountApiService(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AccountApiService value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AccountApiService>(value),
-    );
-  }
-}
-
 String _$accountApiServiceHash() => r'07a1668779729e55a83f850c5c5ed69747262356';
+
+/// See also [accountApiService].
+@ProviderFor(accountApiService)
+final accountApiServiceProvider =
+    AutoDisposeProvider<AccountApiService>.internal(
+      accountApiService,
+      name: r'accountApiServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$accountApiServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AccountApiServiceRef = AutoDisposeProviderRef<AccountApiService>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

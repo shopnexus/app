@@ -22,7 +22,7 @@ UpdateReviewRequest _$UpdateReviewRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$UpdateReviewRequestToJson(
   UpdateReviewRequest instance,
 ) => <String, dynamic>{
-  'attachments': ?instance.attachments,
-  'body': ?instance.body,
-  'rating': ?instance.rating,
+  if (instance.attachments case final value?) 'attachments': value,
+  if (instance.body case final value?) 'body': value,
+  if (instance.rating case final value?) 'rating': value,
 };

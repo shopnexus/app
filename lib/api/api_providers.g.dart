@@ -6,319 +6,134 @@ part of 'api_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-/// The generated endpoint groups, each built on the app's own [dioProvider] so
-/// every call goes through the auth header, the 401 refresh and the logging
-/// interceptor. `ShopnexusApi` from the generated barrel is deliberately unused:
-/// it would build a second Dio with none of that.
-///
-/// `AdminApi` has no provider — this app has no staff surface.
-
-@ProviderFor(accountApi)
-const accountApiProvider = AccountApiProvider._();
-
-/// The generated endpoint groups, each built on the app's own [dioProvider] so
-/// every call goes through the auth header, the 401 refresh and the logging
-/// interceptor. `ShopnexusApi` from the generated barrel is deliberately unused:
-/// it would build a second Dio with none of that.
-///
-/// `AdminApi` has no provider — this app has no staff surface.
-
-final class AccountApiProvider
-    extends $FunctionalProvider<AccountApi, AccountApi, AccountApi>
-    with $Provider<AccountApi> {
-  /// The generated endpoint groups, each built on the app's own [dioProvider] so
-  /// every call goes through the auth header, the 401 refresh and the logging
-  /// interceptor. `ShopnexusApi` from the generated barrel is deliberately unused:
-  /// it would build a second Dio with none of that.
-  ///
-  /// `AdminApi` has no provider — this app has no staff surface.
-  const AccountApiProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'accountApiProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$accountApiHash();
-
-  @$internal
-  @override
-  $ProviderElement<AccountApi> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  AccountApi create(Ref ref) {
-    return accountApi(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AccountApi value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AccountApi>(value),
-    );
-  }
-}
-
 String _$accountApiHash() => r'6a88a7694ec8c415b62e00a97e21b1b33dccc3e4';
 
-@ProviderFor(catalogApi)
-const catalogApiProvider = CatalogApiProvider._();
+/// The generated endpoint groups, each built on the app's own [dioProvider] so
+/// every call goes through the auth header, the 401 refresh and the logging
+/// interceptor. `ShopnexusApi` from the generated barrel is deliberately unused:
+/// it would build a second Dio with none of that.
+///
+/// `AdminApi` has no provider — this app has no staff surface.
+///
+/// Copied from [accountApi].
+@ProviderFor(accountApi)
+final accountApiProvider = AutoDisposeProvider<AccountApi>.internal(
+  accountApi,
+  name: r'accountApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$accountApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-final class CatalogApiProvider
-    extends $FunctionalProvider<CatalogApi, CatalogApi, CatalogApi>
-    with $Provider<CatalogApi> {
-  const CatalogApiProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'catalogApiProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$catalogApiHash();
-
-  @$internal
-  @override
-  $ProviderElement<CatalogApi> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  CatalogApi create(Ref ref) {
-    return catalogApi(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(CatalogApi value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<CatalogApi>(value),
-    );
-  }
-}
-
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AccountApiRef = AutoDisposeProviderRef<AccountApi>;
 String _$catalogApiHash() => r'32c800e9ff4823801461dfbfa53f6b653152fd36';
 
-@ProviderFor(chatApi)
-const chatApiProvider = ChatApiProvider._();
+/// See also [catalogApi].
+@ProviderFor(catalogApi)
+final catalogApiProvider = AutoDisposeProvider<CatalogApi>.internal(
+  catalogApi,
+  name: r'catalogApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$catalogApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-final class ChatApiProvider
-    extends $FunctionalProvider<ChatApi, ChatApi, ChatApi>
-    with $Provider<ChatApi> {
-  const ChatApiProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'chatApiProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$chatApiHash();
-
-  @$internal
-  @override
-  $ProviderElement<ChatApi> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  ChatApi create(Ref ref) {
-    return chatApi(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ChatApi value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<ChatApi>(value),
-    );
-  }
-}
-
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CatalogApiRef = AutoDisposeProviderRef<CatalogApi>;
 String _$chatApiHash() => r'5cb98140944bbcbc38f3578bdb75410a652054e5';
 
-/// The registry every module's pluggable choices are read through — the payment rails and
-/// the carriers. Its own group because the endpoint belongs to no single module.
+/// See also [chatApi].
+@ProviderFor(chatApi)
+final chatApiProvider = AutoDisposeProvider<ChatApi>.internal(
+  chatApi,
+  name: r'chatApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$chatApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-@ProviderFor(commonApi)
-const commonApiProvider = CommonApiProvider._();
-
-/// The registry every module's pluggable choices are read through — the payment rails and
-/// the carriers. Its own group because the endpoint belongs to no single module.
-
-final class CommonApiProvider
-    extends $FunctionalProvider<CommonApi, CommonApi, CommonApi>
-    with $Provider<CommonApi> {
-  /// The registry every module's pluggable choices are read through — the payment rails and
-  /// the carriers. Its own group because the endpoint belongs to no single module.
-  const CommonApiProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'commonApiProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$commonApiHash();
-
-  @$internal
-  @override
-  $ProviderElement<CommonApi> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  CommonApi create(Ref ref) {
-    return commonApi(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(CommonApi value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<CommonApi>(value),
-    );
-  }
-}
-
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ChatApiRef = AutoDisposeProviderRef<ChatApi>;
 String _$commonApiHash() => r'8f21f95ff4166dee0d58a25f39550f1aaa5340b5';
 
-@ProviderFor(financeApi)
-const financeApiProvider = FinanceApiProvider._();
+/// The registry every module's pluggable choices are read through — the payment rails and
+/// the carriers. Its own group because the endpoint belongs to no single module.
+///
+/// Copied from [commonApi].
+@ProviderFor(commonApi)
+final commonApiProvider = AutoDisposeProvider<CommonApi>.internal(
+  commonApi,
+  name: r'commonApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$commonApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-final class FinanceApiProvider
-    extends $FunctionalProvider<FinanceApi, FinanceApi, FinanceApi>
-    with $Provider<FinanceApi> {
-  const FinanceApiProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'financeApiProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$financeApiHash();
-
-  @$internal
-  @override
-  $ProviderElement<FinanceApi> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  FinanceApi create(Ref ref) {
-    return financeApi(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(FinanceApi value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<FinanceApi>(value),
-    );
-  }
-}
-
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CommonApiRef = AutoDisposeProviderRef<CommonApi>;
 String _$financeApiHash() => r'e93bbdc19c1651833c22a437f01c25d5bb7f510b';
 
-@ProviderFor(orderApi)
-const orderApiProvider = OrderApiProvider._();
+/// See also [financeApi].
+@ProviderFor(financeApi)
+final financeApiProvider = AutoDisposeProvider<FinanceApi>.internal(
+  financeApi,
+  name: r'financeApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$financeApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-final class OrderApiProvider
-    extends $FunctionalProvider<OrderApi, OrderApi, OrderApi>
-    with $Provider<OrderApi> {
-  const OrderApiProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'orderApiProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$orderApiHash();
-
-  @$internal
-  @override
-  $ProviderElement<OrderApi> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  OrderApi create(Ref ref) {
-    return orderApi(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(OrderApi value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<OrderApi>(value),
-    );
-  }
-}
-
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef FinanceApiRef = AutoDisposeProviderRef<FinanceApi>;
 String _$orderApiHash() => r'a9ae52c081dba9da7eb0869186fee133b27b0cf8';
 
-@ProviderFor(trustApi)
-const trustApiProvider = TrustApiProvider._();
+/// See also [orderApi].
+@ProviderFor(orderApi)
+final orderApiProvider = AutoDisposeProvider<OrderApi>.internal(
+  orderApi,
+  name: r'orderApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$orderApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-final class TrustApiProvider
-    extends $FunctionalProvider<TrustApi, TrustApi, TrustApi>
-    with $Provider<TrustApi> {
-  const TrustApiProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'trustApiProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$trustApiHash();
-
-  @$internal
-  @override
-  $ProviderElement<TrustApi> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  TrustApi create(Ref ref) {
-    return trustApi(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(TrustApi value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<TrustApi>(value),
-    );
-  }
-}
-
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef OrderApiRef = AutoDisposeProviderRef<OrderApi>;
 String _$trustApiHash() => r'ffbc21f0316988be634d78e61a82f23b3d2d3a28';
+
+/// See also [trustApi].
+@ProviderFor(trustApi)
+final trustApiProvider = AutoDisposeProvider<TrustApi>.internal(
+  trustApi,
+  name: r'trustApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$trustApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef TrustApiRef = AutoDisposeProviderRef<TrustApi>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

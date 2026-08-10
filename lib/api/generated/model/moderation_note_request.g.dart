@@ -17,4 +17,4 @@ ModerationNoteRequest _$ModerationNoteRequestFromJson(
 
 Map<String, dynamic> _$ModerationNoteRequestToJson(
   ModerationNoteRequest instance,
-) => <String, dynamic>{'note': ?instance.note};
+) => <String, dynamic>{if (instance.note case final value?) 'note': value};

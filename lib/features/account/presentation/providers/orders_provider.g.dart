@@ -6,113 +6,46 @@ part of 'orders_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
+String _$unsettledItemsHash() => r'782d3fd2e8fe11e516f38968b63066054955dcef';
+
 /// Dòng đã trả tiền mà chưa thành đơn — cửa sổ duy nhất còn bỏ được.
 ///
 /// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
 /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
-
+///
+/// Copied from [unsettledItems].
 @ProviderFor(unsettledItems)
-const unsettledItemsProvider = UnsettledItemsProvider._();
+final unsettledItemsProvider =
+    AutoDisposeFutureProvider<List<OrderLineView>>.internal(
+      unsettledItems,
+      name: r'unsettledItemsProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$unsettledItemsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-/// Dòng đã trả tiền mà chưa thành đơn — cửa sổ duy nhất còn bỏ được.
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef UnsettledItemsRef = AutoDisposeFutureProviderRef<List<OrderLineView>>;
+String _$ordersHash() => r'6d834304dd4d39d6ab1a959597b18cff3c509d4e';
+
+/// Notifier quản lý đơn hàng của phía Người mua (buyer).
 ///
-/// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
-/// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
-
-final class UnsettledItemsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<OrderLineView>>,
-          List<OrderLineView>,
-          FutureOr<List<OrderLineView>>
-        >
-    with
-        $FutureModifier<List<OrderLineView>>,
-        $FutureProvider<List<OrderLineView>> {
-  /// Dòng đã trả tiền mà chưa thành đơn — cửa sổ duy nhất còn bỏ được.
-  ///
-  /// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
-  /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
-  const UnsettledItemsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'unsettledItemsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$unsettledItemsHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<List<OrderLineView>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<OrderLineView>> create(Ref ref) {
-    return unsettledItems(ref);
-  }
-}
-
-String _$unsettledItemsHash() => r'faca7c951210529836df9c145b32d697214904e4';
-
-/// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
-/// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
-
+/// Copied from [Orders].
 @ProviderFor(Orders)
-const ordersProvider = OrdersProvider._();
+final ordersProvider =
+    AutoDisposeAsyncNotifierProvider<Orders, OrdersFeed>.internal(
+      Orders.new,
+      name: r'ordersProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$ordersHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-/// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
-/// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
-final class OrdersProvider extends $AsyncNotifierProvider<Orders, OrdersFeed> {
-  /// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
-  /// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
-  const OrdersProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'ordersProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$ordersHash();
-
-  @$internal
-  @override
-  Orders create() => Orders();
-}
-
-String _$ordersHash() => r'99b0848e645717d1f180b91883d38955aa1ca546';
-
-/// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
-/// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
-
-abstract class _$Orders extends $AsyncNotifier<OrdersFeed> {
-  FutureOr<OrdersFeed> build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final created = build();
-    final ref = this.ref as $Ref<AsyncValue<OrdersFeed>, OrdersFeed>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<OrdersFeed>, OrdersFeed>,
-              AsyncValue<OrdersFeed>,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, created);
-  }
-}
+typedef _$Orders = AutoDisposeAsyncNotifier<OrdersFeed>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

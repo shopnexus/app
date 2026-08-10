@@ -41,9 +41,9 @@ WalletAdjustmentRequest _$WalletAdjustmentRequestFromJson(
 Map<String, dynamic> _$WalletAdjustmentRequestToJson(
   WalletAdjustmentRequest instance,
 ) => <String, dynamic>{
-  'available_delta': ?instance.availableDelta,
+  if (instance.availableDelta case final value?) 'available_delta': value,
   'currency': instance.currency,
-  'held_delta': ?instance.heldDelta,
+  if (instance.heldDelta case final value?) 'held_delta': value,
   'idempotency_key': instance.idempotencyKey,
   'reason': instance.reason,
 };

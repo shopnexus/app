@@ -21,7 +21,7 @@ CreateOfferRequest _$CreateOfferRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$CreateOfferRequestToJson(CreateOfferRequest instance) =>
     <String, dynamic>{
       'quantity': instance.quantity,
-      'reason': ?instance.reason,
+      if (instance.reason case final value?) 'reason': value,
       'total': instance.total,
       'variant_id': instance.variantId,
     };

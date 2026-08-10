@@ -16,6 +16,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/widgets/wait
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/rate_order_sheet.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refund_status_badge.dart';
+import 'package:shopnexus_flutter_app/features/checkout/presentation/widgets/resume_payment_sheet.dart';
 
 /// Đơn của cả hai chiều, ba nhóm theo lượt, không tab và không segment vai.
 ///
@@ -784,6 +785,27 @@ class _UnsettledBlock extends ConsumerWidget {
                   ],
                 ),
               ),
+              ElevatedButton(
+                onPressed: () {
+                  ResumePaymentSheet.show(
+                    context,
+                    paymentSessionId: line.item.paymentSessionId,
+                    title: line.displayName,
+                    amount: line.item.totalAmount,
+                    currency: line.item.currency,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  textStyle: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: const Text('Thanh toán'),
+              ),
+              const SizedBox(width: 4),
               TextButton(
                 onPressed: () => _confirmCancel(context, ref, line),
                 child: const Text(

@@ -42,9 +42,9 @@ CreateVariantRequest _$CreateVariantRequestFromJson(
 Map<String, dynamic> _$CreateVariantRequestToJson(
   CreateVariantRequest instance,
 ) => <String, dynamic>{
-  'attachments': ?instance.attachments,
+  if (instance.attachments case final value?) 'attachments': value,
   'attributes': instance.attributes,
   'package_details': instance.packageDetails,
   'price': instance.price,
-  'quantity': ?instance.quantity,
+  if (instance.quantity case final value?) 'quantity': value,
 };

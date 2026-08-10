@@ -6,103 +6,45 @@ part of 'wishlist_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-/// The wishlist is a catalog query, not a list of its own: `GET /listings` with
-/// `favorited=true` answers cards, so the screen gets the price and the cover it
-/// draws. Resolving saved ids one detail request at a time gave neither — a
-/// `ListingDetail` carries no card price, which is why every row read 0 ₫.
-
-@ProviderFor(wishlistProducts)
-const wishlistProductsProvider = WishlistProductsProvider._();
-
-/// The wishlist is a catalog query, not a list of its own: `GET /listings` with
-/// `favorited=true` answers cards, so the screen gets the price and the cover it
-/// draws. Resolving saved ids one detail request at a time gave neither — a
-/// `ListingDetail` carries no card price, which is why every row read 0 ₫.
-
-final class WishlistProductsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<Listing>>,
-          List<Listing>,
-          FutureOr<List<Listing>>
-        >
-    with $FutureModifier<List<Listing>>, $FutureProvider<List<Listing>> {
-  /// The wishlist is a catalog query, not a list of its own: `GET /listings` with
-  /// `favorited=true` answers cards, so the screen gets the price and the cover it
-  /// draws. Resolving saved ids one detail request at a time gave neither — a
-  /// `ListingDetail` carries no card price, which is why every row read 0 ₫.
-  const WishlistProductsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'wishlistProductsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$wishlistProductsHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<List<Listing>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<Listing>> create(Ref ref) {
-    return wishlistProducts(ref);
-  }
-}
-
 String _$wishlistProductsHash() => r'2ed77c7a3d39e28708fcabe13ec8fd36d315b06a';
 
-@ProviderFor(WishlistController)
-const wishlistControllerProvider = WishlistControllerProvider._();
+/// The wishlist is a catalog query, not a list of its own: `GET /listings` with
+/// `favorited=true` answers cards, so the screen gets the price and the cover it
+/// draws. Resolving saved ids one detail request at a time gave neither — a
+/// `ListingDetail` carries no card price, which is why every row read 0 ₫.
+///
+/// Copied from [wishlistProducts].
+@ProviderFor(wishlistProducts)
+final wishlistProductsProvider =
+    AutoDisposeFutureProvider<List<Listing>>.internal(
+      wishlistProducts,
+      name: r'wishlistProductsProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wishlistProductsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-final class WishlistControllerProvider
-    extends $AsyncNotifierProvider<WishlistController, void> {
-  const WishlistControllerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'wishlistControllerProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$wishlistControllerHash();
-
-  @$internal
-  @override
-  WishlistController create() => WishlistController();
-}
-
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WishlistProductsRef = AutoDisposeFutureProviderRef<List<Listing>>;
 String _$wishlistControllerHash() =>
     r'72106fa0429854c706ce4a706cdeeb8ba1e87182';
 
-abstract class _$WishlistController extends $AsyncNotifier<void> {
-  FutureOr<void> build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    build();
-    final ref = this.ref as $Ref<AsyncValue<void>, void>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AsyncValue<void>, void>,
-              AsyncValue<void>,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, null);
-  }
-}
+/// See also [WishlistController].
+@ProviderFor(WishlistController)
+final wishlistControllerProvider =
+    AutoDisposeAsyncNotifierProvider<WishlistController, void>.internal(
+      WishlistController.new,
+      name: r'wishlistControllerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wishlistControllerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$WishlistController = AutoDisposeAsyncNotifier<void>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

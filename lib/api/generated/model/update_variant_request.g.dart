@@ -44,10 +44,10 @@ UpdateVariantRequest _$UpdateVariantRequestFromJson(
 Map<String, dynamic> _$UpdateVariantRequestToJson(
   UpdateVariantRequest instance,
 ) => <String, dynamic>{
-  'attachments': ?instance.attachments,
-  'attributes': ?instance.attributes,
-  'is_featured': ?instance.isFeatured,
-  'package_details': ?instance.packageDetails,
-  'price': ?instance.price,
-  'quantity': ?instance.quantity,
+  if (instance.attachments case final value?) 'attachments': value,
+  if (instance.attributes case final value?) 'attributes': value,
+  if (instance.isFeatured case final value?) 'is_featured': value,
+  if (instance.packageDetails case final value?) 'package_details': value,
+  if (instance.price case final value?) 'price': value,
+  if (instance.quantity case final value?) 'quantity': value,
 };

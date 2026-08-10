@@ -6,8 +6,29 @@ part of 'option_names_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
+String _$optionNamesHash() => r'c45bbd39552fad0d62ed4779952bbdf06e2c3397';
+
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
+
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
+
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
+
 /// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
 ///
 /// Một bản ghi đã xong giữ slug làm bằng — `transaction.payment_option`,
@@ -17,9 +38,10 @@ part of 'option_names_provider.dart';
 ///
 /// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
 /// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
-
+///
+/// Copied from [optionNames].
 @ProviderFor(optionNames)
-const optionNamesProvider = OptionNamesFamily._();
+const optionNamesProvider = OptionNamesFamily();
 
 /// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
 ///
@@ -30,17 +52,9 @@ const optionNamesProvider = OptionNamesFamily._();
 ///
 /// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
 /// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
-
-final class OptionNamesProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<Map<String, String>>,
-          Map<String, String>,
-          FutureOr<Map<String, String>>
-        >
-    with
-        $FutureModifier<Map<String, String>>,
-        $FutureProvider<Map<String, String>> {
+///
+/// Copied from [optionNames].
+class OptionNamesFamily extends Family<AsyncValue<Map<String, String>>> {
   /// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
   ///
   /// Một bản ghi đã xong giữ slug làm bằng — `transaction.payment_option`,
@@ -50,90 +64,147 @@ final class OptionNamesProvider
   ///
   /// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
   /// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
-  const OptionNamesProvider._({
-    required OptionNamesFamily super.from,
-    required OptionCategoryName super.argument,
-  }) : super(
-         retry: null,
-         name: r'optionNamesProvider',
-         isAutoDispose: false,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+  ///
+  /// Copied from [optionNames].
+  const OptionNamesFamily();
 
-  @override
-  String debugGetCreateSourceHash() => _$optionNamesHash();
-
-  @override
-  String toString() {
-    return r'optionNamesProvider'
-        ''
-        '($argument)';
+  /// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
+  ///
+  /// Một bản ghi đã xong giữ slug làm bằng — `transaction.payment_option`,
+  /// `transport.option` — nên chỗ nào vẽ nó cũng cần tra tên. Trước đây ba màn in
+  /// thẳng slug: người mua đọc "sepay-bank-transfer" và "mock-standard" thay vì
+  /// "Chuyển khoản ngân hàng (SePay)".
+  ///
+  /// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
+  /// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
+  ///
+  /// Copied from [optionNames].
+  OptionNamesProvider call(OptionCategoryName category) {
+    return OptionNamesProvider(category);
   }
 
-  @$internal
   @override
-  $FutureProviderElement<Map<String, String>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  OptionNamesProvider getProviderOverride(
+    covariant OptionNamesProvider provider,
+  ) {
+    return call(provider.category);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
-  FutureOr<Map<String, String>> create(Ref ref) {
-    final argument = this.argument as OptionCategoryName;
-    return optionNames(ref, argument);
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'optionNamesProvider';
+}
+
+/// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
+///
+/// Một bản ghi đã xong giữ slug làm bằng — `transaction.payment_option`,
+/// `transport.option` — nên chỗ nào vẽ nó cũng cần tra tên. Trước đây ba màn in
+/// thẳng slug: người mua đọc "sepay-bank-transfer" và "mock-standard" thay vì
+/// "Chuyển khoản ngân hàng (SePay)".
+///
+/// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
+/// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
+///
+/// Copied from [optionNames].
+class OptionNamesProvider extends FutureProvider<Map<String, String>> {
+  /// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
+  ///
+  /// Một bản ghi đã xong giữ slug làm bằng — `transaction.payment_option`,
+  /// `transport.option` — nên chỗ nào vẽ nó cũng cần tra tên. Trước đây ba màn in
+  /// thẳng slug: người mua đọc "sepay-bank-transfer" và "mock-standard" thay vì
+  /// "Chuyển khoản ngân hàng (SePay)".
+  ///
+  /// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
+  /// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
+  ///
+  /// Copied from [optionNames].
+  OptionNamesProvider(OptionCategoryName category)
+    : this._internal(
+        (ref) => optionNames(ref as OptionNamesRef, category),
+        from: optionNamesProvider,
+        name: r'optionNamesProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$optionNamesHash,
+        dependencies: OptionNamesFamily._dependencies,
+        allTransitiveDependencies: OptionNamesFamily._allTransitiveDependencies,
+        category: category,
+      );
+
+  OptionNamesProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.category,
+  }) : super.internal();
+
+  final OptionCategoryName category;
+
+  @override
+  Override overrideWith(
+    FutureOr<Map<String, String>> Function(OptionNamesRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: OptionNamesProvider._internal(
+        (ref) => create(ref as OptionNamesRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        category: category,
+      ),
+    );
+  }
+
+  @override
+  FutureProviderElement<Map<String, String>> createElement() {
+    return _OptionNamesProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is OptionNamesProvider && other.argument == argument;
+    return other is OptionNamesProvider && other.category == category;
   }
 
   @override
   int get hashCode {
-    return argument.hashCode;
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, category.hashCode);
+
+    return _SystemHash.finish(hash);
   }
 }
 
-String _$optionNamesHash() => r'c45bbd39552fad0d62ed4779952bbdf06e2c3397';
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin OptionNamesRef on FutureProviderRef<Map<String, String>> {
+  /// The parameter `category` of this provider.
+  OptionCategoryName get category;
+}
 
-/// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
-///
-/// Một bản ghi đã xong giữ slug làm bằng — `transaction.payment_option`,
-/// `transport.option` — nên chỗ nào vẽ nó cũng cần tra tên. Trước đây ba màn in
-/// thẳng slug: người mua đọc "sepay-bank-transfer" và "mock-standard" thay vì
-/// "Chuyển khoản ngân hàng (SePay)".
-///
-/// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
-/// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
-
-final class OptionNamesFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<Map<String, String>>,
-          OptionCategoryName
-        > {
-  const OptionNamesFamily._()
-    : super(
-        retry: null,
-        name: r'optionNamesProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: false,
-      );
-
-  /// Tên hiển thị của một `option` slug, cho cả hai nhóm dùng nó.
-  ///
-  /// Một bản ghi đã xong giữ slug làm bằng — `transaction.payment_option`,
-  /// `transport.option` — nên chỗ nào vẽ nó cũng cần tra tên. Trước đây ba màn in
-  /// thẳng slug: người mua đọc "sepay-bank-transfer" và "mock-standard" thay vì
-  /// "Chuyển khoản ngân hàng (SePay)".
-  ///
-  /// `keepAlive`: danh sách này đổi khi vận hành đổi nó, không đổi theo màn hình, và
-  /// mỗi lần mở một sheet mà gọi lại là một request cho dữ liệu vừa đọc xong.
-
-  OptionNamesProvider call(OptionCategoryName category) =>
-      OptionNamesProvider._(argument: category, from: this);
+class _OptionNamesProviderElement
+    extends FutureProviderElement<Map<String, String>>
+    with OptionNamesRef {
+  _OptionNamesProviderElement(super.provider);
 
   @override
-  String toString() => r'optionNamesProvider';
+  OptionCategoryName get category => (origin as OptionNamesProvider).category;
 }
+
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

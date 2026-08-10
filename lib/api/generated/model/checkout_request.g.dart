@@ -48,6 +48,6 @@ Map<String, dynamic> _$CheckoutRequestToJson(CheckoutRequest instance) =>
       'contact_id': instance.contactId,
       'currency': instance.currency,
       'lines': instance.lines.map((e) => e.toJson()).toList(),
-      'note': ?instance.note,
+      if (instance.note case final value?) 'note': value,
       'transport_option': instance.transportOption,
     };

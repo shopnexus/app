@@ -20,4 +20,6 @@ MarkNotificationsReadRequest _$MarkNotificationsReadRequestFromJson(
 
 Map<String, dynamic> _$MarkNotificationsReadRequestToJson(
   MarkNotificationsReadRequest instance,
-) => <String, dynamic>{'before': ?instance.before?.toIso8601String()};
+) => <String, dynamic>{
+  if (instance.before?.toIso8601String() case final value?) 'before': value,
+};

@@ -45,7 +45,7 @@ StartIdentityVerificationRequest _$StartIdentityVerificationRequestFromJson(
 Map<String, dynamic> _$StartIdentityVerificationRequestToJson(
   StartIdentityVerificationRequest instance,
 ) => <String, dynamic>{
-  'back_resource_id': ?instance.backResourceId,
+  if (instance.backResourceId case final value?) 'back_resource_id': value,
   'doc_type': _$IdentityDocumentTypeEnumMap[instance.docType]!,
   'front_resource_id': instance.frontResourceId,
   'selfie_resource_id': instance.selfieResourceId,

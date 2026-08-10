@@ -21,7 +21,7 @@ CreateCategoryRequest _$CreateCategoryRequestFromJson(
 Map<String, dynamic> _$CreateCategoryRequestToJson(
   CreateCategoryRequest instance,
 ) => <String, dynamic>{
-  'description': ?instance.description,
+  if (instance.description case final value?) 'description': value,
   'name': instance.name,
-  'parent_id': ?instance.parentId,
+  if (instance.parentId case final value?) 'parent_id': value,
 };

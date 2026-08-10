@@ -6,62 +6,26 @@ part of 'listing_suggestion_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-
-@ProviderFor(ListingSuggestionNotifier)
-const listingSuggestionProvider = ListingSuggestionNotifierProvider._();
-
-final class ListingSuggestionNotifierProvider
-    extends
-        $NotifierProvider<ListingSuggestionNotifier, ListingSuggestionState> {
-  const ListingSuggestionNotifierProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'listingSuggestionProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$listingSuggestionNotifierHash();
-
-  @$internal
-  @override
-  ListingSuggestionNotifier create() => ListingSuggestionNotifier();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ListingSuggestionState value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<ListingSuggestionState>(value),
-    );
-  }
-}
-
 String _$listingSuggestionNotifierHash() =>
     r'40f1a065ee46a740963cb04b643065f64b1ac5d5';
 
-abstract class _$ListingSuggestionNotifier
-    extends $Notifier<ListingSuggestionState> {
-  ListingSuggestionState build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final created = build();
-    final ref =
-        this.ref as $Ref<ListingSuggestionState, ListingSuggestionState>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<ListingSuggestionState, ListingSuggestionState>,
-              ListingSuggestionState,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, created);
-  }
-}
+/// See also [ListingSuggestionNotifier].
+@ProviderFor(ListingSuggestionNotifier)
+final listingSuggestionNotifierProvider =
+    AutoDisposeNotifierProvider<
+      ListingSuggestionNotifier,
+      ListingSuggestionState
+    >.internal(
+      ListingSuggestionNotifier.new,
+      name: r'listingSuggestionNotifierProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$listingSuggestionNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$ListingSuggestionNotifier =
+    AutoDisposeNotifier<ListingSuggestionState>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

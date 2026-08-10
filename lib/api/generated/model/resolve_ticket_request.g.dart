@@ -24,7 +24,7 @@ Map<String, dynamic> _$ResolveTicketRequestToJson(
   ResolveTicketRequest instance,
 ) => <String, dynamic>{
   'action_taken': _$TicketResolutionActionEnumMap[instance.actionTaken]!,
-  'note': ?instance.note,
+  if (instance.note case final value?) 'note': value,
 };
 
 const _$TicketResolutionActionEnumMap = {

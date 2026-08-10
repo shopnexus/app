@@ -9,6 +9,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
 import 'package:shopnexus_flutter_app/core/providers/option_names_provider.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
+import 'package:shopnexus_flutter_app/features/checkout/presentation/widgets/resume_payment_sheet.dart';
 
 /// Mọi lần tiền đi qua tài khoản này — cả hai chiều.
 ///
@@ -166,6 +167,25 @@ class _SessionRow extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+          if (unfinished && !lapsed && session.kind == PaymentSessionKind.buyerCheckout) ...[
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                ResumePaymentSheet.show(
+                  context,
+                  paymentSessionId: session.id,
+                  title: session.note.isNotEmpty ? session.note : 'Thanh toán đơn hàng',
+                  amount: session.totalAmount,
+                  currency: session.currency,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              child: const Text('Tiếp tục thanh toán'),
+            ),
+          ],
         ],
       ),
       // Các chặng chỉ nạp khi người dùng mở ra: một trang 50 phiên mà nạp sẵn

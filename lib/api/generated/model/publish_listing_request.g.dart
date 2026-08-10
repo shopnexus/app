@@ -25,4 +25,6 @@ PublishListingRequest _$PublishListingRequestFromJson(
 
 Map<String, dynamic> _$PublishListingRequestToJson(
   PublishListingRequest instance,
-) => <String, dynamic>{'pickup_contact_id': ?instance.pickupContactId};
+) => <String, dynamic>{
+  if (instance.pickupContactId case final value?) 'pickup_contact_id': value,
+};

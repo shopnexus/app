@@ -20,6 +20,6 @@ UpdateOfferRequest _$UpdateOfferRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$UpdateOfferRequestToJson(UpdateOfferRequest instance) =>
     <String, dynamic>{
       'quantity': instance.quantity,
-      'reason': ?instance.reason,
+      if (instance.reason case final value?) 'reason': value,
       'total': instance.total,
     };

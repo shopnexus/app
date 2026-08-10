@@ -20,4 +20,6 @@ MarkConversationReadRequest _$MarkConversationReadRequestFromJson(
 
 Map<String, dynamic> _$MarkConversationReadRequestToJson(
   MarkConversationReadRequest instance,
-) => <String, dynamic>{'before': ?instance.before?.toIso8601String()};
+) => <String, dynamic>{
+  if (instance.before?.toIso8601String() case final value?) 'before': value,
+};

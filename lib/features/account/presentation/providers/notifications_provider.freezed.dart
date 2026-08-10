@@ -1,5 +1,5 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,275 +9,201 @@ part of 'notifications_provider.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// dart format off
 T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
+
 /// @nodoc
 mixin _$NotificationFeed {
+  List<Notification> get items => throw _privateConstructorUsedError;
+  String? get nextCursor => throw _privateConstructorUsedError;
+  bool get loadingMore => throw _privateConstructorUsedError;
 
- List<wire.Notification> get items; String? get nextCursor; bool get loadingMore;
-/// Create a copy of NotificationFeed
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$NotificationFeedCopyWith<NotificationFeed> get copyWith => _$NotificationFeedCopyWithImpl<NotificationFeed>(this as NotificationFeed, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NotificationFeed&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor)&&(identical(other.loadingMore, loadingMore) || other.loadingMore == loadingMore));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(items),nextCursor,loadingMore);
-
-@override
-String toString() {
-  return 'NotificationFeed(items: $items, nextCursor: $nextCursor, loadingMore: $loadingMore)';
-}
-
-
+  /// Create a copy of NotificationFeed
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $NotificationFeedCopyWith<NotificationFeed> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $NotificationFeedCopyWith<$Res>  {
-  factory $NotificationFeedCopyWith(NotificationFeed value, $Res Function(NotificationFeed) _then) = _$NotificationFeedCopyWithImpl;
-@useResult
-$Res call({
- List<wire.Notification> items, String? nextCursor, bool loadingMore
-});
-
-
-
-
+abstract class $NotificationFeedCopyWith<$Res> {
+  factory $NotificationFeedCopyWith(
+    NotificationFeed value,
+    $Res Function(NotificationFeed) then,
+  ) = _$NotificationFeedCopyWithImpl<$Res, NotificationFeed>;
+  @useResult
+  $Res call({List<Notification> items, String? nextCursor, bool loadingMore});
 }
+
 /// @nodoc
-class _$NotificationFeedCopyWithImpl<$Res>
+class _$NotificationFeedCopyWithImpl<$Res, $Val extends NotificationFeed>
     implements $NotificationFeedCopyWith<$Res> {
-  _$NotificationFeedCopyWithImpl(this._self, this._then);
+  _$NotificationFeedCopyWithImpl(this._value, this._then);
 
-  final NotificationFeed _self;
-  final $Res Function(NotificationFeed) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
-/// Create a copy of NotificationFeed
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? items = null,Object? nextCursor = freezed,Object? loadingMore = null,}) {
-  return _then(_self.copyWith(
-items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<wire.Notification>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
-as String?,loadingMore: null == loadingMore ? _self.loadingMore : loadingMore // ignore: cast_nullable_to_non_nullable
-as bool,
-  ));
+  /// Create a copy of NotificationFeed
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? nextCursor = freezed,
+    Object? loadingMore = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            items: null == items
+                ? _value.items
+                : items // ignore: cast_nullable_to_non_nullable
+                      as List<Notification>,
+            nextCursor: freezed == nextCursor
+                ? _value.nextCursor
+                : nextCursor // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            loadingMore: null == loadingMore
+                ? _value.loadingMore
+                : loadingMore // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
 }
 
+/// @nodoc
+abstract class _$$NotificationFeedImplCopyWith<$Res>
+    implements $NotificationFeedCopyWith<$Res> {
+  factory _$$NotificationFeedImplCopyWith(
+    _$NotificationFeedImpl value,
+    $Res Function(_$NotificationFeedImpl) then,
+  ) = __$$NotificationFeedImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<Notification> items, String? nextCursor, bool loadingMore});
 }
 
+/// @nodoc
+class __$$NotificationFeedImplCopyWithImpl<$Res>
+    extends _$NotificationFeedCopyWithImpl<$Res, _$NotificationFeedImpl>
+    implements _$$NotificationFeedImplCopyWith<$Res> {
+  __$$NotificationFeedImplCopyWithImpl(
+    _$NotificationFeedImpl _value,
+    $Res Function(_$NotificationFeedImpl) _then,
+  ) : super(_value, _then);
 
-/// Adds pattern-matching-related methods to [NotificationFeed].
-extension NotificationFeedPatterns on NotificationFeed {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _NotificationFeed value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _NotificationFeed() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _NotificationFeed value)  $default,){
-final _that = this;
-switch (_that) {
-case _NotificationFeed():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _NotificationFeed value)?  $default,){
-final _that = this;
-switch (_that) {
-case _NotificationFeed() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<wire.Notification> items,  String? nextCursor,  bool loadingMore)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _NotificationFeed() when $default != null:
-return $default(_that.items,_that.nextCursor,_that.loadingMore);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<wire.Notification> items,  String? nextCursor,  bool loadingMore)  $default,) {final _that = this;
-switch (_that) {
-case _NotificationFeed():
-return $default(_that.items,_that.nextCursor,_that.loadingMore);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<wire.Notification> items,  String? nextCursor,  bool loadingMore)?  $default,) {final _that = this;
-switch (_that) {
-case _NotificationFeed() when $default != null:
-return $default(_that.items,_that.nextCursor,_that.loadingMore);case _:
-  return null;
-
-}
-}
-
+  /// Create a copy of NotificationFeed
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? nextCursor = freezed,
+    Object? loadingMore = null,
+  }) {
+    return _then(
+      _$NotificationFeedImpl(
+        items: null == items
+            ? _value._items
+            : items // ignore: cast_nullable_to_non_nullable
+                  as List<Notification>,
+        nextCursor: freezed == nextCursor
+            ? _value.nextCursor
+            : nextCursor // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        loadingMore: null == loadingMore
+            ? _value.loadingMore
+            : loadingMore // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
 }
 
 /// @nodoc
 
+class _$NotificationFeedImpl implements _NotificationFeed {
+  const _$NotificationFeedImpl({
+    required final List<Notification> items,
+    this.nextCursor,
+    this.loadingMore = false,
+  }) : _items = items;
 
-class _NotificationFeed implements NotificationFeed {
-  const _NotificationFeed({required final  List<wire.Notification> items, this.nextCursor, this.loadingMore = false}): _items = items;
-  
+  final List<Notification> _items;
+  @override
+  List<Notification> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
 
- final  List<wire.Notification> _items;
-@override List<wire.Notification> get items {
-  if (_items is EqualUnmodifiableListView) return _items;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_items);
+  @override
+  final String? nextCursor;
+  @override
+  @JsonKey()
+  final bool loadingMore;
+
+  @override
+  String toString() {
+    return 'NotificationFeed(items: $items, nextCursor: $nextCursor, loadingMore: $loadingMore)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$NotificationFeedImpl &&
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.nextCursor, nextCursor) ||
+                other.nextCursor == nextCursor) &&
+            (identical(other.loadingMore, loadingMore) ||
+                other.loadingMore == loadingMore));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_items),
+    nextCursor,
+    loadingMore,
+  );
+
+  /// Create a copy of NotificationFeed
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$NotificationFeedImplCopyWith<_$NotificationFeedImpl> get copyWith =>
+      __$$NotificationFeedImplCopyWithImpl<_$NotificationFeedImpl>(
+        this,
+        _$identity,
+      );
 }
 
-@override final  String? nextCursor;
-@override@JsonKey() final  bool loadingMore;
+abstract class _NotificationFeed implements NotificationFeed {
+  const factory _NotificationFeed({
+    required final List<Notification> items,
+    final String? nextCursor,
+    final bool loadingMore,
+  }) = _$NotificationFeedImpl;
 
-/// Create a copy of NotificationFeed
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$NotificationFeedCopyWith<_NotificationFeed> get copyWith => __$NotificationFeedCopyWithImpl<_NotificationFeed>(this, _$identity);
+  @override
+  List<Notification> get items;
+  @override
+  String? get nextCursor;
+  @override
+  bool get loadingMore;
 
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NotificationFeed&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.nextCursor, nextCursor) || other.nextCursor == nextCursor)&&(identical(other.loadingMore, loadingMore) || other.loadingMore == loadingMore));
+  /// Create a copy of NotificationFeed
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$NotificationFeedImplCopyWith<_$NotificationFeedImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
-
-
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),nextCursor,loadingMore);
-
-@override
-String toString() {
-  return 'NotificationFeed(items: $items, nextCursor: $nextCursor, loadingMore: $loadingMore)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$NotificationFeedCopyWith<$Res> implements $NotificationFeedCopyWith<$Res> {
-  factory _$NotificationFeedCopyWith(_NotificationFeed value, $Res Function(_NotificationFeed) _then) = __$NotificationFeedCopyWithImpl;
-@override @useResult
-$Res call({
- List<wire.Notification> items, String? nextCursor, bool loadingMore
-});
-
-
-
-
-}
-/// @nodoc
-class __$NotificationFeedCopyWithImpl<$Res>
-    implements _$NotificationFeedCopyWith<$Res> {
-  __$NotificationFeedCopyWithImpl(this._self, this._then);
-
-  final _NotificationFeed _self;
-  final $Res Function(_NotificationFeed) _then;
-
-/// Create a copy of NotificationFeed
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? items = null,Object? nextCursor = freezed,Object? loadingMore = null,}) {
-  return _then(_NotificationFeed(
-items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<wire.Notification>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
-as String?,loadingMore: null == loadingMore ? _self.loadingMore : loadingMore // ignore: cast_nullable_to_non_nullable
-as bool,
-  ));
-}
-
-
-}
-
-// dart format on
