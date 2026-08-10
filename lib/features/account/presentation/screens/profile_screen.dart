@@ -510,7 +510,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           // nhắm tới.
           Expanded(
             child: GestureDetector(
-              onTap: () => context.push('/account/settings'),
+              onTap: () => context.push('/account/center'),
               behavior: HitTestBehavior.opaque,
               child: Row(
                 children: [

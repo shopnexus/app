@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/theme/theme_provider.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/screens/account_center_section.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -63,23 +62,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Section: Account & Security
-            //
-            // Nội dung của "Trung tâm tài khoản" nằm thẳng ở đây, không còn là
-            // một dòng dẫn sang một màn hình nữa: nó *là* cài đặt tài khoản, và
-            // một trang chỉ có đúng một dòng thì cái dòng đó là một cú chạm phải
-            // trả tiền mà không mua được gì.
             _buildSectionHeader('TÀI KHOẢN & BẢO MẬT'),
             Container(
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: borderColor, width: 1)),
               ),
-              padding: const EdgeInsets.only(top: 16),
               child: Column(
                 children: [
-                  const AccountCenterSection(),
-                  // Một dòng, không bốn: mật khẩu, xác minh email, liên kết và
-                  // thiết bị đều trả lời "ai vào được tài khoản của tôi", nên
-                  // chúng ở chung một màn thay vì rải ra đây.
                   _buildSettingRow(
                     icon: Icons.lock_outline_rounded,
                     label: 'Đăng nhập & bảo mật',
