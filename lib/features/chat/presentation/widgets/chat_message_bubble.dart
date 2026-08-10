@@ -13,9 +13,6 @@ class ChatMessageBubble extends StatelessWidget {
   });
 
   final ChatMessage message;
-
-  /// A thread has exactly two sides, so the avatar beside an incoming bubble is
-  /// always the counterparty's — there is nothing to look up per message.
   final String? counterpartyName;
   final String? counterpartyAvatarUrl;
 
@@ -27,14 +24,10 @@ class ChatMessageBubble extends StatelessWidget {
     final theme = Theme.of(context);
     final isMine = message.isMine;
 
-    // A redacted row stays in the thread so it has no unexplained gap, but its
-    // body is gone: rendering an emptied bubble would read as an edit.
     if (message.isRedacted) {
       return _Notice(text: 'Tin nhắn đã bị xóa', theme: theme);
     }
 
-    // The desk answers as the platform, and `from_support` is what says so — the
-    // absent sender it used to be read from is also how a system row looks.
     if (message.isFromSupport) {
       return _Notice(
         text: message.body,
@@ -50,8 +43,13 @@ class ChatMessageBubble extends StatelessWidget {
       );
     }
 
+    final validAttachments =
+        message.attachments.where((a) => a.url.isNotEmpty).toList();
+    final hasAttachments = validAttachments.isNotEmpty;
+    final hasBody = message.body.trim().isNotEmpty;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
       child: Row(
         mainAxisAlignment: isMine
             ? MainAxisAlignment.end
@@ -71,67 +69,15 @@ class ChatMessageBubble extends StatelessWidget {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isMine
-                        ? theme.colorScheme.primaryContainer
-                        : theme.colorScheme.surface,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(16),
-                      topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(isMine ? 16 : 4),
-                      bottomRight: Radius.circular(isMine ? 4 : 16),
-                    ),
-                    border: isMine
-                        ? null
-                        : Border.all(
-                            color: theme.colorScheme.outlineVariant.withValues(
-                              alpha: 0.3,
-                            ),
-                          ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (final attachment in message.attachments)
-                        // `url` is absent until a module can presign one, which
-                        // is "not available yet" rather than an empty object.
-                        if (attachment.url.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 6),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: CachedNetworkImage(
-                                imageUrl: attachment.url,
-                                height: 200,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                      if (message.body.isNotEmpty)
-                        Text(
-                          message.body,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: isMine
-                                ? theme.colorScheme.onPrimaryContainer
-                                : theme.colorScheme.onSurface,
-                          ),
-                        ),
-                    ],
-                  ),
+                _buildBubbleContent(
+                  context: context,
+                  theme: theme,
+                  isMine: isMine,
+                  hasAttachments: hasAttachments,
+                  hasBody: hasBody,
+                  validAttachments: validAttachments,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Row(
@@ -140,7 +86,7 @@ class ChatMessageBubble extends StatelessWidget {
                       Text(
                         _formatTime(message.createdAt),
                         style: theme.textTheme.labelSmall?.copyWith(
-                          fontSize: 10,
+                          fontSize: 11,
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
@@ -154,8 +100,6 @@ class ChatMessageBubble extends StatelessWidget {
                           ),
                         ),
                       ],
-                      // A message carries no delivery status of its own: seen is
-                      // the thread's read mark reaching this row.
                       if (isMine) ...[
                         const SizedBox(width: 4),
                         if (message.isPending)
@@ -182,8 +126,202 @@ class ChatMessageBubble extends StatelessWidget {
               ],
             ),
           ),
-          if (isMine) const SizedBox(width: 24),
+          if (isMine) const SizedBox(width: 16),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBubbleContent({
+    required BuildContext context,
+    required ThemeData theme,
+    required bool isMine,
+    required bool hasAttachments,
+    required bool hasBody,
+    required List<dynamic> validAttachments,
+  }) {
+    final borderRadius = BorderRadius.only(
+      topLeft: const Radius.circular(18),
+      topRight: const Radius.circular(18),
+      bottomLeft: Radius.circular(isMine ? 18 : 4),
+      bottomRight: Radius.circular(isMine ? 4 : 18),
+    );
+
+    // Trường hợp 1: Chỉ có hình ảnh (không có văn bản) -> Render ảnh tràn khung vừa vặn, không viền bọc thừa
+    if (hasAttachments && !hasBody) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            for (int i = 0; i < validAttachments.length; i++)
+              _ImageAttachment(
+                url: validAttachments[i].url,
+                borderRadius: borderRadius,
+                isSingle: validAttachments.length == 1,
+              ),
+          ],
+        ),
+      );
+    }
+
+    // Trường hợp 2: Có tin nhắn văn bản (hoặc vừa có văn bản vừa có hình ảnh)
+    final bubbleBgColor = isMine
+        ? theme.colorScheme.primary
+        : theme.colorScheme.surfaceContainerHigh;
+
+    final textColor = isMine
+        ? theme.colorScheme.onPrimary
+        : theme.colorScheme.onSurface;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: bubbleBgColor,
+        borderRadius: borderRadius,
+        border: isMine
+            ? null
+            : Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.25),
+              ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (hasAttachments)
+            for (final attachment in validAttachments)
+              _ImageAttachment(
+                url: attachment.url,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(18),
+                ),
+                isSingle: false,
+              ),
+          if (hasBody)
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
+              child: Text(
+                message.body,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontFamily: 'Inter',
+                  fontSize: 14.5,
+                  height: 1.35,
+                  color: textColor,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImageAttachment extends StatelessWidget {
+  const _ImageAttachment({
+    required this.url,
+    required this.borderRadius,
+    required this.isSingle,
+  });
+
+  final String url;
+  final BorderRadius borderRadius;
+  final bool isSingle;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final imageWidth = (screenWidth * 0.72).clamp(200.0, 280.0);
+
+    return GestureDetector(
+      onTap: () => _showImagePreviewDialog(context, url),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: Container(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 280,
+              minHeight: 120,
+            ),
+            child: CachedNetworkImage(
+              imageUrl: url,
+              width: imageWidth,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => SizedBox(
+                width: imageWidth,
+                height: 180,
+                child: const Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+              ),
+              errorWidget: (context, url, error) => SizedBox(
+                width: imageWidth,
+                height: 140,
+                child: const Center(
+                  child: Icon(Icons.broken_image_outlined, size: 32),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showImagePreviewDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.9),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.contain,
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(ctx).padding.top + 16,
+              right: 16,
+              child: IconButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.black.withValues(alpha: 0.6),
+                  foregroundColor: Colors.white,
+                ),
+                icon: const Icon(Icons.close_rounded, size: 24),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -201,7 +339,7 @@ class _CounterpartyAvatar extends StatelessWidget {
     final hasAvatar = avatarUrl != null && avatarUrl!.isNotEmpty;
 
     return CircleAvatar(
-      radius: 14,
+      radius: 16,
       backgroundColor: theme.colorScheme.surfaceContainerHighest,
       backgroundImage: hasAvatar
           ? CachedNetworkImageProvider(avatarUrl!)
@@ -210,15 +348,16 @@ class _CounterpartyAvatar extends StatelessWidget {
           ? null
           : Text(
               (name != null && name!.isNotEmpty) ? name![0].toUpperCase() : '?',
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontFamily: 'Inter',
                 fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
     );
   }
 }
 
-/// A centred, unattributed line: a system update, or a row whose body is gone.
 class _Notice extends StatelessWidget {
   const _Notice({required this.text, required this.theme, this.label});
 
@@ -236,21 +375,23 @@ class _Notice extends StatelessWidget {
             Text(
               label!,
               style: theme.textTheme.labelSmall?.copyWith(
+                fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
                 color: theme.colorScheme.primary,
               ),
             ),
           Container(
             margin: const EdgeInsets.only(top: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               text,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
+                fontFamily: 'Inter',
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
