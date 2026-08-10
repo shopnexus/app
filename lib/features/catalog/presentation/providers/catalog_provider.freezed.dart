@@ -237,7 +237,7 @@ class _CatalogSearchFilters extends CatalogSearchFilters {
 @override final  int? priceMin;
 @override final  int? priceMax;
 @override final  String? tag;
-@override@JsonKey() final  String? sort;
+@override final  String? sort;
 // Where to look: the listing's own snapshot of the seller's pickup address.
 // Send the narrowest level meant — a ward is already inside its province.
 // There is no district: Vietnam goes province to ward, so a listing's

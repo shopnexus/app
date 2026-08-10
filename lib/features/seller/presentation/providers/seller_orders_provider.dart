@@ -23,7 +23,7 @@ abstract class SellerOrdersState with _$SellerOrdersState {
   }) = _SellerOrdersState;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class SellerOrdersNotifier extends _$SellerOrdersNotifier {
   @override
   SellerOrdersState build() {
@@ -42,12 +42,14 @@ class SellerOrdersNotifier extends _$SellerOrdersNotifier {
             ? repository.unsettledItems()
             : Future.value(const <OrderLineView>[]),
       ).wait;
+      if (!ref.mounted) return;
       state = state.copyWith(
         isLoading: false,
         orders: orders,
         unsettled: unsettled,
       );
     } catch (error) {
+      if (!ref.mounted) return;
       state = state.copyWith(isLoading: false, errorMessage: error.toString());
     }
   }
@@ -78,10 +80,13 @@ class SellerOrdersNotifier extends _$SellerOrdersNotifier {
     state = state.copyWith(isActionLoading: true, errorMessage: null);
     try {
       await action(ref.read(sellerRepositoryProvider));
+      if (!ref.mounted) return true;
       await _load();
+      if (!ref.mounted) return true;
       state = state.copyWith(isActionLoading: false);
       return true;
     } catch (error) {
+      if (!ref.mounted) return false;
       // The old buttons reported success whatever happened, because the route
       // they called did not exist and the failure was caught and discarded.
       state = state.copyWith(

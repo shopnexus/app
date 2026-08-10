@@ -20,7 +20,7 @@ final class SellerOrdersNotifierProvider
         argument: null,
         retry: null,
         name: r'sellerOrdersProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -42,7 +42,7 @@ final class SellerOrdersNotifierProvider
 }
 
 String _$sellerOrdersNotifierHash() =>
-    r'90e637c6f8f8190609fb08007c2cafb26ebcdb4c';
+    r'097aa3e83f5a3e2173060c3e4b2839c072dabeb0';
 
 abstract class _$SellerOrdersNotifier extends $Notifier<SellerOrdersState> {
   SellerOrdersState build();

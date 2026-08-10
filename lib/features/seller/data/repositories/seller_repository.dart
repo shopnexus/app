@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
@@ -421,14 +422,66 @@ class SellerRepository {
   Future<Map<String, Listing>> _listingsById(Iterable<OrderItem> items) async {
     final ids = {for (final item in items) item.listingId}.toList();
     if (ids.isEmpty) return const {};
-    final page = (await _catalogApi.listingsGet(
-      ids: ids,
-      limit: ids.length.clamp(1, 100),
-    )).data;
-    return {
-      for (final listing in page?.data ?? const <Listing>[])
-        listing.id: listing,
-    };
+
+    final map = <String, Listing>{};
+    try {
+      final page = (await _catalogApi.listingsGet(
+        ids: ids,
+        limit: ids.length.clamp(1, 100),
+      )).data;
+      for (final listing in page?.data ?? const <Listing>[]) {
+        map[listing.id] = listing;
+      }
+    } catch (e) {
+      debugPrint('Lỗi tải danh sách sản phẩm batch seller: $e');
+    }
+
+    final missingIds = ids.where((id) => !map.containsKey(id)).toList();
+    if (missingIds.isNotEmpty) {
+      final fallbackListings = await Future.wait(
+        missingIds.map((id) async {
+          try {
+            final res = await _catalogApi.listingsIdGet(id: id);
+            final detail = res.data?.data;
+            if (detail != null) {
+              return Listing(
+                id: detail.id,
+                categoryId: detail.category.id,
+                condition: detail.condition,
+                cover: detail.images.isNotEmpty ? detail.images.first : null,
+                createdAt: detail.createdAt,
+                currency: detail.currency,
+                deletedAt: detail.deletedAt,
+                favorited: detail.favorited,
+                location: detail.location,
+                name: detail.name,
+                price: detail.variants.isNotEmpty ? detail.variants.first.price : 0,
+                priceMode: detail.priceMode,
+                rating: detail.rating,
+                reviewCount: detail.reviewCount,
+                score: null,
+                seller: detail.seller,
+                slug: detail.slug,
+                sold: detail.sold,
+                status: detail.status,
+                tags: detail.tags,
+                takenDownAt: detail.takenDownAt,
+              );
+            }
+          } catch (e) {
+            debugPrint('Lỗi tải thông tin sản phẩm đơn lẻ $id: $e');
+          }
+          return null;
+        }),
+      );
+      for (final listing in fallbackListings) {
+        if (listing != null) {
+          map[listing.id] = listing;
+        }
+      }
+    }
+
+    return map;
   }
 }
 

@@ -121,7 +121,9 @@ class _OrdersListState extends ConsumerState<OrdersList> {
   ) {
     final matchingOrders = feed.orders
         .where(
-          (view) => _matchesTab(view, widget.selectedTab, refundedOrderIds),
+          (view) =>
+              _matchesTab(view, widget.selectedTab, refundedOrderIds) &&
+              (view.order.seller.id != me || view.order.buyer.id == me),
         )
         .toList();
 
@@ -480,24 +482,26 @@ class _OrderRow extends ConsumerWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Từ chối đơn hàng?'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Người mua được hoàn lại toàn bộ, gồm cả phí vận chuyển. Cho họ '
-              'biết vì sao.',
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              maxLength: 500,
-              decoration: const InputDecoration(
-                hintText: 'Ví dụ: hết hàng',
-                border: OutlineInputBorder(),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Người mua được hoàn lại toàn bộ, gồm cả phí vận chuyển. Cho họ '
+                'biết vì sao.',
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                autofocus: true,
+                maxLength: 500,
+                decoration: const InputDecoration(
+                  hintText: 'Ví dụ: hết hàng',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(

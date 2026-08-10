@@ -163,6 +163,7 @@ class _SellerOrdersTabList extends ConsumerWidget {
         const <Refund>[];
     final sellerRefundMap = {for (final r in sellerRefunds) r.orderId: r};
     final refundedOrderIds = sellerRefundMap.keys.toSet();
+    final sellerOrdersState = ref.watch(sellerOrdersProvider);
     final notifier = ref.read(sellerOrdersProvider.notifier);
 
     return RefreshIndicator(
@@ -206,7 +207,7 @@ class _SellerOrdersTabList extends ConsumerWidget {
                   context,
                   view,
                   notifier,
-                  false,
+                  sellerOrdersState.isActionLoading,
                   ref,
                   refund: sellerRefundMap[view.order.id],
                 ),
@@ -603,25 +604,27 @@ Future<void> _declineOrder(
     context: context,
     builder: (dialogContext) => AlertDialog(
       title: const Text('Từ chối đơn hàng?'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Người mua được hoàn lại toàn bộ số tiền đã trả, kể cả phí vận '
-            'chuyển. Hãy nói vì sao.',
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: controller,
-            autofocus: true,
-            maxLines: 3,
-            decoration: const InputDecoration(
-              hintText: 'Ví dụ: hết hàng, sai giá…',
-              border: OutlineInputBorder(),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Người mua được hoàn lại toàn bộ số tiền đã trả, kể cả phí vận '
+              'chuyển. Hãy nói vì sao.',
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'Ví dụ: hết hàng, sai giá…',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

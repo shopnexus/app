@@ -59,16 +59,18 @@ class OrdersFeed {
 /// Không gộp vào [Orders]: đây là `/items?pending=true`, một endpoint khác trả về
 /// dòng chứ không phải đơn, và một trong hai hỏng thì không được làm mất bên kia.
 @riverpod
-Future<List<OrderLineView>> unsettledItems(Ref ref) =>
-    ref.watch(accountRepositoryProvider).items(pending: true);
+Future<List<OrderLineView>> unsettledItems(Ref ref) => ref
+    .watch(accountRepositoryProvider)
+    .items(role: OrderRole.buyer, pending: true);
 
-/// Một provider, không một family theo vai: `/orders` trả cả hai chiều, và hai
-/// provider cho hai vai là hai lượt gọi rồi hai cursor phải trộn tay.
+/// Notifier quản lý đơn hàng của phía Người mua (buyer).
 @riverpod
 class Orders extends _$Orders {
   @override
   Future<OrdersFeed> build() async {
-    final page = await ref.watch(accountRepositoryProvider).orders();
+    final page = await ref
+        .watch(accountRepositoryProvider)
+        .orders(role: OrderRole.buyer);
     return OrdersFeed(orders: page.orders, nextCursor: page.nextCursor);
   }
 
@@ -82,7 +84,7 @@ class Orders extends _$Orders {
     try {
       final page = await ref
           .read(accountRepositoryProvider)
-          .orders(cursor: feed.nextCursor);
+          .orders(role: OrderRole.buyer, cursor: feed.nextCursor);
       // Cuộn tới cuối rồi thoát màn ngay là đủ để notifier bị vứt trước khi
       // trang sau về.
       if (!ref.mounted) return;
