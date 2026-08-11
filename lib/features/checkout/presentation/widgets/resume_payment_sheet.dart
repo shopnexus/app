@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/option.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session_status.dart';
@@ -15,8 +16,15 @@ import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/c
 import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/payment_webview_screen.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
-/// Modal sheet hỗ trợ người dùng tiếp tục / thực hiện lại thanh toán cho
-/// một phiên thanh toán dở dang (`PaymentSession` ở trạng thái pending/processing).
+/// Modal sheet để trả nốt một phiên thanh toán dở dang (`PaymentSession` ở
+/// trạng thái pending/processing).
+///
+/// Bố cục ba tầng — đầu cố định, thân cuộn, chân neo — vì số phương thức thanh
+/// toán là do registry phía server quyết, không phải hằng số: gộp tất cả vào
+/// một `SingleChildScrollView` thì thêm vài rail là nút "Thanh toán ngay" bị
+/// đẩy khỏi màn hình, và người dùng phải cuộn để tìm việc duy nhất họ vào đây
+/// để làm. Neo nút xuống chân thì danh sách dài bao nhiêu cũng không đổi được
+/// điều đó.
 class ResumePaymentSheet extends ConsumerStatefulWidget {
   final String paymentSessionId;
   final String? title;
@@ -59,6 +67,7 @@ class ResumePaymentSheet extends ConsumerStatefulWidget {
 class _ResumePaymentSheetState extends ConsumerState<ResumePaymentSheet> {
   bool _isLoading = true;
   bool _isSubmitting = false;
+  bool _isPolling = false;
   String? _errorMessage;
 
   PaymentSession? _session;
@@ -67,16 +76,23 @@ class _ResumePaymentSheetState extends ConsumerState<ResumePaymentSheet> {
   Transaction? _pendingTransaction;
 
   Timer? _pollTimer;
+  Timer? _expiryTicker;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    // Hạn phiên là thông tin sống: đọc "còn 12 phút" lúc mở sheet rồi ngồi
+    // chọn rail thì con số đó thành sai. Nhịp 30s đủ để nó không nói dối.
+    _expiryTicker = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
   void dispose() {
     _pollTimer?.cancel();
+    _expiryTicker?.cancel();
     super.dispose();
   }
 
@@ -109,11 +125,13 @@ class _ResumePaymentSheetState extends ConsumerState<ResumePaymentSheet> {
       setState(() {
         _session = session;
         _paymentOptions = options;
-        if (pendingTxn != null) {
-          _selectedPaymentOption = pendingTxn.paymentOption;
-        } else if (options.isNotEmpty) {
-          _selectedPaymentOption = options.first.id;
-        }
+        // Rail của lần trả dở là mặc định đúng nhất, nhưng chỉ khi registry còn
+        // offer nó — một slug đã bị tắt thì chọn sẵn cũng chỉ dẫn tới 422.
+        final ids = {for (final o in options) o.id};
+        final resumed = pendingTxn?.paymentOption;
+        _selectedPaymentOption = (resumed != null && ids.contains(resumed))
+            ? resumed
+            : (options.isEmpty ? null : options.first.id);
         _pendingTransaction = pendingTxn;
         _isLoading = false;
       });
@@ -127,10 +145,11 @@ class _ResumePaymentSheetState extends ConsumerState<ResumePaymentSheet> {
   }
 
   Future<void> _openExistingWebview() async {
-    if (_pendingTransaction == null || _pendingTransaction!.checkoutUrl.isEmpty) return;
+    final txn = _pendingTransaction;
+    if (txn == null || txn.checkoutUrl.isEmpty) return;
     await PaymentWebViewScreen.show(
       context,
-      checkoutUrl: _pendingTransaction!.checkoutUrl,
+      checkoutUrl: txn.checkoutUrl,
       returnUrl: paymentReturnUrl(widget.paymentSessionId),
     );
     _startPolling();
@@ -178,6 +197,12 @@ class _ResumePaymentSheetState extends ConsumerState<ResumePaymentSheet> {
 
   void _startPolling() {
     _pollTimer?.cancel();
+    if (mounted) {
+      setState(() {
+        _isSubmitting = true;
+        _isPolling = true;
+      });
+    }
     _pollTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       try {
         final repo = ref.read(checkoutRepositoryProvider);
@@ -192,21 +217,26 @@ class _ResumePaymentSheetState extends ConsumerState<ResumePaymentSheet> {
           timer.cancel();
           ref.invalidate(ordersProvider);
           ref.invalidate(unsettledItemsProvider);
-          if (mounted) {
-            Navigator.of(context).pop(true);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Thanh toán thành công! Đơn hàng đã được ghi nhận.'),
-                backgroundColor: Color(0xFF10B981),
+          // Lấy messenger trước khi pop: sau pop thì context này đã rời cây và
+          // không tra ngược lên ScaffoldMessenger được nữa.
+          final messenger = ScaffoldMessenger.of(context);
+          Navigator.of(context).pop(true);
+          messenger.showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Thanh toán thành công. Đơn hàng đã được ghi nhận.',
               ),
-            );
-          }
+              backgroundColor: Color(0xFF10B981),
+            ),
+          );
         } else if (session.status == PaymentSessionStatus.failed ||
             session.status == PaymentSessionStatus.cancelled) {
           timer.cancel();
           setState(() {
             _isSubmitting = false;
-            _errorMessage = 'Thanh toán thất bại hoặc phiên đã bị hủy.';
+            _isPolling = false;
+            _errorMessage =
+                'Thanh toán không hoàn tất. Chọn phương thức và thử lại.';
           });
         }
       } catch (_) {}
@@ -217,259 +247,557 @@ class _ResumePaymentSheetState extends ConsumerState<ResumePaymentSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
-    final displayTitle = _session?.note.isNotEmpty == true
-        ? _session!.note
-        : (widget.title ?? 'Thanh toán đơn hàng');
-    final displayAmount = _session?.totalAmount ?? widget.amount ?? 0;
-    final displayCurrency = _session?.currency ?? widget.currency ?? 'VND';
+    final media = MediaQuery.of(context);
 
     return Container(
+      constraints: BoxConstraints(maxHeight: media.size.height * 0.88),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-      ),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.grey[700] : Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _grabber(isDark),
+          _header(theme),
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 64),
+              child: CircularProgressIndicator(strokeWidth: 2.5),
+            )
+          else if (_session == null)
+            _loadFailed(theme)
+          else ...[
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _amountPanel(theme, isDark, _session!),
+                    if (_pendingTransaction?.checkoutUrl.isNotEmpty ?? false)
+                      ..._resumeCard(theme, isDark),
+                    const SizedBox(height: 20),
+                    _sectionLabel(theme, 'Chọn phương thức thanh toán'),
+                    const SizedBox(height: 10),
+                    if (_paymentOptions.isEmpty)
+                      Text(
+                        'Chưa có phương thức thanh toán khả dụng.',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 13,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      )
+                    else
+                      for (final option in _paymentOptions)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: _optionTile(theme, isDark, option),
+                        ),
+                  ],
                 ),
               ),
+            ),
+            _footer(theme, isDark, media),
+          ],
+        ],
+      ),
+    );
+  }
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  // ---------------------------------------------------------------- chrome
+
+  Widget _grabber(bool isDark) => Container(
+    width: 40,
+    height: 4,
+    margin: const EdgeInsets.only(top: 12, bottom: 14),
+    decoration: BoxDecoration(
+      color: isDark
+          ? AppColors.darkPrimary.withAlpha(60)
+          : const Color(0xFFD8DDDB),
+      borderRadius: BorderRadius.circular(2),
+    ),
+  );
+
+  Widget _header(ThemeData theme) => Padding(
+    padding: const EdgeInsets.fromLTRB(20, 0, 8, 12),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Tiếp tục thanh toán',
+            style: TextStyle(
+              fontFamily: 'Manrope',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.close_rounded, size: 22),
+          color: theme.colorScheme.onSurfaceVariant,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
+    ),
+  );
+
+  Widget _sectionLabel(ThemeData theme, String text) => Text(
+    text,
+    style: TextStyle(
+      fontFamily: 'Manrope',
+      fontSize: 14,
+      fontWeight: FontWeight.bold,
+      color: theme.colorScheme.onSurface,
+    ),
+  );
+
+  Widget _loadFailed(ThemeData theme) => Padding(
+    padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+    child: Column(
+      children: [
+        Icon(
+          Icons.wifi_off_rounded,
+          size: 32,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          _errorMessage ?? 'Không tải được phiên thanh toán.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13,
+            height: 1.4,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 16),
+        OutlinedButton.icon(
+          onPressed: _loadData,
+          icon: const Icon(Icons.refresh_rounded, size: 18),
+          label: const Text('Tải lại'),
+        ),
+      ],
+    ),
+  );
+
+  // ----------------------------------------------------------------- tiền
+
+  /// Số tiền là câu trả lời cho câu hỏi duy nhất người dùng mang vào sheet —
+  /// "còn phải trả bao nhiêu" — nên nó được đọc trước mọi thứ khác. Phiên trả
+  /// một phần thì `outstanding` khác `totalAmount`, và cái đúng để in to là
+  /// phần còn nợ, không phải tổng đơn.
+  Widget _amountPanel(ThemeData theme, bool isDark, PaymentSession session) {
+    final title = session.note.isNotEmpty
+        ? session.note
+        : (widget.title ?? 'Đơn hàng chưa thanh toán');
+    final currency = session.currency.isNotEmpty
+        ? session.currency
+        : (widget.currency ?? 'VND');
+    final outstanding = session.outstanding > 0
+        ? session.outstanding
+        : session.totalAmount;
+    final paid = session.totalAmount - outstanding;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.darkPrimary.withAlpha(28)
+            : const Color(0xFFE6F4EA),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              height: 1.35,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            paid > 0 ? 'Còn phải trả' : 'Tổng thanh toán',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 2),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              MoneyUtils.format(outstanding, currency: currency),
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                height: 1.1,
+                color: isDark
+                    ? AppColors.darkPrimary
+                    : theme.colorScheme.primary,
+              ),
+            ),
+          ),
+          if (paid > 0) ...[
+            const SizedBox(height: 4),
+            Text(
+              'Đã trả ${MoneyUtils.format(paid, currency: currency)} '
+              'trên tổng ${MoneyUtils.format(session.totalAmount, currency: currency)}',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          ..._expiryChip(isDark, session.expiredAt),
+        ],
+      ),
+    );
+  }
+
+  /// Phiên quá hạn bị job dọn, nên hạn là lý do thật để trả bây giờ thay vì
+  /// đóng sheet lại. Hết hạn thì vẫn để bấm được: đồng hồ máy có thể lệch, và
+  /// câu trả lời đúng cho việc đó là của server chứ không phải của client.
+  List<Widget> _expiryChip(bool isDark, DateTime expiredAt) {
+    final remaining = expiredAt.difference(DateTime.now());
+    final expired = remaining.isNegative;
+
+    final String label;
+    if (expired) {
+      label = 'Phiên đã hết hạn — thử lại có thể bị từ chối';
+    } else if (remaining.inMinutes < 60) {
+      label = 'Hết hạn sau ${remaining.inMinutes + 1} phút';
+    } else if (remaining.inHours < 24) {
+      label = 'Hết hạn sau ${remaining.inHours} giờ';
+    } else {
+      label = 'Hết hạn ${DateFormat('HH:mm dd/MM').format(expiredAt)}';
+    }
+
+    final fg = expired
+        ? const Color(0xFFE11D48)
+        : (isDark ? const Color(0xFFFDE68A) : const Color(0xFF92400E));
+
+    return [
+      const SizedBox(height: 12),
+      Row(
+        children: [
+          Icon(
+            expired ? Icons.error_outline_rounded : Icons.schedule_rounded,
+            size: 14,
+            color: fg,
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: fg,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  // ------------------------------------------------------------- lần trả dở
+
+  /// Trang thanh toán còn mở của lần trước là đường ngắn nhất về đích — mở lại
+  /// nó không tạo thêm giao dịch, còn chọn rail bên dưới thì có.
+  List<Widget> _resumeCard(ThemeData theme, bool isDark) => [
+    const SizedBox(height: 12),
+    InkWell(
+      onTap: _isSubmitting ? null : _openExistingWebview,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark
+              ? AppColors.darkPrimary.withAlpha(20)
+              : const Color(0xFFF9F9F7),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isDark
+                ? AppColors.darkPrimary.withAlpha(60)
+                : theme.colorScheme.primary.withAlpha(70),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.open_in_new_rounded,
+              size: 20,
+              color: isDark ? AppColors.darkPrimary : theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tiếp tục thanh toán',
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    'Mở lại trang thanh toán đang chờ',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Manrope',
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    onPressed: () => Navigator.of(context).pop(),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Lần trả trước còn dở. Mở lại để hoàn tất, không tạo thêm '
+                    'giao dịch mới.',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      height: 1.35,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    ),
+  ];
 
-              if (_isLoading)
-                const Padding(
-                  padding: EdgeInsets.all(32),
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else ...[
-                // Informational Card
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? AppColors.darkSurface
-                        : const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isDark
-                          ? AppColors.darkPrimary.withAlpha(40)
-                          : const Color(0xFFE2E8F0),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        displayTitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Tổng thanh toán:',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 13,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          Text(
-                            MoneyUtils.format(displayAmount, currency: displayCurrency),
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+  // --------------------------------------------------------------- rail
+
+  /// Một rail. Icon lấy theo `provider` chứ không theo `id`: id là slug của
+  /// hàng trong registry và staff đổi được, provider mới là thứ nói rail này
+  /// thực sự là gì.
+  Widget _optionTile(ThemeData theme, bool isDark, Option option) {
+    final isSelected = _selectedPaymentOption == option.id;
+
+    final selectedBg = isDark
+        ? AppColors.darkPrimary.withAlpha(35)
+        : const Color(0xFFE6F4EA);
+    final unselectedBg = isDark
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF9F9F7);
+    final borderColor = isSelected
+        ? theme.colorScheme.primary
+        : (isDark
+              ? AppColors.darkPrimary.withAlpha(30)
+              : const Color(0xFFE2E3E0));
+    final accent = isDark ? AppColors.darkPrimary : theme.colorScheme.primary;
+
+    return InkWell(
+      onTap: _isSubmitting
+          ? null
+          : () => setState(() => _selectedPaymentOption = option.id),
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected ? selectedBg : unselectedBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: borderColor, width: isSelected ? 1.5 : 1.0),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSurface : Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.darkPrimary.withAlpha(30)
+                      : const Color(0xFFE2E3E0),
                 ),
-                const SizedBox(height: 16),
-
-                if (_pendingTransaction != null &&
-                    _pendingTransaction!.checkoutUrl.isNotEmpty) ...[
-                  ElevatedButton.icon(
-                    onPressed: _isSubmitting ? null : _openExistingWebview,
-                    icon: const Icon(Icons.open_in_new_rounded),
-                    label: const Text('Mở trang thanh toán đang chờ'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      backgroundColor: theme.colorScheme.secondaryContainer,
-                      foregroundColor: theme.colorScheme.onSecondaryContainer,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(child: Divider(color: theme.colorScheme.outlineVariant)),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text(
-                          'Hoặc chọn phương thức khác',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                      Expanded(child: Divider(color: theme.colorScheme.outlineVariant)),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-
-                Text(
-                  'Phương thức thanh toán',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                for (final option in _paymentOptions)
-                  InkWell(
-                    onTap: _isSubmitting
-                        ? null
-                        : () => setState(() => _selectedPaymentOption = option.id),
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: _selectedPaymentOption == option.id
-                              ? theme.colorScheme.primary
-                              : (isDark
-                                  ? AppColors.darkPrimary.withAlpha(30)
-                                  : const Color(0xFFE2E8F0)),
-                          width: _selectedPaymentOption == option.id ? 1.5 : 1.0,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          // ignore: deprecated_member_use
-                          Radio<String>(
-                            value: option.id,
-                            // ignore: deprecated_member_use
-                            groupValue: _selectedPaymentOption,
-                            // ignore: deprecated_member_use
-                            onChanged: _isSubmitting
-                                ? null
-                                : (v) => setState(() => _selectedPaymentOption = v),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  option.name,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                if (option.description.isNotEmpty)
-                                  Text(
-                                    option.description,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                if (_errorMessage != null) ...[
-                  const SizedBox(height: 12),
+              ),
+              child: Icon(_providerIcon(option.provider), size: 19, color: accent),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    _errorMessage!,
+                    option.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 13,
-                      color: theme.colorScheme.error,
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  if (option.description.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      option.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        height: 1.3,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              isSelected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_off,
+              size: 20,
+              color: isSelected ? accent : theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _providerIcon(String provider) {
+    final p = provider.toLowerCase();
+    if (p.contains('cod') || p.contains('cash')) return Icons.payments_rounded;
+    if (p.contains('wallet') || p.contains('balance')) {
+      return Icons.account_balance_wallet_rounded;
+    }
+    if (p.contains('momo') || p.contains('zalo') || p.contains('vnpay')) {
+      return Icons.qr_code_rounded;
+    }
+    if (p.contains('bank') || p.contains('transfer')) {
+      return Icons.account_balance_rounded;
+    }
+    if (p.contains('card') || p.contains('stripe') || p.contains('visa')) {
+      return Icons.credit_card_rounded;
+    }
+    return Icons.payment_rounded;
+  }
+
+  // --------------------------------------------------------------- chân
+
+  /// Nút neo ngoài vùng cuộn: registry có bao nhiêu rail cũng không đẩy được
+  /// việc chính xuống dưới màn hình.
+  Widget _footer(ThemeData theme, bool isDark, MediaQueryData media) {
+    final canPay =
+        !_isSubmitting && _selectedPaymentOption != null && _session != null;
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + media.viewInsets.bottom),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: isDark
+                ? AppColors.darkPrimary.withAlpha(30)
+                : const Color(0xFFE2E3E0),
+          ),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (_errorMessage != null) ...[
+            Container(
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.error.withAlpha(isDark ? 40 : 20),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 16,
+                    color: theme.colorScheme.error,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        height: 1.35,
+                        color: theme.colorScheme.error,
+                      ),
                     ),
                   ),
                 ],
-
-                const SizedBox(height: 20),
-
-                ElevatedButton(
-                  onPressed: _isSubmitting ? null : _submitPayment,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _isSubmitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
+              ),
+            ),
+          ],
+          SizedBox(
+            height: 52,
+            child: ElevatedButton(
+              onPressed: canPay ? _submitPayment : null,
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: _isSubmitting
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 18,
+                          height: 18,
                           child: CircularProgressIndicator(strokeWidth: 2.5),
-                        )
-                      : const Text(
-                          'Thanh toán ngay',
-                          style: TextStyle(
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          _isPolling ? 'Đang xác nhận…' : 'Đang mở cổng…',
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                ),
-              ],
-            ],
+                      ],
+                    )
+                  : const Text(
+                      'Thanh toán ngay',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

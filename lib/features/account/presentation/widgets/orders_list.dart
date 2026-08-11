@@ -35,6 +35,9 @@ class OrdersList extends ConsumerStatefulWidget {
 }
 
 class _OrdersListState extends ConsumerState<OrdersList> {
+  /// Tab "Chờ xác nhận" trong [OrdersScreen].
+  static const _awaitingTab = 1;
+
   bool _matchesTab(
     OrderView view,
     int selectedTab,
@@ -128,8 +131,14 @@ class _OrdersListState extends ConsumerState<OrdersList> {
         )
         .toList();
 
-    if (matchingOrders.isEmpty &&
-        (widget.selectedTab != 0 || unsettled.isEmpty)) {
+    // Dòng chưa thành đơn thuộc cả hai tab, và không phải vì tiện: nó chưa có
+    // `Order` nên không lọt qua `_matchesTab` được, mà việc nó mô tả — trả nốt
+    // tiền, hoặc chờ hệ thống tạo đơn — đúng là thứ người ta mở tab "Chờ xác
+    // nhận" để tìm. Bỏ nó khỏi đó thì tab ấy trống trong khi vẫn còn việc.
+    final showsUnsettled =
+        widget.selectedTab == 0 || widget.selectedTab == _awaitingTab;
+
+    if (matchingOrders.isEmpty && (!showsUnsettled || unsettled.isEmpty)) {
       return const _Empty();
     }
 
@@ -139,7 +148,7 @@ class _OrdersListState extends ConsumerState<OrdersList> {
       padding: const EdgeInsets.all(16),
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
-        if (widget.selectedTab == 0 && unsettled.isNotEmpty) ...[
+        if (showsUnsettled && unsettled.isNotEmpty) ...[
           _UnsettledBlock(lines: unsettled, me: me),
           const SizedBox(height: 20),
         ],
@@ -753,65 +762,92 @@ class _UnsettledBlock extends ConsumerWidget {
                   : const Color(0xFFE2E8F0),
             ),
           ),
-          child: Row(
+          // Hai nút xếp xuống dòng riêng, không chen cùng hàng với tên: ở màn
+          // hẹp thì tên sản phẩm bị bóp còn vài chữ, mà tên mới là thứ nói
+          // đang trả cho cái gì.
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _Thumbnail(url: line.imageUrl),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      line.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
-                      ),
+              Row(
+                children: [
+                  _Thumbnail(url: line.imageUrl),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          line.displayName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Chờ hoàn tất thanh toán · '
+                          '${MoneyUtils.format(line.item.totalAmount, currency: line.item.currency)}',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Chờ hoàn tất thanh toán · '
-                      '${MoneyUtils.format(line.item.totalAmount, currency: line.item.currency)}',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  ResumePaymentSheet.show(
-                    context,
-                    paymentSessionId: line.item.paymentSessionId,
-                    title: line.displayName,
-                    amount: line.item.totalAmount,
-                    currency: line.item.currency,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  textStyle: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
                   ),
-                ),
-                child: const Text('Thanh toán'),
+                ],
               ),
-              const SizedBox(width: 4),
-              TextButton(
-                onPressed: () => _confirmCancel(context, ref, line),
-                child: const Text(
-                  'Hủy',
-                  style: TextStyle(color: Color(0xFFE11D48)),
-                ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => _confirmCancel(context, ref, line),
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFFE11D48),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      textStyle: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    child: const Text('Hủy'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      ResumePaymentSheet.show(
+                        context,
+                        paymentSessionId: line.item.paymentSessionId,
+                        title: line.displayName,
+                        amount: line.item.totalAmount,
+                        currency: line.item.currency,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      textStyle: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    child: const Text('Thanh toán'),
+                  ),
+                ],
               ),
             ],
           ),
