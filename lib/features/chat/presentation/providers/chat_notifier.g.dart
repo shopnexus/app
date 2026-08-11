@@ -126,7 +126,7 @@ final class ChatDetailNotifierProvider
 }
 
 String _$chatDetailNotifierHash() =>
-    r'e89324549ae42f39822883f4dbfa09c3ba841274';
+    r'd897d8ccf824614337508a945395455bb0761c1a';
 
 /// One open thread.
 ///

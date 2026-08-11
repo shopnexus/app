@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
@@ -13,7 +11,6 @@ import 'package:shopnexus_flutter_app/api/generated/model/submit_review_reply_re
 import 'package:shopnexus_flutter_app/api/generated/model/submit_review_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_review_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/vote_review_request.dart';
-import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
 part 'rating_repository.g.dart';
 
@@ -31,12 +28,10 @@ part 'rating_repository.g.dart';
 /// sinh ra cả hai và cộng chung sẽ tính đơn đó hai lần.
 @riverpod
 RatingRepository ratingRepository(Ref ref) =>
-    RatingRepository(ref.watch(trustApiProvider), ref.watch(resourceUploaderProvider));
+    RatingRepository(ref.watch(trustApiProvider));
 
 class RatingRepository {
-  const RatingRepository(this._trustApi, this._uploader);
-
-  final ResourceUploader _uploader;
+  const RatingRepository(this._trustApi);
 
   /// Cả hai hệ đều là trust's, kể cả cái treo trên route `/orders/{id}/feedback`:
   /// đơn chỉ là thứ đánh giá đó nói *về*, còn uy tín là của trust.
@@ -165,14 +160,4 @@ class RatingRepository {
     return tally;
   }
 
-  /// Ảnh kèm đánh giá. Ba bước là của [ResourceUploader], như mọi upload khác.
-  Future<String> uploadReviewPhoto(File file, {required String mime}) async {
-    final resource = await _uploader.upload(
-      UploadTarget.review,
-      bytes: await file.readAsBytes(),
-      filename: file.uri.pathSegments.last,
-      mime: mime,
-    );
-    return resource.id;
-  }
 }

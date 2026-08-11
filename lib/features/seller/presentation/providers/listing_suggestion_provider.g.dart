@@ -43,7 +43,7 @@ final class ListingSuggestionNotifierProvider
 }
 
 String _$listingSuggestionNotifierHash() =>
-    r'40f1a065ee46a740963cb04b643065f64b1ac5d5';
+    r'c13458ebcfacd55ea376970f24e3653286664877';
 
 abstract class _$ListingSuggestionNotifier
     extends $Notifier<ListingSuggestionState> {

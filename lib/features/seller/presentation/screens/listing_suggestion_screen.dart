@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,11 +10,14 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart
 import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/core/upload/upload_media.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/models/listing_draft.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/listing_suggestion_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
 import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/selling_gate_provider.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/condition_badge.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/upload_preview.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/video_preview.dart';
 
 /// "Photo in, listing out": the seller snaps the item, says a sentence about it,
 /// and gets a filled-in form to correct. The AI only fills the form in —
@@ -224,10 +225,11 @@ class _ListingSuggestionScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('Ảnh sản phẩm (${state.photos.length})'),
+        _sectionTitle('Ảnh & video sản phẩm (${state.photos.length})'),
         const SizedBox(height: 4),
         Text(
-          'AI đọc ba ảnh đầu tiên. Ảnh đầu cũng là ảnh bìa của tin.',
+          'AI đọc ba tệp đầu tiên, nên hãy để ảnh lên trước. '
+          'Ảnh đầu cũng là ảnh bìa của tin.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -242,6 +244,11 @@ class _ListingSuggestionScreenState
                 icon: Icons.photo_camera_outlined,
                 label: 'Chụp ảnh',
                 onTap: notifier.addPhotoFromCamera,
+              ),
+              _addPhotoTile(
+                icon: Icons.videocam_outlined,
+                label: 'Quay video',
+                onTap: notifier.addVideoFromCamera,
               ),
               _addPhotoTile(
                 icon: Icons.photo_library_outlined,
@@ -294,6 +301,11 @@ class _ListingSuggestionScreenState
     );
   }
 
+  bool _isVideo(ListingPhoto photo) {
+    final mime = photo.mime;
+    return mime != null && UploadMedia.isVideo(mime);
+  }
+
   Widget _photoTile(ListingPhoto photo, void Function(String) onRemove) {
     return Container(
       width: 92,
@@ -303,7 +315,17 @@ class _ListingSuggestionScreenState
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(14),
-            child: Image.file(File(photo.path), fit: BoxFit.cover),
+            child: GestureDetector(
+              // Ô 92px không xem video được; chạm vào mở trình phát đầy đủ.
+              onTap: photo.previewUrl != null && _isVideo(photo)
+                  ? () => VideoPlayerDialog.show(context, photo.previewUrl!)
+                  : null,
+              child: UploadPreview(
+                bytes: photo.bytes,
+                url: photo.previewUrl,
+                mime: photo.mime,
+              ),
+            ),
           ),
           if (photo.uploading)
             Container(

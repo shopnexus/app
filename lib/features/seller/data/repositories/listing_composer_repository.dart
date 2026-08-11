@@ -11,6 +11,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/create_listing_request
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/publish_listing_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/suggest_listing_request.dart';
 import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
@@ -39,23 +40,22 @@ class ListingComposerRepository {
   final AccountApi _account;
   final ResourceUploader _uploader;
 
-  /// Answers the resource id, which is what every `attachments` field takes —
-  /// an unconfirmed slot resolves to nothing, so it cannot be attached. The
-  /// three steps behind it live in [ResourceUploader]; a screen that also needs
-  /// the signed `url` calls that directly rather than through here.
-  Future<String> uploadPhoto({
+  /// Answers the confirmed resource whole. `Resource.id` is what every
+  /// `attachments` field takes — an unconfirmed slot resolves to nothing, so it
+  /// cannot be attached — but the confirm step is also the only place the
+  /// server ever hands out a signed `url`, and no route trades a bare id back
+  /// for a picture. Returning just the id left the posting form with nothing to
+  /// draw. The three steps behind this live in [ResourceUploader].
+  Future<Resource> uploadPhoto({
     required List<int> bytes,
     required String filename,
     required String mime,
-  }) async {
-    final resource = await _uploader.upload(
-      UploadTarget.listing,
-      bytes: bytes,
-      filename: filename,
-      mime: mime,
-    );
-    return resource.id;
-  }
+  }) => _uploader.upload(
+    UploadTarget.listing,
+    bytes: bytes,
+    filename: filename,
+    mime: mime,
+  );
 
   /// One synchronous call. At least one of [attachments], [note] or [voiceNote]
   /// has to carry something, or the route answers 422.

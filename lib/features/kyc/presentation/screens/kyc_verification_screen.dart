@@ -121,7 +121,7 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
                         description:
                             'Chụp/Chọn ảnh mặt trước chứa ảnh chân dung và thông tin cá nhân',
                         icon: Icons.badge_outlined,
-                        localPath: state.frontCardPath,
+                        localBytes: state.frontCardBytes,
                         isUploading: state.isUploadingFront,
                         onPickImage: (source) {
                           notifier.pickAndUploadImage(
@@ -140,7 +140,7 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
                           description:
                               'Chụp/Chọn ảnh mặt sau chứa thông tin đặc điểm nhân dạng',
                           icon: Icons.fingerprint_rounded,
-                          localPath: state.backCardPath,
+                          localBytes: state.backCardBytes,
                           isUploading: state.isUploadingBack,
                           onPickImage: (source) {
                             notifier.pickAndUploadImage(
@@ -158,7 +158,7 @@ class _KycVerificationScreenState extends ConsumerState<KycVerificationScreen> {
                         description:
                             'Chụp/Chọn ảnh chân dung hiện rõ khuôn mặt khuôn hình',
                         icon: Icons.face_rounded,
-                        localPath: state.selfiePath,
+                        localBytes: state.selfieBytes,
                         isUploading: state.isUploadingSelfie,
                         onPickImage: (source) {
                           notifier.pickAndUploadImage(

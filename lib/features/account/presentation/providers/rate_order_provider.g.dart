@@ -68,7 +68,7 @@ final class RateOrderProvider
   }
 }
 
-String _$rateOrderHash() => r'a1074b83f7d63862bc900334e959139672edef51';
+String _$rateOrderHash() => r'd3cf44c6e1f0766b9076e66ba0e566c5173a14bc';
 
 /// Gửi cả hai nửa của một lần chấm điểm, theo thứ tự **kín trước, công khai sau**.
 ///

@@ -86,7 +86,7 @@ final class OrdersActionsProvider
   }
 }
 
-String _$ordersActionsHash() => r'e263f0a7db0bc78d12c104d9922039f9662758fc';
+String _$ordersActionsHash() => r'14f099949154be0f807feef420814fe480d0f8d2';
 
 /// Những gì một người bán trả lời một đơn đã trả tiền: xác nhận, từ chối, hủy.
 ///

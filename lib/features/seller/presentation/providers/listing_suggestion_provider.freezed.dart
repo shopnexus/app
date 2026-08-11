@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ListingPhoto {
 
- String get path; String? get resourceId; bool get uploading; String? get errorMessage;
+ String get path; String? get mime; Uint8List? get bytes; String? get previewUrl; String? get resourceId; bool get uploading; String? get errorMessage;
 /// Create a copy of ListingPhoto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ListingPhotoCopyWith<ListingPhoto> get copyWith => _$ListingPhotoCopyWithImpl<L
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListingPhoto&&(identical(other.path, path) || other.path == path)&&(identical(other.resourceId, resourceId) || other.resourceId == resourceId)&&(identical(other.uploading, uploading) || other.uploading == uploading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListingPhoto&&(identical(other.path, path) || other.path == path)&&(identical(other.mime, mime) || other.mime == mime)&&const DeepCollectionEquality().equals(other.bytes, bytes)&&(identical(other.previewUrl, previewUrl) || other.previewUrl == previewUrl)&&(identical(other.resourceId, resourceId) || other.resourceId == resourceId)&&(identical(other.uploading, uploading) || other.uploading == uploading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,resourceId,uploading,errorMessage);
+int get hashCode => Object.hash(runtimeType,path,mime,const DeepCollectionEquality().hash(bytes),previewUrl,resourceId,uploading,errorMessage);
 
 @override
 String toString() {
-  return 'ListingPhoto(path: $path, resourceId: $resourceId, uploading: $uploading, errorMessage: $errorMessage)';
+  return 'ListingPhoto(path: $path, mime: $mime, bytes: $bytes, previewUrl: $previewUrl, resourceId: $resourceId, uploading: $uploading, errorMessage: $errorMessage)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ListingPhotoCopyWith<$Res>  {
   factory $ListingPhotoCopyWith(ListingPhoto value, $Res Function(ListingPhoto) _then) = _$ListingPhotoCopyWithImpl;
 @useResult
 $Res call({
- String path, String? resourceId, bool uploading, String? errorMessage
+ String path, String? mime, Uint8List? bytes, String? previewUrl, String? resourceId, bool uploading, String? errorMessage
 });
 
 
@@ -62,10 +62,13 @@ class _$ListingPhotoCopyWithImpl<$Res>
 
 /// Create a copy of ListingPhoto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? resourceId = freezed,Object? uploading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? path = null,Object? mime = freezed,Object? bytes = freezed,Object? previewUrl = freezed,Object? resourceId = freezed,Object? uploading = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as String,resourceId: freezed == resourceId ? _self.resourceId : resourceId // ignore: cast_nullable_to_non_nullable
+as String,mime: freezed == mime ? _self.mime : mime // ignore: cast_nullable_to_non_nullable
+as String?,bytes: freezed == bytes ? _self.bytes : bytes // ignore: cast_nullable_to_non_nullable
+as Uint8List?,previewUrl: freezed == previewUrl ? _self.previewUrl : previewUrl // ignore: cast_nullable_to_non_nullable
+as String?,resourceId: freezed == resourceId ? _self.resourceId : resourceId // ignore: cast_nullable_to_non_nullable
 as String?,uploading: null == uploading ? _self.uploading : uploading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -153,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String path,  String? resourceId,  bool uploading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String path,  String? mime,  Uint8List? bytes,  String? previewUrl,  String? resourceId,  bool uploading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ListingPhoto() when $default != null:
-return $default(_that.path,_that.resourceId,_that.uploading,_that.errorMessage);case _:
+return $default(_that.path,_that.mime,_that.bytes,_that.previewUrl,_that.resourceId,_that.uploading,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -174,10 +177,10 @@ return $default(_that.path,_that.resourceId,_that.uploading,_that.errorMessage);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String path,  String? resourceId,  bool uploading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String path,  String? mime,  Uint8List? bytes,  String? previewUrl,  String? resourceId,  bool uploading,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _ListingPhoto():
-return $default(_that.path,_that.resourceId,_that.uploading,_that.errorMessage);case _:
+return $default(_that.path,_that.mime,_that.bytes,_that.previewUrl,_that.resourceId,_that.uploading,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +197,10 @@ return $default(_that.path,_that.resourceId,_that.uploading,_that.errorMessage);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String path,  String? resourceId,  bool uploading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String path,  String? mime,  Uint8List? bytes,  String? previewUrl,  String? resourceId,  bool uploading,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _ListingPhoto() when $default != null:
-return $default(_that.path,_that.resourceId,_that.uploading,_that.errorMessage);case _:
+return $default(_that.path,_that.mime,_that.bytes,_that.previewUrl,_that.resourceId,_that.uploading,_that.errorMessage);case _:
   return null;
 
 }
@@ -209,10 +212,13 @@ return $default(_that.path,_that.resourceId,_that.uploading,_that.errorMessage);
 
 
 class _ListingPhoto implements ListingPhoto {
-  const _ListingPhoto({required this.path, this.resourceId, this.uploading = true, this.errorMessage});
+  const _ListingPhoto({required this.path, this.mime, this.bytes, this.previewUrl, this.resourceId, this.uploading = true, this.errorMessage});
   
 
 @override final  String path;
+@override final  String? mime;
+@override final  Uint8List? bytes;
+@override final  String? previewUrl;
 @override final  String? resourceId;
 @override@JsonKey() final  bool uploading;
 @override final  String? errorMessage;
@@ -227,16 +233,16 @@ _$ListingPhotoCopyWith<_ListingPhoto> get copyWith => __$ListingPhotoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListingPhoto&&(identical(other.path, path) || other.path == path)&&(identical(other.resourceId, resourceId) || other.resourceId == resourceId)&&(identical(other.uploading, uploading) || other.uploading == uploading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListingPhoto&&(identical(other.path, path) || other.path == path)&&(identical(other.mime, mime) || other.mime == mime)&&const DeepCollectionEquality().equals(other.bytes, bytes)&&(identical(other.previewUrl, previewUrl) || other.previewUrl == previewUrl)&&(identical(other.resourceId, resourceId) || other.resourceId == resourceId)&&(identical(other.uploading, uploading) || other.uploading == uploading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,resourceId,uploading,errorMessage);
+int get hashCode => Object.hash(runtimeType,path,mime,const DeepCollectionEquality().hash(bytes),previewUrl,resourceId,uploading,errorMessage);
 
 @override
 String toString() {
-  return 'ListingPhoto(path: $path, resourceId: $resourceId, uploading: $uploading, errorMessage: $errorMessage)';
+  return 'ListingPhoto(path: $path, mime: $mime, bytes: $bytes, previewUrl: $previewUrl, resourceId: $resourceId, uploading: $uploading, errorMessage: $errorMessage)';
 }
 
 
@@ -247,7 +253,7 @@ abstract mixin class _$ListingPhotoCopyWith<$Res> implements $ListingPhotoCopyWi
   factory _$ListingPhotoCopyWith(_ListingPhoto value, $Res Function(_ListingPhoto) _then) = __$ListingPhotoCopyWithImpl;
 @override @useResult
 $Res call({
- String path, String? resourceId, bool uploading, String? errorMessage
+ String path, String? mime, Uint8List? bytes, String? previewUrl, String? resourceId, bool uploading, String? errorMessage
 });
 
 
@@ -264,10 +270,13 @@ class __$ListingPhotoCopyWithImpl<$Res>
 
 /// Create a copy of ListingPhoto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? resourceId = freezed,Object? uploading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? path = null,Object? mime = freezed,Object? bytes = freezed,Object? previewUrl = freezed,Object? resourceId = freezed,Object? uploading = null,Object? errorMessage = freezed,}) {
   return _then(_ListingPhoto(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as String,resourceId: freezed == resourceId ? _self.resourceId : resourceId // ignore: cast_nullable_to_non_nullable
+as String,mime: freezed == mime ? _self.mime : mime // ignore: cast_nullable_to_non_nullable
+as String?,bytes: freezed == bytes ? _self.bytes : bytes // ignore: cast_nullable_to_non_nullable
+as Uint8List?,previewUrl: freezed == previewUrl ? _self.previewUrl : previewUrl // ignore: cast_nullable_to_non_nullable
+as String?,resourceId: freezed == resourceId ? _self.resourceId : resourceId // ignore: cast_nullable_to_non_nullable
 as String?,uploading: null == uploading ? _self.uploading : uploading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,

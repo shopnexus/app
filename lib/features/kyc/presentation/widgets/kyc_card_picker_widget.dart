@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
@@ -7,7 +7,9 @@ class KycCardPickerWidget extends StatelessWidget {
   final String title;
   final String description;
   final IconData icon;
-  final String? localPath;
+  /// Bytes của ảnh vừa chọn. Không phải đường dẫn: `Image.file` không vẽ được
+  /// trên web, nơi `XFile.path` là một `blob:` URL.
+  final Uint8List? localBytes;
   final String? networkUrl;
   final bool isUploading;
   final Function(ImageSource source) onPickImage;
@@ -17,7 +19,7 @@ class KycCardPickerWidget extends StatelessWidget {
     required this.title,
     required this.description,
     required this.icon,
-    this.localPath,
+    this.localBytes,
     this.networkUrl,
     required this.isUploading,
     required this.onPickImage,
@@ -119,12 +121,12 @@ class KycCardPickerWidget extends StatelessWidget {
 
     Widget previewContent;
     final hasImage =
-        (localPath != null && localPath!.isNotEmpty) ||
+        (localBytes != null && localBytes!.isNotEmpty) ||
         (networkUrl != null && networkUrl!.isNotEmpty);
 
-    if (localPath != null && localPath!.isNotEmpty) {
-      previewContent = Image.file(
-        File(localPath!),
+    if (localBytes != null && localBytes!.isNotEmpty) {
+      previewContent = Image.memory(
+        localBytes!,
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,

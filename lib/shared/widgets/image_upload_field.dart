@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,16 +6,34 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
+import 'package:shopnexus_flutter_app/core/upload/upload_media.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/upload_preview.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/video_preview.dart';
 
-/// Một tấm ảnh trong dải, ở một trong ba trạng thái.
+/// Một tệp trong dải, ở một trong ba trạng thái.
 ///
-/// [file] còn nguyên sau khi tải xong, và đó là chủ ý: file cục bộ hiện ra ngay
-/// lúc chọn, còn [resource] tới sau vài trăm mili giây — vẽ theo file rồi mới
+/// [bytes] còn nguyên sau khi tải xong, và đó là chủ ý: ảnh cục bộ hiện ra ngay
+/// lúc chọn, còn [resource] tới sau vài trăm mili giây — vẽ theo bytes rồi mới
 /// đổi sang ảnh trên server là cách duy nhất để không có một ô trống ở giữa.
+/// Vẽ theo *bytes* chứ không theo `file.path`: `Image.file` không chạy trên
+/// web, nơi path là một `blob:` URL.
 class UploadingPhoto {
-  const UploadingPhoto({required this.file, this.resource, this.error});
+  const UploadingPhoto({
+    required this.file,
+    required this.mime,
+    this.bytes,
+    this.resource,
+    this.error,
+  });
 
   final XFile file;
+
+  /// Null nghĩa là sàn không lưu loại này.
+  final String? mime;
+
+  /// Bytes để vẽ. Video không dùng tới — nó cần link đã ký để dựng khung hình
+  /// đầu, nên đọc cả trăm MB vào RAM là vô ích.
+  final Uint8List? bytes;
 
   /// Có giá trị khi bytes đã tới nơi và server đã xác nhận. `url` của nó là link
   /// đã ký cho đúng những bytes vừa lên — thứ duy nhất vẽ được tấm ảnh đó từ
@@ -26,8 +44,16 @@ class UploadingPhoto {
 
   bool get isUploading => resource == null && error == null;
 
-  UploadingPhoto copyWith({Resource? resource, String? error}) =>
-      UploadingPhoto(file: file, resource: resource, error: error);
+  bool get isVideo => mime != null && UploadMedia.isVideo(mime!);
+
+  UploadingPhoto copyWith({Uint8List? bytes, Resource? resource, String? error}) =>
+      UploadingPhoto(
+        file: file,
+        mime: mime,
+        bytes: bytes ?? this.bytes,
+        resource: resource,
+        error: error,
+      );
 }
 
 /// Dải ảnh dùng chung cho mọi chỗ đính kèm: ảnh mở hộp, bằng chứng hoàn tiền,
@@ -74,12 +100,23 @@ class _ImageUploadFieldState extends ConsumerState<ImageUploadField> {
   ]);
 
   Future<void> _pick() async {
-    final picked = await _picker.pickMultiImage(maxWidth: 1600, imageQuality: 85);
+    // Ảnh và video trong cùng một lần chọn; `imageQuality` chỉ chạm vào ảnh.
+    final picked = await _picker.pickMultipleMedia(
+      maxWidth: 1600,
+      imageQuality: 85,
+    );
     if (picked.isEmpty || !mounted) return;
 
     final accepted = picked.take(widget.maxPhotos - _photos.length).toList();
     setState(() {
-      _photos.addAll(accepted.map((file) => UploadingPhoto(file: file)));
+      _photos.addAll(
+        accepted.map(
+          (file) => UploadingPhoto(
+            file: file,
+            mime: UploadMedia.mimeFor(file.name, declared: file.mimeType),
+          ),
+        ),
+      );
     });
 
     // Song song: mười ảnh không có lý do gì phải xếp hàng, và một cái hỏng không
@@ -88,15 +125,26 @@ class _ImageUploadFieldState extends ConsumerState<ImageUploadField> {
   }
 
   Future<void> _upload(XFile file) async {
-    _patch(file, (photo) => photo.copyWith());
+    final mime = UploadMedia.mimeFor(file.name, declared: file.mimeType);
+    if (mime == null) {
+      _patch(file, (photo) => photo.copyWith(error: 'Định dạng không nhận'));
+      return;
+    }
+
     try {
+      final bytes = await file.readAsBytes();
+      // Ô có gì để vẽ ngay từ đây, trước khi byte nào rời máy. Video thì không:
+      // nó chờ link đã ký.
+      if (!UploadMedia.isVideo(mime)) {
+        _patch(file, (photo) => photo.copyWith(bytes: bytes));
+      }
       final resource = await ref
           .read(resourceUploaderProvider)
           .upload(
             widget.target,
-            bytes: await file.readAsBytes(),
+            bytes: bytes,
             filename: file.name,
-            mime: file.mimeType ?? _mimeFor(file.name),
+            mime: mime,
           );
       _patch(file, (photo) => photo.copyWith(resource: resource));
     } on UploadTooLarge catch (e) {
@@ -114,7 +162,12 @@ class _ImageUploadFieldState extends ConsumerState<ImageUploadField> {
   Future<void> _retry(XFile file) async {
     setState(() {
       final index = _photos.indexWhere((p) => p.file.path == file.path);
-      if (index >= 0) _photos[index] = UploadingPhoto(file: file);
+      if (index >= 0) {
+        _photos[index] = UploadingPhoto(
+          file: file,
+          mime: UploadMedia.mimeFor(file.name, declared: file.mimeType),
+        );
+      }
     });
     await _upload(file);
   }
@@ -173,7 +226,17 @@ class _Tile extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: _preview(photo),
+            child: GestureDetector(
+              // Ô 72px không xem video được; chạm vào mở trình phát đầy đủ.
+              onTap: photo.isVideo && (photo.resource?.url.isNotEmpty ?? false)
+                  ? () => VideoPlayerDialog.show(context, photo.resource!.url)
+                  : null,
+              child: UploadPreview(
+                bytes: photo.bytes,
+                url: photo.resource?.url,
+                mime: photo.mime,
+              ),
+            ),
           ),
           if (photo.isUploading)
             Container(
@@ -240,24 +303,6 @@ class _Tile extends StatelessWidget {
   }
 }
 
-/// Ảnh cục bộ cho tới khi có ảnh trên server, rồi đổi sang link đã ký.
-///
-/// Người dùng thấy tấm ảnh của mình ngay lúc chọn, và thứ thay thế nó là bằng
-/// chứng bytes đã tới nơi. Link hỏng thì rơi về lại file — tấm ảnh vẫn ở trên
-/// máy, và một ô trống sẽ nói dối rằng nó không còn.
-Widget _preview(UploadingPhoto photo) {
-  final local = File(photo.file.path);
-  final url = photo.resource?.url;
-  if (url == null || url.isEmpty) {
-    return Image.file(local, fit: BoxFit.cover);
-  }
-  return Image.network(
-    url,
-    fit: BoxFit.cover,
-    errorBuilder: (_, _, _) => Image.file(local, fit: BoxFit.cover),
-  );
-}
-
 class _AddTile extends StatelessWidget {
   const _AddTile({required this.onTap});
 
@@ -287,9 +332,3 @@ class _AddTile extends StatelessWidget {
 
 /// `XFile.mimeType` là null cho ảnh chụp từ camera trên vài thiết bị, và
 /// `CreateUploadRequest.mime` là bắt buộc.
-String _mimeFor(String name) {
-  final lower = name.toLowerCase();
-  if (lower.endsWith('.png')) return 'image/png';
-  if (lower.endsWith('.webp')) return 'image/webp';
-  return 'image/jpeg';
-}

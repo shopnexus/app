@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/core/realtime/realtime_client.dart';
 import 'package:shopnexus_flutter_app/core/realtime/realtime_event.dart';
+import 'package:shopnexus_flutter_app/core/upload/upload_media.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
@@ -451,7 +452,7 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
 
     final pending = ChatMessage.pending(
       conversationId: conversationId,
-      body: body.isNotEmpty ? body : (hasFiles ? '[Hình ảnh]' : ''),
+      body: body.isNotEmpty ? body : (hasFiles ? _placeholderFor(files) : ''),
       refs: refs ?? const {},
     );
     state = AsyncValue.data(
@@ -469,10 +470,15 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
       if (hasFiles) {
         attachmentIds = [];
         for (final file in files) {
-          final bytes = await file.readAsBytes();
           final filename = file.name.isNotEmpty ? file.name : 'image.jpg';
-          final mime = _guessMimeType(filename, file.mimeType);
+          final mime = UploadMedia.mimeFor(filename, declared: file.mimeType);
+          if (mime == null) {
+            throw const FormatException(
+              'Sàn chỉ nhận ảnh JPG/PNG/WebP, PDF và video MP4/MOV/WebM.',
+            );
+          }
 
+          final bytes = await file.readAsBytes();
           final resourceId = await repository.uploadAttachment(
             bytes: bytes,
             filename: filename,
@@ -504,17 +510,17 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
     }
   }
 
-  String _guessMimeType(String filename, String? declaredMime) {
-    if (declaredMime != null &&
-        declaredMime.isNotEmpty &&
-        declaredMime.contains('/')) {
-      return declaredMime;
-    }
-    final lower = filename.toLowerCase();
-    if (lower.endsWith('.png')) return 'image/png';
-    if (lower.endsWith('.webp')) return 'image/webp';
-    if (lower.endsWith('.gif')) return 'image/gif';
-    return 'image/jpeg';
+  /// Dòng chữ đứng thay chỗ tấm ảnh trong khoảnh khắc tin nhắn còn đang bay:
+  /// `ChatMessage.pending` chưa có attachment nào để vẽ. Gửi video mà hiện
+  /// "[Hình ảnh]" thì nói sai thứ vừa gửi.
+  String _placeholderFor(List<XFile> files) {
+    final mimes = files
+        .map((file) => UploadMedia.mimeFor(file.name, declared: file.mimeType))
+        .nonNulls;
+    final hasVideo = mimes.any(UploadMedia.isVideo);
+    final hasImage = mimes.any((mime) => !UploadMedia.isVideo(mime));
+    if (hasVideo && hasImage) return '[Ảnh và video]';
+    return hasVideo ? '[Video]' : '[Hình ảnh]';
   }
 
   void _replacePending(String pendingId, ChatMessage sent) {

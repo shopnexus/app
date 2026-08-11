@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +9,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
+import 'package:shopnexus_flutter_app/core/upload/upload_media.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/repositories/listing_composer_repository.dart';
 
@@ -17,10 +21,25 @@ part 'listing_suggestion_provider.g.dart';
 /// A photo the seller picked. [resourceId] is null until the bytes are at the
 /// store and confirmed — an unconfirmed upload resolves to nothing, so it can be
 /// attached neither to a suggestion request nor to a listing.
+///
+/// [bytes] and [previewUrl] are what the thumbnail draws, and neither is
+/// [path]: `Image.file` renders nothing on Flutter Web, where a picked file is
+/// a `blob:` URL, nor on the `content://` URIs Android's Photo Picker answers
+/// with. `readAsBytes` reads both, which is why the upload succeeded while the
+/// tile stayed empty. Bytes are held only until the confirmation comes back
+/// with a signed [previewUrl] — ten full-size photos are not worth keeping in
+/// memory once the server can serve them.
+///
+/// [mime] quyết định ô vẽ ra cái gì: một video dựng khung hình đầu từ
+/// [previewUrl], còn bytes của nó thì `Image.memory` không đọc nổi. Null nghĩa
+/// là đuôi file không nằm trong danh sách sàn lưu.
 @freezed
 abstract class ListingPhoto with _$ListingPhoto {
   const factory ListingPhoto({
     required String path,
+    String? mime,
+    Uint8List? bytes,
+    String? previewUrl,
     String? resourceId,
     @Default(true) bool uploading,
     String? errorMessage,
@@ -56,9 +75,6 @@ class ListingSuggestionNotifier extends _$ListingSuggestionNotifier {
   /// are what the model reads.
   static const _maxPhotos = 10;
 
-  /// `CreateUploadRequest.size` caps at 10 MiB, checked before a byte moves.
-  static const _maxPhotoBytes = 10 * 1024 * 1024;
-
   @override
   ListingSuggestionState build() {
     Future.microtask(_loadPickers);
@@ -85,8 +101,10 @@ class ListingSuggestionNotifier extends _$ListingSuggestionNotifier {
   /// For the "tải lại" affordance next to an empty category picker.
   Future<void> reloadPickers() => _loadPickers();
 
+  /// Thư viện mời cả ảnh lẫn video trong một lần chọn. `maxWidth` và
+  /// `imageQuality` chỉ tác động lên ảnh — video đi qua nguyên vẹn.
   Future<void> addPhotosFromGallery() => _addPhotos(
-    () => _picker.pickMultiImage(maxWidth: 1600, imageQuality: 85),
+    () => _picker.pickMultipleMedia(maxWidth: 1600, imageQuality: 85),
   );
 
   Future<void> addPhotoFromCamera() => _addPhotos(() async {
@@ -98,13 +116,18 @@ class ListingSuggestionNotifier extends _$ListingSuggestionNotifier {
     return shot == null ? const <XFile>[] : [shot];
   });
 
+  Future<void> addVideoFromCamera() => _addPhotos(() async {
+    final clip = await _picker.pickVideo(source: ImageSource.camera);
+    return clip == null ? const <XFile>[] : [clip];
+  });
+
   Future<void> _addPhotos(Future<List<XFile>> Function() pick) async {
     final List<XFile> picked;
     try {
       picked = await pick();
     } catch (e) {
       if (ref.mounted) {
-        state = state.copyWith(errorMessage: 'Không mở được ảnh: $e');
+        state = state.copyWith(errorMessage: 'Không mở được thư viện: $e');
       }
       return;
     }
@@ -113,7 +136,7 @@ class ListingSuggestionNotifier extends _$ListingSuggestionNotifier {
     final room = _maxPhotos - state.photos.length;
     if (room <= 0) {
       state = state.copyWith(
-        errorMessage: 'Mỗi sản phẩm chỉ gửi được tối đa $_maxPhotos ảnh.',
+        errorMessage: 'Mỗi sản phẩm chỉ gửi được tối đa $_maxPhotos tệp.',
       );
       return;
     }
@@ -123,7 +146,12 @@ class ListingSuggestionNotifier extends _$ListingSuggestionNotifier {
       errorMessage: null,
       photos: [
         ...state.photos,
-        ...accepted.map((file) => ListingPhoto(path: file.path)),
+        ...accepted.map(
+          (file) => ListingPhoto(
+            path: file.path,
+            mime: UploadMedia.mimeFor(file.name, declared: file.mimeType),
+          ),
+        ),
       ],
     );
 
@@ -132,35 +160,62 @@ class ListingSuggestionNotifier extends _$ListingSuggestionNotifier {
   }
 
   Future<void> _upload(XFile file) async {
+    final mime = UploadMedia.mimeFor(file.name, declared: file.mimeType);
+    if (mime == null) {
+      // Nói ngay tại chỗ thay vì đi một vòng lên server để nhận về 422: sàn
+      // lưu jpeg/png/webp/pdf và mp4/mov/webm, hết.
+      _patchPhoto(
+        file.path,
+        (photo) => photo.copyWith(
+          uploading: false,
+          errorMessage: 'Định dạng không nhận',
+        ),
+      );
+      return;
+    }
+
     try {
       final bytes = await file.readAsBytes();
-      if (bytes.length > _maxPhotoBytes) {
+      // Trước cả khi byte nào rời máy: đây là lần đầu tấm ảnh vẽ được, và nó
+      // vẽ từ bytes chứ không từ `file.path`.
+      _patchPhoto(file.path, (photo) => photo.copyWith(bytes: bytes));
+      // Ngưỡng đi theo loại — video 100 MB, còn lại 10 MB — nên câu báo cũng
+      // phải đi theo loại.
+      if (bytes.length > ResourceUploader.limitFor(mime)) {
         _patchPhoto(
           file.path,
           (photo) => photo.copyWith(
             uploading: false,
-            errorMessage: 'Ảnh lớn hơn 10 MB',
+            errorMessage: UploadMedia.tooLargeMessage(mime),
           ),
         );
         return;
       }
-      final resourceId = await ref
+      final resource = await ref
           .read(listingComposerRepositoryProvider)
-          .uploadPhoto(
-            bytes: bytes,
-            filename: file.name,
-            mime: file.mimeType ?? _mimeFor(file.name),
-          );
+          .uploadPhoto(bytes: bytes, filename: file.name, mime: mime);
+      // Buông bytes ra khi đã có link ký được — nhưng chỉ khi đó. Module không
+      // ký được link thì `url` là chuỗi rỗng, và bytes là thứ duy nhất còn lại
+      // để vẽ.
+      // Video không vẽ được từ bytes, nó cần một link để dựng khung hình đầu —
+      // nên với video, buông bytes ra không mất gì.
+      final signed = resource.url.isNotEmpty;
       _patchPhoto(
         file.path,
-        (photo) => photo.copyWith(resourceId: resourceId, uploading: false),
+        (photo) => photo.copyWith(
+          resourceId: resource.id,
+          previewUrl: signed ? resource.url : null,
+          bytes: signed ? null : photo.bytes,
+          uploading: false,
+        ),
       );
     } catch (e) {
       // Short on purpose: this lands inside a thumbnail. The seller's move is
       // to remove the photo and pick it again either way.
+      final noun = UploadMedia.nounFor(mime).toLowerCase();
       final reason = _status(e) == 422
-          ? 'Định dạng ảnh không nhận'
-          : 'Tải ảnh thất bại';
+          ? 'Định dạng $noun không nhận'
+          : 'Tải $noun thất bại';
       _patchPhoto(
         file.path,
         (photo) => photo.copyWith(uploading: false, errorMessage: reason),
@@ -346,10 +401,3 @@ String _publishErrorMessage(Object error) {
   }
 }
 
-String _mimeFor(String filename) {
-  final name = filename.toLowerCase();
-  if (name.endsWith('.png')) return 'image/png';
-  if (name.endsWith('.webp')) return 'image/webp';
-  if (name.endsWith('.heic') || name.endsWith('.heif')) return 'image/heic';
-  return 'image/jpeg';
-}

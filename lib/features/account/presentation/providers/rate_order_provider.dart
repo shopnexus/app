@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/features/account/data/repositories/rating_repository.dart';
@@ -27,7 +25,10 @@ class RateOrder extends _$RateOrder {
     String? listingId,
     int? productRating,
     String? productBody,
-    List<File> photos = const [],
+    /// Id của resource đã xác nhận. Ảnh và video lên từ lúc người dùng chọn,
+    /// nên ở đây không còn byte nào phải chờ — và một tệp hỏng đã tự loại mình
+    /// ra khỏi danh sách thay vì làm hỏng cả lượt gửi đánh giá.
+    List<String> attachments = const [],
   }) async {
     state = const RateOrderState(isLoading: true);
     final repository = ref.read(ratingRepositoryProvider);
@@ -39,12 +40,6 @@ class RateOrder extends _$RateOrder {
       );
 
       if (listingId != null && productRating != null) {
-        final attachments = <String>[];
-        for (final photo in photos) {
-          attachments.add(
-            await repository.uploadReviewPhoto(photo, mime: 'image/jpeg'),
-          );
-        }
         await repository.submitReview(
           listingId,
           orderId: orderId,

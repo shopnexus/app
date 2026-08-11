@@ -65,7 +65,7 @@ class RecordingBackend {
 
   /// Where a party's complaint goes now that neither of them writes a shipment's
   /// position: staff read it and decide.
-  late final TicketRepository tickets = TicketRepository(TrustApi(dio), uploader);
+  late final TicketRepository tickets = TicketRepository(TrustApi(dio));
 
   RequestOptions get only {
     if (calls.length != 1) {

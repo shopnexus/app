@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shopnexus_flutter_app/core/upload/upload_media.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
 import 'package:shopnexus_flutter_app/features/kyc/data/repositories/kyc_repository.dart';
@@ -25,6 +28,13 @@ class KycFormState {
   final String? backCardPath;
   final String? selfiePath;
 
+  /// Bytes của ảnh vừa chọn — thứ ô preview vẽ. Không vẽ theo path: trên
+  /// Flutter Web path là một `blob:` URL và `Image.file` không mở được nó, nên
+  /// ảnh lên tới nơi mà ô thì trống.
+  final Uint8List? frontCardBytes;
+  final Uint8List? backCardBytes;
+  final Uint8List? selfieBytes;
+
   // Uploaded Resource IDs
   final String? frontResourceId;
   final String? backResourceId;
@@ -46,6 +56,9 @@ class KycFormState {
     this.frontCardPath,
     this.backCardPath,
     this.selfiePath,
+    this.frontCardBytes,
+    this.backCardBytes,
+    this.selfieBytes,
     this.frontResourceId,
     this.backResourceId,
     this.selfieResourceId,
@@ -65,6 +78,9 @@ class KycFormState {
     String? frontCardPath,
     String? backCardPath,
     String? selfiePath,
+    Uint8List? frontCardBytes,
+    Uint8List? backCardBytes,
+    Uint8List? selfieBytes,
     String? frontResourceId,
     String? backResourceId,
     String? selfieResourceId,
@@ -83,6 +99,9 @@ class KycFormState {
       frontCardPath: frontCardPath ?? this.frontCardPath,
       backCardPath: backCardPath ?? this.backCardPath,
       selfiePath: selfiePath ?? this.selfiePath,
+      frontCardBytes: frontCardBytes ?? this.frontCardBytes,
+      backCardBytes: backCardBytes ?? this.backCardBytes,
+      selfieBytes: selfieBytes ?? this.selfieBytes,
       frontResourceId: frontResourceId ?? this.frontResourceId,
       backResourceId: backResourceId ?? this.backResourceId,
       selfieResourceId: selfieResourceId ?? this.selfieResourceId,
@@ -139,10 +158,29 @@ class KycNotifier extends _$KycNotifier {
 
     if (image == null) return;
 
+    final mime = UploadMedia.mimeFor(image.name, declared: image.mimeType);
+    if (mime == null) {
+      state = state.copyWith(
+        errorMessage: 'Sàn chỉ nhận ảnh JPG, PNG hoặc WebP.',
+      );
+      return;
+    }
+
+    // Đọc trước khi đặt state: ô preview vẽ từ bytes, nên bytes phải có mặt
+    // cùng lúc với path.
+    final Uint8List bytes;
+    try {
+      bytes = await image.readAsBytes();
+    } catch (e) {
+      state = state.copyWith(errorMessage: 'Không đọc được ảnh: $e');
+      return;
+    }
+
     switch (type) {
       case KycImageType.frontCard:
         state = state.copyWith(
           frontCardPath: image.path,
+          frontCardBytes: bytes,
           isUploadingFront: true,
           errorMessage: null,
         );
@@ -150,6 +188,7 @@ class KycNotifier extends _$KycNotifier {
       case KycImageType.backCard:
         state = state.copyWith(
           backCardPath: image.path,
+          backCardBytes: bytes,
           isUploadingBack: true,
           errorMessage: null,
         );
@@ -157,6 +196,7 @@ class KycNotifier extends _$KycNotifier {
       case KycImageType.selfie:
         state = state.copyWith(
           selfiePath: image.path,
+          selfieBytes: bytes,
           isUploadingSelfie: true,
           errorMessage: null,
         );
@@ -165,13 +205,10 @@ class KycNotifier extends _$KycNotifier {
 
     try {
       final repository = ref.read(kycRepositoryProvider);
-      final bytes = await image.readAsBytes();
-      final mimeType = image.mimeType ?? 'image/jpeg';
-
       final resourceId = await repository.uploadKycScan(
         bytes: bytes,
         fileName: image.name,
-        mimeType: mimeType,
+        mimeType: mime,
       );
 
       switch (type) {

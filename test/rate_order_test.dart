@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,16 +6,13 @@ import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/rating_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/rate_order_provider.dart';
 
-import 'support/uploader.dart';
-
 /// Một đơn sinh ra hai thứ chấm điểm — feedback giao dịch (**kín**, vào uy tín) và
 /// review sản phẩm (công khai, vào `cached_rating` của tin). Người dùng thấy một
 /// việc, hệ thống ghi hai bản. Test này giữ ba tính chất của cái ghép đó.
 class _FakeRatings extends RatingRepository {
   /// Một `TrustApi` trên Dio trần: không method nào ở dưới gọi tới nó, mọi thứ
   /// test dùng đều được override, nên không có request nào rời khỏi tiến trình.
-  _FakeRatings({this.failReview = false})
-    : super(TrustApi(Dio()), uploaderOn());
+  _FakeRatings({this.failReview = false}) : super(TrustApi(Dio()));
 
   final bool failReview;
   final List<String> calls = [];
@@ -44,11 +39,6 @@ class _FakeRatings extends RatingRepository {
     return Review.fromJson(_reviewJson);
   }
 
-  @override
-  Future<String> uploadReviewPhoto(File file, {required String mime}) async {
-    calls.add('upload');
-    return 'res_1';
-  }
 }
 
 void main() {
@@ -107,7 +97,9 @@ void main() {
     expect(fake.calls, ['feedback:4']);
   });
 
-  test('ảnh được upload trước khi gửi đánh giá sản phẩm', () async {
+  test('đính kèm đã xác nhận đi thẳng vào review', () async {
+    // Ảnh và video lên từ lúc người dùng chọn, trong `ImageUploadField`, nên
+    // lượt gửi này không còn upload nào của riêng nó — nó chỉ mang sẵn id.
     final fake = _FakeRatings();
     final container = containerWith(fake);
 
@@ -116,10 +108,10 @@ void main() {
       sellerRating: 5,
       listingId: 'lst_1',
       productRating: 5,
-      photos: [File('a.jpg'), File('b.jpg')],
+      attachments: ['res_1', 'res_2'],
     );
 
-    expect(fake.calls, ['feedback:5', 'upload', 'upload', 'review:5:2']);
+    expect(fake.calls, ['feedback:5', 'review:5:2']);
   });
 
   test('nửa công khai hỏng thì báo hỏng, nhưng nửa kín đã ghi', () async {

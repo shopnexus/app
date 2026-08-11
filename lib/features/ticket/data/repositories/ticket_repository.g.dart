@@ -53,4 +53,4 @@ final class TicketRepositoryProvider
   }
 }
 
-String _$ticketRepositoryHash() => r'cda64aeb16db59e7a59eb54c620b910c46a5a397';
+String _$ticketRepositoryHash() => r'f38f8288f66db67fa170f36221a6f82cd84d365d';

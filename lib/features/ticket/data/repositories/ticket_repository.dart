@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
@@ -9,7 +7,6 @@ import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
-import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
 part 'ticket_repository.g.dart';
 
@@ -26,11 +23,9 @@ class TicketPageResult {
 /// Tickets are the one surface for abuse reports, refund disputes, order issues,
 /// payment problems and feature requests — `kind` is what differs.
 class TicketRepository {
-  const TicketRepository(this._api, this._uploader);
+  const TicketRepository(this._api);
 
   final TrustApi _api;
-
-  final ResourceUploader _uploader;
 
   Future<TicketPageResult> list({
     TicketStatus? status,
@@ -85,20 +80,8 @@ class TicketRepository {
     return ticket;
   }
 
-  /// A ticket's attachments become its opening chat message's images, so they go
-  /// up as [UploadTarget.conversation] — there is no ticket-specific route, and a
-  /// resource of one module does not attach to another.
-  Future<String> uploadAttachment(File file, {required String mime}) async {
-    final resource = await _uploader.upload(
-      UploadTarget.conversation,
-      bytes: await file.readAsBytes(),
-      filename: file.uri.pathSegments.last,
-      mime: mime,
-    );
-    return resource.id;
-  }
 }
 
 @riverpod
 TicketRepository ticketRepository(Ref ref) =>
-    TicketRepository(ref.watch(trustApiProvider), ref.watch(resourceUploaderProvider));
+    TicketRepository(ref.watch(trustApiProvider));

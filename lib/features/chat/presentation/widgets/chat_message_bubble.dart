@@ -2,7 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
+import 'package:shopnexus_flutter_app/core/upload/upload_media.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/video_preview.dart';
 
 class ChatMessageBubble extends StatelessWidget {
   const ChatMessageBubble({
@@ -164,8 +167,8 @@ class ChatMessageBubble extends StatelessWidget {
         child: Column(
           children: [
             for (int i = 0; i < validAttachments.length; i++)
-              _ImageAttachment(
-                url: validAttachments[i].url,
+              _Attachment(
+                attachment: validAttachments[i],
                 borderRadius: borderRadius,
                 isSingle: validAttachments.length == 1,
               ),
@@ -206,8 +209,8 @@ class ChatMessageBubble extends StatelessWidget {
         children: [
           if (hasAttachments)
             for (final attachment in validAttachments)
-              _ImageAttachment(
-                url: attachment.url,
+              _Attachment(
+                attachment: attachment,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(18),
                 ),
@@ -232,21 +235,38 @@ class ChatMessageBubble extends StatelessWidget {
   }
 }
 
-class _ImageAttachment extends StatelessWidget {
-  const _ImageAttachment({
-    required this.url,
+/// Một tệp đính kèm trong thread — ảnh hay video, quyết định bởi `mime` của
+/// chính resource chứ không bởi chỗ nó xuất hiện.
+///
+/// Trước đây mọi attachment đều đi qua `CachedNetworkImage`, nên một video về
+/// đúng cái icon ảnh vỡ.
+class _Attachment extends StatelessWidget {
+  const _Attachment({
+    required this.attachment,
     required this.borderRadius,
     required this.isSingle,
   });
 
-  final String url;
+  final Resource attachment;
   final BorderRadius borderRadius;
   final bool isSingle;
+
+  String get url => attachment.url;
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final imageWidth = (screenWidth * 0.72).clamp(200.0, 280.0);
+
+    if (UploadMedia.isVideo(attachment.mime)) {
+      return GestureDetector(
+        onTap: () => VideoPlayerDialog.show(context, url),
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          child: VideoPreview(url: url, width: imageWidth, height: 200),
+        ),
+      );
+    }
 
     return GestureDetector(
       onTap: () => _showImagePreviewDialog(context, url),

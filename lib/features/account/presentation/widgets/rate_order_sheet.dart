@@ -1,8 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
+
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/image_upload_field.dart';
 
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/rate_order_provider.dart';
 
@@ -56,10 +57,12 @@ class RateOrderSheet extends ConsumerStatefulWidget {
 class _RateOrderSheetState extends ConsumerState<RateOrderSheet> {
   static const _maxPhotos = 5;
 
-  final _picker = ImagePicker();
   final _sellerComment = TextEditingController();
   final _productBody = TextEditingController();
-  final List<File> _photos = [];
+
+  /// Ảnh và video đã xác nhận. Chúng lên ngay lúc chọn, nên tới lúc bấm Gửi thì
+  /// không còn gì phải chờ.
+  List<Resource> _photos = const [];
 
   int _sellerRating = 0;
   int _productRating = 0;
@@ -69,17 +72,6 @@ class _RateOrderSheetState extends ConsumerState<RateOrderSheet> {
     _sellerComment.dispose();
     _productBody.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickPhotos() async {
-    final picked = await _picker.pickMultiImage();
-    if (picked.isEmpty) return;
-    setState(() {
-      for (final file in picked) {
-        if (_photos.length >= _maxPhotos) break;
-        _photos.add(File(file.path));
-      }
-    });
   }
 
   Future<void> _submit() async {
@@ -96,7 +88,7 @@ class _RateOrderSheetState extends ConsumerState<RateOrderSheet> {
           productBody: _productBody.text.trim().isEmpty
               ? null
               : _productBody.text.trim(),
-          photos: _photos,
+          attachments: [for (final photo in _photos) photo.id],
         );
     if (!mounted) return;
     if (ok) {
@@ -200,14 +192,12 @@ class _RateOrderSheetState extends ConsumerState<RateOrderSheet> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                _PhotoStrip(
-                  photos: _photos,
-                  onAdd: sending || _photos.length >= _maxPhotos
-                      ? null
-                      : _pickPhotos,
-                  onRemove: sending
-                      ? null
-                      : (index) => setState(() => _photos.removeAt(index)),
+                const SizedBox(height: 8),
+                ImageUploadField(
+                  target: UploadTarget.review,
+                  maxPhotos: _maxPhotos,
+                  enabled: !sending,
+                  onChanged: (next) => setState(() => _photos = next),
                 ),
               ],
             ],
@@ -305,76 +295,6 @@ class _Stars extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-class _PhotoStrip extends StatelessWidget {
-  const _PhotoStrip({
-    required this.photos,
-    required this.onAdd,
-    required this.onRemove,
-  });
-
-  final List<File> photos;
-  final VoidCallback? onAdd;
-  final void Function(int index)? onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          for (var index = 0; index < photos.length; index++)
-            SizedBox(
-              width: 64,
-              height: 64,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(photos[index], fit: BoxFit.cover),
-                  ),
-                  if (onRemove != null)
-                    Positioned(
-                      top: -6,
-                      right: -6,
-                      child: IconButton(
-                        iconSize: 18,
-                        icon: const Icon(Icons.cancel_rounded),
-                        color: theme.colorScheme.error,
-                        onPressed: () => onRemove!(index),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          if (onAdd != null)
-            InkWell(
-              onTap: onAdd,
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: theme.colorScheme.outlineVariant),
-                ),
-                child: Icon(
-                  Icons.add_a_photo_outlined,
-                  size: 20,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-        ],
-      ),
     );
   }
 }

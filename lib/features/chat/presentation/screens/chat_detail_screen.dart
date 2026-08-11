@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
+import 'package:shopnexus_flutter_app/core/upload/upload_media.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
@@ -16,6 +17,7 @@ import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_of
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_product_card.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/counter_offer_dialog.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/share_product_sheet.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/upload_preview.dart';
 
 /// One thread. Chat has one thread per pair of accounts, so there is no product
 /// context on a conversation and nothing to pick between: the header is the
@@ -408,8 +410,30 @@ class _Composer extends StatefulWidget {
   State<_Composer> createState() => _ComposerState();
 }
 
+/// Một ảnh đang chờ gửi, kèm bytes của nó.
+///
+/// Bytes là thứ ô preview vẽ, không phải `file.path`: `Image.file` không vẽ
+/// được trên Flutter Web, nơi path là một `blob:` URL, cũng không vẽ được
+/// `content://` URI của Android Photo Picker. `readAsBytes` đọc được cả hai —
+/// nên ảnh gửi đi bình thường trong khi ô preview trống trơn.
+class _PickedImage {
+  _PickedImage(this.file)
+    : mime = UploadMedia.mimeFor(file.name, declared: file.mimeType);
+
+  final XFile file;
+
+  /// Null nghĩa là sàn không lưu loại này — ô nói ra điều đó thay vì để người
+  /// dùng bấm gửi rồi mới biết.
+  final String? mime;
+
+  /// Null trong khoảnh khắc giữa lúc chọn và lúc đọc xong.
+  Uint8List? bytes;
+
+  bool get isVideo => mime != null && UploadMedia.isVideo(mime!);
+}
+
 class _ComposerState extends State<_Composer> {
-  final List<XFile> _selectedImages = [];
+  final List<_PickedImage> _selectedImages = [];
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImages() async {
@@ -459,8 +483,9 @@ class _ComposerState extends State<_Composer> {
                   ),
                 ),
                 onTap: () async {
-                  final images = await _picker.pickMultiImage();
-                  if (ctx.mounted) Navigator.pop(ctx, images);
+                  // Ảnh và video trong cùng một lần chọn.
+                  final media = await _picker.pickMultipleMedia();
+                  if (ctx.mounted) Navigator.pop(ctx, media);
                 },
               ),
               ListTile(
@@ -493,22 +518,69 @@ class _ComposerState extends State<_Composer> {
                   }
                 },
               ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.videocam_outlined,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                title: Text(
+                  'Quay video',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                onTap: () async {
+                  final clip = await _picker.pickVideo(
+                    source: ImageSource.camera,
+                  );
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx, clip != null ? [clip] : <XFile>[]);
+                  }
+                },
+              ),
             ],
           ),
         ),
       ),
     );
 
-    if (picked != null && picked.isNotEmpty) {
-      setState(() {
-        _selectedImages.addAll(picked);
-      });
+    if (picked == null || picked.isEmpty) return;
+
+    final added = picked.map(_PickedImage.new).toList();
+    setState(() => _selectedImages.addAll(added));
+
+    // Ô ảnh hiện ra ngay, rồi đầy lên khi đọc xong — mười ảnh không phải xếp
+    // hàng chờ nhau, và một ảnh đọc hỏng không giữ chín ảnh kia lại.
+    await Future.wait(added.map(_loadBytes));
+  }
+
+  Future<void> _loadBytes(_PickedImage image) async {
+    // Video không vẽ từ bytes — nó cần link đã ký, và link chỉ có sau khi gửi.
+    // Đọc cả trăm MB vào RAM chỉ để không dùng tới là một cái giá vô cớ.
+    if (image.isVideo) return;
+    try {
+      final bytes = await image.file.readAsBytes();
+      if (!mounted) return;
+      setState(() => image.bytes = bytes);
+    } catch (_) {
+      // Ô trống có nghĩa là việc của UploadPreview. Ảnh vẫn gửi đi được: bước
+      // gửi đọc lại file chứ không dùng lại bytes ở đây.
     }
   }
 
   Future<void> _handleSend() async {
     final text = widget.controller.text;
-    final images = List<XFile>.from(_selectedImages);
+    final images = _selectedImages.map((image) => image.file).toList();
     if (text.trim().isEmpty && images.isEmpty) return;
 
     widget.controller.clear();
@@ -559,17 +631,17 @@ class _ComposerState extends State<_Composer> {
                 itemCount: _selectedImages.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
-                  final file = _selectedImages[index];
+                  final image = _selectedImages[index];
                   return Stack(
                     clipBehavior: Clip.none,
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          File(file.path),
+                        child: UploadPreview(
+                          bytes: image.bytes,
+                          mime: image.mime,
                           width: 64,
                           height: 64,
-                          fit: BoxFit.cover,
                         ),
                       ),
                       Positioned(

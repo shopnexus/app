@@ -5,10 +5,11 @@ import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
 import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
-import 'package:shopnexus_flutter_app/features/ticket/data/repositories/ticket_repository.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/providers/ticket_provider.dart';
-import 'package:shopnexus_flutter_app/core/widgets/attachment_picker.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/image_upload_field.dart';
 
 /// The one form that raises a ticket, whatever the kind. A report of a listing, a
 /// refund the buyer wants staff to decide and a feature request are the same
@@ -67,7 +68,7 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
   final _formKey = GlobalKey<FormState>();
   final _subjectController = TextEditingController();
   final _bodyController = TextEditingController();
-  List<Attachment> _attachments = const [];
+  List<Resource> _attachments = const [];
 
   late TicketKind _kind;
   TicketReason _reason = TicketReason.other;
@@ -95,7 +96,7 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
     setState(() => _submitting = true);
 
     try {
-      final attachments = [for (final a in _attachments) a.resourceId];
+      final attachments = [for (final a in _attachments) a.id];
 
       final ticket = await ref
           .read(raiseTicketProvider.notifier)
@@ -237,13 +238,13 @@ class _RaiseTicketSheetState extends ConsumerState<RaiseTicketSheet> {
               ),
 
               const SizedBox(height: 8),
-              AttachmentPicker(
-                attachments: _attachments,
+              // Đính kèm của một ticket trở thành ảnh của tin nhắn mở đầu, nên
+              // chúng lên theo route conversation — không có route riêng cho
+              // ticket, và resource của module này không đính vào module kia.
+              ImageUploadField(
+                target: UploadTarget.conversation,
                 enabled: !_submitting,
                 onChanged: (next) => setState(() => _attachments = next),
-                upload: (file, mime) => ref
-                    .read(ticketRepositoryProvider)
-                    .uploadAttachment(file, mime: mime),
               ),
 
               const SizedBox(height: 16),
