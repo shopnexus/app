@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/core/realtime/realtime_client.dart';
 import 'package:shopnexus_flutter_app/core/realtime/realtime_event.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
@@ -424,7 +425,22 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
 
   Future<bool> sendTextMessage(String content) => sendMessage(text: content);
 
-  Future<bool> sendMessage({String? text, List<XFile>? files}) async {
+  /// Đưa một tin đăng vào thread.
+  ///
+  /// `text` mang tên sản phẩm chứ không để rỗng, vì hai lý do đều có thật.
+  /// `domain.NewMessage` phía server từ chối tin không có cả chữ lẫn ảnh, nên
+  /// một tin chỉ có `refs` không lưu được. Và `Conversation.lastMessageText`
+  /// đọc đúng `body` — bỏ trống thì dòng preview ở màn danh sách chat trắng
+  /// trơn. Thread nào hiểu `refs` thì vẽ thẻ và bỏ qua dòng chữ này; chỗ nào
+  /// chưa hiểu vẫn đọc ra được người kia đang nói về cái gì.
+  Future<bool> sendListing(Listing listing) =>
+      sendMessage(text: listing.name, refs: {'listing_id': listing.id});
+
+  Future<bool> sendMessage({
+    String? text,
+    List<XFile>? files,
+    Map<String, Object>? refs,
+  }) async {
     final body = text?.trim() ?? '';
     final hasFiles = files != null && files.isNotEmpty;
     if (body.isEmpty && !hasFiles) return false;
@@ -436,6 +452,7 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
     final pending = ChatMessage.pending(
       conversationId: conversationId,
       body: body.isNotEmpty ? body : (hasFiles ? '[Hình ảnh]' : ''),
+      refs: refs ?? const {},
     );
     state = AsyncValue.data(
       current.copyWith(
@@ -469,6 +486,7 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
         conversationId: conversationId,
         body: body.isEmpty ? null : body,
         attachments: attachmentIds,
+        refs: refs,
       );
       _replacePending(pending.id, ChatMessage.inThread(sent, conversation));
       ref

@@ -54,6 +54,7 @@ class ChatMessage {
   factory ChatMessage.pending({
     required String conversationId,
     required String body,
+    Map<String, Object> refs = const {},
   }) {
     return ChatMessage(
       message: Message(
@@ -64,7 +65,9 @@ class ChatMessage {
         type: MessageType.user,
         body: body,
         attachments: const [],
-        refs: const {},
+        // Hàng lạc quan mang luôn refs, không thì thẻ sản phẩm nháy một nhịp
+        // chữ trước khi POST trả lời và trở thành thẻ.
+        refs: refs,
         card: const {},
         createdAt: DateTime.now(),
         editedAt: null,
@@ -112,6 +115,17 @@ class ChatMessage {
   /// screen.
   String? get offerId {
     final value = message.card['offer_id'];
+    return value is String && value.isNotEmpty ? value : null;
+  }
+
+  /// Một tin đăng người gửi trỏ tới, đọc từ `refs` chứ không phải `card`.
+  ///
+  /// Hai chỗ chứa hai thứ khác nhau và không thay nhau được: `card` là chữ của
+  /// backend, route từ chối nó trên tin của người dùng, nên nó không thể là nơi
+  /// một người chỉ vào sản phẩm. `refs` là client tự điền — thẻ vì thế chỉ đọc
+  /// được id, còn mọi thứ hiện lên thì tự đi hỏi catalog.
+  String? get listingId {
+    final value = message.refs['listing_id'];
     return value is String && value.isNotEmpty ? value : null;
   }
 

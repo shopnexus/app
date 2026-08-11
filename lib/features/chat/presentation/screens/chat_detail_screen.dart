@@ -12,7 +12,9 @@ import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_state.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_message_bubble.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_offer_card.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_product_card.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/counter_offer_dialog.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/share_product_sheet.dart';
 
 /// One thread. Chat has one thread per pair of accounts, so there is no product
 /// context on a conversation and nothing to pick between: the header is the
@@ -71,6 +73,16 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   Future<void> _send(String text, List<XFile> images) async {
     if (text.trim().isEmpty && images.isEmpty) return;
     if (await _notifier.sendMessage(text: text, files: images)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    }
+  }
+
+  /// Chọn xong là gửi luôn, không qua ô soạn: một sản phẩm là cả nội dung của
+  /// tin nhắn, khác với ảnh — ảnh thường cần một câu đi kèm.
+  Future<void> _sendProduct() async {
+    final listing = await ShareProductSheet.show(context);
+    if (listing == null) return;
+    if (await _notifier.sendListing(listing)) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     }
   }
@@ -200,6 +212,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               controller: _textController,
               isSending: state.isSending,
               onSend: _send,
+              onSendProduct: _sendProduct,
             ),
           ],
         ),
@@ -319,6 +332,26 @@ class _Thread extends StatelessWidget {
           );
         }
 
+        // Sau nhánh offer, vì hai thứ đọc từ hai chỗ khác nhau và một tin
+        // không thể vừa là thẻ thương lượng backend viết vừa là cái ai đó trỏ
+        // tay vào.
+        final listingId = message.listingId;
+
+        if (listingId != null) {
+          return Align(
+            alignment: message.isMine
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: ChatProductCard(
+                listingId: listingId,
+                onOpen: () => context.push('/home/product/$listingId'),
+              ),
+            ),
+          );
+        }
+
         return ChatMessageBubble(
           message: message,
           counterpartyName: conversation?.participantName,
@@ -334,11 +367,13 @@ class _Composer extends StatefulWidget {
     required this.controller,
     required this.isSending,
     required this.onSend,
+    required this.onSendProduct,
   });
 
   final TextEditingController controller;
   final bool isSending;
   final Future<void> Function(String text, List<XFile> images) onSend;
+  final Future<void> Function() onSendProduct;
 
   @override
   State<_Composer> createState() => _ComposerState();
@@ -549,6 +584,18 @@ class _ComposerState extends State<_Composer> {
                       : theme.colorScheme.onSurfaceVariant,
                 ),
                 tooltip: 'Gửi hình ảnh',
+                visualDensity: VisualDensity.compact,
+              ),
+              IconButton(
+                onPressed: widget.isSending
+                    ? null
+                    : () => widget.onSendProduct(),
+                icon: Icon(
+                  Icons.storefront_outlined,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                tooltip: 'Gửi sản phẩm',
+                visualDensity: VisualDensity.compact,
               ),
               const SizedBox(width: 4),
               Expanded(
