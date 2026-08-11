@@ -32,10 +32,10 @@ UpdateAccountRequest _$UpdateAccountRequestFromJson(
 Map<String, dynamic> _$UpdateAccountRequestToJson(
   UpdateAccountRequest instance,
 ) => <String, dynamic>{
-  if (instance.clearEmail case final value?) 'clear_email': value,
-  if (instance.clearPhone case final value?) 'clear_phone': value,
-  if (instance.clearUsername case final value?) 'clear_username': value,
-  if (instance.email case final value?) 'email': value,
-  if (instance.phone case final value?) 'phone': value,
-  if (instance.username case final value?) 'username': value,
+  'clear_email': ?instance.clearEmail,
+  'clear_phone': ?instance.clearPhone,
+  'clear_username': ?instance.clearUsername,
+  'email': ?instance.email,
+  'phone': ?instance.phone,
+  'username': ?instance.username,
 };

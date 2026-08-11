@@ -21,6 +21,6 @@ TakedownRequest _$TakedownRequestFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$TakedownRequestToJson(TakedownRequest instance) =>
     <String, dynamic>{
-      if (instance.notifySeller case final value?) 'notify_seller': value,
+      'notify_seller': ?instance.notifySeller,
       'reason': instance.reason,
     };

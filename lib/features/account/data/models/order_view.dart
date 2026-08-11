@@ -3,6 +3,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/refund_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
 import 'package:shopnexus_flutter_app/core/utils/deadline_utils.dart';
 
@@ -110,6 +111,23 @@ abstract class OrderView with _$OrderView {
       order.state == OrderState.open &&
       order.receivedAt == null &&
       order.transport?.status == TransportStatus.delivered;
+
+  /// Vụ hoàn tiền đang mở trên đơn này, nếu có.
+  ///
+  /// `settled` là câu server bảo phải hỏi: các trạng thái chặn là của một cái
+  /// index, không phải một danh sách để mỗi client tự dựng lại.
+  RefundSummary? get openRefund {
+    final refund = order.refund;
+    return refund != null && !refund.settled ? refund : null;
+  }
+
+  /// Người mua mở được một vụ hoàn tiền. Đúng hai điều kiện server đặt ra:
+  /// `POST /orders/{id}/refunds` trả 409 khi escrow đã kết — đơn đã hoàn thành
+  /// hoặc đã hủy — và khi đã có một vụ chưa xong trên cùng đơn.
+  ///
+  /// Hỏi trước chứ không để người mua điền xong biểu mẫu rồi mới nhận 409: một
+  /// nút chỉ nên có mặt khi nó bấm được.
+  bool get canRequestRefund => !isFinished && openRefund == null;
 
   /// Kiện hàng chưa rời kho. Đây là cửa sổ duy nhất còn hủy được, và nó đúng cho
   /// **cả hai bên** — server cho bất kỳ ai trong đơn hủy, rồi từ chối nếu hàng đã

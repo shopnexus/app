@@ -6,8 +6,8 @@ part of 'catalog_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$RecentListingImpl _$$RecentListingImplFromJson(Map<String, dynamic> json) =>
-    _$RecentListingImpl(
+_RecentListing _$RecentListingFromJson(Map<String, dynamic> json) =>
+    _RecentListing(
       id: json['id'] as String,
       name: json['name'] as String,
       price: (json['price'] as num).toInt(),
@@ -17,7 +17,7 @@ _$RecentListingImpl _$$RecentListingImplFromJson(Map<String, dynamic> json) =>
       negotiable: json['negotiable'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$$RecentListingImplToJson(_$RecentListingImpl instance) =>
+Map<String, dynamic> _$RecentListingToJson(_RecentListing instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

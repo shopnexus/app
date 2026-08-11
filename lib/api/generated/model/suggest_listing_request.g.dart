@@ -33,9 +33,9 @@ SuggestListingRequest _$SuggestListingRequestFromJson(
 Map<String, dynamic> _$SuggestListingRequestToJson(
   SuggestListingRequest instance,
 ) => <String, dynamic>{
-  if (instance.attachments case final value?) 'attachments': value,
-  if (instance.language case final value?) 'language': value,
-  if (instance.note case final value?) 'note': value,
-  if (instance.voiceNote case final value?) 'voice_note': value,
-  if (instance.voiceNoteMime case final value?) 'voice_note_mime': value,
+  'attachments': ?instance.attachments,
+  'language': ?instance.language,
+  'note': ?instance.note,
+  'voice_note': ?instance.voiceNote,
+  'voice_note_mime': ?instance.voiceNoteMime,
 };

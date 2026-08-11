@@ -6,44 +6,87 @@ part of 'notifications_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$unreadNotificationsCountHash() =>
-    r'8acc408c967694430e248ed34c6647eb897e4d20';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [unreadNotificationsCount].
-@ProviderFor(unreadNotificationsCount)
-final unreadNotificationsCountProvider =
-    AutoDisposeFutureProvider<int>.internal(
-      unreadNotificationsCount,
-      name: r'unreadNotificationsCountProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$unreadNotificationsCountHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+@ProviderFor(NotificationsController)
+const notificationsControllerProvider = NotificationsControllerProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef UnreadNotificationsCountRef = AutoDisposeFutureProviderRef<int>;
+final class NotificationsControllerProvider
+    extends $AsyncNotifierProvider<NotificationsController, NotificationFeed> {
+  const NotificationsControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'notificationsControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$notificationsControllerHash();
+
+  @$internal
+  @override
+  NotificationsController create() => NotificationsController();
+}
+
 String _$notificationsControllerHash() =>
     r'78d71a54bc05cd0a305dc7575034fc97eea1d7a3';
 
-/// See also [NotificationsController].
-@ProviderFor(NotificationsController)
-final notificationsControllerProvider =
-    AutoDisposeAsyncNotifierProvider<
-      NotificationsController,
-      NotificationFeed
-    >.internal(
-      NotificationsController.new,
-      name: r'notificationsControllerProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$notificationsControllerHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+abstract class _$NotificationsController
+    extends $AsyncNotifier<NotificationFeed> {
+  FutureOr<NotificationFeed> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref =
+        this.ref as $Ref<AsyncValue<NotificationFeed>, NotificationFeed>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<NotificationFeed>, NotificationFeed>,
+              AsyncValue<NotificationFeed>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
 
-typedef _$NotificationsController = AutoDisposeAsyncNotifier<NotificationFeed>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+@ProviderFor(unreadNotificationsCount)
+const unreadNotificationsCountProvider = UnreadNotificationsCountProvider._();
+
+final class UnreadNotificationsCountProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  const UnreadNotificationsCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'unreadNotificationsCountProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$unreadNotificationsCountHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return unreadNotificationsCount(ref);
+  }
+}
+
+String _$unreadNotificationsCountHash() =>
+    r'8acc408c967694430e248ed34c6647eb897e4d20';

@@ -10,6 +10,8 @@ import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/confirm_receipt_sheet.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
@@ -45,6 +47,8 @@ class OrderDetailScreen extends ConsumerWidget {
           onPressed: () => context.pop(),
         ),
         actions: [
+          // Chỉ còn "báo sự cố": đó là câu hỏi cho support, không phải một bước
+          // của đơn. Hoàn tiền đã xuống thanh dưới, nơi nó chỉ hiện khi bấm được.
           PopupMenuButton<_OrderHelpAction>(
             icon: Icon(
               Icons.more_horiz_rounded,
@@ -53,16 +57,19 @@ class OrderDetailScreen extends ConsumerWidget {
             onSelected: (action) => _handleHelpAction(context, action),
             itemBuilder: (_) => const [
               PopupMenuItem(
-                value: _OrderHelpAction.requestRefund,
-                child: Text('Yêu cầu hoàn tiền'),
-              ),
-              PopupMenuItem(
                 value: _OrderHelpAction.reportIssue,
                 child: Text('Báo sự cố đơn hàng'),
               ),
             ],
           ),
         ],
+      ),
+      // Việc của đơn nằm ở chỗ ngón tay đang đứng, không nằm sau ba chấm: một
+      // menu là nơi để tìm, còn "đã nhận hàng" và "yêu cầu hoàn tiền" là hai
+      // việc người ta mở màn này ra để làm.
+      bottomNavigationBar: orderDetailAsync.maybeWhen(
+        data: (view) => _buildActionBar(context, ref, view),
+        orElse: () => null,
       ),
       body: RefreshIndicator(
         color: theme.colorScheme.primary,
@@ -161,6 +168,83 @@ class OrderDetailScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Thanh việc dưới cùng, hoặc không có thanh nào.
+  ///
+  /// Trả `null` chứ không trả một thanh rỗng: một đơn đã xong không còn việc gì,
+  /// và một dải trắng cao 80px ở đáy màn hình nói rằng có.
+  ///
+  /// Hoàn tiền chỉ hiện khi server nhận: đã có vụ đang mở thì đường đi là *xem*
+  /// nó, vì mở vụ thứ hai trên cùng đơn trả 409 — nút thứ hai chỉ để dẫn người
+  /// mua tới một thông báo lỗi.
+  Widget? _buildActionBar(BuildContext context, WidgetRef ref, OrderView view) {
+    final theme = Theme.of(context);
+    final openRefund = view.openRefund;
+
+    final actions = <Widget>[
+      if (view.canConfirmReceipt)
+        FilledButton.icon(
+          onPressed: () => _confirmReceipt(context, ref),
+          icon: const Icon(Icons.inventory_2_outlined, size: 20),
+          label: const Text('Đã nhận hàng'),
+        ),
+      if (openRefund != null)
+        OutlinedButton.icon(
+          onPressed: () =>
+              context.push('/account/refunds/${openRefund.id}'),
+          icon: const Icon(Icons.assignment_return_outlined, size: 20),
+          label: const Text('Xem yêu cầu hoàn tiền'),
+        )
+      else if (view.canRequestRefund)
+        OutlinedButton.icon(
+          onPressed: () => _requestRefund(context, ref),
+          icon: const Icon(Icons.assignment_return_outlined, size: 20),
+          label: const Text('Yêu cầu hoàn tiền'),
+        ),
+    ];
+    if (actions.isEmpty) return null;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant, width: 0.5),
+        ),
+      ),
+      child: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final action in actions) ...[
+              if (action != actions.first) const SizedBox(height: 8),
+              SizedBox(width: double.infinity, height: 48, child: action),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Xác nhận đã nhận hàng, ngay tại màn chi tiết. Trước đây việc này chỉ có ở
+  /// danh sách, nên người mở đơn ra xem rồi mới quyết định phải quay lại mới làm
+  /// được — và `received_at` là thứ mở đồng hồ trả tiền cho người bán.
+  Future<void> _confirmReceipt(BuildContext context, WidgetRef ref) async {
+    final confirmed = await ConfirmReceiptSheet.show(context, orderId: orderId);
+    if (confirmed != true || !context.mounted) return;
+    // Sheet đã tự báo lỗi của nó; ở đây chỉ còn việc nạp lại cả chi tiết lẫn
+    // danh sách phía sau, vì đơn vừa đổi trạng thái.
+    ref.invalidate(buyerOrderDetailProvider(orderId));
+    ref.invalidate(ordersProvider);
+    ref.invalidate(unsettledItemsProvider);
+  }
+
+  Future<void> _requestRefund(BuildContext context, WidgetRef ref) async {
+    final refund = await RequestRefundSheet.show(context, orderId);
+    if (refund == null || !context.mounted) return;
+    ref.invalidate(buyerOrderDetailProvider(orderId));
+    context.push('/account/refunds/${refund.id}');
   }
 
   Widget _buildStatusCard(BuildContext context, OrderView view) {
@@ -593,18 +677,14 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  /// Both live on the order, but only one of them is about money: a refund is
-  /// order's own state machine, while a `order-issue` ticket is a question for
-  /// support.
+  /// Hỏi support, chứ không phải một bước của đơn: một `order-issue` ticket là
+  /// câu hỏi cho người, còn hoàn tiền là máy trạng thái của chính đơn và sống ở
+  /// thanh dưới.
   Future<void> _handleHelpAction(
     BuildContext context,
     _OrderHelpAction action,
   ) async {
     switch (action) {
-      case _OrderHelpAction.requestRefund:
-        final refund = await RequestRefundSheet.show(context, orderId);
-        if (refund == null || !context.mounted) return;
-        context.push('/account/refunds/${refund.id}');
       case _OrderHelpAction.reportIssue:
         final ticket = await RaiseTicketSheet.show(
           context,
@@ -619,4 +699,4 @@ class OrderDetailScreen extends ConsumerWidget {
   }
 }
 
-enum _OrderHelpAction { requestRefund, reportIssue }
+enum _OrderHelpAction { reportIssue }

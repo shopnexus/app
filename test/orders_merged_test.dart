@@ -62,19 +62,19 @@ void main() {
     addTearDown(subscription.close);
   }
 
-  group('GET /orders, cả hai chiều', () {
-    test('không gửi role và không gửi state', () async {
+  group('GET /orders, vai người mua', () {
+    test('gửi role=buyer và không gửi state', () async {
       final backend = RecordingBackend(serves([]));
       final container = containerOn(backend);
 
       await container.read(ordersProvider.future);
 
       final call = backend.calls.firstWhere((c) => c.path == '/orders');
-      // Không có `role`: một danh sách gộp hai chiều. Gửi nó là quay lại cái
-      // segment "Tôi mua | Tôi bán", mà vai chưa bao giờ là câu hỏi người dùng có.
-      expect(call.queryParameters.containsKey('role'), isFalse);
-      // `state` là optional của route. Năm provider lọc theo tab là năm lượt gọi
-      // cho cùng một danh sách.
+      // Màn "Đơn hàng của tôi" là đơn mình mua; đơn mình bán có màn riêng ở
+      // `/seller/orders` với lượt đọc riêng của nó.
+      expect(call.queryParameters['role'], 'buyer');
+      // `state` là optional của route. Sáu provider lọc theo tab là sáu lượt gọi
+      // cho cùng một danh sách — và sáu cursor phải trộn tay.
       expect(call.queryParameters.containsKey('state'), isFalse);
       // Cursor route: `page` bị bỏ qua, nên xin nó là tự giới hạn ở trang đầu.
       expect(call.queryParameters.containsKey('page'), isFalse);
@@ -218,17 +218,17 @@ void main() {
   });
 
   group('dòng chờ gom tiền', () {
-    test('là một endpoint khác, và cũng hỏi cả hai chiều', () async {
+    test('là một endpoint khác, và cũng hỏi đúng vai người mua', () async {
       final backend = RecordingBackend(serves([]));
       final container = containerOn(backend);
 
       await container.read(unsettledItemsProvider.future);
 
       final call = backend.calls.firstWhere((c) => c.path == '/items');
-      // Cũng không có vai: một dòng đã trả tiền chưa thành đơn có thể là dòng mình
-      // mua (còn bỏ được) hay dòng mình bán (chỉ để biết), và khối hiển thị chia
-      // chúng ra theo `item.seller_id` chứ không hỏi hai lần.
-      expect(call.queryParameters.containsKey('role'), isFalse);
+      // Cùng vai với danh sách nó ngồi cạnh: khối này nằm trong tab "Chờ xác
+      // nhận" của màn đơn mua, và việc nó mô tả — trả nốt tiền, hoặc bỏ dòng
+      // trước khi tiền gom thành đơn — là việc của người mua.
+      expect(call.queryParameters['role'], 'buyer');
       expect(call.queryParameters['pending'], true);
     });
   });

@@ -14,6 +14,8 @@ import 'package:shopnexus_flutter_app/features/account/data/repositories/rating_
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 
+import 'support/uploader.dart';
+
 /// Everything the app had a client for and never called: tags, the review
 /// filters, the helpful vote, and the search mode. A wrong *request* is the
 /// drift that matters here — the parameters are all optional, so a dropped one
@@ -122,7 +124,10 @@ void main() {
 
   group('helpful vote', () {
     RatingRepository rating() =>
-        RatingRepository(TrustApi(container.read(dioProvider)));
+        RatingRepository(
+          TrustApi(container.read(dioProvider)),
+          uploaderOn(container.read(dioProvider)),
+        );
 
     test('a helpful vote is +1 and answers the recomputed tally', () async {
       final tally = await rating().voteReview('rvw_1', helpful: true);

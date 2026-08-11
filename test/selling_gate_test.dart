@@ -9,6 +9,8 @@ import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
 import 'package:shopnexus_flutter_app/features/kyc/data/repositories/kyc_repository.dart';
 import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/selling_gate_provider.dart';
 
+import 'support/uploader.dart';
+
 /// Server chặn `POST /listings` khi chưa định danh (`identity_required`, 422) và
 /// app không kiểm ở đâu cả: người chưa định danh chụp ảnh, tải lên, ghi âm, đợi
 /// model chạy, rồi mới bị từ chối — bằng nguyên văn tiếng Anh của server.
@@ -129,7 +131,11 @@ IdentityDocument _document(IdentityStatus status, {String? reason}) =>
 
 class _FakeKycRepository extends KycRepository {
   _FakeKycRepository(this.document)
-    : super(hiveService: HiveService(), api: AccountApi(Dio()));
+    : super(
+        hiveService: HiveService(),
+        api: AccountApi(Dio()),
+        uploader: uploaderOn(),
+      );
 
   final IdentityDocument? document;
   int reads = 0;

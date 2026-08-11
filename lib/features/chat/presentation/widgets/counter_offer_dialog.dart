@@ -23,14 +23,32 @@ class CounterOfferTerms {
 }
 
 class CounterOfferDialog extends StatefulWidget {
-  const CounterOfferDialog({super.key, required this.offer});
+  const CounterOfferDialog({
+    super.key,
+    required this.offer,
+    this.askingUnitPrice,
+  });
 
   final Offer offer;
 
-  static Future<CounterOfferTerms?> show(BuildContext context, Offer offer) {
+  /// Giá niêm yết của biến thể đang thương lượng, và là trần của mọi mức giá gõ
+  /// ở đây: thương lượng chỉ đi xuống, nên server trả 422 `offer_above_asking`
+  /// cho một tổng vượt qua nó.
+  ///
+  /// Null khi người gọi không tra được — DTO của offer không mang giá niêm yết,
+  /// nên nó là một lượt đọc riêng và lượt đọc đó có thể hỏng. Lúc đó hộp thoại
+  /// không tự bịa ra một cái trần: server vẫn là chỗ giữ luật.
+  final int? askingUnitPrice;
+
+  static Future<CounterOfferTerms?> show(
+    BuildContext context,
+    Offer offer, {
+    int? askingUnitPrice,
+  }) {
     return showDialog<CounterOfferTerms>(
       context: context,
-      builder: (_) => CounterOfferDialog(offer: offer),
+      builder: (_) =>
+          CounterOfferDialog(offer: offer, askingUnitPrice: askingUnitPrice),
     );
   }
 
@@ -48,11 +66,26 @@ class _CounterOfferDialogState extends State<CounterOfferDialog> {
   );
   late int _quantity = widget.offer.quantity;
 
+  /// Trần của **tổng tiền**, vì ô nhập là tổng chứ không phải giá mỗi cái — cùng
+  /// phép so sánh server làm. Đổi theo số lượng, nên nút cộng/trừ cũng phải chạy
+  /// lại `validate`.
+  int? get _ceiling {
+    final unit = widget.askingUnitPrice;
+    return unit == null || unit <= 0 ? null : unit * _quantity;
+  }
+
   @override
   void dispose() {
     _totalController.dispose();
     _reasonController.dispose();
     super.dispose();
+  }
+
+  /// Số lượng đổi thì cái trần đổi theo, nên câu báo lỗi đang hiện phải được hỏi
+  /// lại — không thì một tổng vừa hợp lệ vẫn đỏ, hoặc ngược lại.
+  void _setQuantity(int delta) {
+    setState(() => _quantity += delta);
+    if (_ceiling != null) _formKey.currentState?.validate();
   }
 
   void _submit() {
@@ -100,6 +133,12 @@ class _CounterOfferDialogState extends State<CounterOfferDialog> {
                 if (parsed == null || parsed < 1) {
                   return 'Vui lòng nhập số tiền hợp lệ';
                 }
+                final ceiling = _ceiling;
+                if (ceiling != null && parsed > ceiling) {
+                  return 'Không cao hơn giá niêm yết '
+                      '(${MoneyUtils.format(ceiling, currency: currency)} '
+                      'cho $_quantity sản phẩm)';
+                }
                 return null;
               },
             ),
@@ -110,14 +149,12 @@ class _CounterOfferDialogState extends State<CounterOfferDialog> {
                   child: Text('Số lượng', style: theme.textTheme.bodyMedium),
                 ),
                 IconButton(
-                  onPressed: _quantity > 1
-                      ? () => setState(() => _quantity--)
-                      : null,
+                  onPressed: _quantity > 1 ? () => _setQuantity(-1) : null,
                   icon: const Icon(Icons.remove_circle_outline),
                 ),
                 Text('$_quantity', style: theme.textTheme.titleMedium),
                 IconButton(
-                  onPressed: () => setState(() => _quantity++),
+                  onPressed: () => _setQuantity(1),
                   icon: const Icon(Icons.add_circle_outline),
                 ),
               ],

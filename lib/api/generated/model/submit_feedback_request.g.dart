@@ -19,7 +19,4 @@ SubmitFeedbackRequest _$SubmitFeedbackRequestFromJson(
 
 Map<String, dynamic> _$SubmitFeedbackRequestToJson(
   SubmitFeedbackRequest instance,
-) => <String, dynamic>{
-  if (instance.comment case final value?) 'comment': value,
-  'rating': instance.rating,
-};
+) => <String, dynamic>{'comment': ?instance.comment, 'rating': instance.rating};

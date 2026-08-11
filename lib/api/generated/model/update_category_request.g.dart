@@ -29,8 +29,8 @@ UpdateCategoryRequest _$UpdateCategoryRequestFromJson(
 Map<String, dynamic> _$UpdateCategoryRequestToJson(
   UpdateCategoryRequest instance,
 ) => <String, dynamic>{
-  if (instance.clearParentId case final value?) 'clear_parent_id': value,
-  if (instance.description case final value?) 'description': value,
-  if (instance.name case final value?) 'name': value,
-  if (instance.parentId case final value?) 'parent_id': value,
+  'clear_parent_id': ?instance.clearParentId,
+  'description': ?instance.description,
+  'name': ?instance.name,
+  'parent_id': ?instance.parentId,
 };

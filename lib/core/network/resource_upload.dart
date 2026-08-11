@@ -18,11 +18,12 @@ import 'package:shopnexus_flutter_app/api/generated/model/upload_slot.dart';
 /// Một hàm, một cách làm. Header lấy nguyên từ slot: đó là những gì chữ ký đã
 /// bao gồm, nên thêm hay đè lên chúng là cách chắc chắn nhất để nhận 403 từ
 /// object store.
-Future<void> putToSlot(UploadSlot slot, List<int> bytes) async {
-  // Dio trần: URL đã ký sẵn cho đúng key và đúng method, và bearer token của sàn
-  // không có việc gì ở một object store không phải API này — vài store còn từ
-  // chối request mang cả hai.
-  await Dio().put<void>(
+/// [client] chỉ để test thay được: mặc định là một Dio trần, và đó mới là điều
+/// đúng khi chạy thật. URL đã ký sẵn cho đúng key và đúng method, còn bearer
+/// token của sàn thì không có việc gì ở một object store không phải API này —
+/// vài store còn từ chối thẳng request mang cả hai.
+Future<void> putToSlot(UploadSlot slot, List<int> bytes, {Dio? client}) async {
+  await (client ?? Dio()).put<void>(
     slot.url,
     data: Stream<List<int>>.fromIterable([bytes]),
     options: Options(

@@ -4,7 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_feedback.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review_reply.dart';
@@ -14,7 +13,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/submit_review_reply_re
 import 'package:shopnexus_flutter_app/api/generated/model/submit_review_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_review_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/vote_review_request.dart';
-import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
 part 'rating_repository.g.dart';
 
@@ -32,10 +31,12 @@ part 'rating_repository.g.dart';
 /// sinh ra cả hai và cộng chung sẽ tính đơn đó hai lần.
 @riverpod
 RatingRepository ratingRepository(Ref ref) =>
-    RatingRepository(ref.watch(trustApiProvider));
+    RatingRepository(ref.watch(trustApiProvider), ref.watch(resourceUploaderProvider));
 
 class RatingRepository {
-  const RatingRepository(this._trustApi);
+  const RatingRepository(this._trustApi, this._uploader);
+
+  final ResourceUploader _uploader;
 
   /// Cả hai hệ đều là trust's, kể cả cái treo trên route `/orders/{id}/feedback`:
   /// đơn chỉ là thứ đánh giá đó nói *về*, còn uy tín là của trust.
@@ -164,22 +165,14 @@ class RatingRepository {
     return tally;
   }
 
-  /// Ảnh kèm đánh giá. Ba bước như mọi upload khác trong app: giữ chỗ, PUT bằng
-  /// [putToSlot], rồi xác nhận — trước khi xác nhận thì resource không resolve ra gì.
+  /// Ảnh kèm đánh giá. Ba bước là của [ResourceUploader], như mọi upload khác.
   Future<String> uploadReviewPhoto(File file, {required String mime}) async {
-    final size = await file.length();
-    final reserved = (await _trustApi.reviewsUploadsPost(
-      createUploadRequest: CreateUploadRequest(
-        filename: file.uri.pathSegments.last,
-        mime: mime,
-        size: size,
-      ),
-    )).data?.data;
-    if (reserved == null) throw StateError('empty upload slot');
-
-    await putToSlot(reserved, await file.readAsBytes());
-
-    await _trustApi.reviewsUploadsIdConfirmationPost(id: reserved.resourceId);
-    return reserved.resourceId;
+    final resource = await _uploader.upload(
+      UploadTarget.review,
+      bytes: await file.readAsBytes(),
+      filename: file.uri.pathSegments.last,
+      mime: mime,
+    );
+    return resource.id;
   }
 }

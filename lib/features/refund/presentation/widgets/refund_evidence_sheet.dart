@@ -1,12 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
-import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/image_upload_field.dart';
 
 /// Bổ sung ảnh cho một vụ việc đang mở.
 ///
@@ -39,40 +38,20 @@ class RefundEvidenceSheet extends ConsumerStatefulWidget {
 class _RefundEvidenceSheetState extends ConsumerState<RefundEvidenceSheet> {
   static const _maxPhotos = 10;
 
-  final _picker = ImagePicker();
-  final List<File> _photos = [];
+  /// Resource đã xác nhận. Ảnh đi lên ngay lúc chọn — route đính kèm chỉ nhận
+  /// resource *đã* confirm, và một ảnh hỏng phải hỏng một mình chứ không kéo cả
+  /// lần nộp theo.
+  List<Resource> _photos = const [];
   bool _submitting = false;
-
-  Future<void> _pick() async {
-    final picked = await _picker.pickMultiImage();
-    if (picked.isEmpty) return;
-    setState(() {
-      for (final file in picked) {
-        if (_photos.length >= _maxPhotos) break;
-        _photos.add(File(file.path));
-      }
-    });
-  }
 
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
-      final repository = ref.read(accountRepositoryProvider);
-      // Tải lên trước, rồi mới gắn: route đính kèm chỉ nhận resource đã confirm,
-      // nên một ảnh hỏng phải làm hỏng cả lần nộp chứ không được gửi danh sách thiếu.
-      final ids = <String>[];
-      for (final photo in _photos) {
-        ids.add(
-          await repository.uploadOrderEvidence(
-            bytes: await photo.readAsBytes(),
-            filename: photo.uri.pathSegments.last,
-            mime: 'image/jpeg',
-          ),
-        );
-      }
       await ref
           .read(refundActionsProvider.notifier)
-          .addAttachments(widget.refundId, ids);
+          .addAttachments(widget.refundId, [
+            for (final photo in _photos) photo.id,
+          ]);
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
@@ -114,56 +93,11 @@ class _RefundEvidenceSheetState extends ConsumerState<RefundEvidenceSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (var index = 0; index < _photos.length; index++)
-                  SizedBox(
-                    width: 72,
-                    height: 72,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.file(_photos[index], fit: BoxFit.cover),
-                        ),
-                        if (!_submitting)
-                          Positioned(
-                            top: -6,
-                            right: -6,
-                            child: IconButton(
-                              iconSize: 18,
-                              icon: const Icon(Icons.cancel_rounded),
-                              color: theme.colorScheme.error,
-                              onPressed: () =>
-                                  setState(() => _photos.removeAt(index)),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                if (!_submitting && _photos.length < _maxPhotos)
-                  InkWell(
-                    onTap: _pick,
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: theme.colorScheme.outlineVariant,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.add_a_photo_outlined,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-              ],
+            ImageUploadField(
+              target: UploadTarget.order,
+              maxPhotos: _maxPhotos,
+              enabled: !_submitting,
+              onChanged: (photos) => setState(() => _photos = photos),
             ),
             const SizedBox(height: 20),
             SizedBox(

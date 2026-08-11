@@ -20,9 +20,9 @@ SaveOptionRequest _$SaveOptionRequestFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$SaveOptionRequestToJson(SaveOptionRequest instance) =>
     <String, dynamic>{
-      if (instance.description case final value?) 'description': value,
-      if (instance.isEnabled case final value?) 'is_enabled': value,
-      if (instance.name case final value?) 'name': value,
-      if (instance.priority case final value?) 'priority': value,
-      if (instance.provider case final value?) 'provider': value,
+      'description': ?instance.description,
+      'is_enabled': ?instance.isEnabled,
+      'name': ?instance.name,
+      'priority': ?instance.priority,
+      'provider': ?instance.provider,
     };

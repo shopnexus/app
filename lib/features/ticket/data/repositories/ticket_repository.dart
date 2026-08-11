@@ -3,15 +3,13 @@ import 'dart:io';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shopnexus_flutter_app/api/api_providers.dart';
-import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/open_ticket_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_reason.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
-import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
 part 'ticket_repository.g.dart';
 
@@ -28,13 +26,11 @@ class TicketPageResult {
 /// Tickets are the one surface for abuse reports, refund disputes, order issues,
 /// payment problems and feature requests — `kind` is what differs.
 class TicketRepository {
-  const TicketRepository(this._api, this._chatApi);
+  const TicketRepository(this._api, this._uploader);
 
   final TrustApi _api;
 
-  /// A ticket's attachments become its opening chat message's images, so they go
-  /// through chat's upload route — there is no ticket-specific one.
-  final ChatApi _chatApi;
+  final ResourceUploader _uploader;
 
   Future<TicketPageResult> list({
     TicketStatus? status,
@@ -89,29 +85,20 @@ class TicketRepository {
     return ticket;
   }
 
-  /// Reserve a slot, PUT the bytes to the signed URL, confirm. Until the
-  /// confirmation lands the resource resolves to nothing, so a half-finished
-  /// upload can never be attached.
+  /// A ticket's attachments become its opening chat message's images, so they go
+  /// up as [UploadTarget.conversation] — there is no ticket-specific route, and a
+  /// resource of one module does not attach to another.
   Future<String> uploadAttachment(File file, {required String mime}) async {
-    final slot = await _chatApi.conversationsUploadsPost(
-      createUploadRequest: CreateUploadRequest(
-        filename: file.uri.pathSegments.last,
-        mime: mime,
-        size: await file.length(),
-      ),
+    final resource = await _uploader.upload(
+      UploadTarget.conversation,
+      bytes: await file.readAsBytes(),
+      filename: file.uri.pathSegments.last,
+      mime: mime,
     );
-    final reserved = slot.data?.data;
-    if (reserved == null) throw StateError('empty upload slot');
-
-    await putToSlot(reserved, await file.readAsBytes());
-
-    await _chatApi.conversationsUploadsIdConfirmationPost(
-      id: reserved.resourceId,
-    );
-    return reserved.resourceId;
+    return resource.id;
   }
 }
 
 @riverpod
 TicketRepository ticketRepository(Ref ref) =>
-    TicketRepository(ref.watch(trustApiProvider), ref.watch(chatApiProvider));
+    TicketRepository(ref.watch(trustApiProvider), ref.watch(resourceUploaderProvider));

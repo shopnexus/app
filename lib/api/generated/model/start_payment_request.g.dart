@@ -28,7 +28,7 @@ StartPaymentRequest _$StartPaymentRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$StartPaymentRequestToJson(
   StartPaymentRequest instance,
 ) => <String, dynamic>{
-  if (instance.amount case final value?) 'amount': value,
+  'amount': ?instance.amount,
   'payment_option': instance.paymentOption,
-  if (instance.returnUrl case final value?) 'return_url': value,
+  'return_url': ?instance.returnUrl,
 };

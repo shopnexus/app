@@ -5,7 +5,6 @@ import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/chat_unread_count.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/conversation.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/mark_conversation_read_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/message.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
@@ -13,7 +12,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/send_message_request.d
 import 'package:shopnexus_flutter_app/api/generated/model/start_conversation_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_message_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_offer_request.dart';
-import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
 part 'chat_repository.g.dart';
 
@@ -29,9 +28,11 @@ class ChatPage<T> {
 }
 
 class ChatRepository {
-  const ChatRepository(this._api, this._orderApi);
+  const ChatRepository(this._api, this._orderApi, this._uploader);
 
   final ChatApi _api;
+
+  final ResourceUploader _uploader;
 
   /// A negotiation card names an offer and nothing else, so rendering a thread
   /// means reading — and answering — that offer. The terms live in order.
@@ -110,26 +111,21 @@ class ChatRepository {
     return message;
   }
 
-  /// Reserve a slot, PUT the bytes to the signed URL, confirm the upload.
+  /// Hands back the resource id `SendMessageRequest.attachments` takes. The three
+  /// steps are [ResourceUploader]'s; a composer that wants to show the photo it
+  /// just sent calls that directly and keeps the `Resource`.
   Future<String> uploadAttachment({
     required List<int> bytes,
     required String filename,
     required String mime,
   }) async {
-    final slotResponse = await _api.conversationsUploadsPost(
-      createUploadRequest: CreateUploadRequest(
-        filename: filename,
-        mime: mime,
-        size: bytes.length,
-      ),
+    final resource = await _uploader.upload(
+      UploadTarget.conversation,
+      bytes: bytes,
+      filename: filename,
+      mime: mime,
     );
-    final slot = slotResponse.data?.data;
-    if (slot == null) throw StateError('empty upload slot response');
-
-    await putToSlot(slot, bytes);
-
-    await _api.conversationsUploadsIdConfirmationPost(id: slot.resourceId);
-    return slot.resourceId;
+    return resource.id;
   }
 
   /// Omitting `before` marks the whole thread read. The answer is the updated
@@ -222,5 +218,6 @@ ChatRepository chatRepository(Ref ref) {
   return ChatRepository(
     ref.watch(chatApiProvider),
     ref.watch(orderApiProvider),
+    ref.watch(resourceUploaderProvider),
   );
 }

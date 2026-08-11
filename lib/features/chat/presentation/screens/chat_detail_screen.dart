@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
+import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_state.dart';
@@ -88,7 +89,17 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   }
 
   Future<void> _counterOffer(Offer offer) async {
-    final terms = await CounterOfferDialog.show(context, offer);
+    // Giá niêm yết là trần của mức giá trả lại, và DTO của offer không mang nó —
+    // nó chỉ mang `variant_id`. Một lượt đọc để hộp thoại nói được câu "không
+    // cao hơn X" ngay lúc gõ; hỏng thì vẫn mở hộp thoại, và server là chỗ giữ
+    // luật.
+    final askingUnitPrice = await _askingUnitPrice(offer);
+    if (!mounted) return;
+    final terms = await CounterOfferDialog.show(
+      context,
+      offer,
+      askingUnitPrice: askingUnitPrice,
+    );
     if (terms == null) return;
     await _notifier.counterOffer(
       offer.id,
@@ -96,6 +107,24 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       quantity: terms.quantity,
       reason: terms.reason,
     );
+  }
+
+  /// Giá đang niêm yết của đúng biến thể đang thương lượng, hoặc null nếu không
+  /// tra được — biến thể bị gỡ, mạng hỏng, hay tin đăng đã xoá.
+  Future<int?> _askingUnitPrice(Offer offer) async {
+    try {
+      final detail = await ref
+          .read(catalogRepositoryProvider)
+          .listingDetail(offer.listingId);
+      for (final variant in detail.variants) {
+        if (variant.id == offer.variantId) return variant.price;
+      }
+    } catch (_) {
+      // Nuốt có chủ đích: đây là thứ làm câu báo lỗi đẹp hơn, không phải điều
+      // kiện để trả giá. Chặn người ta trả giá vì một lượt đọc phụ hỏng là đổi
+      // một bất tiện lấy một chức năng.
+    }
+    return null;
   }
 
   Future<void> _reportCounterparty(Conversation conversation) async {

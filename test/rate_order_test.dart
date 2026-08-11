@@ -8,13 +8,16 @@ import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/rating_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/rate_order_provider.dart';
 
+import 'support/uploader.dart';
+
 /// Một đơn sinh ra hai thứ chấm điểm — feedback giao dịch (**kín**, vào uy tín) và
 /// review sản phẩm (công khai, vào `cached_rating` của tin). Người dùng thấy một
 /// việc, hệ thống ghi hai bản. Test này giữ ba tính chất của cái ghép đó.
 class _FakeRatings extends RatingRepository {
   /// Một `TrustApi` trên Dio trần: không method nào ở dưới gọi tới nó, mọi thứ
   /// test dùng đều được override, nên không có request nào rời khỏi tiến trình.
-  _FakeRatings({this.failReview = false}) : super(TrustApi(Dio()));
+  _FakeRatings({this.failReview = false})
+    : super(TrustApi(Dio()), uploaderOn());
 
   final bool failReview;
   final List<String> calls = [];

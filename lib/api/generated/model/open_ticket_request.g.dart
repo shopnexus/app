@@ -29,16 +29,15 @@ OpenTicketRequest _$OpenTicketRequestFromJson(Map<String, dynamic> json) =>
       return val;
     }, fieldKeyMap: const {'refId': 'ref_id'});
 
-Map<String, dynamic> _$OpenTicketRequestToJson(
-  OpenTicketRequest instance,
-) => <String, dynamic>{
-  if (instance.attachments case final value?) 'attachments': value,
-  if (instance.body case final value?) 'body': value,
-  'kind': _$TicketKindEnumMap[instance.kind]!,
-  if (_$TicketReasonEnumMap[instance.reason] case final value?) 'reason': value,
-  if (instance.refId case final value?) 'ref_id': value,
-  'subject': instance.subject,
-};
+Map<String, dynamic> _$OpenTicketRequestToJson(OpenTicketRequest instance) =>
+    <String, dynamic>{
+      'attachments': ?instance.attachments,
+      'body': ?instance.body,
+      'kind': _$TicketKindEnumMap[instance.kind]!,
+      'reason': ?_$TicketReasonEnumMap[instance.reason],
+      'ref_id': ?instance.refId,
+      'subject': instance.subject,
+    };
 
 const _$TicketKindEnumMap = {
   TicketKind.reportListing: 'report-listing',

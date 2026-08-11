@@ -26,7 +26,7 @@ SendMessageRequest _$SendMessageRequestFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$SendMessageRequestToJson(SendMessageRequest instance) =>
     <String, dynamic>{
-      if (instance.attachments case final value?) 'attachments': value,
-      if (instance.body case final value?) 'body': value,
-      if (instance.refs case final value?) 'refs': value,
+      'attachments': ?instance.attachments,
+      'body': ?instance.body,
+      'refs': ?instance.refs,
     };

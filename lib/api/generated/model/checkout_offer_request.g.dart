@@ -30,6 +30,6 @@ Map<String, dynamic> _$CheckoutOfferRequestToJson(
   CheckoutOfferRequest instance,
 ) => <String, dynamic>{
   'contact_id': instance.contactId,
-  if (instance.note case final value?) 'note': value,
+  'note': ?instance.note,
   'transport_option': instance.transportOption,
 };

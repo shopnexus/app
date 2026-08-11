@@ -6,210 +6,192 @@ part of 'seller_products_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$sellerListingCountsHash() =>
-    r'025870ceac45254a9437b9d46d745aff8ca3308b';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// One total per status, off each page's `meta.total_count`. The filter chips and
+/// the dashboard tiles are the same four numbers, so they are read once.
+
+@ProviderFor(sellerListingCounts)
+const sellerListingCountsProvider = SellerListingCountsProvider._();
 
 /// One total per status, off each page's `meta.total_count`. The filter chips and
 /// the dashboard tiles are the same four numbers, so they are read once.
-///
-/// Copied from [sellerListingCounts].
-@ProviderFor(sellerListingCounts)
-final sellerListingCountsProvider =
-    AutoDisposeFutureProvider<Map<ListingStatus, int>>.internal(
-      sellerListingCounts,
-      name: r'sellerListingCountsProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$sellerListingCountsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SellerListingCountsRef =
-    AutoDisposeFutureProviderRef<Map<ListingStatus, int>>;
-String _$listingTakedownReasonHash() =>
-    r'2d30ef2230971dad766322d5639cfdd20ac12441';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
-/// detail reads at all.
-///
-/// Copied from [listingTakedownReason].
-@ProviderFor(listingTakedownReason)
-const listingTakedownReasonProvider = ListingTakedownReasonFamily();
-
-/// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
-/// detail reads at all.
-///
-/// Copied from [listingTakedownReason].
-class ListingTakedownReasonFamily extends Family<AsyncValue<String?>> {
-  /// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
-  /// detail reads at all.
-  ///
-  /// Copied from [listingTakedownReason].
-  const ListingTakedownReasonFamily();
-
-  /// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
-  /// detail reads at all.
-  ///
-  /// Copied from [listingTakedownReason].
-  ListingTakedownReasonProvider call(String listingId) {
-    return ListingTakedownReasonProvider(listingId);
-  }
-
-  @override
-  ListingTakedownReasonProvider getProviderOverride(
-    covariant ListingTakedownReasonProvider provider,
-  ) {
-    return call(provider.listingId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'listingTakedownReasonProvider';
-}
-
-/// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
-/// detail reads at all.
-///
-/// Copied from [listingTakedownReason].
-class ListingTakedownReasonProvider extends AutoDisposeFutureProvider<String?> {
-  /// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
-  /// detail reads at all.
-  ///
-  /// Copied from [listingTakedownReason].
-  ListingTakedownReasonProvider(String listingId)
-    : this._internal(
-        (ref) =>
-            listingTakedownReason(ref as ListingTakedownReasonRef, listingId),
-        from: listingTakedownReasonProvider,
-        name: r'listingTakedownReasonProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$listingTakedownReasonHash,
-        dependencies: ListingTakedownReasonFamily._dependencies,
-        allTransitiveDependencies:
-            ListingTakedownReasonFamily._allTransitiveDependencies,
-        listingId: listingId,
+final class SellerListingCountsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<ListingStatus, int>>,
+          Map<ListingStatus, int>,
+          FutureOr<Map<ListingStatus, int>>
+        >
+    with
+        $FutureModifier<Map<ListingStatus, int>>,
+        $FutureProvider<Map<ListingStatus, int>> {
+  /// One total per status, off each page's `meta.total_count`. The filter chips and
+  /// the dashboard tiles are the same four numbers, so they are read once.
+  const SellerListingCountsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sellerListingCountsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
       );
 
-  ListingTakedownReasonProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.listingId,
-  }) : super.internal();
+  @override
+  String debugGetCreateSourceHash() => _$sellerListingCountsHash();
 
-  final String listingId;
+  @$internal
+  @override
+  $FutureProviderElement<Map<ListingStatus, int>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  Override overrideWith(
-    FutureOr<String?> Function(ListingTakedownReasonRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: ListingTakedownReasonProvider._internal(
-        (ref) => create(ref as ListingTakedownReasonRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        listingId: listingId,
-      ),
-    );
+  FutureOr<Map<ListingStatus, int>> create(Ref ref) {
+    return sellerListingCounts(ref);
+  }
+}
+
+String _$sellerListingCountsHash() =>
+    r'025870ceac45254a9437b9d46d745aff8ca3308b';
+
+/// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
+/// detail reads at all.
+
+@ProviderFor(listingTakedownReason)
+const listingTakedownReasonProvider = ListingTakedownReasonFamily._();
+
+/// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
+/// detail reads at all.
+
+final class ListingTakedownReasonProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  /// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
+  /// detail reads at all.
+  const ListingTakedownReasonProvider._({
+    required ListingTakedownReasonFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'listingTakedownReasonProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$listingTakedownReasonHash();
+
+  @override
+  String toString() {
+    return r'listingTakedownReasonProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  AutoDisposeFutureProviderElement<String?> createElement() {
-    return _ListingTakedownReasonProviderElement(this);
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    final argument = this.argument as String;
+    return listingTakedownReason(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is ListingTakedownReasonProvider &&
-        other.listingId == listingId;
+    return other is ListingTakedownReasonProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, listingId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin ListingTakedownReasonRef on AutoDisposeFutureProviderRef<String?> {
-  /// The parameter `listingId` of this provider.
-  String get listingId;
-}
+String _$listingTakedownReasonHash() =>
+    r'2d30ef2230971dad766322d5639cfdd20ac12441';
 
-class _ListingTakedownReasonProviderElement
-    extends AutoDisposeFutureProviderElement<String?>
-    with ListingTakedownReasonRef {
-  _ListingTakedownReasonProviderElement(super.provider);
+/// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
+/// detail reads at all.
+
+final class ListingTakedownReasonFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<String?>, String> {
+  const ListingTakedownReasonFamily._()
+    : super(
+        retry: null,
+        name: r'listingTakedownReasonProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Watched only by a card whose `taken_down_at` is set, so a healthy shop makes no
+  /// detail reads at all.
+
+  ListingTakedownReasonProvider call(String listingId) =>
+      ListingTakedownReasonProvider._(argument: listingId, from: this);
 
   @override
-  String get listingId => (origin as ListingTakedownReasonProvider).listingId;
+  String toString() => r'listingTakedownReasonProvider';
+}
+
+@ProviderFor(SellerProductsNotifier)
+const sellerProductsProvider = SellerProductsNotifierProvider._();
+
+final class SellerProductsNotifierProvider
+    extends $NotifierProvider<SellerProductsNotifier, SellerProductsState> {
+  const SellerProductsNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sellerProductsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$sellerProductsNotifierHash();
+
+  @$internal
+  @override
+  SellerProductsNotifier create() => SellerProductsNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SellerProductsState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SellerProductsState>(value),
+    );
+  }
 }
 
 String _$sellerProductsNotifierHash() =>
     r'd2f7780c2e08be98b38bfa2ea8c873c4b0524cae';
 
-/// See also [SellerProductsNotifier].
-@ProviderFor(SellerProductsNotifier)
-final sellerProductsNotifierProvider =
-    AutoDisposeNotifierProvider<
-      SellerProductsNotifier,
-      SellerProductsState
-    >.internal(
-      SellerProductsNotifier.new,
-      name: r'sellerProductsNotifierProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$sellerProductsNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$SellerProductsNotifier = AutoDisposeNotifier<SellerProductsState>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$SellerProductsNotifier extends $Notifier<SellerProductsState> {
+  SellerProductsState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<SellerProductsState, SellerProductsState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<SellerProductsState, SellerProductsState>,
+              SellerProductsState,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

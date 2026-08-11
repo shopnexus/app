@@ -8,12 +8,11 @@ import 'package:shopnexus_flutter_app/api/generated/api/catalog_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_listing_request.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/publish_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/suggest_listing_request.dart';
-import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
 part 'listing_composer_repository.g.dart';
 
@@ -34,32 +33,28 @@ class VoiceNote {
 /// writes nothing at all, so an abandoned attempt leaves only the uploaded
 /// photos behind, and [createListing] is the only call that creates anything.
 class ListingComposerRepository {
-  ListingComposerRepository(this._catalog, this._account);
+  ListingComposerRepository(this._catalog, this._account, this._uploader);
 
   final CatalogApi _catalog;
   final AccountApi _account;
+  final ResourceUploader _uploader;
 
-  /// Reserve a slot, PUT the bytes at the store, confirm the object landed.
   /// Answers the resource id, which is what every `attachments` field takes —
-  /// an unconfirmed slot resolves to nothing, so it cannot be attached.
+  /// an unconfirmed slot resolves to nothing, so it cannot be attached. The
+  /// three steps behind it live in [ResourceUploader]; a screen that also needs
+  /// the signed `url` calls that directly rather than through here.
   Future<String> uploadPhoto({
     required List<int> bytes,
     required String filename,
     required String mime,
   }) async {
-    final reserved = await _catalog.listingsUploadsPost(
-      createUploadRequest: CreateUploadRequest(
-        filename: filename,
-        mime: mime,
-        size: bytes.length,
-      ),
+    final resource = await _uploader.upload(
+      UploadTarget.listing,
+      bytes: bytes,
+      filename: filename,
+      mime: mime,
     );
-    final slot = reserved.data!.data;
-
-    await putToSlot(slot, bytes);
-
-    await _catalog.listingsUploadsIdConfirmationPost(id: slot.resourceId);
-    return slot.resourceId;
+    return resource.id;
   }
 
   /// One synchronous call. At least one of [attachments], [note] or [voiceNote]
@@ -124,4 +119,5 @@ ListingComposerRepository listingComposerRepository(Ref ref) =>
     ListingComposerRepository(
       ref.watch(catalogApiProvider),
       ref.watch(accountApiProvider),
+      ref.watch(resourceUploaderProvider),
     );
