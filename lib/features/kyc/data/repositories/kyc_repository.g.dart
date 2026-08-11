@@ -6,22 +6,46 @@ part of 'kyc_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$kycRepositoryHash() => r'cc45386f14064da90ca12b7e2805b10969180495';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [kycRepository].
 @ProviderFor(kycRepository)
-final kycRepositoryProvider = AutoDisposeProvider<KycRepository>.internal(
-  kycRepository,
-  name: r'kycRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$kycRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+const kycRepositoryProvider = KycRepositoryProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef KycRepositoryRef = AutoDisposeProviderRef<KycRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class KycRepositoryProvider
+    extends $FunctionalProvider<KycRepository, KycRepository, KycRepository>
+    with $Provider<KycRepository> {
+  const KycRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'kycRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$kycRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<KycRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  KycRepository create(Ref ref) {
+    return kycRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(KycRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<KycRepository>(value),
+    );
+  }
+}
+
+String _$kycRepositoryHash() => r'cc45386f14064da90ca12b7e2805b10969180495';

@@ -15,6 +15,4 @@ PutTagRequest _$PutTagRequestFromJson(Map<String, dynamic> json) =>
     });
 
 Map<String, dynamic> _$PutTagRequestToJson(PutTagRequest instance) =>
-    <String, dynamic>{
-      if (instance.description case final value?) 'description': value,
-    };
+    <String, dynamic>{'description': ?instance.description};

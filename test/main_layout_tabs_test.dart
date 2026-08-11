@@ -71,32 +71,33 @@ void main() {
 
   final sellButton = find.byIcon(Icons.add_circle_outline_rounded);
 
-  testWidgets('nút + mở khu bán hàng', (tester) async {
+  testWidgets('nút + mở thẳng biểu mẫu đăng bán', (tester) async {
     await tester.pumpWidget(app());
 
     await tester.tap(sellButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('seller dashboard'), findsOneWidget);
+    // Không phải bảng số liệu của người bán: cái + hỏi "đăng bán cái gì", và
+    // bắt người ta đi qua một trang thống kê để tới đó là một lần chạm thừa.
+    expect(find.text('posting form'), findsOneWidget);
+    expect(find.text('seller dashboard'), findsNothing);
   });
 
-  /// `go`, không `push`: một tab là điểm đến, không phải thứ chồng lên điểm đến
-  /// khác. Nếu nó `push`, khu bán hàng sẽ nằm trên màn trước đó và nút back của
-  /// hệ thống rơi ngược về chỗ vừa rời — không tab nào khác cư xử như vậy.
-  testWidgets('+ điều hướng như một tab, không chồng màn lên nhau', (
-    tester,
-  ) async {
+  /// `push`, không `go` — và đây là chỗ duy nhất trong thanh nav được phép thế.
+  /// Bốn tab kia là *điểm đến*; cái + là một việc đang làm dở, nên nó chồng lên
+  /// chỗ đang đứng và nút back trả người ta về đúng chỗ đó thay vì về Trang chủ.
+  testWidgets('+ chồng lên màn đang đứng, và quay lại được', (tester) async {
     await tester.pumpWidget(app(at: '/account'));
 
     await tester.tap(sellButton);
     await tester.pumpAndSettle();
-    expect(find.text('seller dashboard'), findsOneWidget);
+    expect(find.text('posting form'), findsOneWidget);
 
-    final context = tester.element(find.text('seller dashboard'));
+    final context = tester.element(find.text('posting form'));
     expect(
       GoRouter.of(context).canPop(),
-      isFalse,
-      reason: 'không có màn nào bị chồng dưới',
+      isTrue,
+      reason: 'bỏ dở việc đăng bán phải quay về chỗ vừa rời',
     );
   });
 
@@ -172,28 +173,27 @@ void main() {
     });
   });
 
-  group('chấm việc-cần-làm trên tab Tài khoản', () {
-    /// Chấm, không phải số: nó chỉ nói "vào đây xem", nên nó không thể nói sai.
-    testWidgets('có việc thì hiện chấm mà không hiện con số', (tester) async {
+  group('việc-cần-làm không leo lên thanh nav', () {
+    /// Thanh nav chỉ còn báo **chưa đọc**. Việc cần làm sống trong khối
+    /// `ActionInboxView` ở trang Tài khoản, nơi mỗi dòng nói ra nó là việc gì và
+    /// mở đúng chỗ để làm — một cái chấm ngoài này chỉ nói "vào đây xem".
+    ///
+    /// Bài này giữ điều đó cố định: có việc cũng không được vẽ thêm gì lên tab
+    /// Tài khoản, và tuyệt đối không phải một con số.
+    testWidgets('có việc cũng không vẽ gì lên tab Tài khoản', (tester) async {
       await tester.pumpWidget(
         app(unread: 0, inbox: const ActionInbox(ordersToShip: 3)),
       );
       await tester.pumpAndSettle();
 
       expect(find.text('3'), findsNothing);
-      expect(_dots(tester), 1);
-    });
-
-    testWidgets('không việc nào thì không chấm', (tester) async {
-      await tester.pumpWidget(app(unread: 0, inbox: const ActionInbox()));
-      await tester.pumpAndSettle();
-
       expect(_dots(tester), 0);
     });
 
-    /// Badge của Hộp thư và chấm của Tài khoản là hai chỗ độc lập: một hộp thư
-    /// sạch vẫn phải để lộ việc của người bán, và ngược lại.
-    testWidgets('badge và chấm không dùng chung một nguồn', (tester) async {
+    /// Và badge Tin nhắn vẫn là của riêng nó: một hộp thư có tin chưa đọc phải
+    /// hiện số đó dù người bán có việc hay không, và việc của người bán không
+    /// được biến thành một con số ở đây.
+    testWidgets('badge Tin nhắn không dính gì tới việc cần làm', (tester) async {
       await tester.pumpWidget(
         app(unread: 4, inbox: const ActionInbox(refundsAsSeller: 2)),
       );
@@ -201,7 +201,7 @@ void main() {
 
       expect(find.text('4'), findsOneWidget, reason: 'chưa đọc là 4');
       expect(find.text('2'), findsNothing, reason: 'việc cần làm không có số');
-      expect(_dots(tester), 1);
+      expect(_dots(tester), 0);
     });
   });
 

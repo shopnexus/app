@@ -1,10 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
+import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_actions_provider.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/image_upload_field.dart';
 
 /// Người mua nói hàng đã tới, kèm ảnh mở hộp.
 ///
@@ -37,32 +37,32 @@ class ConfirmReceiptSheet extends ConsumerStatefulWidget {
 class _ConfirmReceiptSheetState extends ConsumerState<ConfirmReceiptSheet> {
   static const _maxPhotos = 10;
 
-  final _picker = ImagePicker();
-  final List<File> _photos = [];
+  /// Resource đã xác nhận, do [ImageUploadField] tải lên. Ảnh được đưa lên ngay
+  /// lúc chọn chứ không đợi lúc bấm gửi: server chỉ nhận resource *đã* confirm,
+  /// nên gộp hai việc vào một lần bấm biến một ảnh hỏng thành cả lần xác nhận hỏng.
+  List<Resource> _photos = const [];
   bool _submitting = false;
 
-  Future<void> _pickPhotos() async {
-    final picked = await _picker.pickMultiImage();
-    if (picked.isEmpty) return;
-    setState(() {
-      for (final file in picked) {
-        if (_photos.length >= _maxPhotos) break;
-        _photos.add(File(file.path));
-      }
-    });
-  }
+  /// Vì sao lần bấm vừa rồi chưa gửi được. Giữ ở đây chứ không chỉ ném snackbar:
+  /// câu trả lời nằm ngay trên dải ảnh, đúng chỗ phải sửa.
+  String? _error;
 
   Future<void> _submit() async {
-    setState(() => _submitting = true);
+    // Nút không bị vô hiệu hoá khi chưa có ảnh, nó *trả lời*: một nút bấm vào
+    // không xảy ra gì là cách chắc chắn nhất để người dùng kết luận app hỏng —
+    // và đó đúng là chuyện đã xảy ra ở đây.
+    if (_photos.isEmpty) {
+      setState(() => _error = 'Cần ít nhất một ảnh mở hộp trước khi xác nhận.');
+      return;
+    }
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
     final ok = await ref
         .read(ordersActionsProvider.notifier)
         .confirmReceipt(widget.orderId, [
-          for (final photo in _photos)
-            ReceiptPhoto(
-              bytes: await photo.readAsBytes(),
-              filename: photo.uri.pathSegments.last,
-              mime: 'image/jpeg',
-            ),
+          for (final photo in _photos) photo.id,
         ]);
     if (!mounted) return;
     if (ok) {
@@ -80,7 +80,6 @@ class _ConfirmReceiptSheetState extends ConsumerState<ConfirmReceiptSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final canSubmit = _photos.isNotEmpty && !_submitting;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -125,20 +124,29 @@ class _ConfirmReceiptSheetState extends ConsumerState<ConfirmReceiptSheet> {
               ),
             ),
             const SizedBox(height: 12),
-            _PhotoStrip(
-              photos: _photos,
-              onAdd: _submitting || _photos.length >= _maxPhotos
-                  ? null
-                  : _pickPhotos,
-              onRemove: _submitting
-                  ? null
-                  : (index) => setState(() => _photos.removeAt(index)),
+            ImageUploadField(
+              target: UploadTarget.order,
+              maxPhotos: _maxPhotos,
+              enabled: !_submitting,
+              onChanged: (photos) => setState(() {
+                _photos = photos;
+                if (photos.isNotEmpty) _error = null;
+              }),
             ),
+            if (_error case final error?) ...[
+              const SizedBox(height: 8),
+              Text(
+                error,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.error,
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: canSubmit ? _submit : null,
+                onPressed: _submitting ? null : _submit,
                 child: Text(
                   _submitting ? 'Đang gửi…' : 'Xác nhận đã nhận hàng',
                 ),
@@ -157,74 +165,6 @@ class _ConfirmReceiptSheetState extends ConsumerState<ConfirmReceiptSheet> {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// Ảnh đã chọn, cộng một ô "thêm" ở cuối — cùng hình dạng với chỗ đính kèm của
-/// ticket, để hai nơi chụp ảnh trong app không trông như hai sản phẩm.
-class _PhotoStrip extends StatelessWidget {
-  const _PhotoStrip({
-    required this.photos,
-    required this.onAdd,
-    required this.onRemove,
-  });
-
-  final List<File> photos;
-  final VoidCallback? onAdd;
-  final void Function(int index)? onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (var index = 0; index < photos.length; index++)
-          SizedBox(
-            width: 72,
-            height: 72,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.file(photos[index], fit: BoxFit.cover),
-                ),
-                if (onRemove != null)
-                  Positioned(
-                    top: -6,
-                    right: -6,
-                    child: IconButton(
-                      iconSize: 18,
-                      icon: const Icon(Icons.cancel_rounded),
-                      color: theme.colorScheme.error,
-                      onPressed: () => onRemove!(index),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        if (onAdd != null)
-          InkWell(
-            onTap: onAdd,
-            borderRadius: BorderRadius.circular(10),
-            child: Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: theme.colorScheme.outlineVariant),
-              ),
-              child: Icon(
-                Icons.add_a_photo_outlined,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

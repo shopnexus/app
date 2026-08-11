@@ -14,6 +14,8 @@ import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repos
 import 'package:shopnexus_flutter_app/features/refund/data/repositories/refund_repository.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
 
+import 'support/uploader.dart';
+
 /// Bốn nguồn số độc lập nhau. Gộp chúng bằng một `Future.wait` trần có nghĩa là
 /// hộp thư chat hỏng thì người bán mất luôn cảnh báo hoàn tiền chờ duyệt — đúng
 /// kiểu hỏng đã phải sửa một lần ở profile_screen, nơi một lần đọc summary hỏng
@@ -253,7 +255,8 @@ class _FakeRefundRepository extends RefundRepository {
 }
 
 class _FakeChatRepository extends ChatRepository {
-  _FakeChatRepository(this.unread) : super(ChatApi(Dio()), OrderApi(Dio()));
+  _FakeChatRepository(this.unread)
+    : super(ChatApi(Dio()), OrderApi(Dio()), uploaderOn());
 
   /// Null nghĩa là lời gọi ném lỗi.
   final int? unread;

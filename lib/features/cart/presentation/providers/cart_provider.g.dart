@@ -6,21 +6,58 @@ part of 'cart_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(CartNotifier)
+const cartProvider = CartNotifierProvider._();
+
+final class CartNotifierProvider
+    extends $NotifierProvider<CartNotifier, CartState> {
+  const CartNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cartProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cartNotifierHash();
+
+  @$internal
+  @override
+  CartNotifier create() => CartNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CartState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CartState>(value),
+    );
+  }
+}
+
 String _$cartNotifierHash() => r'7b2c2d4a061cf1cbe718247bc97f31ef119f6bdc';
 
-/// See also [CartNotifier].
-@ProviderFor(CartNotifier)
-final cartNotifierProvider =
-    AutoDisposeNotifierProvider<CartNotifier, CartState>.internal(
-      CartNotifier.new,
-      name: r'cartNotifierProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$cartNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$CartNotifier = AutoDisposeNotifier<CartState>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$CartNotifier extends $Notifier<CartState> {
+  CartState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<CartState, CartState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<CartState, CartState>,
+              CartState,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

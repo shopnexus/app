@@ -53,20 +53,18 @@ UpdateProfileRequest _$UpdateProfileRequestFromJson(
 Map<String, dynamic> _$UpdateProfileRequestToJson(
   UpdateProfileRequest instance,
 ) => <String, dynamic>{
-  if (instance.avatarResourceId case final value?) 'avatar_resource_id': value,
-  if (instance.clearAvatarResourceId case final value?)
-    'clear_avatar_resource_id': value,
-  if (instance.clearDateOfBirth case final value?) 'clear_date_of_birth': value,
-  if (instance.clearDescription case final value?) 'clear_description': value,
-  if (instance.clearGender case final value?) 'clear_gender': value,
-  if (instance.country case final value?) 'country': value,
-  if (instance.dateOfBirth case final value?) 'date_of_birth': value,
-  if (instance.description case final value?) 'description': value,
-  if (_$ProfileGenderEnumMap[instance.gender] case final value?)
-    'gender': value,
-  if (instance.locale case final value?) 'locale': value,
-  if (instance.name case final value?) 'name': value,
-  if (instance.timezone case final value?) 'timezone': value,
+  'avatar_resource_id': ?instance.avatarResourceId,
+  'clear_avatar_resource_id': ?instance.clearAvatarResourceId,
+  'clear_date_of_birth': ?instance.clearDateOfBirth,
+  'clear_description': ?instance.clearDescription,
+  'clear_gender': ?instance.clearGender,
+  'country': ?instance.country,
+  'date_of_birth': ?instance.dateOfBirth,
+  'description': ?instance.description,
+  'gender': ?_$ProfileGenderEnumMap[instance.gender],
+  'locale': ?instance.locale,
+  'name': ?instance.name,
+  'timezone': ?instance.timezone,
 };
 
 const _$ProfileGenderEnumMap = {

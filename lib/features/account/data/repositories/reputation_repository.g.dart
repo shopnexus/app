@@ -6,24 +6,53 @@ part of 'reputation_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(reputationRepository)
+const reputationRepositoryProvider = ReputationRepositoryProvider._();
+
+final class ReputationRepositoryProvider
+    extends
+        $FunctionalProvider<
+          ReputationRepository,
+          ReputationRepository,
+          ReputationRepository
+        >
+    with $Provider<ReputationRepository> {
+  const ReputationRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'reputationRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$reputationRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<ReputationRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ReputationRepository create(Ref ref) {
+    return reputationRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ReputationRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ReputationRepository>(value),
+    );
+  }
+}
+
 String _$reputationRepositoryHash() =>
     r'2a6cd0fed9dc15202ba300062938bc4c1a607629';
-
-/// See also [reputationRepository].
-@ProviderFor(reputationRepository)
-final reputationRepositoryProvider =
-    AutoDisposeProvider<ReputationRepository>.internal(
-      reputationRepository,
-      name: r'reputationRepositoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$reputationRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef ReputationRepositoryRef = AutoDisposeProviderRef<ReputationRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

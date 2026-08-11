@@ -118,6 +118,10 @@ const orderJson = <String, dynamic>{
   'created_at': '2026-08-05T02:47:38.20111Z',
   'completed_at': null,
   'cancelled_at': null,
+  // Required, and null on an order nobody has raised a case on. It is what
+  // "yêu cầu hoàn tiền" asks before offering itself, so a fixture without it
+  // is not an order this app could render.
+  'refund': null,
 };
 
 /// `GET /orders/summary?role=seller&tz=Asia/Ho_Chi_Minh` as `bob_store` — the one

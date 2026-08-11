@@ -67,15 +67,15 @@ CreateListingRequest _$CreateListingRequestFromJson(
 Map<String, dynamic> _$CreateListingRequestToJson(
   CreateListingRequest instance,
 ) => <String, dynamic>{
-  if (instance.attachments case final value?) 'attachments': value,
+  'attachments': ?instance.attachments,
   'category_id': instance.categoryId,
   'condition': _$ListingConditionEnumMap[instance.condition]!,
   'currency': instance.currency,
-  if (instance.description case final value?) 'description': value,
+  'description': ?instance.description,
   'name': instance.name,
   'price_mode': _$PriceModeEnumMap[instance.priceMode]!,
-  if (instance.specifications case final value?) 'specifications': value,
-  if (instance.tags case final value?) 'tags': value,
+  'specifications': ?instance.specifications,
+  'tags': ?instance.tags,
   'variants': instance.variants.map((e) => e.toJson()).toList(),
 };
 

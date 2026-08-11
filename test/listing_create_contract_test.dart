@@ -9,6 +9,8 @@ import 'package:shopnexus_flutter_app/features/seller/data/repositories/listing_
 import 'support/fixtures.dart';
 import 'support/recording_backend.dart';
 
+import 'support/uploader.dart';
+
 /// `POST /listings` refused everything the posting form sent: the single variant
 /// went out with `attributes: {}`, and a variant is what `attributes` tells
 /// apart, so the API takes none without at least one entry — the seller got
@@ -111,6 +113,7 @@ void main() {
       final repository = ListingComposerRepository(
         CatalogApi(backend.dio),
         AccountApi(backend.dio),
+        uploaderOn(backend.dio),
       );
 
       await repository.createListing(

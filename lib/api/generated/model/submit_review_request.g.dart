@@ -24,8 +24,8 @@ SubmitReviewRequest _$SubmitReviewRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$SubmitReviewRequestToJson(
   SubmitReviewRequest instance,
 ) => <String, dynamic>{
-  if (instance.attachments case final value?) 'attachments': value,
-  if (instance.body case final value?) 'body': value,
+  'attachments': ?instance.attachments,
+  'body': ?instance.body,
   'order_id': instance.orderId,
   'rating': instance.rating,
 };

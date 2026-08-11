@@ -6,24 +6,53 @@ part of 'checkout_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(checkoutRepository)
+const checkoutRepositoryProvider = CheckoutRepositoryProvider._();
+
+final class CheckoutRepositoryProvider
+    extends
+        $FunctionalProvider<
+          CheckoutRepository,
+          CheckoutRepository,
+          CheckoutRepository
+        >
+    with $Provider<CheckoutRepository> {
+  const CheckoutRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'checkoutRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$checkoutRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<CheckoutRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CheckoutRepository create(Ref ref) {
+    return checkoutRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CheckoutRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CheckoutRepository>(value),
+    );
+  }
+}
+
 String _$checkoutRepositoryHash() =>
     r'caecfc1b089323c4940b0b3eb6e68c011d3834ed';
-
-/// See also [checkoutRepository].
-@ProviderFor(checkoutRepository)
-final checkoutRepositoryProvider =
-    AutoDisposeProvider<CheckoutRepository>.internal(
-      checkoutRepository,
-      name: r'checkoutRepositoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$checkoutRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CheckoutRepositoryRef = AutoDisposeProviderRef<CheckoutRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

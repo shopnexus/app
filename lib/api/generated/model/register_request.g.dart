@@ -34,11 +34,11 @@ RegisterRequest _$RegisterRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$RegisterRequestToJson(RegisterRequest instance) =>
     <String, dynamic>{
       'country': instance.country,
-      if (instance.email case final value?) 'email': value,
+      'email': ?instance.email,
       'locale': instance.locale,
       'name': instance.name,
       'password': instance.password,
-      if (instance.phone case final value?) 'phone': value,
+      'phone': ?instance.phone,
       'timezone': instance.timezone,
-      if (instance.username case final value?) 'username': value,
+      'username': ?instance.username,
     };

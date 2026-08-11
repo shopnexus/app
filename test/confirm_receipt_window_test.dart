@@ -77,7 +77,8 @@ const deliveredOrderJson = r'''
   "payout_released_at": null,
   "created_at": "2026-08-06T10:42:33.826375Z",
   "completed_at": null,
-  "cancelled_at": null
+  "cancelled_at": null,
+  "refund": null
 }
 ''';
 

@@ -6,7 +6,7 @@ import 'package:shopnexus_flutter_app/api/api_providers.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/account_api.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/features/kyc/data/models/kyc_model.dart';
-import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
 part 'kyc_repository.g.dart';
 
@@ -14,11 +14,14 @@ class KycRepository {
   const KycRepository({
     required HiveService hiveService,
     required AccountApi api,
+    required ResourceUploader uploader,
   }) : _hiveService = hiveService,
-       _api = api;
+       _api = api,
+       _uploader = uploader;
 
   final HiveService _hiveService;
   final AccountApi _api;
+  final ResourceUploader _uploader;
 
   /// The document that decides whether this account may sell, or null when there
   /// is nothing on file. Cached so the account centre still renders offline.
@@ -54,27 +57,21 @@ class KycRepository {
     }
   }
 
-  /// Reserve a slot, PUT the bytes, and hand back the resource id the
-  /// verification request references. The bytes never pass through the API.
+  /// Hands back the resource id the verification request references. A scan goes
+  /// up as `kind: identity`, not `avatar` — the same store holds both, and only
+  /// an avatar may ever resolve to a public link.
   Future<String> uploadKycScan({
     required List<int> bytes,
     required String fileName,
     required String mimeType,
   }) async {
-    final reserved = (await _api.meUploadsPost(
-      accountCreateUploadRequest: AccountCreateUploadRequest(
-        filename: fileName,
-        kind: AccountCreateUploadRequestKindEnum.identity,
-        mime: mimeType,
-        size: bytes.length,
-      ),
-    )).data?.data;
-    if (reserved == null) throw StateError('empty upload slot');
-
-    await putToSlot(reserved, bytes);
-
-    await _api.meUploadsIdConfirmationPost(id: reserved.resourceId);
-    return reserved.resourceId;
+    final resource = await _uploader.upload(
+      UploadTarget.identityDocument,
+      bytes: bytes,
+      filename: fileName,
+      mime: mimeType,
+    );
+    return resource.id;
   }
 
   /// A vendor either decides now or runs its own web flow, so the ticket may
@@ -99,4 +96,5 @@ class KycRepository {
 KycRepository kycRepository(Ref ref) => KycRepository(
   hiveService: ref.watch(hiveServiceProvider),
   api: ref.watch(accountApiProvider),
+  uploader: ref.watch(resourceUploaderProvider),
 );

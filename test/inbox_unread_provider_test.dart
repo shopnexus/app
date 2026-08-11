@@ -3,70 +3,110 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/chat_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/chat_unread_count.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/conversation.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_state.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/inbox_unread_provider.dart';
 
-/// Badge trên tab Hộp thư là kênh thông báo duy nhất của app này — không push,
-/// không SMS. Nên hai điều phải đúng: nó đếm *đúng phạm vi* Hộp thư (tin nhắn +
-/// thông báo, không phải `ActionInbox.total`, thứ còn cộng đơn chờ giao và hoàn
-/// tiền), và một nguồn hỏng chỉ mất phần của nó chứ không xoá cả badge.
+import 'support/uploader.dart';
+
+/// Badge trên tab Tin nhắn đếm **tin nhắn chưa đọc**, và chỉ thế.
+///
+/// Hộp thư từng là một màn hai tab và badge này cộng cả thông báo; hai thứ đó đã
+/// tách ra — thông báo có màn riêng và cái chuông riêng ở Trang chủ — nên cộng
+/// chúng vào đây sẽ đưa người dùng vào Tin nhắn để tìm một thứ không nằm ở đó.
+///
+/// Nguồn ưu tiên là danh sách hội thoại đang mở, để badge tụt ngay khi đọc xong
+/// một thread thay vì đợi một lượt đọc mới; `GET /conversations/unread` là đường
+/// lùi khi danh sách chưa nạp. Một nguồn hỏng cho 0 chứ không ném: badge là kênh
+/// thông báo duy nhất của app này, và làm sập cây widget vì nó là đổi một con số
+/// sai lấy một màn hình trắng.
 void main() {
-  /// `null` cho một nguồn nghĩa là nguồn đó ném lỗi.
-  ProviderContainer containerWith({int? messages, int? notifications}) =>
-      ProviderContainer(
-        overrides: [
-          chatRepositoryProvider.overrideWithValue(
-            _FakeChatRepository(messages),
-          ),
-          unreadNotificationsCountProvider.overrideWith((ref) async {
-            if (notifications == null) throw StateError('thông báo hỏng');
-            return notifications;
-          }),
-        ],
-      );
+  ProviderContainer containerWith({
+    List<int>? perConversation,
+    int? fallback,
+  }) => ProviderContainer.test(
+    overrides: [
+      chatRepositoryProvider.overrideWithValue(_FakeChatRepository(fallback)),
+      if (perConversation != null)
+        chatListProvider.overrideWith(
+          () => _FakeChatList(perConversation),
+        )
+      else
+        chatListProvider.overrideWith(_FailingChatList.new),
+    ],
+  );
 
-  test('cộng tin nhắn chưa đọc với thông báo chưa đọc', () async {
-    final container = containerWith(messages: 3, notifications: 4);
-    addTearDown(container.dispose);
+  /// `read(...future)` mở rồi đóng ngay một subscription tạm, và một provider
+  /// autoDispose bị vứt giữa lúc đang load thì không bao giờ phát ra giá trị.
+  /// Giữ một người nghe cho tới hết bài là đủ.
+  Future<int> unreadOf(ProviderContainer container) {
+    container.listen(inboxUnreadProvider, (_, _) {});
+    return container.read(inboxUnreadProvider.future);
+  }
 
-    expect(await container.read(inboxUnreadProvider.future), 7);
+  test('cộng số chưa đọc của từng hội thoại đang mở', () async {
+    final container = containerWith(perConversation: [3, 4]);
+
+    expect(await unreadOf(container), 7);
   });
 
   test('không có gì chưa đọc thì ra 0', () async {
-    final container = containerWith(messages: 0, notifications: 0);
-    addTearDown(container.dispose);
+    final container = containerWith(perConversation: [0, 0]);
 
-    expect(await container.read(inboxUnreadProvider.future), 0);
+    expect(await unreadOf(container), 0);
   });
 
-  /// Cái hỏng phải chặn: một `Future.wait` trần ở đây sẽ để chat hỏng xoá luôn số
-  /// thông báo, và một badge biến mất trông giống một badge bằng 0.
-  test('chat hỏng thì vẫn ra số thông báo', () async {
-    final container = containerWith(messages: null, notifications: 5);
-    addTearDown(container.dispose);
+  test('danh sách chưa nạp thì hỏi tổng số chưa đọc', () async {
+    final container = containerWith(fallback: 5);
 
-    expect(await container.read(inboxUnreadProvider.future), 5);
-  });
-
-  test('thông báo hỏng thì vẫn ra số tin nhắn', () async {
-    final container = containerWith(messages: 2, notifications: null);
-    addTearDown(container.dispose);
-
-    expect(await container.read(inboxUnreadProvider.future), 2);
+    expect(await unreadOf(container), 5);
   });
 
   test('cả hai nguồn hỏng thì ra 0, không ném', () async {
-    final container = containerWith(messages: null, notifications: null);
-    addTearDown(container.dispose);
+    final container = containerWith(fallback: null);
 
-    expect(await container.read(inboxUnreadProvider.future), 0);
+    expect(await unreadOf(container), 0);
   });
 }
 
+class _FakeChatList extends ChatListNotifier {
+  _FakeChatList(this.unreadPerConversation);
+
+  final List<int> unreadPerConversation;
+
+  @override
+  Future<ChatListState> build() async => ChatListState(
+    conversations: [
+      for (var i = 0; i < unreadPerConversation.length; i++)
+        _conversation('cnv_$i', unreadPerConversation[i]),
+    ],
+  );
+}
+
+class _FailingChatList extends ChatListNotifier {
+  @override
+  Future<ChatListState> build() async => throw StateError('danh sách hỏng');
+}
+
+Conversation _conversation(String id, int unread) => Conversation(
+  id: id,
+  counterparty: AccountSummary(id: 'acc_1', name: 'Bob', avatar: null),
+  counterpartyReadAt: null,
+  unread: unread,
+  lastMessage: null,
+  lastMessageAt: DateTime(2026, 8, 10),
+  readAt: null,
+  ticketId: null,
+  createdAt: DateTime(2026, 8, 10),
+);
+
 class _FakeChatRepository extends ChatRepository {
-  _FakeChatRepository(this.unread) : super(ChatApi(Dio()), OrderApi(Dio()));
+  _FakeChatRepository(this.unread)
+    : super(ChatApi(Dio()), OrderApi(Dio()), uploaderOn());
 
   /// Null nghĩa là lời gọi ném lỗi.
   final int? unread;

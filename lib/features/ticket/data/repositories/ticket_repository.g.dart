@@ -6,22 +6,51 @@ part of 'ticket_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$ticketRepositoryHash() => r'cda64aeb16db59e7a59eb54c620b910c46a5a397';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [ticketRepository].
 @ProviderFor(ticketRepository)
-final ticketRepositoryProvider = AutoDisposeProvider<TicketRepository>.internal(
-  ticketRepository,
-  name: r'ticketRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$ticketRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+const ticketRepositoryProvider = TicketRepositoryProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef TicketRepositoryRef = AutoDisposeProviderRef<TicketRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class TicketRepositoryProvider
+    extends
+        $FunctionalProvider<
+          TicketRepository,
+          TicketRepository,
+          TicketRepository
+        >
+    with $Provider<TicketRepository> {
+  const TicketRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'ticketRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$ticketRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<TicketRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TicketRepository create(Ref ref) {
+    return ticketRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TicketRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TicketRepository>(value),
+    );
+  }
+}
+
+String _$ticketRepositoryHash() => r'cda64aeb16db59e7a59eb54c620b910c46a5a397';

@@ -6,23 +6,52 @@ part of 'catalog_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$catalogRepositoryHash() => r'5f23214d9328f8d8f89ef5d352a280afb4871fcf';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [catalogRepository].
 @ProviderFor(catalogRepository)
-final catalogRepositoryProvider =
-    AutoDisposeProvider<CatalogRepository>.internal(
-      catalogRepository,
-      name: r'catalogRepositoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$catalogRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+const catalogRepositoryProvider = CatalogRepositoryProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CatalogRepositoryRef = AutoDisposeProviderRef<CatalogRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class CatalogRepositoryProvider
+    extends
+        $FunctionalProvider<
+          CatalogRepository,
+          CatalogRepository,
+          CatalogRepository
+        >
+    with $Provider<CatalogRepository> {
+  const CatalogRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'catalogRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$catalogRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<CatalogRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CatalogRepository create(Ref ref) {
+    return catalogRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CatalogRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CatalogRepository>(value),
+    );
+  }
+}
+
+String _$catalogRepositoryHash() => r'5f23214d9328f8d8f89ef5d352a280afb4871fcf';

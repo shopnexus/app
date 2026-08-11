@@ -10,6 +10,7 @@ import 'package:shopnexus_flutter_app/api/generated/api/finance_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/order_api.dart';
 import 'package:shopnexus_flutter_app/api/generated/api/trust_api.dart';
 import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/repositories/checkout_repository.dart';
 import 'package:shopnexus_flutter_app/features/seller/data/repositories/seller_repository.dart';
@@ -31,11 +32,22 @@ class RecordingBackend {
   late final Dio dio = Dio(BaseOptions(baseUrl: _baseUrl))
     ..httpClientAdapter = _Adapter(this);
 
+  /// Cùng một uploader thật cho mọi repository ở đây, dựng trên chính [dio] này —
+  /// nên ba bước reserve/PUT/confirm cũng bị ghi lại như mọi request khác.
+  late final ResourceUploader uploader = ResourceUploader(
+    account: AccountApi(dio),
+    catalog: CatalogApi(dio),
+    chat: ChatApi(dio),
+    order: OrderApi(dio),
+    trust: TrustApi(dio),
+  );
+
   late final AccountRepository repository = AccountRepository(
     AccountApiService(dio, baseUrl: _baseUrl),
     AccountApi(dio),
     OrderApi(dio),
     CatalogApi(dio),
+    uploader,
   );
 
   late final SellerRepository seller = SellerRepository(
@@ -53,10 +65,7 @@ class RecordingBackend {
 
   /// Where a party's complaint goes now that neither of them writes a shipment's
   /// position: staff read it and decide.
-  late final TicketRepository tickets = TicketRepository(
-    TrustApi(dio),
-    ChatApi(dio),
-  );
+  late final TicketRepository tickets = TicketRepository(TrustApi(dio), uploader);
 
   RequestOptions get only {
     if (calls.length != 1) {

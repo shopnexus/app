@@ -24,5 +24,5 @@ Map<String, dynamic> _$SuspendAccountRequestToJson(
   SuspendAccountRequest instance,
 ) => <String, dynamic>{
   'reason': instance.reason,
-  if (instance.until?.toIso8601String() case final value?) 'until': value,
+  'until': ?instance.until?.toIso8601String(),
 };

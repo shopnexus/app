@@ -10,6 +10,10 @@ class ErrorHandler {
     'identity_required':
         'Bạn cần định danh trước khi đăng bán. Mọi người bán trên ShopNexus '
         'đều đã định danh — đó là lý do người mua dám mua.',
+    // Cả hai màn nhập giá đều chặn trước khi gửi; câu này là cho đường còn lại —
+    // người bán hạ giá niêm yết trong lúc bên kia đang gõ.
+    'offer_above_asking':
+        'Mức giá đề nghị không được cao hơn giá niêm yết của sản phẩm.',
   };
 
   static String getErrorMessage(dynamic error) {

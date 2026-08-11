@@ -113,10 +113,10 @@ void main() {
       // Dio serialises the enum with `toString()`, which the generated type
       // overrides to the contract's kebab value — that is what reaches the wire.
       expect(backend.only.queryParameters['kind'].toString(), 'fee');
-      // The route caps at 100 and exposes no way to ask for a second page, so
-      // the read takes the whole cap in one go.
+      // The ledger is page-paginated, and this read takes the cap in one go:
+      // the surface shows a wallet's recent movements, not a pager over them.
       expect(backend.only.queryParameters['limit'], 100);
-      expect(backend.only.queryParameters.containsKey('page'), isFalse);
+      expect(backend.only.queryParameters['page'], 1);
     });
 
     test('a ledger longer than the read says so', () async {

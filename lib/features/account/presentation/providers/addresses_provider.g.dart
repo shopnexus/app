@@ -6,39 +6,90 @@ part of 'addresses_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(buyerContacts)
+const buyerContactsProvider = BuyerContactsProvider._();
+
+final class BuyerContactsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Contact>>,
+          List<Contact>,
+          FutureOr<List<Contact>>
+        >
+    with $FutureModifier<List<Contact>>, $FutureProvider<List<Contact>> {
+  const BuyerContactsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'buyerContactsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$buyerContactsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Contact>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Contact>> create(Ref ref) {
+    return buyerContacts(ref);
+  }
+}
+
 String _$buyerContactsHash() => r'40863f4e9a54616a93002544d796a363b890efc1';
 
-/// See also [buyerContacts].
-@ProviderFor(buyerContacts)
-final buyerContactsProvider = AutoDisposeFutureProvider<List<Contact>>.internal(
-  buyerContacts,
-  name: r'buyerContactsProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$buyerContactsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+@ProviderFor(AddressesController)
+const addressesControllerProvider = AddressesControllerProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef BuyerContactsRef = AutoDisposeFutureProviderRef<List<Contact>>;
+final class AddressesControllerProvider
+    extends $AsyncNotifierProvider<AddressesController, void> {
+  const AddressesControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'addressesControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$addressesControllerHash();
+
+  @$internal
+  @override
+  AddressesController create() => AddressesController();
+}
+
 String _$addressesControllerHash() =>
     r'9c901d09ef1f93bb35bd0d0c499a7b0d172f2e58';
 
-/// See also [AddressesController].
-@ProviderFor(AddressesController)
-final addressesControllerProvider =
-    AutoDisposeAsyncNotifierProvider<AddressesController, void>.internal(
-      AddressesController.new,
-      name: r'addressesControllerProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$addressesControllerHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$AddressesController = AutoDisposeAsyncNotifier<void>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$AddressesController extends $AsyncNotifier<void> {
+  FutureOr<void> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    build();
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, null);
+  }
+}

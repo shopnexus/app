@@ -13,6 +13,14 @@ Dio dio(Ref ref) {
       baseUrl: ApiEndpoints.baseUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
+      // Every array query parameter this API has — `/listings?ids`, `/tags?near`,
+      // `/categories?near` — is `style: form, explode: false`, i.e. one parameter
+      // holding a comma-joined list. Dio's default is the opposite (`ids=a&ids=b`),
+      // and the server reads only the first value of a repeated key: an
+      // order with three lines resolved exactly one listing, so the other two
+      // rendered "Sản phẩm không còn trong danh mục" for products that were never
+      // gone.
+      listFormat: ListFormat.csv,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

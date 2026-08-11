@@ -24,6 +24,6 @@ WithdrawalApprovalRequest _$WithdrawalApprovalRequestFromJson(
 Map<String, dynamic> _$WithdrawalApprovalRequestToJson(
   WithdrawalApprovalRequest instance,
 ) => <String, dynamic>{
-  if (instance.providerRef case final value?) 'provider_ref': value,
-  if (instance.reason case final value?) 'reason': value,
+  'provider_ref': ?instance.providerRef,
+  'reason': ?instance.reason,
 };

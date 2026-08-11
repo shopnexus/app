@@ -6,170 +6,98 @@ part of 'seller_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$sellerProductsHash() => r'b719579b13ef528724735755b8425ed3322ed441';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
 /// visitor sees exactly what is public — there is no shop-scoped route and no
 /// `mine=true` here, which is what would be needed to see a draft.
-///
-/// Copied from [sellerProducts].
+
 @ProviderFor(sellerProducts)
-const sellerProductsProvider = SellerProductsFamily();
+const sellerProductsProvider = SellerProductsFamily._();
 
 /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
 /// visitor sees exactly what is public — there is no shop-scoped route and no
 /// `mine=true` here, which is what would be needed to see a draft.
-///
-/// Copied from [sellerProducts].
-class SellerProductsFamily extends Family<AsyncValue<List<Listing>>> {
+
+final class SellerProductsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Listing>>,
+          List<Listing>,
+          FutureOr<List<Listing>>
+        >
+    with $FutureModifier<List<Listing>>, $FutureProvider<List<Listing>> {
   /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
   /// visitor sees exactly what is public — there is no shop-scoped route and no
   /// `mine=true` here, which is what would be needed to see a draft.
-  ///
-  /// Copied from [sellerProducts].
-  const SellerProductsFamily();
+  const SellerProductsProvider._({
+    required SellerProductsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'sellerProductsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
-  /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
-  /// visitor sees exactly what is public — there is no shop-scoped route and no
-  /// `mine=true` here, which is what would be needed to see a draft.
-  ///
-  /// Copied from [sellerProducts].
-  SellerProductsProvider call(String vendorId) {
-    return SellerProductsProvider(vendorId);
+  @override
+  String debugGetCreateSourceHash() => _$sellerProductsHash();
+
+  @override
+  String toString() {
+    return r'sellerProductsProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  SellerProductsProvider getProviderOverride(
-    covariant SellerProductsProvider provider,
-  ) {
-    return call(provider.vendorId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
+  $FutureProviderElement<List<Listing>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'sellerProductsProvider';
-}
-
-/// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
-/// visitor sees exactly what is public — there is no shop-scoped route and no
-/// `mine=true` here, which is what would be needed to see a draft.
-///
-/// Copied from [sellerProducts].
-class SellerProductsProvider extends AutoDisposeFutureProvider<List<Listing>> {
-  /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
-  /// visitor sees exactly what is public — there is no shop-scoped route and no
-  /// `mine=true` here, which is what would be needed to see a draft.
-  ///
-  /// Copied from [sellerProducts].
-  SellerProductsProvider(String vendorId)
-    : this._internal(
-        (ref) => sellerProducts(ref as SellerProductsRef, vendorId),
-        from: sellerProductsProvider,
-        name: r'sellerProductsProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$sellerProductsHash,
-        dependencies: SellerProductsFamily._dependencies,
-        allTransitiveDependencies:
-            SellerProductsFamily._allTransitiveDependencies,
-        vendorId: vendorId,
-      );
-
-  SellerProductsProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.vendorId,
-  }) : super.internal();
-
-  final String vendorId;
-
-  @override
-  Override overrideWith(
-    FutureOr<List<Listing>> Function(SellerProductsRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: SellerProductsProvider._internal(
-        (ref) => create(ref as SellerProductsRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        vendorId: vendorId,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<List<Listing>> createElement() {
-    return _SellerProductsProviderElement(this);
+  FutureOr<List<Listing>> create(Ref ref) {
+    final argument = this.argument as String;
+    return sellerProducts(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is SellerProductsProvider && other.vendorId == vendorId;
+    return other is SellerProductsProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, vendorId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin SellerProductsRef on AutoDisposeFutureProviderRef<List<Listing>> {
-  /// The parameter `vendorId` of this provider.
-  String get vendorId;
-}
+String _$sellerProductsHash() => r'b719579b13ef528724735755b8425ed3322ed441';
 
-class _SellerProductsProviderElement
-    extends AutoDisposeFutureProviderElement<List<Listing>>
-    with SellerProductsRef {
-  _SellerProductsProviderElement(super.provider);
+/// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
+/// visitor sees exactly what is public — there is no shop-scoped route and no
+/// `mine=true` here, which is what would be needed to see a draft.
+
+final class SellerProductsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<Listing>>, String> {
+  const SellerProductsFamily._()
+    : super(
+        retry: null,
+        name: r'sellerProductsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
+  /// visitor sees exactly what is public — there is no shop-scoped route and no
+  /// `mine=true` here, which is what would be needed to see a draft.
+
+  SellerProductsProvider call(String vendorId) =>
+      SellerProductsProvider._(argument: vendorId, from: this);
 
   @override
-  String get vendorId => (origin as SellerProductsProvider).vendorId;
+  String toString() => r'sellerProductsProvider';
 }
-
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

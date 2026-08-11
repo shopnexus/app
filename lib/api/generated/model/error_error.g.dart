@@ -26,8 +26,7 @@ ErrorError _$ErrorErrorFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ErrorErrorToJson(ErrorError instance) =>
     <String, dynamic>{
       'code': instance.code,
-      if (instance.fields?.map((e) => e.toJson()).toList() case final value?)
-        'fields': value,
+      'fields': ?instance.fields?.map((e) => e.toJson()).toList(),
       'message': instance.message,
       'request_id': instance.requestId,
     };

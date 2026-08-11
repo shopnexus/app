@@ -60,20 +60,16 @@ UpdateListingRequest _$UpdateListingRequestFromJson(
 Map<String, dynamic> _$UpdateListingRequestToJson(
   UpdateListingRequest instance,
 ) => <String, dynamic>{
-  if (instance.attachments case final value?) 'attachments': value,
-  if (instance.categoryId case final value?) 'category_id': value,
-  if (instance.clearFeaturedVariantId case final value?)
-    'clear_featured_variant_id': value,
-  if (_$ListingConditionEnumMap[instance.condition] case final value?)
-    'condition': value,
-  if (instance.description case final value?) 'description': value,
-  if (instance.featuredVariantId case final value?)
-    'featured_variant_id': value,
-  if (instance.name case final value?) 'name': value,
-  if (_$PriceModeEnumMap[instance.priceMode] case final value?)
-    'price_mode': value,
-  if (instance.specifications case final value?) 'specifications': value,
-  if (instance.tags case final value?) 'tags': value,
+  'attachments': ?instance.attachments,
+  'category_id': ?instance.categoryId,
+  'clear_featured_variant_id': ?instance.clearFeaturedVariantId,
+  'condition': ?_$ListingConditionEnumMap[instance.condition],
+  'description': ?instance.description,
+  'featured_variant_id': ?instance.featuredVariantId,
+  'name': ?instance.name,
+  'price_mode': ?_$PriceModeEnumMap[instance.priceMode],
+  'specifications': ?instance.specifications,
+  'tags': ?instance.tags,
 };
 
 const _$ListingConditionEnumMap = {

@@ -6,223 +6,186 @@ part of 'chat_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// The inbox.
+///
+/// Every change to it arrives on the account's one socket; nothing is polled and
+/// nothing is replayed, so a re-handshake means refetching over REST.
+
+@ProviderFor(ChatListNotifier)
+const chatListProvider = ChatListNotifierProvider._();
+
+/// The inbox.
+///
+/// Every change to it arrives on the account's one socket; nothing is polled and
+/// nothing is replayed, so a re-handshake means refetching over REST.
+final class ChatListNotifierProvider
+    extends $AsyncNotifierProvider<ChatListNotifier, ChatListState> {
+  /// The inbox.
+  ///
+  /// Every change to it arrives on the account's one socket; nothing is polled and
+  /// nothing is replayed, so a re-handshake means refetching over REST.
+  const ChatListNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'chatListProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$chatListNotifierHash();
+
+  @$internal
+  @override
+  ChatListNotifier create() => ChatListNotifier();
+}
+
 String _$chatListNotifierHash() => r'b7533ee0aaf204f4dff929fb8b928209221ae978';
 
 /// The inbox.
 ///
 /// Every change to it arrives on the account's one socket; nothing is polled and
 /// nothing is replayed, so a re-handshake means refetching over REST.
-///
-/// Copied from [ChatListNotifier].
-@ProviderFor(ChatListNotifier)
-final chatListNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<ChatListNotifier, ChatListState>.internal(
-      ChatListNotifier.new,
-      name: r'chatListNotifierProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$chatListNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$ChatListNotifier = AutoDisposeAsyncNotifier<ChatListState>;
-String _$chatDetailNotifierHash() =>
-    r'f8baf60ababce1dfbbe4e9d8349578157f86ee43';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
+abstract class _$ChatListNotifier extends $AsyncNotifier<ChatListState> {
+  FutureOr<ChatListState> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<AsyncValue<ChatListState>, ChatListState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<ChatListState>, ChatListState>,
+              AsyncValue<ChatListState>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
   }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$ChatDetailNotifier
-    extends BuildlessAutoDisposeAsyncNotifier<ChatDetailState> {
-  late final String conversationId;
-
-  FutureOr<ChatDetailState> build(String conversationId);
 }
 
 /// One open thread.
 ///
 /// Messages, read receipts and the negotiations its cards point at all arrive on
 /// the same socket; what the app sends, it sends over REST.
-///
-/// Copied from [ChatDetailNotifier].
+
 @ProviderFor(ChatDetailNotifier)
-const chatDetailNotifierProvider = ChatDetailNotifierFamily();
+const chatDetailProvider = ChatDetailNotifierFamily._();
 
 /// One open thread.
 ///
 /// Messages, read receipts and the negotiations its cards point at all arrive on
 /// the same socket; what the app sends, it sends over REST.
-///
-/// Copied from [ChatDetailNotifier].
-class ChatDetailNotifierFamily extends Family<AsyncValue<ChatDetailState>> {
+final class ChatDetailNotifierProvider
+    extends $AsyncNotifierProvider<ChatDetailNotifier, ChatDetailState> {
   /// One open thread.
   ///
   /// Messages, read receipts and the negotiations its cards point at all arrive on
   /// the same socket; what the app sends, it sends over REST.
-  ///
-  /// Copied from [ChatDetailNotifier].
-  const ChatDetailNotifierFamily();
+  const ChatDetailNotifierProvider._({
+    required ChatDetailNotifierFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'chatDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
-  /// One open thread.
-  ///
-  /// Messages, read receipts and the negotiations its cards point at all arrive on
-  /// the same socket; what the app sends, it sends over REST.
-  ///
-  /// Copied from [ChatDetailNotifier].
-  ChatDetailNotifierProvider call(String conversationId) {
-    return ChatDetailNotifierProvider(conversationId);
+  @override
+  String debugGetCreateSourceHash() => _$chatDetailNotifierHash();
+
+  @override
+  String toString() {
+    return r'chatDetailProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  ChatDetailNotifierProvider getProviderOverride(
-    covariant ChatDetailNotifierProvider provider,
-  ) {
-    return call(provider.conversationId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'chatDetailNotifierProvider';
-}
-
-/// One open thread.
-///
-/// Messages, read receipts and the negotiations its cards point at all arrive on
-/// the same socket; what the app sends, it sends over REST.
-///
-/// Copied from [ChatDetailNotifier].
-class ChatDetailNotifierProvider
-    extends
-        AutoDisposeAsyncNotifierProviderImpl<
-          ChatDetailNotifier,
-          ChatDetailState
-        > {
-  /// One open thread.
-  ///
-  /// Messages, read receipts and the negotiations its cards point at all arrive on
-  /// the same socket; what the app sends, it sends over REST.
-  ///
-  /// Copied from [ChatDetailNotifier].
-  ChatDetailNotifierProvider(String conversationId)
-    : this._internal(
-        () => ChatDetailNotifier()..conversationId = conversationId,
-        from: chatDetailNotifierProvider,
-        name: r'chatDetailNotifierProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$chatDetailNotifierHash,
-        dependencies: ChatDetailNotifierFamily._dependencies,
-        allTransitiveDependencies:
-            ChatDetailNotifierFamily._allTransitiveDependencies,
-        conversationId: conversationId,
-      );
-
-  ChatDetailNotifierProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.conversationId,
-  }) : super.internal();
-
-  final String conversationId;
-
-  @override
-  FutureOr<ChatDetailState> runNotifierBuild(
-    covariant ChatDetailNotifier notifier,
-  ) {
-    return notifier.build(conversationId);
-  }
-
-  @override
-  Override overrideWith(ChatDetailNotifier Function() create) {
-    return ProviderOverride(
-      origin: this,
-      override: ChatDetailNotifierProvider._internal(
-        () => create()..conversationId = conversationId,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        conversationId: conversationId,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeAsyncNotifierProviderElement<ChatDetailNotifier, ChatDetailState>
-  createElement() {
-    return _ChatDetailNotifierProviderElement(this);
-  }
+  ChatDetailNotifier create() => ChatDetailNotifier();
 
   @override
   bool operator ==(Object other) {
-    return other is ChatDetailNotifierProvider &&
-        other.conversationId == conversationId;
+    return other is ChatDetailNotifierProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, conversationId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin ChatDetailNotifierRef
-    on AutoDisposeAsyncNotifierProviderRef<ChatDetailState> {
-  /// The parameter `conversationId` of this provider.
-  String get conversationId;
-}
+String _$chatDetailNotifierHash() =>
+    r'e89324549ae42f39822883f4dbfa09c3ba841274';
 
-class _ChatDetailNotifierProviderElement
-    extends
-        AutoDisposeAsyncNotifierProviderElement<
+/// One open thread.
+///
+/// Messages, read receipts and the negotiations its cards point at all arrive on
+/// the same socket; what the app sends, it sends over REST.
+
+final class ChatDetailNotifierFamily extends $Family
+    with
+        $ClassFamilyOverride<
           ChatDetailNotifier,
-          ChatDetailState
-        >
-    with ChatDetailNotifierRef {
-  _ChatDetailNotifierProviderElement(super.provider);
+          AsyncValue<ChatDetailState>,
+          ChatDetailState,
+          FutureOr<ChatDetailState>,
+          String
+        > {
+  const ChatDetailNotifierFamily._()
+    : super(
+        retry: null,
+        name: r'chatDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// One open thread.
+  ///
+  /// Messages, read receipts and the negotiations its cards point at all arrive on
+  /// the same socket; what the app sends, it sends over REST.
+
+  ChatDetailNotifierProvider call(String conversationId) =>
+      ChatDetailNotifierProvider._(argument: conversationId, from: this);
 
   @override
-  String get conversationId =>
-      (origin as ChatDetailNotifierProvider).conversationId;
+  String toString() => r'chatDetailProvider';
 }
 
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+/// One open thread.
+///
+/// Messages, read receipts and the negotiations its cards point at all arrive on
+/// the same socket; what the app sends, it sends over REST.
+
+abstract class _$ChatDetailNotifier extends $AsyncNotifier<ChatDetailState> {
+  late final _$args = ref.$arg as String;
+  String get conversationId => _$args;
+
+  FutureOr<ChatDetailState> build(String conversationId);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(_$args);
+    final ref = this.ref as $Ref<AsyncValue<ChatDetailState>, ChatDetailState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<ChatDetailState>, ChatDetailState>,
+              AsyncValue<ChatDetailState>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

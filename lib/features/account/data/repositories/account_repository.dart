@@ -11,9 +11,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/update_notification_pr
 import 'package:shopnexus_flutter_app/api/generated/model/update_notification_preferences_request_items_inner.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/account_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/verify_contact_phone_request.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/account_create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/confirm_receipt_request.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/administrative_area.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/device.dart';
@@ -30,7 +28,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/update_profile_request
 import 'package:shopnexus_flutter_app/features/account/data/data_sources/account_api_service.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/account_model.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
-import 'package:shopnexus_flutter_app/core/network/resource_upload.dart';
+import 'package:shopnexus_flutter_app/core/upload/resource_uploader.dart';
 
 part 'account_repository.g.dart';
 
@@ -39,38 +37,31 @@ class AccountRepository {
   final generated.AccountApi _api;
   final OrderApi _orderApi;
   final CatalogApi _catalogApi;
+  final ResourceUploader _uploader;
 
   AccountRepository(
     this._apiService,
     this._api,
     this._orderApi,
     this._catalogApi,
+    this._uploader,
   );
 
-  /// Reserve a slot, PUT the bytes to the signed URL, confirm — the bytes never
-  /// pass through this API, and until the confirmation lands the resource
-  /// resolves to nothing, so a profile can never show an avatar that never
-  /// arrived. Returns the resource id for
-  /// `UpdateProfileRequest.avatarResourceId`.
+  /// Returns the resource id for `UpdateProfileRequest.avatarResourceId`. The
+  /// three steps behind it — reserve, PUT, confirm — are [ResourceUploader]'s,
+  /// the same ones every other upload on the platform takes.
   Future<String> uploadAvatar({
     required List<int> bytes,
     required String filename,
     required String mime,
   }) async {
-    final reserved = (await _api.meUploadsPost(
-      accountCreateUploadRequest: AccountCreateUploadRequest(
-        filename: filename,
-        kind: AccountCreateUploadRequestKindEnum.avatar,
-        mime: mime,
-        size: bytes.length,
-      ),
-    )).data?.data;
-    if (reserved == null) throw StateError('empty upload slot');
-
-    await putToSlot(reserved, bytes);
-
-    await _api.meUploadsIdConfirmationPost(id: reserved.resourceId);
-    return reserved.resourceId;
+    final resource = await _uploader.upload(
+      UploadTarget.avatar,
+      bytes: bytes,
+      filename: filename,
+      mime: mime,
+    );
+    return resource.id;
   }
 
   /// Ảnh mở hộp, cho lúc xác nhận đã nhận hàng. Cùng ba bước như mọi upload khác:
@@ -81,19 +72,13 @@ class AccountRepository {
     required String filename,
     required String mime,
   }) async {
-    final reserved = (await _orderApi.ordersUploadsPost(
-      createUploadRequest: CreateUploadRequest(
-        filename: filename,
-        mime: mime,
-        size: bytes.length,
-      ),
-    )).data?.data;
-    if (reserved == null) throw StateError('empty upload slot');
-
-    await putToSlot(reserved, bytes);
-
-    await _orderApi.ordersUploadsIdConfirmationPost(id: reserved.resourceId);
-    return reserved.resourceId;
+    final resource = await _uploader.upload(
+      UploadTarget.order,
+      bytes: bytes,
+      filename: filename,
+      mime: mime,
+    );
+    return resource.id;
   }
 
   /// Người mua nói hàng đã tới. Đây là thứ khởi động đồng hồ trả tiền cho người
@@ -457,4 +442,5 @@ AccountRepository accountRepository(Ref ref) => AccountRepository(
   ref.watch(accountApiProvider),
   ref.watch(orderApiProvider),
   ref.watch(catalogApiProvider),
+  ref.watch(resourceUploaderProvider),
 );

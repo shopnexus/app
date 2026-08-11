@@ -84,6 +84,22 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
     return parsed;
   }
 
+  /// Vì sao mức giá đang gõ chưa gửi được, hoặc null nếu gửi được.
+  ///
+  /// Thương lượng chỉ đi xuống: giá niêm yết vốn đã là lời đề nghị bán ở mức đó,
+  /// nên đề xuất cao hơn là thứ không ai làm — người mua chỉ việc bấm mua. Server
+  /// trả 422 `offer_above_asking` cho đúng chuyện này; hỏi ở đây để người ta biết
+  /// ngay lúc gõ chứ không phải sau khi bấm gửi.
+  String? get _priceError {
+    final unitPrice = _unitPrice;
+    if (unitPrice == null) return null;
+    if (unitPrice > widget.variant.price) {
+      return 'Không cao hơn giá niêm yết '
+          '(${MoneyUtils.format(widget.variant.price)}).';
+    }
+    return null;
+  }
+
   Future<void> _send() async {
     final unitPrice = _unitPrice;
     if (unitPrice == null) {
@@ -95,6 +111,9 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
       );
       return;
     }
+    // Nút đã bị vô hiệu hoá ở trạng thái này; đây là chốt chặn cho đường vào còn
+    // lại — bàn phím gửi đi trong lúc `errorText` đang hiện.
+    if (_priceError != null) return;
 
     setState(() => _isSending = true);
     final reason = _reasonController.text.trim();
@@ -267,6 +286,7 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
     final isDarkMode = theme.brightness == Brightness.dark;
     final unitPrice = _unitPrice;
     final askingPrice = widget.variant.price;
+    final priceError = _priceError;
     final label = variantLabel(widget.variant);
 
     return SafeArea(
@@ -347,6 +367,7 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.sell_outlined),
                 hintText: 'Nhập số tiền...',
+                errorText: priceError,
                 filled: true,
                 fillColor: isDarkMode
                     ? theme.colorScheme.surfaceContainerHighest
@@ -385,7 +406,7 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
               ),
             ),
             const SizedBox(height: 8),
-            if (unitPrice != null)
+            if (unitPrice != null && priceError == null)
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -421,7 +442,7 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: _isSending ? null : _send,
+                onPressed: _isSending || priceError != null ? null : _send,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: theme.colorScheme.onPrimary,
