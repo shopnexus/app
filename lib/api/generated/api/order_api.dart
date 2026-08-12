@@ -1353,7 +1353,7 @@ class OrderApi {
   }
 
   /// Counter-offer
-  /// Revises the current terms in place, moves authorship to the caller and posts the new card into the thread. Only the party that does not own the standing proposal may counter, so the two sides alternate.
+  /// Revises the current terms in place, moves authorship to the caller and posts the new card into the thread. Only the party that does not own the standing proposal may counter, so the two sides alternate.  A counter may go *up* — that is a seller holding out — but not above the variant&#39;s listed price for that &#x60;quantity&#x60;, the same ceiling opening one has. The price is read when the counter lands, so a seller who lowered their asking price mid-thread has lowered it here too.
   ///
   /// Parameters:
   /// * [id]
@@ -1452,7 +1452,7 @@ class OrderApi {
   }
 
   /// Open a price negotiation on a variant
-  /// The buyer opens it, from the listing page: a seller has nobody to propose to on their own listing, so they answer rather than start. One active negotiation per (buyer, variant); the terms are then revised in place rather than by stacking rows, and each revision posts a card into the pair&#39;s chat thread.
+  /// The buyer opens it, from the listing page: a seller has nobody to propose to on their own listing, so they answer rather than start. One active negotiation per (buyer, variant); the terms are then revised in place rather than by stacking rows, and each revision posts a card into the pair&#39;s chat thread.  &#x60;total&#x60; may not exceed the variant&#39;s listed price for that &#x60;quantity&#x60;. Negotiation only moves the price down: the asking price is already an offer to sell at it, so terms above it are a proposal with no reason to exist — the buyer would simply buy.
   ///
   /// Parameters:
   /// * [createOfferRequest]
