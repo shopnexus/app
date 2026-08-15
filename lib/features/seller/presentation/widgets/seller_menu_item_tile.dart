@@ -26,9 +26,12 @@ class SellerMenuItemTile extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final defaultIconColor = iconColor ?? AppColors.primary;
+    final defaultIconColor = iconColor ?? theme.colorScheme.primary;
     final defaultBgColor =
-        iconBgColor ?? AppColors.primary.withValues(alpha: 0.15);
+        iconBgColor ??
+        (isDark
+            ? theme.colorScheme.primary.withValues(alpha: 0.15)
+            : theme.colorScheme.primary.withValues(alpha: 0.10));
 
     return Material(
       color: Colors.transparent,
@@ -38,14 +41,12 @@ class SellerMenuItemTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: isDark
-                ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-                : const Color(0xFFF8FAFC),
+            color: isDark ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : const Color(0xFFF1F5F9),
+                  ? AppColors.darkPrimary.withValues(alpha: 0.15)
+                  : const Color(0xFFE2E8F0),
             ),
           ),
           child: Row(
@@ -55,7 +56,7 @@ class SellerMenuItemTile extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   color: defaultBgColor,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, size: 22, color: defaultIconColor),
               ),
@@ -66,9 +67,8 @@ class SellerMenuItemTile extends StatelessWidget {
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
-                    color: isDark
-                        ? const Color(0xFFE2E8F0)
-                        : const Color(0xFF334155),
+                    fontFamily: 'Inter',
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -79,15 +79,16 @@ class SellerMenuItemTile extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     badgeText!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      fontFamily: 'Inter',
+                      color: theme.colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -100,8 +101,8 @@ class SellerMenuItemTile extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF334155)
-                        : const Color(0xFFE2E8F0),
+                        ? theme.colorScheme.surfaceContainerHighest
+                        : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -109,16 +110,19 @@ class SellerMenuItemTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      fontFamily: 'Inter',
+                      color: isDark
+                          ? AppColors.darkPrimary
+                          : theme.colorScheme.onSurface,
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
               ],
-              const Icon(
-                Icons.chevron_right,
+              Icon(
+                Icons.chevron_right_rounded,
                 size: 20,
-                color: Color(0xFF94A3B8),
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ],
           ),

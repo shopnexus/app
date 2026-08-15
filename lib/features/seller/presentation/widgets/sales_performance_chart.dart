@@ -35,12 +35,12 @@ class SalesPerformanceChart extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFF1F5F9),
+              ? AppColors.darkPrimary.withValues(alpha: 0.15)
+              : const Color(0xFFE2E8F0),
         ),
         boxShadow: [
           BoxShadow(
@@ -61,16 +61,16 @@ class SalesPerformanceChart extends StatelessWidget {
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  fontFamily: 'Manrope',
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 'Chỉ những ngày có đơn',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: isDark
-                      ? const Color(0xFF94A3B8)
-                      : const Color(0xFF64748B),
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontFamily: 'Inter',
                 ),
               ),
             ],
@@ -83,9 +83,8 @@ class SalesPerformanceChart extends StatelessWidget {
                 child: Text(
                   'Chưa có đơn nào trong khoảng thời gian này',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: isDark
-                        ? const Color(0xFF94A3B8)
-                        : const Color(0xFF64748B),
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontFamily: 'Inter',
                   ),
                 ),
               ),
@@ -102,7 +101,7 @@ class SalesPerformanceChart extends StatelessWidget {
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
                         color: isDark
-                            ? Colors.white.withValues(alpha: 0.05)
+                            ? AppColors.darkPrimary.withValues(alpha: 0.1)
                             : const Color(0xFFF1F5F9),
                         strokeWidth: 1,
                       );
@@ -142,9 +141,8 @@ class SalesPerformanceChart extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? const Color(0xFFE2E8F0)
-                                        : const Color(0xFF334155),
+                                    fontFamily: 'Inter',
+                                    color: theme.colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -153,9 +151,8 @@ class SalesPerformanceChart extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,
-                                    color: isDark
-                                        ? const Color(0xFF64748B)
-                                        : const Color(0xFF94A3B8),
+                                    fontFamily: 'Inter',
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -175,7 +172,7 @@ class SalesPerformanceChart extends StatelessWidget {
                       spots: spots,
                       isCurved: true,
                       curveSmoothness: 0.35,
-                      color: AppColors.primary,
+                      color: theme.colorScheme.primary,
                       barWidth: 3,
                       isStrokeCapRound: true,
                       dotData: FlDotData(
@@ -183,10 +180,10 @@ class SalesPerformanceChart extends StatelessWidget {
                         getDotPainter: (spot, percent, barData, index) {
                           return FlDotCirclePainter(
                             radius: 5,
-                            color: AppColors.primary,
+                            color: theme.colorScheme.primary,
                             strokeWidth: 2,
                             strokeColor: isDark
-                                ? const Color(0xFF1E293B)
+                                ? AppColors.darkSurface
                                 : Colors.white,
                           );
                         },
@@ -195,8 +192,8 @@ class SalesPerformanceChart extends StatelessWidget {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            AppColors.primary.withValues(alpha: 0.25),
-                            AppColors.primary.withValues(alpha: 0.0),
+                            theme.colorScheme.primary.withValues(alpha: 0.25),
+                            theme.colorScheme.primary.withValues(alpha: 0.0),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,

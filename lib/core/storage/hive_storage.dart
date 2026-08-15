@@ -28,6 +28,28 @@ class HiveService {
   Box get authBox => Hive.box(HiveBoxNames.authBox);
   Box get cartBox => Hive.box(HiveBoxNames.cartBox);
   Box get recentBox => Hive.box(HiveBoxNames.recentBox);
+
+  /// Xóa toàn bộ dữ liệu người dùng cục bộ khi đăng xuất (lịch sử tìm kiếm, sản phẩm vừa xem, giỏ hàng, token...).
+  /// Tùy chọn [keepPreferences] cho phép giữ lại cài đặt thiết bị như theme.
+  Future<void> clearUserData({bool keepPreferences = true}) async {
+    String? savedTheme;
+    if (keepPreferences && Hive.isBoxOpen(HiveBoxNames.authBox)) {
+      savedTheme = authBox.get('theme_mode') as String?;
+    }
+
+    if (Hive.isBoxOpen(HiveBoxNames.authBox)) {
+      await authBox.clear();
+      if (keepPreferences && savedTheme != null) {
+        await authBox.put('theme_mode', savedTheme);
+      }
+    }
+    if (Hive.isBoxOpen(HiveBoxNames.cartBox)) {
+      await cartBox.clear();
+    }
+    if (Hive.isBoxOpen(HiveBoxNames.recentBox)) {
+      await recentBox.clear();
+    }
+  }
 }
 
 /// Riverpod Provider cung cấp instance của HiveService

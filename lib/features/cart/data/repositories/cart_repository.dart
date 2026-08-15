@@ -74,6 +74,14 @@ class CartRepository {
     }
   }
 
+  /// Xóa giỏ hàng cached trong Hive
+  Future<void> clearCachedCart() async {
+    try {
+      final box = _hiveService.cartBox;
+      await box.delete('cart_items');
+    } catch (_) {}
+  }
+
   CartItem _row(CartItem? data) {
     if (data == null) throw StateError('empty cart item');
     return data;

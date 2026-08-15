@@ -12,6 +12,7 @@ import 'package:shopnexus_flutter_app/features/account/data/models/order_view.da
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/buyer_orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/confirm_receipt_sheet.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/order_status_badge.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
@@ -282,15 +283,7 @@ class OrderDetailScreen extends ConsumerWidget {
                   fontFamily: 'Inter',
                 ),
               ),
-              Text(
-                view.statusLabel,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                  fontFamily: 'Inter',
-                ),
-              ),
+              OrderStatusBadge(view: view),
             ],
           ),
           Divider(height: 24, color: dividerColor),

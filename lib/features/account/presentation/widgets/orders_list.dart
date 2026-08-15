@@ -56,6 +56,11 @@ class _OrdersListState extends ConsumerState<OrdersList> {
         view.order.completedAt != null ||
         isDelivered;
 
+    final hasRefund =
+        view.order.declineReason != null ||
+        view.order.transport?.status == TransportStatus.returned ||
+        refundedOrderIds.contains(view.order.id);
+
     switch (selectedTab) {
       case 1: // Chờ xác nhận
         return view.order.state == OrderState.awaitingConfirmation &&
@@ -63,15 +68,12 @@ class _OrdersListState extends ConsumerState<OrdersList> {
       case 2: // Đang xử lý
         return view.order.state == OrderState.open &&
             !isCompleted &&
-            view.order.transport?.status != TransportStatus.returned &&
+            !hasRefund &&
             !isCancelled;
       case 3: // Hoàn thành
-        return isCompleted && !isCancelled;
+        return isCompleted && !hasRefund && !isCancelled;
       case 4: // Hoàn tiền
-        return (view.order.declineReason != null ||
-                view.order.transport?.status == TransportStatus.returned ||
-                refundedOrderIds.contains(view.order.id)) &&
-            !isCancelled;
+        return hasRefund && !isCancelled;
       case 5: // Đã hủy
         return isCancelled;
       case 0: // Tất cả
@@ -273,10 +275,18 @@ class _OrderRow extends ConsumerWidget {
                               fontFamily: 'Inter',
                               fontSize: 12,
                               height: 1.4,
-                              fontWeight: view.isAwaitingConfirmation
+                              fontWeight: (view.isAwaitingConfirmation ||
+                                      view.order.state == OrderState.cancelled ||
+                                      view.order.transport?.status == TransportStatus.failed)
                                   ? FontWeight.w600
                                   : FontWeight.normal,
-                              color: view.isAwaitingConfirmation
+                              color: (view.order.state == OrderState.cancelled ||
+                                      view.order.transport?.status == TransportStatus.failed ||
+                                      view.order.transport?.status == TransportStatus.cancelled)
+                                  ? (isDark
+                                      ? const Color(0xFFF87171)
+                                      : const Color(0xFFDC2626))
+                                  : view.isAwaitingConfirmation
                                   ? theme.colorScheme.primary
                                   : theme.colorScheme.onSurfaceVariant,
                             ),

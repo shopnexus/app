@@ -42,6 +42,11 @@ class SellerDashboardScreen extends ConsumerWidget {
             v.order.completedAt != null ||
             isDelivered;
 
+        final hasRefund =
+            v.order.declineReason != null ||
+            v.order.transport?.status == TransportStatus.returned ||
+            sellerRefundedOrderIds.contains(v.order.id);
+
         switch (tabIndex) {
           case 1: // Chờ xác nhận
             return v.order.state == OrderState.awaitingConfirmation &&
@@ -49,15 +54,12 @@ class SellerDashboardScreen extends ConsumerWidget {
           case 2: // Đang xử lý
             return v.order.state == OrderState.open &&
                 !isCompleted &&
-                v.order.transport?.status != TransportStatus.returned &&
+                !hasRefund &&
                 !isCancelled;
           case 3: // Hoàn thành
-            return isCompleted && !isCancelled;
+            return isCompleted && !hasRefund && !isCancelled;
           case 4: // Hoàn tiền
-            return (v.order.declineReason != null ||
-                    v.order.transport?.status == TransportStatus.returned ||
-                    sellerRefundedOrderIds.contains(v.order.id)) &&
-                !isCancelled;
+            return hasRefund && !isCancelled;
           case 5: // Đã hủy
             return isCancelled;
           default:
@@ -67,9 +69,7 @@ class SellerDashboardScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF0F172A)
-          : const Color(0xFFF8FAFC),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -77,8 +77,9 @@ class SellerDashboardScreen extends ConsumerWidget {
         leading: context.canPop()
             ? IconButton(
                 icon: Icon(
-                  Icons.arrow_back_rounded,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  Icons.arrow_back_ios_new_rounded,
+                  color: theme.colorScheme.onSurface,
+                  size: 20,
                 ),
                 onPressed: () => context.pop(),
               )
@@ -88,7 +89,9 @@ class SellerDashboardScreen extends ConsumerWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.2),
+                backgroundColor: theme.colorScheme.primary.withValues(
+                  alpha: 0.15,
+                ),
                 backgroundImage:
                     profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
                     ? NetworkImage(profile.avatarUrl!)
@@ -99,8 +102,8 @@ class SellerDashboardScreen extends ConsumerWidget {
                                 ? profile.name
                                 : (profile.username ?? 'S'))[0]
                             .toUpperCase(),
-                        style: const TextStyle(
-                          color: AppColors.primary,
+                        style: TextStyle(
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Manrope',
                         ),
@@ -118,7 +121,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                       fontFamily: 'Manrope',
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -130,6 +133,7 @@ class SellerDashboardScreen extends ConsumerWidget {
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               fontFamily: 'Manrope',
+              color: theme.colorScheme.onSurface,
             ),
           ),
           error: (_, _) => Text(
@@ -137,13 +141,17 @@ class SellerDashboardScreen extends ConsumerWidget {
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               fontFamily: 'Manrope',
+              color: theme.colorScheme.onSurface,
             ),
           ),
         ),
       ),
       body: RefreshIndicator(
+        color: theme.colorScheme.primary,
         onRefresh: () async {
           await ref.read(sellerDashboardProvider.notifier).refresh();
+          ref.invalidate(sellerAllOrdersProvider);
+          ref.invalidate(refundListProvider);
         },
         child: dashboardAsync.when(
           data: (dashboard) => SingleChildScrollView(
@@ -168,7 +176,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                   children: [
                     SellerMenuItemTile(
                       title: 'Chờ xác nhận',
-                      icon: Icons.hourglass_top_rounded,
+                      icon: Icons.pending_actions_outlined,
                       iconColor: const Color(0xFF3B82F6),
                       iconBgColor: const Color(
                         0xFF3B82F6,
@@ -179,25 +187,24 @@ class SellerDashboardScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
                       title: 'Đang xử lý',
-                      icon: Icons.pending_actions,
+                      icon: Icons.local_shipping_outlined,
                       iconColor: const Color(0xFFF59E0B),
                       iconBgColor: const Color(
                         0xFFF59E0B,
                       ).withValues(alpha: 0.12),
-                      count: dashboard.summary.open,
-                      onTap: () => context.push('/seller/orders?state=open'),
+                      count: getSellerOrderCount(2),
+                      onTap: () => context.push('/seller/orders?tab=2'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
                       title: 'Hoàn thành',
-                      icon: Icons.check_circle_outline,
+                      icon: Icons.check_circle_outline_rounded,
                       iconColor: const Color(0xFF10B981),
                       iconBgColor: const Color(
                         0xFF10B981,
                       ).withValues(alpha: 0.12),
-                      count: dashboard.summary.completed,
-                      onTap: () =>
-                          context.push('/seller/orders?state=completed'),
+                      count: getSellerOrderCount(3),
+                      onTap: () => context.push('/seller/orders?tab=3'),
                     ),
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
@@ -214,13 +221,16 @@ class SellerDashboardScreen extends ConsumerWidget {
                     SellerMenuItemTile(
                       title: 'Đã hủy',
                       icon: Icons.cancel_outlined,
-                      iconColor: const Color(0xFFEF4444),
-                      iconBgColor: const Color(
-                        0xFFEF4444,
-                      ).withValues(alpha: 0.12),
-                      count: dashboard.summary.cancelled,
-                      onTap: () =>
-                          context.push('/seller/orders?state=cancelled'),
+                      iconColor: isDark
+                          ? const Color(0xFFEF4444)
+                          : const Color(0xFFBA1A1A),
+                      iconBgColor:
+                          (isDark
+                                  ? const Color(0xFFEF4444)
+                                  : const Color(0xFFBA1A1A))
+                              .withValues(alpha: 0.12),
+                      count: getSellerOrderCount(5),
+                      onTap: () => context.push('/seller/orders?tab=5'),
                     ),
                   ],
                 ),
@@ -243,8 +253,10 @@ class SellerDashboardScreen extends ConsumerWidget {
                     SellerMenuItemTile(
                       title: 'Đang bán',
                       icon: Icons.inventory_2_outlined,
-                      iconColor: AppColors.primary,
-                      iconBgColor: AppColors.primary.withValues(alpha: 0.12),
+                      iconColor: theme.colorScheme.primary,
+                      iconBgColor: theme.colorScheme.primary.withValues(
+                        alpha: 0.12,
+                      ),
                       count: dashboard.listingsWith(ListingStatus.active),
                       onTap: () =>
                           context.push('/seller/products?status=active'),
@@ -252,7 +264,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
                       title: 'Chờ duyệt',
-                      icon: Icons.hourglass_empty,
+                      icon: Icons.hourglass_empty_rounded,
                       iconColor: const Color(0xFFF59E0B),
                       iconBgColor: const Color(
                         0xFFF59E0B,
@@ -265,10 +277,9 @@ class SellerDashboardScreen extends ConsumerWidget {
                     SellerMenuItemTile(
                       title: 'Đã ẩn',
                       icon: Icons.visibility_off_outlined,
-                      iconColor: const Color(0xFF64748B),
-                      iconBgColor: const Color(
-                        0xFF64748B,
-                      ).withValues(alpha: 0.12),
+                      iconColor: theme.colorScheme.onSurfaceVariant,
+                      iconBgColor: theme.colorScheme.onSurfaceVariant
+                          .withValues(alpha: 0.12),
                       count: dashboard.listingsWith(ListingStatus.hidden),
                       onTap: () =>
                           context.push('/seller/products?status=hidden'),
@@ -276,11 +287,10 @@ class SellerDashboardScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     SellerMenuItemTile(
                       title: 'Nháp',
-                      icon: Icons.edit_note,
-                      iconColor: const Color(0xFF94A3B8),
-                      iconBgColor: const Color(
-                        0xFF94A3B8,
-                      ).withValues(alpha: 0.12),
+                      icon: Icons.edit_note_rounded,
+                      iconColor: theme.colorScheme.onSurfaceVariant,
+                      iconBgColor: theme.colorScheme.onSurfaceVariant
+                          .withValues(alpha: 0.12),
                       count: dashboard.listingsWith(ListingStatus.draft),
                       onTap: () =>
                           context.push('/seller/products?status=draft'),
@@ -305,7 +315,6 @@ class SellerDashboardScreen extends ConsumerWidget {
     VoidCallback? onSeeAll,
   }) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -315,7 +324,8 @@ class SellerDashboardScreen extends ConsumerWidget {
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             fontSize: 18,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            fontFamily: 'Manrope',
+            color: theme.colorScheme.onSurface,
           ),
         ),
         if (onSeeAll != null)
@@ -329,16 +339,16 @@ class SellerDashboardScreen extends ConsumerWidget {
                   Text(
                     'Xem tất cả',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B),
-                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Inter',
                     ),
                   ),
-                  const Icon(
-                    Icons.chevron_right,
+                  const SizedBox(width: 2),
+                  Icon(
+                    Icons.chevron_right_rounded,
                     size: 18,
-                    color: Color(0xFF94A3B8),
+                    color: theme.colorScheme.primary,
                   ),
                 ],
               ),
@@ -349,16 +359,15 @@ class SellerDashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildAiPostingBanner(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [const Color(0xFF0F172A), const Color(0xFF1E293B)]
-              : [const Color(0xFF0F172A), const Color(0xFF1E293B)],
+              ? [AppColors.darkSurface, AppColors.darkBackground]
+              : [const Color(0xFF00302C), const Color(0xFF005049)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -379,12 +388,13 @@ class SellerDashboardScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.2),
+                  color: (isDark ? AppColors.darkPrimary : Colors.white)
+                      .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
-                  Icons.auto_awesome,
-                  color: AppColors.primary,
+                child: Icon(
+                  Icons.auto_awesome_rounded,
+                  color: isDark ? AppColors.darkPrimary : Colors.white,
                   size: 24,
                 ),
               ),
@@ -398,6 +408,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Manrope',
                         color: Colors.white,
                       ),
                     ),
@@ -406,7 +417,8 @@ class SellerDashboardScreen extends ConsumerWidget {
                       'Chụp ảnh, nói vài câu — AI điền sẵn tin đăng để bạn sửa',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.7),
+                        fontFamily: 'Inter',
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -419,13 +431,20 @@ class SellerDashboardScreen extends ConsumerWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => context.push('/seller/new-listing'),
-              icon: const Icon(Icons.auto_awesome, size: 20),
+              icon: const Icon(Icons.auto_awesome_rounded, size: 20),
               label: const Text('Đăng sản phẩm mới'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: isDark ? AppColors.darkPrimary : Colors.white,
+                foregroundColor: isDark
+                    ? AppColors.darkBackground
+                    : AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 elevation: 0,
+                textStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter',
+                  fontSize: 15,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -438,11 +457,10 @@ class SellerDashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildShimmerLoading(BuildContext context, bool isDark) {
-    final baseColor = isDark
-        ? const Color(0xFF1E293B)
-        : const Color(0xFFE2E8F0);
+    final theme = Theme.of(context);
+    final baseColor = isDark ? AppColors.darkSurface : const Color(0xFFE2E8F0);
     final highlightColor = isDark
-        ? const Color(0xFF334155)
+        ? theme.colorScheme.surfaceContainerHighest
         : const Color(0xFFF1F5F9);
 
     return SingleChildScrollView(
@@ -492,6 +510,7 @@ class SellerDashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildErrorWidget(BuildContext context, String error, WidgetRef ref) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -504,26 +523,35 @@ class SellerDashboardScreen extends ConsumerWidget {
               color: Color(0xFFEF4444),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Không thể tải số liệu bán hàng',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Inter',
+                color: theme.colorScheme.onSurface,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               error,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 13,
+                fontFamily: 'Inter',
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
                 ref.read(sellerDashboardProvider.notifier).refresh();
               },
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh_rounded),
               label: const Text('Tải lại'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

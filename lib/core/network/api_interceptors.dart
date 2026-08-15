@@ -116,7 +116,7 @@ class AuthInterceptor extends Interceptor {
   }
 
   Future<void> _endSession(HiveService hiveService) async {
-    await hiveService.authBox.clear();
+    await hiveService.clearUserData(keepPreferences: true);
     _ref.read(authProvider.notifier).forceLogout();
 
     try {
