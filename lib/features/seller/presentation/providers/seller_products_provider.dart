@@ -79,6 +79,15 @@ class SellerProductsNotifier extends _$SellerProductsNotifier {
     await refresh();
   }
 
+  /// Sends a draft or inactive listing to moderation (`pending`).
+  Future<void> publishListing(String id, {String? pickupContactId}) async {
+    await ref.read(sellerRepositoryProvider).publishListing(
+      id,
+      pickupContactId: pickupContactId,
+    );
+    await refresh();
+  }
+
   Future<void> deleteListing(String id) async {
     await ref.read(sellerRepositoryProvider).deleteListing(id);
     await refresh();

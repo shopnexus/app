@@ -93,14 +93,23 @@ CreateListingRequest listingDraftRequest({
   required ListingCondition condition,
   required String currency,
   required PriceMode priceMode,
-  required int price,
-  required int weightG,
-  required int quantity,
+  List<CreateVariantRequest>? variants,
+  int? price,
+  int? weightG,
+  int? quantity,
   List<String> attachments = const [],
   List<String> tags = const [],
   Map<String, Object> specifications = const {},
 }) {
   final slugs = listingTags(tags);
+  final finalVariants = variants ?? [
+    CreateVariantRequest(
+      price: price ?? 0,
+      quantity: quantity ?? 1,
+      attributes: defaultVariantAttributes,
+      packageDetails: <String, Object>{'weight_g': weightG ?? 500},
+    ),
+  ];
 
   return CreateListingRequest(
     name: name,
@@ -114,16 +123,6 @@ CreateListingRequest listingDraftRequest({
     attachments: attachments.isEmpty ? null : attachments,
     tags: slugs.isEmpty ? null : slugs,
     specifications: specifications.isEmpty ? null : specifications,
-    variants: [
-      // One variant: this is a marketplace for used goods, so a listing is
-      // normally the one item in the seller's hands. Price and parcel weight
-      // live on the variant, which is why it exists at all.
-      CreateVariantRequest(
-        price: price,
-        quantity: quantity,
-        attributes: defaultVariantAttributes,
-        packageDetails: <String, Object>{'weight_g': weightG},
-      ),
-    ],
+    variants: finalVariants,
   );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
@@ -227,7 +228,7 @@ class _ListingEditScreenState extends ConsumerState<ListingEditScreen> {
         const SizedBox(height: 8),
         // Ảnh sửa ở đâu thì nói ra, thay vì để một ô trống người bán tìm mãi.
         Text(
-          'Ảnh và giá bán sửa ở màn danh sách tin, mục "Sửa giá & tồn kho".',
+          'Ảnh, giá bán và phiên bản sửa ở màn danh sách tin, mục "Quản lý phiên bản (giá & tồn kho)".',
           textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
@@ -249,27 +250,283 @@ class _CategoryPicker extends ConsumerWidget {
   final bool enabled;
   final ValueChanged<String> onChanged;
 
+  String _categoryLabel(Category cat, List<Category> all) {
+    if (cat.parentId == null) return cat.name;
+    final parent = all.where((c) => c.id == cat.parentId).firstOrNull;
+    if (parent == null) return cat.name;
+    return '${_categoryLabel(parent, all)} > ${cat.name}';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categories = ref.watch(editableCategoriesProvider);
+    final theme = Theme.of(context);
 
     return switch (categories) {
-      AsyncData(value: final tree) => DropdownButtonFormField<String>(
-        initialValue: tree.any((c) => c.id == value) ? value : null,
-        decoration: const InputDecoration(border: OutlineInputBorder()),
-        items: [
-          for (final category in tree)
-            DropdownMenuItem(value: category.id, child: Text(category.name)),
-        ],
-        onChanged: enabled
-            ? (next) {
-                if (next != null) onChanged(next);
-              }
-            : null,
-      ),
+      AsyncData(value: final tree) => InkWell(
+          onTap: !enabled || tree.isEmpty
+              ? null
+              : () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    builder: (sheetContext) => _EditCategorySearchBottomSheet(
+                      categories: tree,
+                      selectedCategoryId: value,
+                      categoryLabel: (cat) => _categoryLabel(cat, tree),
+                      onSelect: (selectedId) {
+                        onChanged(selectedId);
+                        Navigator.pop(sheetContext);
+                      },
+                    ),
+                  );
+                },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: theme.colorScheme.outline.withAlpha(120),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.category_outlined,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    tree.where((c) => c.id == value).firstOrNull?.let(
+                              (c) => _categoryLabel(c, tree),
+                            ) ??
+                        'Chọn danh mục...',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(
+                  Icons.search,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
+        ),
       AsyncError() => const Text('Không tải được danh mục.'),
       _ => const LinearProgressIndicator(),
     };
+  }
+}
+
+extension _CategoryLet<T> on T {
+  R let<R>(R Function(T) op) => op(this);
+}
+
+class _EditCategorySearchBottomSheet extends StatefulWidget {
+  final List<Category> categories;
+  final String? selectedCategoryId;
+  final String Function(Category) categoryLabel;
+  final ValueChanged<String> onSelect;
+
+  const _EditCategorySearchBottomSheet({
+    required this.categories,
+    required this.selectedCategoryId,
+    required this.categoryLabel,
+    required this.onSelect,
+  });
+
+  @override
+  State<_EditCategorySearchBottomSheet> createState() =>
+      _EditCategorySearchBottomSheetState();
+}
+
+class _EditCategorySearchBottomSheetState
+    extends State<_EditCategorySearchBottomSheet> {
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final query = _query.trim().toLowerCase();
+
+    final filtered = widget.categories.where((cat) {
+      if (query.isEmpty) return true;
+      final nameMatch = cat.name.toLowerCase().contains(query);
+      final labelMatch =
+          widget.categoryLabel(cat).toLowerCase().contains(query);
+      return nameMatch || labelMatch;
+    }).toList();
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.75,
+      minChildSize: 0.4,
+      maxChildSize: 0.95,
+      expand: false,
+      builder: (context, scrollController) {
+        return Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.onSurfaceVariant.withAlpha(80),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Chọn danh mục',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _searchController,
+                autofocus: false,
+                style: TextStyle(color: theme.colorScheme.onSurface),
+                decoration: InputDecoration(
+                  hintText: 'Tìm kiếm danh mục...',
+                  hintStyle: TextStyle(
+                    fontSize: 13,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  suffixIcon: _query.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _query = '');
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: isDark
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : const Color(0xFFF1F5F9),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                onChanged: (val) => setState(() => _query = val),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '${filtered.length} danh mục',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: filtered.isEmpty
+                  ? Center(
+                      child: Text(
+                        'Không tìm thấy danh mục "$_query"',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  : ListView.separated(
+                      controller: scrollController,
+                      itemCount: filtered.length,
+                      separatorBuilder: (_, __) =>
+                          const Divider(height: 1, indent: 16, endIndent: 16),
+                      itemBuilder: (context, index) {
+                        final cat = filtered[index];
+                        final isSelected =
+                            cat.id == widget.selectedCategoryId;
+                        final label = widget.categoryLabel(cat);
+
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 4,
+                          ),
+                          title: Text(
+                            label,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          trailing: isSelected
+                              ? Icon(
+                                  Icons.check_circle_rounded,
+                                  color: theme.colorScheme.primary,
+                                  size: 20,
+                                )
+                              : null,
+                          onTap: () => widget.onSelect(cat.id),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
