@@ -273,10 +273,18 @@ class _OrderRow extends ConsumerWidget {
                               fontFamily: 'Inter',
                               fontSize: 12,
                               height: 1.4,
-                              fontWeight: view.isAwaitingConfirmation
+                              fontWeight: (view.isAwaitingConfirmation ||
+                                      view.order.state == OrderState.cancelled ||
+                                      view.order.transport?.status == TransportStatus.failed)
                                   ? FontWeight.w600
                                   : FontWeight.normal,
-                              color: view.isAwaitingConfirmation
+                              color: (view.order.state == OrderState.cancelled ||
+                                      view.order.transport?.status == TransportStatus.failed ||
+                                      view.order.transport?.status == TransportStatus.cancelled)
+                                  ? (isDark
+                                      ? const Color(0xFFF87171)
+                                      : const Color(0xFFDC2626))
+                                  : view.isAwaitingConfirmation
                                   ? theme.colorScheme.primary
                                   : theme.colorScheme.onSurfaceVariant,
                             ),

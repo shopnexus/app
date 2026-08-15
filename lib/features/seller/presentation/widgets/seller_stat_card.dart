@@ -26,9 +26,9 @@ class SellerStatCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final defaultIconColor = iconColor ?? AppColors.primary;
+    final defaultIconColor = iconColor ?? theme.colorScheme.primary;
     final defaultBgColor =
-        iconBgColor ?? AppColors.primary.withValues(alpha: 0.12);
+        iconBgColor ?? theme.colorScheme.primary.withValues(alpha: 0.12);
 
     return Material(
       color: Colors.transparent,
@@ -38,12 +38,12 @@ class SellerStatCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            color: isDark ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : const Color(0xFFF1F5F9),
+                  ? AppColors.darkPrimary.withValues(alpha: 0.15)
+                  : const Color(0xFFE2E8F0),
             ),
             boxShadow: [
               BoxShadow(
@@ -66,10 +66,9 @@ class SellerStatCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
+                        color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
+                        fontFamily: 'Inter',
                       ),
                     ),
                   ),
@@ -89,7 +88,8 @@ class SellerStatCard extends StatelessWidget {
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 22,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  fontFamily: 'Manrope',
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               if (subtitle != null) ...[
@@ -97,8 +97,9 @@ class SellerStatCard extends StatelessWidget {
                 Text(
                   subtitle!,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.primary,
+                    color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w500,
+                    fontFamily: 'Inter',
                   ),
                 ),
               ],

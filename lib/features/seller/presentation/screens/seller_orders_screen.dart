@@ -14,6 +14,7 @@ import 'package:shopnexus_flutter_app/features/account/presentation/providers/ac
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/refund_status_badge.dart';
+import 'package:shopnexus_flutter_app/shared/widgets/order_status_badge.dart';
 
 /// A seller's sales, read through `GET /orders?role=seller&state=…`.
 ///
@@ -273,26 +274,7 @@ Widget _buildOrderCard(
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF059669).withAlpha(40)
-                    : const Color(0xFFD1FAE5),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                view.statusLabel,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: isDark
-                      ? const Color(0xFF34D399)
-                      : const Color(0xFF065F46),
-                ),
-              ),
-            ),
+            OrderStatusBadge(view: view),
           ],
         ),
         const SizedBox(height: 8),
