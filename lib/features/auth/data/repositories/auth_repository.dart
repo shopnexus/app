@@ -48,7 +48,7 @@ class AuthRepository {
     } catch (_) {
       // Offline or a server error; proceed with the local logout.
     }
-    await _hiveService.authBox.clear();
+    await _hiveService.clearUserData(keepPreferences: true);
   }
 
   /// The tokens land in Hive here rather than in the notifier, because the

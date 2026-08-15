@@ -124,6 +124,11 @@ bool _matchesSellerTab(
       view.order.completedAt != null ||
       isDelivered;
 
+  final hasRefund =
+      view.order.declineReason != null ||
+      view.order.transport?.status == TransportStatus.returned ||
+      refundedOrderIds.contains(view.order.id);
+
   switch (selectedTab) {
     case 1: // Chờ xác nhận
       return view.order.state == OrderState.awaitingConfirmation &&
@@ -131,15 +136,12 @@ bool _matchesSellerTab(
     case 2: // Đang xử lý
       return view.order.state == OrderState.open &&
           !isCompleted &&
-          view.order.transport?.status != TransportStatus.returned &&
+          !hasRefund &&
           !isCancelled;
     case 3: // Hoàn thành
-      return isCompleted && !isCancelled;
+      return isCompleted && !hasRefund && !isCancelled;
     case 4: // Hoàn tiền
-      return (view.order.declineReason != null ||
-              view.order.transport?.status == TransportStatus.returned ||
-              refundedOrderIds.contains(view.order.id)) &&
-          !isCancelled;
+      return hasRefund && !isCancelled;
     case 5: // Đã hủy
       return isCancelled;
     case 0: // Tất cả

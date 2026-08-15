@@ -268,6 +268,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             v.order.completedAt != null ||
             isDelivered;
 
+        final hasRefund =
+            v.order.declineReason != null ||
+            v.order.transport?.status == TransportStatus.returned ||
+            buyerRefundedOrderIds.contains(v.order.id);
+
         switch (tabIndex) {
           case 1: // Chờ xác nhận
             return v.order.state == OrderState.awaitingConfirmation &&
@@ -275,15 +280,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           case 2: // Đang xử lý
             return v.order.state == OrderState.open &&
                 !isCompleted &&
-                v.order.transport?.status != TransportStatus.returned &&
+                !hasRefund &&
                 !isCancelled;
           case 3: // Hoàn thành
-            return isCompleted && !isCancelled;
+            return isCompleted && !hasRefund && !isCancelled;
           case 4: // Hoàn tiền
-            return (v.order.declineReason != null ||
-                    v.order.transport?.status == TransportStatus.returned ||
-                    buyerRefundedOrderIds.contains(v.order.id)) &&
-                !isCancelled;
+            return hasRefund && !isCancelled;
           case 5: // Đã hủy
             return isCancelled;
           default:

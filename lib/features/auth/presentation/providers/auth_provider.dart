@@ -1,10 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/wishlist_provider.dart';
 import 'package:shopnexus_flutter_app/features/auth/data/models/auth_model.dart';
 import 'package:shopnexus_flutter_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:shopnexus_flutter_app/features/cart/presentation/providers/cart_provider.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 
 part 'auth_provider.freezed.dart';
 part 'auth_provider.g.dart';
@@ -148,7 +151,7 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       final repository = ref.read(authRepositoryProvider);
       await repository.logout(deviceId: deviceId);
-      ref.invalidate(profileProvider);
+      _clearLocalSession();
       state = const AuthState.unauthenticated();
     } catch (e) {
       state = AuthState.error(message: ErrorHandler.getErrorMessage(e));
@@ -157,8 +160,17 @@ class AuthNotifier extends _$AuthNotifier {
 
   /// Buộc đăng xuất (khi refresh token thất bại hoặc hết hạn)
   void forceLogout() {
-    ref.invalidate(profileProvider);
+    ref.read(hiveServiceProvider).clearUserData(keepPreferences: true);
+    _clearLocalSession();
     state = const AuthState.unauthenticated();
+  }
+
+  void _clearLocalSession() {
+    ref.invalidate(profileProvider);
+    ref.invalidate(recentSearchesProvider);
+    ref.invalidate(recentlyViewedProductsProvider);
+    ref.invalidate(cartProvider);
+    ref.invalidate(wishlistProductsProvider);
   }
 
   /// Cập nhật lại token mới sau khi refresh thành công
