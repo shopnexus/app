@@ -245,7 +245,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
     // `taken_down_at` is the only thing that tells the two apart.
     final isTakenDown = listing.takenDownAt != null;
     final statusText = isTakenDown
-        ? 'Bị hạ'
+        ? 'Đã ẩn'
         : _statusLabels[listing.status] ?? listing.status.value;
     final statusBgColor = isTakenDown
         ? (isDark
@@ -446,9 +446,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // A draft has never been published, so there is no
-                        // publication to take down and nothing to toggle.
-                        if (listing.status != ListingStatus.draft) ...[
+                        // Only active or hidden listings can be toggled.
+                        // Products that are pending review (Chờ duyệt) or draft cannot be toggled.
+                        if (listing.status == ListingStatus.active ||
+                            listing.status == ListingStatus.hidden) ...[
                           GestureDetector(
                             onTap: () => _showToggleConfirmDialog(
                               context,
@@ -516,6 +517,37 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                             ),
                           ),
                           const SizedBox(width: 4),
+                        ],
+                        if (listing.status == ListingStatus.draft) ...[
+                          FilledButton.icon(
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              backgroundColor: theme.colorScheme.primary,
+                              foregroundColor: theme.colorScheme.onPrimary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            icon: const Icon(Icons.send_rounded, size: 13),
+                            label: const Text(
+                              'Gửi duyệt',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed: () => _confirmPublishDraft(
+                              context,
+                              listing,
+                              notifier,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                         ],
                         IconButton(
                           icon: Icon(
@@ -617,6 +649,24 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (listing.status == ListingStatus.draft)
+                ListTile(
+                  leading: Icon(
+                    Icons.send_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
+                  title: Text(
+                    'Gửi duyệt sản phẩm',
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _confirmPublishDraft(context, listing, notifier);
+                  },
+                ),
               ListTile(
                 leading: Icon(
                   Icons.visibility_outlined,
@@ -657,11 +707,11 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
               // chứ không nằm trong "Sửa tin". Người bán đổi hai thứ này hằng tuần.
               ListTile(
                 leading: Icon(
-                  Icons.sell_outlined,
+                  Icons.layers_outlined,
                   color: theme.colorScheme.onSurface,
                 ),
                 title: Text(
-                  'Sửa giá & tồn kho',
+                  'Quản lý phiên bản (giá & tồn kho)',
                   style: TextStyle(color: theme.colorScheme.onSurface),
                 ),
                 onTap: () async {
@@ -780,6 +830,88 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _confirmPublishDraft(
+    BuildContext context,
+    Listing listing,
+    SellerProductsNotifier notifier,
+  ) async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.send_rounded, color: theme.colorScheme.primary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Gửi duyệt sản phẩm',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Gửi sản phẩm "${listing.name}" đi duyệt? Sau khi gửi, sản phẩm sẽ được chuyển sang tab "Chờ duyệt" để quản trị viên kiểm tra.',
+          style: TextStyle(
+            fontSize: 14,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(
+              'Hủy',
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text('Gửi duyệt'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || !context.mounted) return;
+
+    try {
+      await notifier.publishListing(listing.id);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Đã gửi sản phẩm "${listing.name}" đi duyệt. Sản phẩm đã chuyển sang tab Chờ duyệt.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Không thể gửi duyệt: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildShimmerList(BuildContext context) {

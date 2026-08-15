@@ -10,6 +10,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/create_bank_account_re
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transaction.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_bank_account_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/create_variant_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_variant_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/create_withdrawal_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
@@ -20,6 +21,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/publish_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/tax_info.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/update_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/upsert_tax_info_request.dart';
@@ -254,11 +256,26 @@ class SellerRepository {
   Future<void> hideListing(String id) =>
       _catalogApi.listingsIdPublicationDelete(id: id);
 
-  /// Re-queues a hidden listing for moderation, so it comes back as `pending`
-  /// rather than straight to `active`. That is also the route out of a takedown —
-  /// it clears the marker and its reason and the listing is reviewed again.
-  Future<void> publishListing(String id) =>
-      _catalogApi.listingsIdPublicationPost(id: id);
+  Future<void> publishListing(String id, {String? pickupContactId}) =>
+      _catalogApi.listingsIdPublicationPost(
+        id: id,
+        publishListingRequest: pickupContactId == null
+            ? null
+            : PublishListingRequest(pickupContactId: pickupContactId),
+      );
+
+  Future<ListingDetail> addVariant(
+    String listingId,
+    CreateVariantRequest request,
+  ) async {
+    final response = await _catalogApi.listingsIdVariantsPost(
+      id: listingId,
+      createVariantRequest: request,
+    );
+    final detail = response.data?.data;
+    if (detail == null) throw StateError('empty add variant response');
+    return detail;
+  }
 
   Future<void> deleteVariant(String id) => _catalogApi.variantsIdDelete(id: id);
 
