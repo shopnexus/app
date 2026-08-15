@@ -14,6 +14,9 @@ class ErrorHandler {
     // người bán hạ giá niêm yết trong lúc bên kia đang gõ.
     'offer_above_asking':
         'Mức giá đề nghị không được cao hơn giá niêm yết của sản phẩm.',
+    // Trang tin đăng đã ẩn hết nút mua khi tin là của chính mình; câu này là cho
+    // những đường còn lại — giỏ hàng cũ, hay một liên kết mở thẳng vào thanh toán.
+    'self_purchase': 'Bạn không thể mua tin đăng của chính mình.',
   };
 
   static String getErrorMessage(dynamic error) {

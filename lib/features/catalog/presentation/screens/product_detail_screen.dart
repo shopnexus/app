@@ -1365,26 +1365,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         ? theme.colorScheme.surfaceContainerHighest
         : const Color(0xFFEEEEEB);
 
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        16.0,
-        12.0,
-        16.0,
-        MediaQuery.of(context).padding.bottom + 12.0,
-      ),
-      decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.darkSurface : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
-        boxShadow: [
-          BoxShadow(
-            color: isDarkMode
-                ? Colors.black.withAlpha(80)
-                : Colors.black.withAlpha(20),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
+    // Không ai mua được tin của chính mình — server chặn ở cả draft, giỏ hàng lẫn
+    // thương lượng — nên đừng bày ra nút để người bán bấm rồi ăn lỗi. Chỗ đó dành
+    // cho việc họ thật sự làm được ở đây: sửa tin.
+    final currentUserId = ref.watch(profileProvider).value?.id;
+    if (currentUserId != null && currentUserId == detail.seller.id) {
+      return _buildOwnListingBar(detail);
+    }
+
+    return _buildStickyBarFrame(
       child: Row(
         children: [
           // Nút Icon Chat
@@ -1610,6 +1599,89 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       fontSize: 13,
                     ),
                   ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Khung của thanh dưới cùng. Hai trạng thái của nó — người mua và chính người
+  /// bán — dùng chung nền, bo góc và bóng đổ; chỉ phần bên trong là khác.
+  Widget _buildStickyBarFrame({required Widget child}) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        16.0,
+        12.0,
+        16.0,
+        MediaQuery.of(context).padding.bottom + 12.0,
+      ),
+      decoration: BoxDecoration(
+        color: isDarkMode ? AppColors.darkSurface : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
+        boxShadow: [
+          BoxShadow(
+            color: isDarkMode
+                ? Colors.black.withAlpha(80)
+                : Colors.black.withAlpha(20),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  /// Thanh dưới cùng khi tin đăng là của chính người đang xem: không mua, không
+  /// thêm giỏ, không nhắn cho chính mình.
+  Widget _buildOwnListingBar(ListingDetail detail) {
+    final theme = Theme.of(context);
+    return _buildStickyBarFrame(
+      child: Row(
+        children: [
+          Icon(
+            Icons.storefront_outlined,
+            size: 20,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 8.0),
+          Expanded(
+            child: Text(
+              'Đây là tin đăng của bạn',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12.0),
+          SizedBox(
+            height: 48.0,
+            child: ElevatedButton(
+              onPressed: () =>
+                  context.push('/seller/products/${detail.id}/edit'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                'CHỈNH SỬA TIN',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
                 ),
               ),
             ),
