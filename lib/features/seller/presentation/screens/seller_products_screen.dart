@@ -446,9 +446,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // A draft has never been published, so there is no
-                        // publication to take down and nothing to toggle.
-                        if (listing.status != ListingStatus.draft) ...[
+                        // Only active or hidden listings can be toggled.
+                        // Products that are pending review (Chờ duyệt) or draft cannot be toggled.
+                        if (listing.status == ListingStatus.active ||
+                            listing.status == ListingStatus.hidden) ...[
                           GestureDetector(
                             onTap: () => _showToggleConfirmDialog(
                               context,

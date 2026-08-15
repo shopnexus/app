@@ -990,130 +990,30 @@ class _ListingSuggestionScreenState
       return;
     }
 
-    final controller = TextEditingController();
-    final raw = await _promptText(
-      title: 'Thêm thẻ',
-      hint: 'handmade',
-      controller: controller,
+    final raw = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => _AddTagDialog(
+        cardColor: _cardColor,
+        inputDecoration: _inputDecoration,
+      ),
     );
-    controller.dispose();
-    setState(() => _tags = listingTags([..._tags, raw ?? '']));
+    if (!mounted || raw == null || raw.trim().isEmpty) return;
+    setState(() => _tags = listingTags([..._tags, raw.trim()]));
   }
 
   Future<void> _addSpec() async {
-    final keyController = TextEditingController();
-    final valueController = TextEditingController();
-    final theme = Theme.of(context);
-
-    final added = await showDialog<bool>(
+    final pair = await showDialog<MapEntry<String, String>>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: _cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Thêm thông số',
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: keyController,
-              autofocus: true,
-              style: TextStyle(color: theme.colorScheme.onSurface),
-              decoration: _inputDecoration(
-                hint: 'Tên thông số, ví dụ: Dung lượng',
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: valueController,
-              style: TextStyle(color: theme.colorScheme.onSurface),
-              decoration: _inputDecoration(hint: 'Giá trị, ví dụ: 64GB'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(
-              'Hủy',
-              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: theme.colorScheme.onPrimary,
-            ),
-            child: const Text('Thêm'),
-          ),
-        ],
+      builder: (dialogContext) => _AddSpecDialog(
+        cardColor: _cardColor,
+        inputDecoration: _inputDecoration,
       ),
     );
-
-    final key = keyController.text.trim();
-    final value = valueController.text.trim();
-    keyController.dispose();
-    valueController.dispose();
-    if (added != true || key.isEmpty || value.isEmpty) return;
+    if (!mounted || pair == null) return;
     setState(() {
-      _specs.removeWhere((spec) => spec.key == key);
-      _specs.add(MapEntry(key, value));
+      _specs.removeWhere((spec) => spec.key == pair.key);
+      _specs.add(pair);
     });
-  }
-
-  Future<String?> _promptText({
-    required String title,
-    required String hint,
-    required TextEditingController controller,
-  }) {
-    final theme = Theme.of(context);
-
-    return showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: _cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: TextStyle(color: theme.colorScheme.onSurface),
-          decoration: _inputDecoration(hint: hint),
-          onSubmitted: (value) => Navigator.pop(dialogContext, value),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Hủy',
-              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, controller.text),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: theme.colorScheme.onPrimary,
-            ),
-            child: const Text('Thêm'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _applySuggestion(ListingSuggestion suggestion) {
@@ -1417,6 +1317,169 @@ class _IdentityGate extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AddTagDialog extends StatefulWidget {
+  final Color cardColor;
+  final InputDecoration Function({required String hint}) inputDecoration;
+
+  const _AddTagDialog({
+    required this.cardColor,
+    required this.inputDecoration,
+  });
+
+  @override
+  State<_AddTagDialog> createState() => _AddTagDialogState();
+}
+
+class _AddTagDialogState extends State<_AddTagDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AlertDialog(
+      backgroundColor: widget.cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text(
+        'Thêm thẻ',
+        style: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        style: TextStyle(color: theme.colorScheme.onSurface),
+        decoration: widget.inputDecoration(hint: 'handmade'),
+        onSubmitted: (value) => Navigator.pop(context, value.trim()),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            'Hủy',
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
+          ),
+          child: const Text('Thêm'),
+        ),
+      ],
+    );
+  }
+}
+
+class _AddSpecDialog extends StatefulWidget {
+  final Color cardColor;
+  final InputDecoration Function({required String hint}) inputDecoration;
+
+  const _AddSpecDialog({
+    required this.cardColor,
+    required this.inputDecoration,
+  });
+
+  @override
+  State<_AddSpecDialog> createState() => _AddSpecDialogState();
+}
+
+class _AddSpecDialogState extends State<_AddSpecDialog> {
+  late final TextEditingController _keyController;
+  late final TextEditingController _valueController;
+
+  @override
+  void initState() {
+    super.initState();
+    _keyController = TextEditingController();
+    _valueController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _keyController.dispose();
+    _valueController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AlertDialog(
+      backgroundColor: widget.cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text(
+        'Thêm thông số',
+        style: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _keyController,
+            autofocus: true,
+            style: TextStyle(color: theme.colorScheme.onSurface),
+            decoration: widget.inputDecoration(
+              hint: 'Tên thông số, ví dụ: Dung lượng',
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _valueController,
+            style: TextStyle(color: theme.colorScheme.onSurface),
+            decoration: widget.inputDecoration(hint: 'Giá trị, ví dụ: 64GB'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            'Hủy',
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final key = _keyController.text.trim();
+            final value = _valueController.text.trim();
+            if (key.isNotEmpty && value.isNotEmpty) {
+              Navigator.pop(context, MapEntry(key, value));
+            } else {
+              Navigator.pop(context);
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
+          ),
+          child: const Text('Thêm'),
+        ),
+      ],
     );
   }
 }
