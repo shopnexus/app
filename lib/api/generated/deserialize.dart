@@ -231,8 +231,6 @@ ReturnType deserialize<ReturnType, BaseType>(
   bool growable = true,
 }) {
   switch (targetType) {
-    case 'String':
-      return '$value' as ReturnType;
     case 'int':
       return (value is int ? value : int.parse('$value')) as ReturnType;
     case 'bool':

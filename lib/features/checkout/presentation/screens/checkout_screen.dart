@@ -23,6 +23,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   int _visibleShippingCount = _initialVisibleCount;
   int _visiblePaymentCount = _initialVisibleCount;
+  late final TextEditingController _noteController;
+
+  @override
+  void initState() {
+    super.initState();
+    _noteController = TextEditingController(text: ref.read(checkoutProvider).note ?? '');
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +157,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           const SizedBox(height: 16),
 
           _buildPaymentMethodCard(context, ref, state),
+          const SizedBox(height: 16),
+
+          _buildBuyerNoteCard(context, ref, state),
           const SizedBox(height: 16),
 
           _buildOrderSummaryCard(context, state),
@@ -640,7 +656,122 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  // --- 4. ORDER ITEMS CARD ---
+  // --- 4. BUYER NOTE CARD ---
+  Widget _buildBuyerNoteCard(
+    BuildContext context,
+    WidgetRef ref,
+    CheckoutState state,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final cardBorderColor = isDarkMode
+        ? AppColors.darkPrimary.withAlpha(40)
+        : const Color(0xFFE2E3E0);
+    final inputBgColor = isDarkMode
+        ? theme.colorScheme.surfaceContainerHighest
+        : const Color(0xFFF8FAFC);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardBgColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: cardBorderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(isDarkMode ? 40 : 6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.edit_note_rounded,
+                color: theme.colorScheme.primary,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Lời nhắn cho người bán',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _noteController,
+            maxLines: 3,
+            minLines: 1,
+            maxLength: 200,
+            textInputAction: TextInputAction.done,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              color: theme.colorScheme.onSurface,
+            ),
+            decoration: InputDecoration(
+              hintText:
+                  'Lưu ý cho người bán (ví dụ: thời gian nhận hàng, đóng gói cẩn thận...)',
+              hintStyle: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              filled: true,
+              fillColor: inputBgColor,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDarkMode
+                      ? AppColors.darkPrimary.withAlpha(30)
+                      : const Color(0xFFE2E3E0),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDarkMode
+                      ? AppColors.darkPrimary.withAlpha(30)
+                      : const Color(0xFFE2E3E0),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary,
+                  width: 1.5,
+                ),
+              ),
+              counterStyle: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            onChanged: (value) {
+              ref.read(checkoutProvider.notifier).setNote(value);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- 5. ORDER ITEMS CARD ---
   Widget _buildOrderItemsCard(
     BuildContext context,
     WidgetRef ref,

@@ -129,7 +129,7 @@ class Listing {
   @JsonKey(name: r'seller', required: true, includeIfNull: false)
   final AccountSummary seller;
 
-  /// URL-friendly, globally unique and fixed at creation.
+  /// The slug a link carries: the listing's name, slugified and frozen at creation, with the listing's id on the end. The text in front is for the person reading the link and is not matched — renaming a listing does not rewrite links already shared, and a stale one still resolves because the id behind the last hyphen is what addresses the listing.  It never contains an underscore, which is how `GET /listings/{id}` tells it from a `ListingID` and accepts either. A name that slugifies to nothing leaves the id alone.
   @JsonKey(name: r'slug', required: true, includeIfNull: false)
   final String slug;
 
