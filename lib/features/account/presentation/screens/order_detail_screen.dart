@@ -362,6 +362,31 @@ class OrderDetailScreen extends ConsumerWidget {
               fontFamily: 'Inter',
             ),
           ),
+          // Cạnh địa chỉ, vì người bán đọc hai thứ này trong cùng một việc: gói
+          // hàng rồi ghi phiếu. Câu dặn được ghi vào đơn từ lâu mà trước đây
+          // không hiện ở đâu cả.
+          if (view.buyerNote.isNotEmpty) ...[
+            Divider(height: 24, color: dividerColor),
+            Text(
+              'Ghi chú của người mua',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+                fontFamily: 'Inter',
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              view.buyerNote,
+              style: TextStyle(
+                fontSize: 13,
+                height: 1.5,
+                color: theme.colorScheme.onSurfaceVariant,
+                fontFamily: 'Inter',
+              ),
+            ),
+          ],
         ],
       ),
     );
