@@ -10,11 +10,22 @@ import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/c
 import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/payment_webview_screen.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/escrow_notice.dart';
 
-class CheckoutScreen extends ConsumerWidget {
+class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CheckoutScreen> createState() => _CheckoutScreenState();
+}
+
+class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
+  static const int _initialVisibleCount = 3;
+  static const int _expandStepCount = 5;
+
+  int _visibleShippingCount = _initialVisibleCount;
+  int _visiblePaymentCount = _initialVisibleCount;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final checkoutState = ref.watch(checkoutProvider);
 
@@ -259,6 +270,14 @@ class CheckoutScreen extends ConsumerWidget {
         ? AppColors.darkPrimary.withAlpha(40)
         : const Color(0xFFE2E3E0);
 
+    final shippingOptions = state.shippingOptions;
+    final displayedOptions =
+        shippingOptions.take(_visibleShippingCount).toList();
+    final hasMore = shippingOptions.length > _visibleShippingCount;
+    final remaining = shippingOptions.length - _visibleShippingCount;
+    final canCollapse =
+        !hasMore && shippingOptions.length > _initialVisibleCount;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -298,7 +317,7 @@ class CheckoutScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           // Whatever POST /shipping-quotes named, and only that: the slug sent at
           // checkout has to be one the carrier registry actually has enabled.
-          if (state.shippingOptions.isEmpty)
+          if (shippingOptions.isEmpty)
             Text(
               state.isLoading
                   ? 'Đang lấy báo giá vận chuyển…'
@@ -309,8 +328,8 @@ class CheckoutScreen extends ConsumerWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             )
-          else
-            for (final option in state.shippingOptions)
+          else ...[
+            for (final option in displayedOptions)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _buildRegistryOptionTile(
@@ -327,6 +346,51 @@ class CheckoutScreen extends ConsumerWidget {
                       .selectTransportOption(option.option),
                 ),
               ),
+            if (hasMore)
+              Center(
+                child: TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _visibleShippingCount += _expandStepCount;
+                    });
+                  },
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 18),
+                  label: Text(
+                    'Xem thêm ($remaining)',
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: theme.colorScheme.primary,
+                  ),
+                ),
+              )
+            else if (canCollapse)
+              Center(
+                child: TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _visibleShippingCount = _initialVisibleCount;
+                    });
+                  },
+                  icon: const Icon(Icons.keyboard_arrow_up_rounded, size: 18),
+                  label: const Text(
+                    'Thu gọn',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+          ],
         ],
       ),
     );
@@ -426,6 +490,13 @@ class CheckoutScreen extends ConsumerWidget {
         ? AppColors.darkPrimary.withAlpha(40)
         : const Color(0xFFE2E3E0);
 
+    final paymentOptions = state.paymentOptions;
+    final displayedOptions = paymentOptions.take(_visiblePaymentCount).toList();
+    final hasMore = paymentOptions.length > _visiblePaymentCount;
+    final remaining = paymentOptions.length - _visiblePaymentCount;
+    final canCollapse =
+        !hasMore && paymentOptions.length > _initialVisibleCount;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -466,7 +537,7 @@ class CheckoutScreen extends ConsumerWidget {
           // Whatever GET /options?category=payment named, and only that. The card used to show one
           // hardcoded box: it claimed a rail the registry no longer had, so every checkout ended in
           // a 422 the buyer could do nothing about, and there was nothing to pick anyway.
-          if (state.paymentOptions.isEmpty)
+          if (paymentOptions.isEmpty)
             Text(
               state.isLoading
                   ? 'Đang tải phương thức thanh toán…'
@@ -477,8 +548,8 @@ class CheckoutScreen extends ConsumerWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             )
-          else
-            for (final option in state.paymentOptions)
+          else ...[
+            for (final option in displayedOptions)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _buildRegistryOptionTile(
@@ -492,6 +563,57 @@ class CheckoutScreen extends ConsumerWidget {
                       .selectPaymentOption(option.id),
                 ),
               ),
+            if (hasMore)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Center(
+                  child: TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _visiblePaymentCount += _expandStepCount;
+                      });
+                    },
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 18),
+                    label: Text(
+                      'Xem thêm ($remaining)',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      foregroundColor: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              )
+            else if (canCollapse)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Center(
+                  child: TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _visiblePaymentCount = _initialVisibleCount;
+                      });
+                    },
+                    icon: const Icon(Icons.keyboard_arrow_up_rounded, size: 18),
+                    label: const Text(
+                      'Thu gọn',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      foregroundColor: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ),
+          ],
           const SizedBox(height: 4),
           Row(
             children: [
