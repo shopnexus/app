@@ -31,8 +31,8 @@ npx --yes @openapitools/openapi-generator-cli generate \
   -g dart-dio \
   -o "$TMP/pkg" \
   --additional-properties=serializationLibrary=json_serializable,pubName=shopnexus_api \
-  --schema-mappings SemanticSeed=String \
-  --type-mappings SemanticSeed=String,date=String
+  --schema-mappings SemanticSeed=String,ModelListingsIdGetIdParameter=String,ListingsIdGetIdParameter=String \
+  --type-mappings SemanticSeed=String,ModelListingsIdGetIdParameter=String,ListingsIdGetIdParameter=String,date=String
 
 # The generator emits a standalone package. The app hosts the code directly
 # instead, so there is one pubspec, one build_runner and one dio — a nested
@@ -41,6 +41,17 @@ rm -rf "$OUT"
 mkdir -p "$OUT"
 mv "$TMP/pkg/lib/src"/* "$OUT/"
 mv "$TMP/pkg/lib/shopnexus_api.dart" "$OUT/shopnexus_api.dart"
+
+# Fix broken dart-dio generator output for empty oneOf parameter (ModelListingsIdGetIdParameter)
+rm -f "$OUT/model/model_listings_id_get_id_parameter.dart"
+grep -rl 'ModelListingsIdGetIdParameter' "$OUT" \
+  | xargs sed -i -e "s#ModelListingsIdGetIdParameter#String#g"
+
+grep -rl 'model_listings_id_get_id_parameter' "$OUT" \
+  | xargs sed -i -e "/model_listings_id_get_id_parameter/d"
+
+# Clean up invalid String.fromJson deserialize entry
+sed -i "/case 'String':/,/as ReturnType;/d" "$OUT/deserialize.dart"
 
 # Rewrite the standalone package's self-imports onto this package.
 grep -rl 'package:shopnexus_api/' "$OUT" \

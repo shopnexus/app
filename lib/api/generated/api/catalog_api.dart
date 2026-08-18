@@ -420,7 +420,7 @@ class CatalogApi {
   /// Carries the variants with their prices and stock and the seller summary.  A listing that was never public — &#x60;draft&#x60; or &#x60;pending&#x60; — is readable only by its owner and by staff. One that is &#x60;hidden&#x60; or soft-deleted is readable by anyone, because a cart or an order that references it still has to render; &#x60;status&#x60; and &#x60;deleted_at&#x60; say that it cannot be bought.
   ///
   /// Parameters:
-  /// * [id] - The listing's opaque id or its slug. A slug is lowercase, hyphen-separated and never contains an underscore, so it cannot be mistaken for an id — but only the id is accepted today; resolving a slug needs a lookup this route does not have yet.
+  /// * [id] - The listing's opaque id or the slug a link carries. A slug is lowercase, hyphen-separated and never contains an underscore, so it cannot be mistaken for an id; it resolves without a lookup, because it carries the id on the end.
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -502,7 +502,7 @@ class CatalogApi {
   }
 
   /// Edit a listing
-  /// An edit to a draft applies immediately. An edit to a live listing that trips the prohibited-goods filter is held as a pending edit and applied only when a moderator approves it, so the version buyers see never changes into unreviewed content.  The slug is fixed at creation. Renaming a listing leaves it alone: there is no redirect table, so a new slug would only turn every link already shared into a 404, and &#x60;GET /listings/{id}&#x60; takes the id as well.
+  /// An edit to a draft applies immediately. An edit to a live listing that trips the prohibited-goods filter is held as a pending edit and applied only when a moderator approves it, so the version buyers see never changes into unreviewed content.  The slug&#39;s readable half is fixed at creation. Renaming a listing leaves it alone, so a link shared before the rename keeps saying what it said then — and it would resolve either way, since the id it carries is what addresses the listing.
   ///
   /// Parameters:
   /// * [id] - The opaque id. A write addresses the listing, never its public slug.
