@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -92,8 +94,19 @@ final tagSuggestionsProvider = FutureProvider.autoDispose
       return ref.watch(catalogRepositoryProvider).tags(q: q, limit: 20);
     });
 
+/// A fresh run id for the personalised feed. Left out, the server rotates its
+/// own default only every fifteen minutes, which is what made reopening the
+/// feed answer the same page it just had.
+String _newFeedSeed() => Random().nextInt(1 << 32).toRadixString(36);
+
 @riverpod
 class CatalogProducts extends _$CatalogProducts {
+  /// This run's personalised feed seed, held for every page after the first —
+  /// paging has to read the same draw, not a new one — and regenerated
+  /// whenever the feed itself restarts: a fresh [build] (screen reopened, pull
+  /// to refresh) or an explicit [updateFilters].
+  String? _recommendedSeed;
+
   Future<List<Listing>> _fetch(
     CatalogRepository repo,
     CatalogSearchFilters filters,
@@ -109,6 +122,7 @@ class CatalogProducts extends _$CatalogProducts {
       priceMax: filters.priceMax,
       tag: filters.tag,
       sort: filters.sort,
+      seed: _recommendedSeed,
       provinceCode: filters.provinceCode,
       wardCode: filters.wardCode,
       nearContactId: filters.nearContactId,
@@ -128,6 +142,9 @@ class CatalogProducts extends _$CatalogProducts {
     // Watched, not read: switching lexical/semantic/hybrid re-ranks the whole
     // result, so it has to restart at page 1 like any other filter change.
     ref.watch(searchModeProvider);
+    _recommendedSeed = initialFilters.sort == ListingSort.recommended
+        ? _newFeedSeed()
+        : null;
     final products = await _fetch(repo, initialFilters);
     return CatalogProductsState(
       products: products,
@@ -177,6 +194,9 @@ class CatalogProducts extends _$CatalogProducts {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final repo = ref.read(catalogRepositoryProvider);
+      _recommendedSeed = newFilters.sort == ListingSort.recommended
+          ? _newFeedSeed()
+          : null;
       final products = await _fetch(repo, newFilters);
       return CatalogProductsState(
         products: products,
