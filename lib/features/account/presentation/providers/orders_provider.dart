@@ -63,6 +63,27 @@ Future<List<OrderLineView>> unsettledItems(Ref ref) => ref
     .watch(accountRepositoryProvider)
     .items(role: OrderRole.buyer, pending: true);
 
+/// Dòng đã hủy trước khi thành đơn — "lịch sử hủy" của một lượt đặt hàng bỏ dở.
+///
+/// Đơn chỉ ra đời khi tiền về, nên một lượt đặt hàng bị hủy lúc chưa thanh toán
+/// không bao giờ có `Order` để nằm trong `/orders`. Nó cũng rơi khỏi
+/// [unsettledItems] ngay lúc bị hủy — `pending=true` là "chưa có đơn **và** chưa
+/// bị hủy", server lọc vậy. Không đọc riêng chỗ này thì người mua bấm "Hủy" xong
+/// là dòng ấy biến mất khỏi mọi màn hình.
+///
+/// `pending: false` là lượt đọc không lọc, nên "đã hủy" đọc trên `cancelled_at`
+/// còn "chưa thành đơn" đọc trên `order_id` — đúng hai thứ route trả về sẵn.
+@riverpod
+Future<List<OrderLineView>> cancelledItems(Ref ref) async {
+  final lines = await ref
+      .watch(accountRepositoryProvider)
+      .items(role: OrderRole.buyer, pending: false);
+  return [
+    for (final line in lines)
+      if (line.item.orderId == null && line.isCancelled) line,
+  ];
+}
+
 /// Notifier quản lý đơn hàng của phía Người mua (buyer).
 @riverpod
 class Orders extends _$Orders {

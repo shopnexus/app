@@ -63,6 +63,79 @@ final class UnsettledItemsProvider
 
 String _$unsettledItemsHash() => r'782d3fd2e8fe11e516f38968b63066054955dcef';
 
+/// Dòng đã hủy trước khi thành đơn — "lịch sử hủy" của một lượt đặt hàng bỏ dở.
+///
+/// Đơn chỉ ra đời khi tiền về, nên một lượt đặt hàng bị hủy lúc chưa thanh toán
+/// không bao giờ có `Order` để nằm trong `/orders`. Nó cũng rơi khỏi
+/// [unsettledItems] ngay lúc bị hủy — `pending=true` là "chưa có đơn **và** chưa
+/// bị hủy", server lọc vậy. Không đọc riêng chỗ này thì người mua bấm "Hủy" xong
+/// là dòng ấy biến mất khỏi mọi màn hình.
+///
+/// `pending: false` là lượt đọc không lọc, nên "đã hủy" đọc trên `cancelled_at`
+/// còn "chưa thành đơn" đọc trên `order_id` — đúng hai thứ route trả về sẵn.
+
+@ProviderFor(cancelledItems)
+const cancelledItemsProvider = CancelledItemsProvider._();
+
+/// Dòng đã hủy trước khi thành đơn — "lịch sử hủy" của một lượt đặt hàng bỏ dở.
+///
+/// Đơn chỉ ra đời khi tiền về, nên một lượt đặt hàng bị hủy lúc chưa thanh toán
+/// không bao giờ có `Order` để nằm trong `/orders`. Nó cũng rơi khỏi
+/// [unsettledItems] ngay lúc bị hủy — `pending=true` là "chưa có đơn **và** chưa
+/// bị hủy", server lọc vậy. Không đọc riêng chỗ này thì người mua bấm "Hủy" xong
+/// là dòng ấy biến mất khỏi mọi màn hình.
+///
+/// `pending: false` là lượt đọc không lọc, nên "đã hủy" đọc trên `cancelled_at`
+/// còn "chưa thành đơn" đọc trên `order_id` — đúng hai thứ route trả về sẵn.
+
+final class CancelledItemsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<OrderLineView>>,
+          List<OrderLineView>,
+          FutureOr<List<OrderLineView>>
+        >
+    with
+        $FutureModifier<List<OrderLineView>>,
+        $FutureProvider<List<OrderLineView>> {
+  /// Dòng đã hủy trước khi thành đơn — "lịch sử hủy" của một lượt đặt hàng bỏ dở.
+  ///
+  /// Đơn chỉ ra đời khi tiền về, nên một lượt đặt hàng bị hủy lúc chưa thanh toán
+  /// không bao giờ có `Order` để nằm trong `/orders`. Nó cũng rơi khỏi
+  /// [unsettledItems] ngay lúc bị hủy — `pending=true` là "chưa có đơn **và** chưa
+  /// bị hủy", server lọc vậy. Không đọc riêng chỗ này thì người mua bấm "Hủy" xong
+  /// là dòng ấy biến mất khỏi mọi màn hình.
+  ///
+  /// `pending: false` là lượt đọc không lọc, nên "đã hủy" đọc trên `cancelled_at`
+  /// còn "chưa thành đơn" đọc trên `order_id` — đúng hai thứ route trả về sẵn.
+  const CancelledItemsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cancelledItemsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cancelledItemsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<OrderLineView>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<OrderLineView>> create(Ref ref) {
+    return cancelledItems(ref);
+  }
+}
+
+String _$cancelledItemsHash() => r'0bc66811268025a893a28223a630705da22fa528';
+
 /// Notifier quản lý đơn hàng của phía Người mua (buyer).
 
 @ProviderFor(Orders)
