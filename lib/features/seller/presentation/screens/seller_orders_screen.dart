@@ -294,6 +294,33 @@ Widget _buildOrderCard(
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
+        // Ngay dưới địa chỉ: hai thứ này được đọc trong cùng một việc — gói kiện
+        // và ghi phiếu — nên chúng đứng cạnh nhau chứ không cách nhau một bảng
+        // tiền.
+        if (view.buyerNote.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.sticky_note_2_outlined,
+                size: 14,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Ghi chú của người mua: ${view.buyerNote}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 1.4,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
         Divider(height: 20, color: dividerColor),
         for (final line in view.lines)
           Padding(

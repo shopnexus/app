@@ -38,6 +38,9 @@ class _OrdersListState extends ConsumerState<OrdersList> {
   /// Tab "Chờ xác nhận" trong [OrdersScreen].
   static const _awaitingTab = 1;
 
+  /// Tab "Đã hủy" trong [OrdersScreen].
+  static const _cancelledTab = 5;
+
   bool _matchesTab(
     OrderView view,
     int selectedTab,
@@ -86,6 +89,7 @@ class _OrdersListState extends ConsumerState<OrdersList> {
   Widget build(BuildContext context) {
     final feed = ref.watch(ordersProvider);
     final unsettled = ref.watch(unsettledItemsProvider);
+    final cancelledLines = ref.watch(cancelledItemsProvider);
     final me = ref.watch(profileProvider).value?.id;
     final refundsAsync = ref.watch(refundListProvider);
     final buyerRefunds =
@@ -99,6 +103,7 @@ class _OrdersListState extends ConsumerState<OrdersList> {
       onRefresh: () async {
         ref.invalidate(ordersProvider);
         ref.invalidate(unsettledItemsProvider);
+        ref.invalidate(cancelledItemsProvider);
         ref.invalidate(refundListProvider);
       },
       child: switch (feed) {
@@ -109,6 +114,7 @@ class _OrdersListState extends ConsumerState<OrdersList> {
         AsyncValue(:final value?) => _body(
           value,
           unsettled.value ?? const [],
+          cancelledLines.value ?? const [],
           me,
           refundedOrderIds,
           buyerRefundMap,
@@ -121,6 +127,7 @@ class _OrdersListState extends ConsumerState<OrdersList> {
   Widget _body(
     OrdersFeed feed,
     List<OrderLineView> unsettled,
+    List<OrderLineView> cancelledLines,
     String? me,
     Set<String> refundedOrderIds,
     Map<String, Refund> refundMap,
@@ -140,7 +147,18 @@ class _OrdersListState extends ConsumerState<OrdersList> {
     final showsUnsettled =
         widget.selectedTab == 0 || widget.selectedTab == _awaitingTab;
 
-    if (matchingOrders.isEmpty && (!showsUnsettled || unsettled.isEmpty)) {
+    // Cũng vì chưa có `Order` mà dòng bị hủy lúc chưa trả tiền không lọt qua
+    // `_matchesTab` được — nhưng "đã hủy" là đúng chỗ người ta đi tìm nó, nên
+    // nó được vẽ ở đó, và ở "Tất cả" như mọi thứ khác.
+    final showsCancelledLines =
+        widget.selectedTab == 0 || widget.selectedTab == _cancelledTab;
+    final visibleCancelledLines = showsCancelledLines
+        ? cancelledLines
+        : const <OrderLineView>[];
+
+    if (matchingOrders.isEmpty &&
+        (!showsUnsettled || unsettled.isEmpty) &&
+        visibleCancelledLines.isEmpty) {
       return const _Empty();
     }
 
@@ -152,6 +170,10 @@ class _OrdersListState extends ConsumerState<OrdersList> {
       children: [
         if (showsUnsettled && unsettled.isNotEmpty) ...[
           _UnsettledBlock(lines: unsettled, me: me),
+          const SizedBox(height: 20),
+        ],
+        if (visibleCancelledLines.isNotEmpty) ...[
+          _CancelledLinesBlock(lines: visibleCancelledLines),
           const SizedBox(height: 20),
         ],
         if (selling) const _CarrierNote(),
@@ -895,7 +917,13 @@ class _UnsettledBlock extends ConsumerWidget {
     final ok = await ref
         .read(ordersActionsProvider.notifier)
         .cancelItem(line.item.id);
-    if (ok) ref.invalidate(unsettledItemsProvider);
+    if (ok) {
+      ref.invalidate(unsettledItemsProvider);
+      // Dòng vừa hủy rời danh sách chờ và vào lịch sử hủy trong cùng một chạm,
+      // nên cả hai nguồn phải đọc lại — không thì tab "Đã hủy" vẫn trống đúng
+      // như trước lúc bấm.
+      ref.invalidate(cancelledItemsProvider);
+    }
     if (!context.mounted) return;
 
     final message = ok
@@ -937,6 +965,80 @@ class _Thumbnail extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
       ),
+    );
+  }
+}
+
+/// Dòng người mua bỏ khi chưa thanh toán xong — lịch sử, không phải việc.
+///
+/// Không có nút nào: dòng đã đóng, phiên thanh toán của nó cũng vậy, và mua lại
+/// là một lượt đặt hàng mới từ trang sản phẩm. Nó ở đây chỉ để trả lời "cái tôi
+/// vừa hủy đâu rồi" — câu mà trước đây không màn nào trả lời được, vì hủy trước
+/// khi trả tiền thì không bao giờ có đơn để mà hiện.
+class _CancelledLinesBlock extends StatelessWidget {
+  const _CancelledLinesBlock({required this.lines});
+
+  final List<OrderLineView> lines;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _SectionHeader('ĐÃ HỦY KHI CHƯA THANH TOÁN'),
+        for (final line in lines)
+          Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkSurface : Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark
+                    ? AppColors.darkPrimary.withAlpha(40)
+                    : const Color(0xFFE2E8F0),
+              ),
+            ),
+            child: Row(
+              children: [
+                _Thumbnail(url: line.imageUrl),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        line.displayName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          height: 1.3,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Đã hủy · chưa thanh toán · '
+                        '${MoneyUtils.format(line.item.totalAmount, currency: line.item.currency)}',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

@@ -69,6 +69,22 @@ abstract class OrderView with _$OrderView {
     };
   }
 
+  /// Câu người mua dặn lúc thanh toán, hoặc rỗng nếu họ không dặn gì.
+  ///
+  /// Ghi chú nằm trên *dòng* chứ không trên đơn: một lượt thanh toán chép cùng
+  /// một câu lên mọi dòng nó tạo ra, nên dòng nào cũng mang nó. Vẫn gộp theo
+  /// distinct thay vì lấy `lines.first`: nếu về sau một đơn gom nhiều lượt thanh
+  /// toán, hai câu dặn khác nhau đều phải tới tay người bán — mất câu thứ hai
+  /// còn tệ hơn không hiện câu nào, vì người bán không biết mình đang thiếu.
+  String get buyerNote {
+    final notes = <String>{};
+    for (final line in lines) {
+      final note = line.item.note.trim();
+      if (note.isNotEmpty) notes.add(note);
+    }
+    return notes.join('\n');
+  }
+
   /// The snapshot froze area *codes*, not names — a carrier is routed by them and
   /// a renamed ward must not rewrite where a past parcel went. So the lines are
   /// the recipient and the street, and the area is left to the codes.
