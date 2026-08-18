@@ -65,6 +65,7 @@ abstract class CheckoutState with _$CheckoutState {
     /// checkout that breaks the day an operator retires that rail.
     @Default([]) List<Option> paymentOptions,
     String? paymentOption,
+    String? note,
     CheckoutResult? checkoutResult,
     Transaction? paymentTransaction,
     PaymentSession? paymentSession,
@@ -385,6 +386,11 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     }
   }
 
+  /// Cập nhật lời nhắn cho người bán
+  void setNote(String note) {
+    state = state.copyWith(note: note);
+  }
+
   /// Thay đổi trạng thái đồng ý điều khoản dịch vụ
   void toggleAgreeToTerms({bool? value}) {
     state = state.copyWith(
@@ -424,6 +430,9 @@ class CheckoutNotifier extends _$CheckoutNotifier {
             for (final line in state.lines)
               CheckoutLine(variantId: line.variantId, quantity: line.quantity),
           ],
+          note: (state.note?.trim().isNotEmpty == true)
+              ? state.note!.trim()
+              : null,
           transportOption: state.transportOption!,
         ),
       );
