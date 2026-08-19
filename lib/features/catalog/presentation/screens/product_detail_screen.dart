@@ -808,15 +808,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   color: theme.colorScheme.onSurface,
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8.0),
               if (_selectedVariant != null)
-                Text(
-                  'Đã chọn: ${variantLabel(_selectedVariant!)}',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
+                Expanded(
+                  child: Text(
+                    'Đã chọn: ${variantLabel(_selectedVariant!)}',
+                    textAlign: TextAlign.end,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
             ],

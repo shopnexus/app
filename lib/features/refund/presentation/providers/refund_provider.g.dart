@@ -123,23 +123,32 @@ final class RefundDetailFamily extends $Family
 
 /// The moves either party can still make on a live case. Everything that decides
 /// money is staff's, reached by opening a `refund-dispute` ticket.
+///
+/// `keepAlive` vì action provider được gọi bằng `read`: autoDispose sẽ huỷ
+/// notifier trong lúc `await`, khiến `_invalidate` sau đó ném lỗi Ref disposed.
 
 @ProviderFor(RefundActions)
 const refundActionsProvider = RefundActionsProvider._();
 
 /// The moves either party can still make on a live case. Everything that decides
 /// money is staff's, reached by opening a `refund-dispute` ticket.
+///
+/// `keepAlive` vì action provider được gọi bằng `read`: autoDispose sẽ huỷ
+/// notifier trong lúc `await`, khiến `_invalidate` sau đó ném lỗi Ref disposed.
 final class RefundActionsProvider
     extends $NotifierProvider<RefundActions, void> {
   /// The moves either party can still make on a live case. Everything that decides
   /// money is staff's, reached by opening a `refund-dispute` ticket.
+  ///
+  /// `keepAlive` vì action provider được gọi bằng `read`: autoDispose sẽ huỷ
+  /// notifier trong lúc `await`, khiến `_invalidate` sau đó ném lỗi Ref disposed.
   const RefundActionsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'refundActionsProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -160,10 +169,13 @@ final class RefundActionsProvider
   }
 }
 
-String _$refundActionsHash() => r'e52e69604ed2898b183baca58dfcaa524e38c509';
+String _$refundActionsHash() => r'258f4ed42acf231ba3940955bac6ce48fcc89b9a';
 
 /// The moves either party can still make on a live case. Everything that decides
 /// money is staff's, reached by opening a `refund-dispute` ticket.
+///
+/// `keepAlive` vì action provider được gọi bằng `read`: autoDispose sẽ huỷ
+/// notifier trong lúc `await`, khiến `_invalidate` sau đó ném lỗi Ref disposed.
 
 abstract class _$RefundActions extends $Notifier<void> {
   void build();

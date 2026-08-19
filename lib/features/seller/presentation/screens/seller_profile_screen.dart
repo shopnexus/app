@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reputation_role.dart';
@@ -251,11 +252,16 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
   }
 
   Widget _buildTabContent(
-    dynamic profile,
+    PublicAccount profile,
     AsyncValue<List<Listing>> productsAsync,
   ) {
     switch (_selectedTabIndex) {
       case 0: // About
+        DateTime? createdDate;
+        try {
+          createdDate = DateTime.parse(profile.createdAt);
+        } catch (_) {}
+
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(20),
@@ -268,7 +274,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Giới thiệu cửa hàng',
+                'Giới thiệu',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -278,7 +284,9 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                profile.description ?? 'Chưa có thông tin giới thiệu cửa hàng.',
+                profile.description?.isNotEmpty == true
+                    ? profile.description!
+                    : 'Chưa có thông tin giới thiệu.',
                 style: const TextStyle(
                   fontSize: 14,
                   fontFamily: 'Inter',
@@ -288,7 +296,7 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
               ),
               const SizedBox(height: 24),
               const Text(
-                'Thông tin liên hệ',
+                'Thông tin hoạt động',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -297,27 +305,14 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              if (profile.email != null)
+              if (createdDate != null)
                 ListTile(
                   leading: const Icon(
-                    Icons.email_outlined,
+                    Icons.calendar_month_outlined,
                     color: Color(0xFF6E7977),
                   ),
                   title: Text(
-                    profile.email!,
-                    style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
-                  ),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                ),
-              if (profile.phone != null)
-                ListTile(
-                  leading: const Icon(
-                    Icons.phone_outlined,
-                    color: Color(0xFF6E7977),
-                  ),
-                  title: Text(
-                    profile.phone!,
+                    'Tham gia từ: ${DateFormat('dd/MM/yyyy').format(createdDate.toLocal())}',
                     style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
                   ),
                   contentPadding: EdgeInsets.zero,
@@ -325,12 +320,39 @@ class _SellerProfileScreenState extends ConsumerState<SellerProfileScreen> {
                 ),
               ListTile(
                 leading: const Icon(
-                  Icons.public_outlined,
+                  Icons.people_outline_rounded,
                   color: Color(0xFF6E7977),
                 ),
                 title: Text(
-                  'Quốc gia: ${profile.country}',
+                  'Số người theo dõi: ${profile.followerCount}',
                   style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
+                ),
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+              ),
+              ListTile(
+                leading: Icon(
+                  profile.identityVerified
+                      ? Icons.verified_user_rounded
+                      : Icons.gpp_maybe_outlined,
+                  color: profile.identityVerified
+                      ? const Color(0xFF005049)
+                      : const Color(0xFF6E7977),
+                ),
+                title: Text(
+                  profile.identityVerified
+                      ? 'Tài khoản đã xác minh danh tính'
+                      : 'Chưa xác minh danh tính',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14,
+                    color: profile.identityVerified
+                        ? const Color(0xFF005049)
+                        : const Color(0xFF6E7977),
+                    fontWeight: profile.identityVerified
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
                 ),
                 contentPadding: EdgeInsets.zero,
                 dense: true,

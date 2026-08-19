@@ -19,7 +19,10 @@ Future<Refund> refundDetail(Ref ref, String id) =>
 
 /// The moves either party can still make on a live case. Everything that decides
 /// money is staff's, reached by opening a `refund-dispute` ticket.
-@riverpod
+///
+/// `keepAlive` vì action provider được gọi bằng `read`: autoDispose sẽ huỷ
+/// notifier trong lúc `await`, khiến `_invalidate` sau đó ném lỗi Ref disposed.
+@Riverpod(keepAlive: true)
 class RefundActions extends _$RefundActions {
   @override
   void build() {}
