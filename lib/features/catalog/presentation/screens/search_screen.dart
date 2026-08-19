@@ -517,6 +517,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         ),
         const SizedBox(height: 4.0),
 
+        // Những gì bước hiểu đọc ra từ câu tìm, và các cụm nó thực sự tìm theo.
+        // Chỉ hiện với đúng những gì server vừa trả lời cho lần tìm này.
+        productsState.maybeWhen(
+          data: (stateData) =>
+              _buildUnderstoodBanner(stateData, activeFilters.keyword),
+          orElse: () => const SizedBox.shrink(),
+        ),
+
         // Vùng danh sách sản phẩm kết quả
         Expanded(
           child: productsState.when(
@@ -651,6 +659,94 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Câu lý giải kèm các cụm đã tìm theo, ngay dưới hàng chủ đề. Cả hai đều
+  /// rỗng cho một lượt duyệt không có từ khoá, nên trống là im lặng thay vì
+  /// bịa ra một cách hiểu không hề có — và một `probes` chỉ gồm đúng nguyên
+  /// văn người dùng gõ (không có gì được sửa) không được vẽ như một sự sửa.
+  Widget _buildUnderstoodBanner(
+    CatalogProductsState stateData,
+    String? keyword,
+  ) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final understood = stateData.understood.trim();
+    final normalizedKeyword = (keyword ?? '').trim().toLowerCase();
+    final hasCorrection = stateData.probes.any(
+      (probe) => probe.trim().toLowerCase() != normalizedKeyword,
+    );
+
+    if (understood.isEmpty && !hasCorrection) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (understood.isNotEmpty)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.auto_awesome_rounded,
+                  size: 15,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 6.0),
+                Expanded(
+                  child: Text(
+                    understood,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12.5,
+                      fontStyle: FontStyle.italic,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          if (hasCorrection) ...[
+            if (understood.isNotEmpty) const SizedBox(height: 8.0),
+            // Mỗi cụm bấm được: chạm vào là tìm lại đúng với cụm đó, thay vì
+            // chỉ để xem.
+            Wrap(
+              spacing: 6.0,
+              runSpacing: 6.0,
+              children: stateData.probes.map((probe) {
+                return ActionChip(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  label: Text(probe),
+                  onPressed: () => _triggerSearch(probe),
+                  backgroundColor: isDarkMode
+                      ? AppColors.darkSurface
+                      : const Color(0xFFEEEEEB),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9999.0),
+                    side: BorderSide(
+                      color: isDarkMode
+                          ? AppColors.darkPrimary.withAlpha(40)
+                          : const Color(0xFFBCC9C6),
+                      width: 0.5,
+                    ),
+                  ),
+                  labelStyle: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 11.5,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
     );
   }
 

@@ -332,7 +332,12 @@ as int,
 /// @nodoc
 mixin _$CatalogProductsState {
 
- List<Listing> get products; bool get hasMore; bool get isLoadingMore; CatalogSearchFilters get filters;
+ List<Listing> get products; bool get hasMore; bool get isLoadingMore; CatalogSearchFilters get filters;// What the search understood the query to mean, and the phrases it
+// actually ran — both empty for a browse with no query. Carried from the
+// page that started this run and left untouched by `loadNextPage`: the
+// keyword does not change between pages, so re-showing them per page
+// would only risk a flicker for no new information.
+ String get understood; List<String> get probes;
 /// Create a copy of CatalogProductsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -343,16 +348,16 @@ $CatalogProductsStateCopyWith<CatalogProductsState> get copyWith => _$CatalogPro
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogProductsState&&const DeepCollectionEquality().equals(other.products, products)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.filters, filters) || other.filters == filters));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogProductsState&&const DeepCollectionEquality().equals(other.products, products)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.filters, filters) || other.filters == filters)&&(identical(other.understood, understood) || other.understood == understood)&&const DeepCollectionEquality().equals(other.probes, probes));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(products),hasMore,isLoadingMore,filters);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(products),hasMore,isLoadingMore,filters,understood,const DeepCollectionEquality().hash(probes));
 
 @override
 String toString() {
-  return 'CatalogProductsState(products: $products, hasMore: $hasMore, isLoadingMore: $isLoadingMore, filters: $filters)';
+  return 'CatalogProductsState(products: $products, hasMore: $hasMore, isLoadingMore: $isLoadingMore, filters: $filters, understood: $understood, probes: $probes)';
 }
 
 
@@ -363,7 +368,7 @@ abstract mixin class $CatalogProductsStateCopyWith<$Res>  {
   factory $CatalogProductsStateCopyWith(CatalogProductsState value, $Res Function(CatalogProductsState) _then) = _$CatalogProductsStateCopyWithImpl;
 @useResult
 $Res call({
- List<Listing> products, bool hasMore, bool isLoadingMore, CatalogSearchFilters filters
+ List<Listing> products, bool hasMore, bool isLoadingMore, CatalogSearchFilters filters, String understood, List<String> probes
 });
 
 
@@ -380,13 +385,15 @@ class _$CatalogProductsStateCopyWithImpl<$Res>
 
 /// Create a copy of CatalogProductsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? products = null,Object? hasMore = null,Object? isLoadingMore = null,Object? filters = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? products = null,Object? hasMore = null,Object? isLoadingMore = null,Object? filters = null,Object? understood = null,Object? probes = null,}) {
   return _then(_self.copyWith(
 products: null == products ? _self.products : products // ignore: cast_nullable_to_non_nullable
 as List<Listing>,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
 as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
 as bool,filters: null == filters ? _self.filters : filters // ignore: cast_nullable_to_non_nullable
-as CatalogSearchFilters,
+as CatalogSearchFilters,understood: null == understood ? _self.understood : understood // ignore: cast_nullable_to_non_nullable
+as String,probes: null == probes ? _self.probes : probes // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 /// Create a copy of CatalogProductsState
@@ -480,10 +487,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters,  String understood,  List<String> probes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CatalogProductsState() when $default != null:
-return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);case _:
+return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters,_that.understood,_that.probes);case _:
   return orElse();
 
 }
@@ -501,10 +508,10 @@ return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters,  String understood,  List<String> probes)  $default,) {final _that = this;
 switch (_that) {
 case _CatalogProductsState():
-return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);case _:
+return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters,_that.understood,_that.probes);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -521,10 +528,10 @@ return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Listing> products,  bool hasMore,  bool isLoadingMore,  CatalogSearchFilters filters,  String understood,  List<String> probes)?  $default,) {final _that = this;
 switch (_that) {
 case _CatalogProductsState() when $default != null:
-return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);case _:
+return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters,_that.understood,_that.probes);case _:
   return null;
 
 }
@@ -536,7 +543,7 @@ return $default(_that.products,_that.hasMore,_that.isLoadingMore,_that.filters);
 
 
 class _CatalogProductsState implements CatalogProductsState {
-  const _CatalogProductsState({required final  List<Listing> products, required this.hasMore, required this.isLoadingMore, required this.filters}): _products = products;
+  const _CatalogProductsState({required final  List<Listing> products, required this.hasMore, required this.isLoadingMore, required this.filters, this.understood = '', final  List<String> probes = const []}): _products = products,_probes = probes;
   
 
  final  List<Listing> _products;
@@ -549,6 +556,19 @@ class _CatalogProductsState implements CatalogProductsState {
 @override final  bool hasMore;
 @override final  bool isLoadingMore;
 @override final  CatalogSearchFilters filters;
+// What the search understood the query to mean, and the phrases it
+// actually ran — both empty for a browse with no query. Carried from the
+// page that started this run and left untouched by `loadNextPage`: the
+// keyword does not change between pages, so re-showing them per page
+// would only risk a flicker for no new information.
+@override@JsonKey() final  String understood;
+ final  List<String> _probes;
+@override@JsonKey() List<String> get probes {
+  if (_probes is EqualUnmodifiableListView) return _probes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_probes);
+}
+
 
 /// Create a copy of CatalogProductsState
 /// with the given fields replaced by the non-null parameter values.
@@ -560,16 +580,16 @@ _$CatalogProductsStateCopyWith<_CatalogProductsState> get copyWith => __$Catalog
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogProductsState&&const DeepCollectionEquality().equals(other._products, _products)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.filters, filters) || other.filters == filters));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogProductsState&&const DeepCollectionEquality().equals(other._products, _products)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.filters, filters) || other.filters == filters)&&(identical(other.understood, understood) || other.understood == understood)&&const DeepCollectionEquality().equals(other._probes, _probes));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_products),hasMore,isLoadingMore,filters);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_products),hasMore,isLoadingMore,filters,understood,const DeepCollectionEquality().hash(_probes));
 
 @override
 String toString() {
-  return 'CatalogProductsState(products: $products, hasMore: $hasMore, isLoadingMore: $isLoadingMore, filters: $filters)';
+  return 'CatalogProductsState(products: $products, hasMore: $hasMore, isLoadingMore: $isLoadingMore, filters: $filters, understood: $understood, probes: $probes)';
 }
 
 
@@ -580,7 +600,7 @@ abstract mixin class _$CatalogProductsStateCopyWith<$Res> implements $CatalogPro
   factory _$CatalogProductsStateCopyWith(_CatalogProductsState value, $Res Function(_CatalogProductsState) _then) = __$CatalogProductsStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<Listing> products, bool hasMore, bool isLoadingMore, CatalogSearchFilters filters
+ List<Listing> products, bool hasMore, bool isLoadingMore, CatalogSearchFilters filters, String understood, List<String> probes
 });
 
 
@@ -597,13 +617,15 @@ class __$CatalogProductsStateCopyWithImpl<$Res>
 
 /// Create a copy of CatalogProductsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? products = null,Object? hasMore = null,Object? isLoadingMore = null,Object? filters = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? products = null,Object? hasMore = null,Object? isLoadingMore = null,Object? filters = null,Object? understood = null,Object? probes = null,}) {
   return _then(_CatalogProductsState(
 products: null == products ? _self._products : products // ignore: cast_nullable_to_non_nullable
 as List<Listing>,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
 as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
 as bool,filters: null == filters ? _self.filters : filters // ignore: cast_nullable_to_non_nullable
-as CatalogSearchFilters,
+as CatalogSearchFilters,understood: null == understood ? _self.understood : understood // ignore: cast_nullable_to_non_nullable
+as String,probes: null == probes ? _self._probes : probes // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 

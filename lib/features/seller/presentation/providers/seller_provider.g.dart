@@ -74,7 +74,7 @@ final class SellerProductsProvider
   }
 }
 
-String _$sellerProductsHash() => r'b719579b13ef528724735755b8425ed3322ed441';
+String _$sellerProductsHash() => r'e5cfc701081462f8ef84ec9f4c2557de6ac6577b';
 
 /// What a shop's public page lists. `seller_id` narrows the ordinary feed, so a
 /// visitor sees exactly what is public — there is no shop-scoped route and no

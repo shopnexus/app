@@ -120,6 +120,7 @@ export 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart
 export 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listing_location.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listing_page.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/listing_queue_page.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request.dart';

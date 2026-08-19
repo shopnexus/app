@@ -89,7 +89,7 @@ final class CatalogProductsProvider
   }
 }
 
-String _$catalogProductsHash() => r'2f034a84760cc4af3bb0cb6e2b317e49b767bcb3';
+String _$catalogProductsHash() => r'607fcc27c3c19bcabf14348d9710e0c753967077';
 
 final class CatalogProductsFamily extends $Family
     with

@@ -10,10 +10,11 @@ part 'wishlist_provider.g.dart';
 /// draws. Resolving saved ids one detail request at a time gave neither — a
 /// `ListingDetail` carries no card price, which is why every row read 0 ₫.
 @riverpod
-Future<List<Listing>> wishlistProducts(Ref ref) {
-  return ref
+Future<List<Listing>> wishlistProducts(Ref ref) async {
+  final page = await ref
       .watch(catalogRepositoryProvider)
       .listings(favorited: true, page: 1, size: 100);
+  return page.listings;
 }
 
 @riverpod

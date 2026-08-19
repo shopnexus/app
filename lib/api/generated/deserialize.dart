@@ -93,6 +93,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_location.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_page.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_queue_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request_interactions_inner.dart';
@@ -556,6 +557,9 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'ListingPage':
       return ListingPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ListingQueuePage':
+      return ListingQueuePage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'ListingStatus':
     case 'ListingSuggestion':
       return ListingSuggestion.fromJson(value as Map<String, dynamic>)

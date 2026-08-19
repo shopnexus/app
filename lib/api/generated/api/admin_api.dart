@@ -30,7 +30,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/error.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/identity_document_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/identity_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/identity_verdict_request.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/listing_page.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_queue_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/moderation_note_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session_kind.dart';
@@ -786,9 +786,9 @@ class AdminApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ListingPage] as data
+  /// Returns a [Future] containing a [Response] with a [ListingQueuePage] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListingPage>> adminListingsGet({
+  Future<Response<ListingQueuePage>> adminListingsGet({
     ListingStatus? status,
     String? sellerId,
     int? page = 1,
@@ -829,15 +829,15 @@ class AdminApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    ListingPage? _responseData;
+    ListingQueuePage? _responseData;
 
     try {
       final rawData = _response.data;
       _responseData = rawData == null
           ? null
-          : deserialize<ListingPage, ListingPage>(
+          : deserialize<ListingQueuePage, ListingQueuePage>(
               rawData,
-              'ListingPage',
+              'ListingQueuePage',
               growable: true,
             );
     } catch (error, stackTrace) {
@@ -850,7 +850,7 @@ class AdminApi {
       );
     }
 
-    return Response<ListingPage>(
+    return Response<ListingQueuePage>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

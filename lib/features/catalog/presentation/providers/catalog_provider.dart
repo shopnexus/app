@@ -60,6 +60,13 @@ abstract class CatalogProductsState with _$CatalogProductsState {
     required bool hasMore,
     required bool isLoadingMore,
     required CatalogSearchFilters filters,
+    // What the search understood the query to mean, and the phrases it
+    // actually ran — both empty for a browse with no query. Carried from the
+    // page that started this run and left untouched by `loadNextPage`: the
+    // keyword does not change between pages, so re-showing them per page
+    // would only risk a flicker for no new information.
+    @Default('') String understood,
+    @Default([]) List<String> probes,
   }) = _CatalogProductsState;
 }
 
@@ -93,7 +100,7 @@ class CatalogProducts extends _$CatalogProducts {
   /// to refresh) or an explicit [updateFilters].
   String? _recommendedSeed;
 
-  Future<List<Listing>> _fetch(
+  Future<ListingsPage> _fetch(
     CatalogRepository repo,
     CatalogSearchFilters filters,
   ) {
@@ -124,12 +131,14 @@ class CatalogProducts extends _$CatalogProducts {
     _recommendedSeed = initialFilters.sort == ListingSort.recommended
         ? _newFeedSeed()
         : null;
-    final products = await _fetch(repo, initialFilters);
+    final page = await _fetch(repo, initialFilters);
     return CatalogProductsState(
-      products: products,
-      hasMore: products.length >= initialFilters.size,
+      products: page.listings,
+      hasMore: page.listings.length >= initialFilters.size,
       isLoadingMore: false,
       filters: initialFilters,
+      understood: page.understood,
+      probes: page.probes,
     );
   }
 
@@ -150,7 +159,8 @@ class CatalogProducts extends _$CatalogProducts {
     );
 
     try {
-      final newProducts = await _fetch(repo, nextFilters);
+      final page = await _fetch(repo, nextFilters);
+      final newProducts = page.listings;
 
       state = AsyncValue.data(
         currentState.copyWith(
@@ -176,12 +186,14 @@ class CatalogProducts extends _$CatalogProducts {
       _recommendedSeed = newFilters.sort == ListingSort.recommended
           ? _newFeedSeed()
           : null;
-      final products = await _fetch(repo, newFilters);
+      final page = await _fetch(repo, newFilters);
       return CatalogProductsState(
-        products: products,
-        hasMore: products.length >= newFilters.size,
+        products: page.listings,
+        hasMore: page.listings.length >= newFilters.size,
         isLoadingMore: false,
         filters: newFilters,
+        understood: page.understood,
+        probes: page.probes,
       );
     });
   }

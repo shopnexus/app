@@ -8,5 +8,9 @@ part 'seller_provider.g.dart';
 /// visitor sees exactly what is public — there is no shop-scoped route and no
 /// `mine=true` here, which is what would be needed to see a draft.
 @riverpod
-Future<List<Listing>> sellerProducts(Ref ref, String vendorId) =>
-    ref.watch(catalogRepositoryProvider).listings(vendorId: vendorId);
+Future<List<Listing>> sellerProducts(Ref ref, String vendorId) async {
+  final page = await ref
+      .watch(catalogRepositoryProvider)
+      .listings(vendorId: vendorId);
+  return page.listings;
+}

@@ -53,7 +53,7 @@ void main() {
 
     responder = (_) async => _page([_card('lst_home', 'cat_home')]);
     final home = await repo.listings();
-    expect(home.single.id, 'lst_home');
+    expect(home.listings.single.id, 'lst_home');
 
     responder = (_) async => _json(500, {
       'error': {'code': 'internal', 'message': 'boom'},
@@ -82,8 +82,8 @@ void main() {
 
     // The shoes browse is answerable from its own cache.
     final shoes = await repo.listings(categoryId: 'cat_shoes');
-    expect(shoes.single.id, 'lst_shoe');
-    expect(shoes.single.categoryId, 'cat_shoes');
+    expect(shoes.listings.single.id, 'lst_shoe');
+    expect(shoes.listings.single.categoryId, 'cat_shoes');
 
     // A category never cached has no honest answer, so it fails rather than
     // borrowing one.
@@ -106,8 +106,8 @@ void main() {
         );
 
     final cached = await repo.listings();
-    expect(cached.single.id, 'lst_home');
-    expect(cached.single.categoryId, 'cat_home');
+    expect(cached.listings.single.id, 'lst_home');
+    expect(cached.listings.single.categoryId, 'cat_home');
   });
 }
 
