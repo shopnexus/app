@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/listing_dismiss_sheet.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/shared_product_card.dart';
 
 /// The feed card plus what only a geo browse knows: how far the goods are.
@@ -13,6 +14,9 @@ class CatalogProductCard extends StatelessWidget {
   final VoidCallback? onFavoriteTap;
   final bool showFavoriteButton;
   final bool showVendor;
+  final bool dismissible;
+  final ValueChanged<ListingDismissChoice>? onDismiss;
+  final bool isDismissing;
 
   const CatalogProductCard({
     super.key,
@@ -23,6 +27,9 @@ class CatalogProductCard extends StatelessWidget {
     this.onFavoriteTap,
     this.showFavoriteButton = false,
     this.showVendor = true,
+    this.dismissible = false,
+    this.onDismiss,
+    this.isDismissing = false,
   });
 
   @override
@@ -35,6 +42,9 @@ class CatalogProductCard extends StatelessWidget {
       onFavoriteTap: onFavoriteTap,
       showFavoriteButton: showFavoriteButton,
       showVendor: showVendor,
+      dismissible: dismissible,
+      onDismiss: onDismiss,
+      isDismissing: isDismissing,
     );
 
     final distanceKm = product.location?.distanceKm;

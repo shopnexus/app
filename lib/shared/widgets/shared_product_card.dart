@@ -6,6 +6,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart
 import 'package:shopnexus_flutter_app/api/generated/model/price_mode.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/listing_dismiss_sheet.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/condition_badge.dart';
 
 /// The six things the card draws, derived from a `Listing` here at the widget
@@ -58,6 +59,17 @@ class SharedProductCard extends StatelessWidget {
   final bool showFavoriteButton;
   final bool showVendor;
 
+  /// Offers "Không quan tâm" / "Ẩn tin này". Only truthful on the recommended feed — the one
+  /// list a hidden card actually leaves, since the server excludes a listing from
+  /// `sort=recommended` alone. A caller on search or a category browse leaves this off rather
+  /// than showing a menu that would not remove the card.
+  final bool dismissible;
+  final ValueChanged<ListingDismissChoice>? onDismiss;
+
+  /// True while this card is inside its undo window: still built, fading and shrinking in
+  /// place rather than gone, because the choice has not actually reached the server yet.
+  final bool isDismissing;
+
   const SharedProductCard({
     super.key,
     required this.product,
@@ -67,6 +79,9 @@ class SharedProductCard extends StatelessWidget {
     this.onFavoriteTap,
     this.showFavoriteButton = false,
     this.showVendor = true,
+    this.dismissible = false,
+    this.onDismiss,
+    this.isDismissing = false,
   });
 
   @override
@@ -74,6 +89,23 @@ class SharedProductCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
+    return AnimatedOpacity(
+      opacity: isDismissing ? 0 : 1,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+      child: AnimatedScale(
+        scale: isDismissing ? 0.92 : 1,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+        child: IgnorePointer(
+          ignoring: isDismissing,
+          child: _card(context, theme, isDarkMode),
+        ),
+      ),
+    );
+  }
+
+  Widget _card(BuildContext context, ThemeData theme, bool isDarkMode) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -151,33 +183,37 @@ class SharedProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (showFavoriteButton)
+                  if (dismissible || showFavoriteButton)
                     Positioned(
                       top: 8.0,
                       right: 8.0,
-                      child: GestureDetector(
-                        onTap: onFavoriteTap,
-                        child: Container(
-                          padding: const EdgeInsets.all(6.0),
-                          decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? theme.colorScheme.surface.withAlpha(220)
-                                : Colors.white.withAlpha(230),
-                            shape: BoxShape.circle,
-                            boxShadow: const [
-                              BoxShadow(color: Colors.black12, blurRadius: 4.0),
-                            ],
-                          ),
-                          child: Icon(
-                            isFavorite
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_border_rounded,
-                            size: 18,
-                            color: isFavorite
-                                ? const Color(0xFFBA1A1A)
-                                : theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (dismissible) ...[
+                            _CardIconButton(
+                              icon: Icons.more_vert_rounded,
+                              isDarkMode: isDarkMode,
+                              onTap: () => showListingDismissSheet(
+                                context,
+                                onSelected: (choice) => onDismiss?.call(choice),
+                              ),
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 6.0),
+                          ],
+                          if (showFavoriteButton)
+                            _CardIconButton(
+                              icon: isFavorite
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              isDarkMode: isDarkMode,
+                              onTap: onFavoriteTap,
+                              color: isFavorite
+                                  ? const Color(0xFFBA1A1A)
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
+                        ],
                       ),
                     ),
                 ],
@@ -338,6 +374,40 @@ class SharedProductCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// The one small circular chip both card corner buttons are — kept in one place so the
+/// kebab and the favourite heart read as one family of controls rather than two designs.
+class _CardIconButton extends StatelessWidget {
+  const _CardIconButton({
+    required this.icon,
+    required this.isDarkMode,
+    required this.color,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final bool isDarkMode;
+  final Color color;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(6.0),
+        decoration: BoxDecoration(
+          color: isDarkMode
+              ? Theme.of(context).colorScheme.surface.withAlpha(220)
+              : Colors.white.withAlpha(230),
+          shape: BoxShape.circle,
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4.0)],
+        ),
+        child: Icon(icon, size: 18, color: color),
       ),
     );
   }

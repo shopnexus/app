@@ -37,6 +37,12 @@ abstract class AccountApiService {
   @DELETE(ApiEndpoints.favoriteListingTemplate)
   Future<void> removeFavorite(@Path('listingID') String listingId);
 
+  // --- Interactions ---
+  // A shopper's action against a listing — catalog's route, same as the wishlist above.
+  // 204, no body: the caller does not wait on this, so nothing here reads a response.
+  @POST(ApiEndpoints.listingsInteractions)
+  Future<void> recordInteractions(@Body() Map<String, dynamic> body);
+
   // The notification feed is the generated `AccountApi`'s: it is cursor-paged,
   // and there is no per-row id to mark read by.
 

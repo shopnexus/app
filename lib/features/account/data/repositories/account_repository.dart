@@ -233,6 +233,23 @@ class AccountRepository {
   Future<void> removeFavorite(String listingId) =>
       _apiService.removeFavorite(listingId);
 
+  /// Records one shopper action against a listing — fire-and-forget, matching
+  /// the route's own contract: nothing on screen waits on this, and a failure
+  /// is swallowed here rather than surfaced, so every call site is spared a
+  /// try/catch for a lost "view" that costs the feed a slightly stale signal
+  /// and nothing else.
+  Future<void> recordInteraction(String listingId, String type) async {
+    try {
+      await _apiService.recordInteractions({
+        'interactions': [
+          {'listing_id': listingId, 'type': type},
+        ],
+      });
+    } catch (_) {
+      // Best-effort by design — see the doc above.
+    }
+  }
+
   // --- Notifications Features ---
 
   /// Cursor-paged: `created_at` identifies a row together with the feed order,
@@ -387,7 +404,9 @@ class AccountRepository {
                 favorited: detail.favorited,
                 location: detail.location,
                 name: detail.name,
-                price: detail.variants.isNotEmpty ? detail.variants.first.price : 0,
+                price: detail.variants.isNotEmpty
+                    ? detail.variants.first.price
+                    : 0,
                 priceMode: detail.priceMode,
                 rating: detail.rating,
                 reviewCount: detail.reviewCount,

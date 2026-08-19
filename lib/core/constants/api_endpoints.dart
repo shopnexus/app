@@ -22,4 +22,7 @@ class ApiEndpoints {
 
   // --- Wishlist ---
   static const String favoriteListingTemplate = 'favorites/{listingID}';
+
+  // --- Interactions ---
+  static const String listingsInteractions = 'listings/interactions';
 }

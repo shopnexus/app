@@ -5,10 +5,13 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
+import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/dismiss_undo_snackbar.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/listing_dismiss_sheet.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/sort_options_sheet.dart';
@@ -24,6 +27,17 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _minPriceController = TextEditingController();
   final TextEditingController _maxPriceController = TextEditingController();
+
+  /// Cards inside their undo window: still in the grid, fading out. A card leaves this set
+  /// either way it can — undone back to normal, or confirmed into [_hiddenIds] — so it never
+  /// lingers once the snackbar that named it has closed.
+  final Set<String> _dismissingIds = {};
+
+  /// Cards whose dismissal is confirmed: filtered out of the grid for the rest of this
+  /// screen's life. The server will not answer `recommended` with them again once the next
+  /// recompute runs, but this list has already been fetched — the client is what makes the
+  /// choice feel immediate.
+  final Set<String> _hiddenIds = {};
 
   @override
   void initState() {
@@ -42,10 +56,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
   CatalogSearchFilters _getHomeFilters() {
     final activeFilters = ref.read(activeSearchFiltersProvider);
-    final isAuthenticated = ref.read(authProvider).maybeWhen(
-          authenticated: (_, __) => true,
-          orElse: () => false,
-        );
+    final isAuthenticated = ref
+        .read(authProvider)
+        .maybeWhen(authenticated: (_, __) => true, orElse: () => false);
 
     return (activeFilters.sort == null && isAuthenticated)
         ? activeFilters.copyWith(sort: ListingSort.recommended)
@@ -60,16 +73,45 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     }
   }
 
+  /// The reader's own choice leaving the recommended feed, not the server's — so the card
+  /// stays returnable for as long as it plausibly is. It fades in place immediately; the
+  /// interaction itself is not sent until the undo window closes with nobody pressing
+  /// "Hoàn tác", which is what makes changing your mind free.
+  void _dismissListing(String listingId, ListingDismissChoice choice) {
+    setState(() => _dismissingIds.add(listingId));
+    showDismissUndoSnackBar(
+      context,
+      message: switch (choice) {
+        ListingDismissChoice.notInterested =>
+          'Đã ghi nhận, sẽ ít gợi ý sản phẩm như thế này hơn',
+        ListingDismissChoice.hidden => 'Đã ẩn tin này khỏi Gợi ý cho bạn',
+      },
+      onUndo: () {
+        if (!mounted) return;
+        setState(() => _dismissingIds.remove(listingId));
+      },
+      onExpire: () {
+        ref
+            .read(accountRepositoryProvider)
+            .recordInteraction(listingId, choice.wireType);
+        if (!mounted) return;
+        setState(() {
+          _dismissingIds.remove(listingId);
+          _hiddenIds.add(listingId);
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
     final activeFilters = ref.watch(activeSearchFiltersProvider);
-    final isAuthenticated = ref.watch(authProvider).maybeWhen(
-          authenticated: (_, __) => true,
-          orElse: () => false,
-        );
+    final isAuthenticated = ref
+        .watch(authProvider)
+        .maybeWhen(authenticated: (_, __) => true, orElse: () => false);
 
     final homeFilters = (activeFilters.sort == null && isAuthenticated)
         ? activeFilters.copyWith(sort: ListingSort.recommended)
@@ -341,7 +383,14 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                 // 5. Masonry Grid cho danh sách sản phẩm
                 productsState.when(
                   data: (stateData) {
-                    final products = stateData.products;
+                    final products = stateData.products
+                        .where((p) => !_hiddenIds.contains(p.id))
+                        .toList();
+                    // Only truthful here: this is the one list a "not interested"/"hidden"
+                    // choice actually leaves, since the server excludes a listing from
+                    // `sort=recommended` alone.
+                    final isRecommended =
+                        homeFilters.sort == ListingSort.recommended;
                     if (products.isEmpty) {
                       return SliverFillRemaining(
                         hasScrollBody: false,
@@ -407,6 +456,12 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                             '/home/product/${product.id}',
                                           );
                                         },
+                                        dismissible: isRecommended,
+                                        isDismissing: _dismissingIds.contains(
+                                          product.id,
+                                        ),
+                                        onDismiss: (choice) =>
+                                            _dismissListing(product.id, choice),
                                       ),
                                     );
                                   }),
