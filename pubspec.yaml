@@ -39,11 +39,20 @@ dev_dependencies:
 
   flutter_lints: ^4.0.0
   flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
   build_runner: ^2.4.8
   freezed: ^3.0.0
   json_serializable: ^6.7.1
   retrofit_generator: ^10.2.1
   riverpod_generator: ^3.0.0-dev.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo_shopnexus.jpg"
+  min_sdk_android: 21
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/logo_shopnexus.jpg"
 
 flutter:
   uses-material-design: true
