@@ -80,15 +80,18 @@ class _AccountCenterScreenState extends ConsumerState<AccountCenterScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Thông tin tài khoản chi tiết',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Manrope',
-                      color: theme.colorScheme.onSurface,
+                  Expanded(
+                    child: Text(
+                      'Thông tin tài khoản chi tiết',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Manrope',
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 8),
                   TextButton.icon(
                     onPressed: () => _showEditProfileBottomSheet(profile),
                     icon: const Icon(Icons.edit_outlined, size: 16),

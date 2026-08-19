@@ -922,16 +922,33 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Bộ chỉnh số lượng đặt mua
           Row(
             children: [
-              Text(
-                'Số lượng đặt mua',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Số lượng đặt mua',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 2.0),
+                    Text(
+                      'Tồn kho: $totalStock',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 12.0),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(
@@ -943,6 +960,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: Icon(
@@ -950,12 +968,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         size: 16,
                         color: theme.colorScheme.onSurface,
                       ),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
+                      padding: EdgeInsets.zero,
                       onPressed: _quantity > 1
                           ? () => setState(() => _quantity--)
                           : null,
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      constraints: const BoxConstraints(minWidth: 32),
+                      alignment: Alignment.center,
                       child: Text(
                         '$_quantity',
                         style: TextStyle(
@@ -972,20 +996,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         size: 16,
                         color: theme.colorScheme.onSurface,
                       ),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
+                      padding: EdgeInsets.zero,
                       onPressed: _quantity < totalStock
                           ? () => setState(() => _quantity++)
                           : null,
                     ),
                   ],
-                ),
-              ),
-              const SizedBox(width: 12.0),
-              Text(
-                'Tồn kho: $totalStock',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
