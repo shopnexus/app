@@ -16,9 +16,9 @@ import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog
 
 
 /// Everything the app had a client for and never called: tags, the review
-/// filters, the helpful vote, and the search mode. A wrong *request* is the
-/// drift that matters here — the parameters are all optional, so a dropped one
-/// fails silently as "the server just answered that".
+/// filters, and the helpful vote. A wrong *request* is the drift that matters
+/// here — the parameters are all optional, so a dropped one fails silently as
+/// "the server just answered that".
 void main() {
   late Directory hiveDir;
   late HiveService hiveService;
@@ -60,6 +60,11 @@ void main() {
             'limit': 20,
             'total_count': 0,
           },
+          // Required on every listings page as of the search rewrite; these
+          // tests don't exercise either field, so empty is enough to satisfy
+          // deserialization.
+          'understood': '',
+          'probes': <dynamic>[],
         });
       });
 
@@ -85,17 +90,6 @@ void main() {
     expect(requests.single.path, endsWith('listings'));
     expect(requests.single.queryParameters['tag'], 'do-cu');
     expect(requests.single.queryParameters.containsKey('q'), isFalse);
-  });
-
-  test('the search mode rides along only with a query', () async {
-    await catalog().listings(keyword: 'ống kính', mode: SearchMode.semantic);
-    expect(requests.single.queryParameters['mode'], 'semantic');
-
-    requests.clear();
-    // No keyword: the server ignores `mode` there, so sending it would only
-    // claim something the request cannot mean.
-    await catalog().listings(mode: SearchMode.semantic);
-    expect(requests.single.queryParameters.containsKey('mode'), isFalse);
   });
 
   test('GET /tags carries the ranking query and the limit', () async {

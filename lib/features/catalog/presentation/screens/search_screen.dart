@@ -5,7 +5,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
-import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
@@ -769,16 +768,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     .setSort(sort),
               ),
             ),
-            // Cách khớp từ khoá — chỉ hiện khi có từ khoá, vì server bỏ qua nó
-            // khi không có `q`, và một nút không đổi gì là một nút gây hiểu lầm.
-            if (activeFilters.keyword != null &&
-                activeFilters.keyword!.trim().isNotEmpty) ...[
-              const SizedBox(width: 8.0),
-              _SearchModeChip(
-                background: chipBgColor,
-                foreground: chipTextColor,
-              ),
-            ],
             if (activeFilters.categoryId != null) ...[
               const SizedBox(width: 8.0),
               Chip(
@@ -1108,57 +1097,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           },
         );
       },
-    );
-  }
-}
-
-/// Cách khớp từ khoá: `lexical` dò chữ (chịu được thiếu dấu), `semantic` dò
-/// theo nghĩa, `hybrid` gộp cả hai. Server bỏ qua tham số này khi không có
-/// `q`, nên chip chỉ xuất hiện cùng từ khoá.
-///
-/// Đáng để lộ ra vì một tin chưa kịp tính embedding thì chỉ tìm được bằng
-/// `lexical` — người bán vừa đăng xong mà tìm không ra là chuyện có thật.
-class _SearchModeChip extends ConsumerWidget {
-  const _SearchModeChip({required this.background, required this.foreground});
-
-  final Color background;
-  final Color foreground;
-
-  static const _labels = <String, String>{
-    SearchMode.hybrid: 'Kết hợp',
-    SearchMode.semantic: 'Theo nghĩa',
-    SearchMode.lexical: 'Theo chữ',
-  };
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final mode = ref.watch(searchModeProvider);
-
-    return PopupMenuButton<String>(
-      initialValue: mode,
-      onSelected: (next) => ref.read(searchModeProvider.notifier).set(next),
-      itemBuilder: (context) => [
-        for (final entry in _labels.entries)
-          PopupMenuItem(value: entry.key, child: Text(entry.value)),
-      ],
-      child: Chip(
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        visualDensity: VisualDensity.compact,
-        avatar: Icon(
-          Icons.auto_awesome_rounded,
-          size: 14,
-          color: theme.colorScheme.primary,
-        ),
-        label: Text(_labels[mode] ?? _labels[SearchMode.hybrid]!),
-        labelStyle: TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 12,
-          color: foreground,
-          fontWeight: FontWeight.w600,
-        ),
-        backgroundColor: background,
-      ),
     );
   }
 }

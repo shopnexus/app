@@ -33,6 +33,8 @@ void main() {
         return _json(200, {
           'data': <Map<String, dynamic>>[],
           'meta': {'page': 1, 'limit': 20, 'total_count': 0},
+          'understood': '',
+          'probes': <String>[],
         });
       });
     container = ProviderContainer.test(

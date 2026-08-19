@@ -39,6 +39,8 @@ void main() {
         return _json(200, {
           'data': [_favoritedCard],
           'meta': {'page': 1, 'limit': 100, 'total_count': 1},
+          'understood': '',
+          'probes': <String>[],
         });
       });
 

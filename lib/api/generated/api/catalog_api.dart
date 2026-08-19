@@ -20,6 +20,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/error.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_suggestions_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/publish_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/suggest_listing_request.dart';
@@ -217,12 +218,11 @@ class CatalogApi {
   }
 
   /// Browse, search and resolve listings
-  /// With no parameters, the newest live active listings. The parameters narrow that one query rather than selecting between separate endpoints.  &#x60;q&#x60; makes it a search and moves the default sort to &#x60;relevance&#x60;. &#x60;lexical&#x60; matches the name by trigram and tolerates missing diacritics, &#x60;semantic&#x60; runs an approximate nearest-neighbour search over the dense embedding, and &#x60;hybrid&#x60; combines the dense vector with the sparse lexical one, which is what the embedding model is built for. Each hit then carries &#x60;score&#x60;, always so that higher is better. A listing whose embedding has not been computed yet can only be found lexically.  &#x60;sort&#x3D;recommended&#x60; is the personalised feed. A buyer is credited with up to four interests at once, derived from what they saved and refreshed as they save more; each one searches the catalogue on its own, a further share of the page goes to whatever was posted most recently, and the results are merged in proportion to how much of that buyer&#39;s behaviour each source accounts for. So an occasional taste still reaches the page instead of being crowded out by the dominant one, and something outside every one of them still gets in — a feed that only ever answers its own past has no way to learn it was wrong. The page is *drawn* from a pool several pages deep rather than taken off the top, so two runs differ; &#x60;seed&#x60; is what holds one run still while it is paged through. Their own listings and anything already on their wishlist are left out. It needs a token, and falls back to newest for an account with no interests computed yet.  &#x60;score&#x60; is the similarity to the interest that surfaced a card, and is &#x60;null&#x60; for one drawn for being new — nothing measured it against anything.  &#x60;mine&#x3D;true&#x60; restricts the result to the caller&#39;s own listings, and is the only case in which &#x60;status&#x60; is honoured — a seller has to see what is not public, and nobody else may.  &#x60;favorited&#x3D;true&#x60; is the wishlist page. It is a filter here rather than its own endpoint because a wishlist wants exactly what a feed wants — cards, with prices and stock and every filter available — and a separate endpoint returning saved ids left the client resolving them one by one.  &#x60;ids&#x60; resolves a known set, which is how a cart or an order list renders the listings behind its rows. It ignores every other filter and answers for hidden and soft-deleted listings too, because an order that references one still has to display it; &#x60;deleted_at&#x60; says which. Listings that were never public (&#x60;draft&#x60;, &#x60;pending&#x60;) stay out unless they are the caller&#39;s own.  Location is a C2C buyer&#39;s first filter — collecting in person, or just trusting a seller two districts away over one across the country. It is the seller&#39;s pickup address as the listing snapshotted it when they published, so it is the same address a carrier collects from, and it never moves under a listing that has already sold. &#x60;province_code&#x60;/&#x60;district_code&#x60;/ &#x60;ward_code&#x60; filter on it; &#x60;lat&#x60;+&#x60;lon&#x60; or &#x60;near_contact_id&#x60; measure from where the buyer is, &#x60;radius_km&#x60; bounds the result and &#x60;sort&#x3D;distance&#x60; orders by it.  &#x60;price-asc&#x60; and &#x60;price-desc&#x60; are answered through the SKU price index rather than a value cached on the listing, so &#x60;price&#x60; is the cheapest matching variant&#39;s. &#x60;best-selling&#x60; is the one that cannot work that way — it orders by a sum over the variants, and a sum has no per-SKU index to scan in order — so it reads &#x60;cached_sold&#x60; on the listing, maintained with the sales it counts.
+  /// With no parameters, the newest live active listings. The parameters narrow that one query rather than selecting between separate endpoints.  &#x60;q&#x60; makes it a search and moves the default sort to &#x60;relevance&#x60;. It is read rather than matched: an understanding stage works out what the words meant — fixing spelling and diacritics, reading a price or a place out of the phrase — and the search ranks against those phrases *and* the shopper&#39;s own words, so a misreading narrows the ranking instead of replacing it. &#x60;understood&#x60; and &#x60;probes&#x60; on the response are what it made of the query. Ranking is dense plus sparse nearest-neighbour over the embeddings, and each hit carries &#x60;score&#x60;, always so that higher is better. A listing whose embedding has not been computed yet cannot be found at all.  &#x60;sort&#x3D;recommended&#x60; is the personalised feed. A buyer is credited with up to four interests at once, derived from what they saved and refreshed as they save more; each one searches the catalogue on its own, a further share of the page goes to whatever was posted most recently, and the results are merged in proportion to how much of that buyer&#39;s behaviour each source accounts for. So an occasional taste still reaches the page instead of being crowded out by the dominant one, and something outside every one of them still gets in — a feed that only ever answers its own past has no way to learn it was wrong. The page is *drawn* from a pool several pages deep rather than taken off the top, so two runs differ; &#x60;seed&#x60; is what holds one run still while it is paged through. Their own listings and anything already on their wishlist are left out. It needs a token, and falls back to &#x60;sort&#x3D;trending&#x60; for an account with no interests computed yet and nothing else in the request &#x60;trending&#x60; itself would refuse, or to newest otherwise.  &#x60;score&#x60; is the similarity to the interest that surfaced a card, and is &#x60;null&#x60; for one drawn for being new — nothing measured it against anything.  &#x60;sort&#x3D;trending&#x60; is the platform&#39;s own top list: every buyer&#39;s aggregate interactions — a view, a click, a purchase — folded into one ranking with no account behind it, so it needs no token. It ranks the *whole* catalogue and has nothing to join that ranking against a category, a price range, a search or a position, so it is refused together with any other narrowing parameter — &#x60;mine&#x60;, &#x60;favorited&#x60;, &#x60;q&#x60;, &#x60;category_id&#x60;, &#x60;tag&#x60;, &#x60;seller_id&#x60;, &#x60;condition&#x60;, &#x60;min_price&#x60;, &#x60;max_price&#x60;, the location filters. A page it cannot fill from popularity alone backfills with the newest listings not already on it, so a young platform&#39;s trending page is never emptier than its newest page would be.  &#x60;mine&#x3D;true&#x60; restricts the result to the caller&#39;s own listings, and is the only case in which &#x60;status&#x60; is honoured — a seller has to see what is not public, and nobody else may.  &#x60;favorited&#x3D;true&#x60; is the wishlist page. It is a filter here rather than its own endpoint because a wishlist wants exactly what a feed wants — cards, with prices and stock and every filter available — and a separate endpoint returning saved ids left the client resolving them one by one.  &#x60;ids&#x60; resolves a known set, which is how a cart or an order list renders the listings behind its rows. It ignores every other filter and answers for hidden and soft-deleted listings too, because an order that references one still has to display it; &#x60;deleted_at&#x60; says which. Listings that were never public (&#x60;draft&#x60;, &#x60;pending&#x60;) stay out unless they are the caller&#39;s own.  Location is a C2C buyer&#39;s first filter — collecting in person, or just trusting a seller two districts away over one across the country. It is the seller&#39;s pickup address as the listing snapshotted it when they published, so it is the same address a carrier collects from, and it never moves under a listing that has already sold. &#x60;province_code&#x60;/&#x60;district_code&#x60;/ &#x60;ward_code&#x60; filter on it; &#x60;lat&#x60;+&#x60;lon&#x60; or &#x60;near_contact_id&#x60; measure from where the buyer is, &#x60;radius_km&#x60; bounds the result and &#x60;sort&#x3D;distance&#x60; orders by it.  &#x60;price-asc&#x60; and &#x60;price-desc&#x60; are answered through the SKU price index rather than a value cached on the listing, so &#x60;price&#x60; is the cheapest matching variant&#39;s. &#x60;best-selling&#x60; is the one that cannot work that way — it orders by a sum over the variants, and a sum has no per-SKU index to scan in order — so it reads &#x60;cached_sold&#x60; on the listing, maintained with the sales it counts.
   ///
   /// Parameters:
   /// * [ids] - Resolve exactly these listings, ignoring the other filters.
-  /// * [q] - Free-text query. Turns the request into a search.
-  /// * [mode] - Search mode. Ignored without a query.
+  /// * [q] - Free-text query. Turns the request into a search. Read by an understanding stage rather than matched literally, so a misspelling or a vague phrase is expected, not required to be exact.
   /// * [mine] - The caller's own listings, in every state.
   /// * [favorited] - The caller's wishlist. This is the wishlist page.
   /// * [status] - Only honoured together with mine=true.
@@ -239,8 +239,8 @@ class CatalogApi {
   /// * [lon]
   /// * [nearContactId] - One of the caller's own saved addresses, as an alternative to `lat`/`lon` — the usual case, since a buyer's address is already on file. 422 if it was never geocoded.
   /// * [radiusKm] - Bound the result to a circle around that position. Without it a position still ranks and reports distance, it just does not exclude anything.
-  /// * [sort] - Defaults to `relevance` when a query is given and `newest` otherwise. `distance` needs a position, like `radius_km` does.
-  /// * [seed] - Which shuffle of a personalised feed this is; read only by `sort=recommended`, ignored everywhere else. That feed is drawn from a pool several pages deep rather than taken off the top of it, so the ordering is a function of this value: send one seed for a whole run of pages, or the second page will be drawn from a different feed than the first and repeat cards it has already shown. Send a new one to get a new feed. Any string does — it is hashed, never interpreted. Left out, the server rotates it every fifteen minutes.
+  /// * [sort] - Defaults to `relevance` when a query is given and `newest` otherwise. `distance` needs a position, like `radius_km` does. `trending` refuses every other narrowing parameter — see above.
+  /// * [seed] - Which shuffle of a personalised feed this is; read only by `sort=recommended`, ignored everywhere else. That feed is drawn from a pool several pages deep rather than taken off the top of it, so the ordering is a function of this value: send one seed for a whole run of pages, or the second page will be drawn from a different feed than the first and repeat cards it has already shown. Send a new one to get a new feed. Any string does — it is hashed, never interpreted. Left out, the server rotates it every minute.
   /// * [page] - 1-based page number.
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -255,7 +255,6 @@ class CatalogApi {
   Future<Response<ListingPage>> listingsGet({
     List<String>? ids,
     String? q,
-    String? mode = 'hybrid',
     bool? mine = false,
     bool? favorited = false,
     ListingStatus? status,
@@ -299,7 +298,6 @@ class CatalogApi {
     final _queryParameters = <String, dynamic>{
       if (ids != null) r'ids': ids,
       if (q != null) r'q': q,
-      if (mode != null) r'mode': mode,
       if (mine != null) r'mine': mine,
       if (favorited != null) r'favorited': favorited,
       if (status != null) r'status': status,
@@ -893,6 +891,68 @@ class CatalogApi {
       statusMessage: _response.statusMessage,
       extra: _response.extra,
     );
+  }
+
+  /// Record a batch of shopper actions against listings
+  /// Best-effort and asynchronous: the response does not wait on personalisation or popularity catching up, and a batch too large to matter is refused rather than silently truncated. &#x60;view&#x60; is the account looking at a listing; the three &#x60;click-from-*&#x60; kinds say where that look started; &#x60;not-interested&#x60; and &#x60;hidden&#x60; exclude a listing from that account&#39;s personalised feed outright rather than lowering its rank — the two carry a negative weight for the popularity score, but never for personalisation, which averages positive weights into a share of the page and has nothing a negative number there would do but corrupt.  Optional auth: an anonymous view still counts toward popularity. Only a signed-in one has an account for personalisation to attach to.
+  ///
+  /// Parameters:
+  /// * [listingsInteractionsPostRequest]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future]
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<void>> listingsInteractionsPost({
+    required ListingsInteractionsPostRequest listingsInteractionsPostRequest,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/listings/interactions';
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      _bodyData = jsonEncode(listingsInteractionsPostRequest);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    return _response;
   }
 
   /// Create a listing

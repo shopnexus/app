@@ -138,6 +138,8 @@ Map<String, dynamic> _card(String id, String categoryId) => {
 ResponseBody _page(List<Map<String, dynamic>> cards) => _json(200, {
   'data': cards,
   'meta': {'page': 1, 'limit': 20, 'total_count': cards.length},
+  'understood': '',
+  'probes': <String>[],
 });
 
 class _FakeAdapter implements HttpClientAdapter {

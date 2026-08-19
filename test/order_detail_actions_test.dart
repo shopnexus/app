@@ -63,6 +63,8 @@ void main() {
           {...listingJson, 'cover': null},
         ],
         'meta': const {'page': 1, 'limit': 20, 'total_count': 1},
+        'understood': '',
+        'probes': const <String>[],
       },
       _ => {'data': row},
     },

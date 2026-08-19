@@ -30,6 +30,8 @@ void main() {
         '/listings' => {
           'data': listings,
           'meta': {'page': 1, 'limit': 20, 'total_count': listings.length},
+          'understood': '',
+          'probes': const <String>[],
         },
         _ => const {'data': <String, dynamic>{}},
       };

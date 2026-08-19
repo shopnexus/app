@@ -68,20 +68,6 @@ Future<List<Category>> categories(Ref ref) {
   return ref.watch(catalogRepositoryProvider).categories();
 }
 
-/// How a keyword is matched. Kept beside the filters rather than inside them
-/// because it is not one: it changes nothing about *which* listings qualify,
-/// only how they are ranked, and the server ignores it without a `q`.
-class SearchModeNotifier extends Notifier<String> {
-  @override
-  String build() => SearchMode.hybrid;
-
-  void set(String mode) => state = mode;
-}
-
-final searchModeProvider = NotifierProvider<SearchModeNotifier, String>(
-  SearchModeNotifier.new,
-);
-
 /// The tag cloud. A tag's id *is* its slug, so what comes back is what `?tag=`
 /// takes — no lookup in between. An empty `q` is the trending list; a keyword
 /// ranks them against it, which is what makes the row on a result page mean
@@ -113,10 +99,6 @@ class CatalogProducts extends _$CatalogProducts {
   ) {
     return repo.listings(
       keyword: filters.keyword,
-      // `read`, not `watch`: `build` watches it, so a mode change already
-      // refetches from page 1 — re-watching here would only add a second
-      // dependency edge from inside `loadNextPage`.
-      mode: ref.read(searchModeProvider),
       categoryId: filters.categoryId,
       priceMin: filters.priceMin,
       priceMax: filters.priceMax,
@@ -139,9 +121,6 @@ class CatalogProducts extends _$CatalogProducts {
     CatalogSearchFilters initialFilters,
   ) async {
     final repo = ref.watch(catalogRepositoryProvider);
-    // Watched, not read: switching lexical/semantic/hybrid re-ranks the whole
-    // result, so it has to restart at page 1 like any other filter change.
-    ref.watch(searchModeProvider);
     _recommendedSeed = initialFilters.sort == ListingSort.recommended
         ? _newFeedSeed()
         : null;

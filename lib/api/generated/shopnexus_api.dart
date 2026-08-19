@@ -122,6 +122,8 @@ export 'package:shopnexus_flutter_app/api/generated/model/listing_location.dart'
 export 'package:shopnexus_flutter_app/api/generated/model/listing_page.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request.dart';
+export 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request_interactions_inner.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listings_listing_id_reviews_post201_response.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/listings_suggestions_post200_response.dart';
 export 'package:shopnexus_flutter_app/api/generated/model/login_post200_response.dart';

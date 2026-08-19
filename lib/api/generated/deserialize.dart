@@ -94,6 +94,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_location.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request_interactions_inner.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_listing_id_reviews_post201_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_suggestions_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/login_post200_response.dart';
@@ -557,6 +559,16 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'ListingStatus':
     case 'ListingSuggestion':
       return ListingSuggestion.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ListingsInteractionsPostRequest':
+      return ListingsInteractionsPostRequest.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ListingsInteractionsPostRequestInteractionsInner':
+      return ListingsInteractionsPostRequestInteractionsInner.fromJson(
+            value as Map<String, dynamic>,
+          )
           as ReturnType;
     case 'ListingsListingIDReviewsPost201Response':
       return ListingsListingIDReviewsPost201Response.fromJson(

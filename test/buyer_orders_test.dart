@@ -33,6 +33,8 @@ void main() {
         '/listings' => {
           'data': listings,
           'meta': const {'page': 1, 'limit': 20, 'total_count': 1},
+          'understood': '',
+          'probes': const <String>[],
         },
         _ => {'data': orders.isEmpty ? null : orders.first},
       };

@@ -19,7 +19,15 @@ part 'listing_page.g.dart';
 )
 class ListingPage {
   /// Returns a new [ListingPage] instance.
-  ListingPage({required this.data, required this.meta});
+  ListingPage({
+    required this.data,
+
+    required this.meta,
+
+    required this.probes,
+
+    required this.understood,
+  });
 
   @JsonKey(name: r'data', required: true, includeIfNull: false)
   final List<Listing> data;
@@ -27,13 +35,26 @@ class ListingPage {
   @JsonKey(name: r'meta', required: true, includeIfNull: false)
   final PageMeta meta;
 
+  /// The phrases actually searched — the shopper's own words plus whatever the understanding stage added. Empty for a browse with no query.
+  @JsonKey(name: r'probes', required: true, includeIfNull: false)
+  final List<String> probes;
+
+  /// What the search took the query to mean, in the shopper's language. Empty for a browse with no query.
+  @JsonKey(name: r'understood', required: true, includeIfNull: false)
+  final String understood;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ListingPage && other.data == data && other.meta == meta;
+      other is ListingPage &&
+          other.data == data &&
+          other.meta == meta &&
+          other.probes == probes &&
+          other.understood == understood;
 
   @override
-  int get hashCode => data.hashCode + meta.hashCode;
+  int get hashCode =>
+      data.hashCode + meta.hashCode + probes.hashCode + understood.hashCode;
 
   factory ListingPage.fromJson(Map<String, dynamic> json) =>
       _$ListingPageFromJson(json);

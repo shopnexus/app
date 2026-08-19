@@ -24,14 +24,6 @@ abstract final class ListingSort {
   static const distance = 'distance';
 }
 
-/// How `GET /listings` matches `q`. Ignored without a query, so the picker is
-/// only offered once there is one.
-abstract final class SearchMode {
-  static const lexical = 'lexical';
-  static const semantic = 'semantic';
-  static const hybrid = 'hybrid';
-}
-
 /// The `sort` values `GET /listings/{id}/reviews` accepts. A cursor belongs to
 /// the sort it was issued under, so changing this restarts the traversal.
 abstract final class ReviewSort {
