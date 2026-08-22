@@ -257,7 +257,8 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => context.go('/search'),
+                            onTap: () =>
+                                context.push('/search?autofocus=true'),
                             child: Container(
                               height: 48.0,
                               padding: const EdgeInsets.symmetric(

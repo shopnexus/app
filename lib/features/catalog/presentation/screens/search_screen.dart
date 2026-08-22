@@ -11,7 +11,8 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/prod
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/sort_options_sheet.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+  final bool autofocus;
+  const SearchScreen({super.key, this.autofocus = true});
 
   @override
   ConsumerState<SearchScreen> createState() => _SearchScreenState();
@@ -20,6 +21,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _searchFocusNode = FocusNode();
 
   // Temporary controller for bottom sheet filter
   final TextEditingController _minPriceController = TextEditingController();
@@ -34,6 +36,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final activeFilters = ref.read(activeSearchFiltersProvider);
       _searchController.text = activeFilters.keyword ?? '';
+      if (widget.autofocus) {
+        _searchFocusNode.requestFocus();
+      }
     });
   }
 
@@ -45,6 +50,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _searchFocusNode.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _minPriceController.dispose();
@@ -152,6 +158,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             child: Center(
               child: TextField(
                 controller: _searchController,
+                focusNode: _searchFocusNode,
+                autofocus: widget.autofocus,
                 textInputAction: TextInputAction.search,
                 onSubmitted: (val) => _triggerSearch(val),
                 decoration: InputDecoration(

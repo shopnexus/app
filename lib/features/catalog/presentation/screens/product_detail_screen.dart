@@ -781,7 +781,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     ref.read(activeSearchFiltersProvider.notifier)
       ..reset()
       ..setTag(tag);
-    context.push('/search');
+    context.push('/search?autofocus=false');
   }
 
   // 3. Bộ chọn biến thể (SKU Selector) & Số lượng

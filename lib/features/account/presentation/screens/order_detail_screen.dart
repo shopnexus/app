@@ -436,69 +436,86 @@ class OrderDetailScreen extends ConsumerWidget {
                 Divider(height: 24, color: dividerColor),
             itemBuilder: (context, index) {
               final line = view.lines[index];
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      color: imageBgColor,
-                      child: line.imageUrl != null && line.imageUrl!.isNotEmpty
-                          ? Image.network(line.imageUrl!, fit: BoxFit.cover)
-                          : Icon(
-                              Icons.image_rounded,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          line.displayName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.onSurface,
-                            fontFamily: 'Inter',
-                          ),
+              final listingId = line.listing?.id ?? line.item.listingId;
+              return InkWell(
+                onTap: listingId.isNotEmpty
+                    ? () => context.push('/home/product/$listingId')
+                    : null,
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          width: 64,
+                          height: 64,
+                          color: imageBgColor,
+                          child: line.imageUrl != null &&
+                                  line.imageUrl!.isNotEmpty
+                              ? Image.network(line.imageUrl!, fit: BoxFit.cover)
+                              : Icon(
+                                  Icons.image_rounded,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
                         ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'x${line.item.quantity}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: theme.colorScheme.onSurfaceVariant,
-                                fontFamily: 'Inter',
-                              ),
-                            ),
-                            Text(
-                              MoneyUtils.format(
-                                line.item.totalAmount,
-                                currency: line.item.currency,
-                              ),
+                              line.displayName,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 13,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 color: theme.colorScheme.onSurface,
                                 fontFamily: 'Inter',
                               ),
                             ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'x${line.item.quantity}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                                Text(
+                                  MoneyUtils.format(
+                                    line.item.totalAmount,
+                                    currency: line.item.currency,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.onSurface,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               );
             },
           ),

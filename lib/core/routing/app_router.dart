@@ -140,7 +140,13 @@ GoRouter appRouter(Ref ref) {
           GoRoute(
             path: '/search',
             name: 'search',
-            builder: (context, state) => const SearchScreen(),
+            builder: (context, state) {
+              final autofocusParam = state.uri.queryParameters['autofocus'];
+              final autofocus = autofocusParam != null
+                  ? autofocusParam == 'true'
+                  : true;
+              return SearchScreen(autofocus: autofocus);
+            },
           ),
           // Trang công khai của một *người*, không của một shop. Spec không có
           // thực thể shop nào: `reputation` và `follows` đều gắn với account, nên
