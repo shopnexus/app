@@ -69,9 +69,9 @@ class ChatOfferCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       constraints: BoxConstraints(
-        maxWidth: (screenWidth * 0.84).clamp(280.0, 350.0),
+        maxWidth: (screenWidth * 0.88).clamp(300.0, 390.0),
       ),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(16),
@@ -413,21 +413,27 @@ class ChatOfferCard extends StatelessWidget {
   }) {
     return SizedBox(
       width: double.infinity,
-      height: 42,
+      height: 46,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: theme.colorScheme.onPrimary,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          alignment: Alignment.center,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            height: 1.2,
           ),
         ),
       ),
@@ -442,22 +448,28 @@ class ChatOfferCard extends StatelessWidget {
   }) {
     return SizedBox(
       width: double.infinity,
-      height: 40,
+      height: 44,
       child: OutlinedButton.icon(
         onPressed: onPressed,
-        icon: icon == null ? null : Icon(icon, size: 18),
-        label: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+        icon: icon == null ? null : Icon(icon, size: 19),
+        label: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            height: 1.2,
           ),
         ),
         style: OutlinedButton.styleFrom(
           foregroundColor: theme.colorScheme.primary,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+          alignment: Alignment.center,
           side: BorderSide(color: theme.colorScheme.outline),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
       ),
@@ -470,22 +482,28 @@ class ChatOfferCard extends StatelessWidget {
     VoidCallback? onPressed,
   }) {
     return SizedBox(
-      height: 40,
+      height: 44,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.errorContainer,
           foregroundColor: theme.colorScheme.onErrorContainer,
           elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+          alignment: Alignment.center,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            height: 1.2,
           ),
         ),
       ),
@@ -500,25 +518,26 @@ class ChatOfferCard extends StatelessWidget {
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 6),
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 8),
           Flexible(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                label,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+                fontSize: 13.5,
+                color: color,
               ),
             ),
           ),

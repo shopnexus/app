@@ -20,17 +20,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  String _selectedCountry = 'VN';
   bool _agreeToTerms = false;
-
-  final List<Map<String, String>> _countries = [
-    {'code': 'VN', 'name': 'Việt Nam'},
-    {'code': 'US', 'name': 'United States (Mỹ)'},
-    {'code': 'JP', 'name': 'Japan (Nhật Bản)'},
-    {'code': 'KR', 'name': 'South Korea (Hàn Quốc)'},
-    {'code': 'CN', 'name': 'China (Trung Quốc)'},
-    {'code': 'SG', 'name': 'Singapore'},
-  ];
 
   @override
   void dispose() {
@@ -61,7 +51,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             name: _fullNameController.text.trim(),
             email: _emailController.text.trim(),
             password: _passwordController.text,
-            country: _selectedCountry,
+            country: 'VN',
           );
     }
   }
@@ -101,12 +91,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       orElse: () => false,
     );
 
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
     final labelColor = theme.colorScheme.onSurfaceVariant;
-    final backgroundColor = theme.colorScheme.surface;
 
     return BackButtonListener(
       onBackButtonPressed: () async {
@@ -173,85 +161,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           style: TextStyle(fontSize: 14, color: labelColor),
                         ),
                         const SizedBox(height: 36),
-
-                        // Country Selection
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'QUỐC GIA',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: labelColor,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            DropdownButtonFormField<String>(
-                              initialValue: _selectedCountry,
-                              items: _countries.map((country) {
-                                return DropdownMenuItem<String>(
-                                  value: country['code'],
-                                  child: Text(
-                                    country['name']!,
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 16,
-                                      color: textColor,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: isLoading
-                                  ? null
-                                  : (value) {
-                                      if (value != null) {
-                                        setState(() {
-                                          _selectedCountry = value;
-                                        });
-                                      }
-                                    },
-                              decoration: InputDecoration(
-                                fillColor: backgroundColor,
-                                filled: true,
-                                prefixIcon: Icon(
-                                  Icons.public,
-                                  color: labelColor,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: isDarkMode
-                                        ? const Color(0xFF3E4947)
-                                        : const Color(0xFFE0E3E4),
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: isDarkMode
-                                        ? const Color(0xFF3E4947)
-                                        : const Color(0xFFE0E3E4),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: primaryColor,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
 
                         // Full Name
                         CustomTextField(

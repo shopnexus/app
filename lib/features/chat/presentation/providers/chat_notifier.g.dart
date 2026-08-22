@@ -45,7 +45,7 @@ final class ChatListNotifierProvider
   ChatListNotifier create() => ChatListNotifier();
 }
 
-String _$chatListNotifierHash() => r'b7533ee0aaf204f4dff929fb8b928209221ae978';
+String _$chatListNotifierHash() => r'551b3e5f73996000590adf0c12cbd73c72af9daa';
 
 /// The inbox.
 ///
@@ -126,7 +126,7 @@ final class ChatDetailNotifierProvider
 }
 
 String _$chatDetailNotifierHash() =>
-    r'd897d8ccf824614337508a945395455bb0761c1a';
+    r'05f63eb967cc8b649ebcde23dc06bd62fb8127a2';
 
 /// One open thread.
 ///

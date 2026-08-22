@@ -108,69 +108,71 @@ class _CounterOfferDialogState extends State<CounterOfferDialog> {
 
     return AlertDialog(
       title: const Text('Đề nghị mức giá khác'),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Mức giá hiện tại: '
-              '${MoneyUtils.format(widget.offer.total, currency: currency)}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _totalController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Tổng tiền đề nghị ($currency)',
-              ),
-              validator: (value) {
-                final parsed = int.tryParse(value?.trim() ?? '');
-                if (parsed == null || parsed < 1) {
-                  return 'Vui lòng nhập số tiền hợp lệ';
-                }
-                final ceiling = _ceiling;
-                if (ceiling != null && parsed > ceiling) {
-                  return 'Không cao hơn giá niêm yết '
-                      '(${MoneyUtils.format(ceiling, currency: currency)} '
-                      'cho $_quantity sản phẩm)';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Text('Số lượng', style: theme.textTheme.bodyMedium),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Mức giá hiện tại: '
+                '${MoneyUtils.format(widget.offer.total, currency: currency)}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-                IconButton(
-                  onPressed: _quantity > 1 ? () => _setQuantity(-1) : null,
-                  icon: const Icon(Icons.remove_circle_outline),
-                ),
-                Text('$_quantity', style: theme.textTheme.titleMedium),
-                IconButton(
-                  onPressed: () => _setQuantity(1),
-                  icon: const Icon(Icons.add_circle_outline),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            TextFormField(
-              controller: _reasonController,
-              maxLines: 3,
-              minLines: 2,
-              decoration: const InputDecoration(
-                labelText: 'Lý do (không bắt buộc)',
-                hintText: 'Hiển thị cạnh mức giá bạn đề nghị',
-                alignLabelWithHint: true,
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _totalController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Tổng tiền đề nghị ($currency)',
+                ),
+                validator: (value) {
+                  final parsed = int.tryParse(value?.trim() ?? '');
+                  if (parsed == null || parsed < 1) {
+                    return 'Vui lòng nhập số tiền hợp lệ';
+                  }
+                  final ceiling = _ceiling;
+                  if (ceiling != null && parsed > ceiling) {
+                    return 'Không cao hơn giá niêm yết '
+                        '(${MoneyUtils.format(ceiling, currency: currency)} '
+                        'cho $_quantity sản phẩm)';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text('Số lượng', style: theme.textTheme.bodyMedium),
+                  ),
+                  IconButton(
+                    onPressed: _quantity > 1 ? () => _setQuantity(-1) : null,
+                    icon: const Icon(Icons.remove_circle_outline),
+                  ),
+                  Text('$_quantity', style: theme.textTheme.titleMedium),
+                  IconButton(
+                    onPressed: () => _setQuantity(1),
+                    icon: const Icon(Icons.add_circle_outline),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              TextFormField(
+                controller: _reasonController,
+                maxLines: 3,
+                minLines: 2,
+                decoration: const InputDecoration(
+                  labelText: 'Lý do (không bắt buộc)',
+                  hintText: 'Hiển thị cạnh mức giá bạn đề nghị',
+                  alignLabelWithHint: true,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       actions: [

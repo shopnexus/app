@@ -20,7 +20,8 @@ mixin _$CheckoutState {
 /// nó là draft. Thiếu nó thì route trả 400 `quote_source_invalid`, và màn hình
 /// chỉ thấy một danh sách rỗng nên nói nhầm thành "chưa có báo giá cho địa chỉ
 /// này".
- DraftOrder? get draft; ShippingQuotes? get shippingQuotes;/// The carrier slug the buyer is buying, always one `POST /shipping-quotes`
+ DraftOrder? get draft;/// Thỏa thuận thương lượng giá đã được chấp nhận khi thanh toán qua Offer
+ Offer? get offer; ShippingQuotes? get shippingQuotes;/// The carrier slug the buyer is buying, always one `POST /shipping-quotes`
 /// answered — never a label. Null until a quote has been asked for.
  String? get transportOption;/// The rails this deployment can charge on, and the one the buyer picked. Read from
 /// `GET /options?category=payment` rather than named here: a hardcoded slug is a
@@ -36,16 +37,16 @@ $CheckoutStateCopyWith<CheckoutState> get copyWith => _$CheckoutStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutState&&(identical(other.step, step) || other.step == step)&&const DeepCollectionEquality().equals(other.contacts, contacts)&&(identical(other.selectedContact, selectedContact) || other.selectedContact == selectedContact)&&const DeepCollectionEquality().equals(other.lines, lines)&&(identical(other.draft, draft) || other.draft == draft)&&(identical(other.shippingQuotes, shippingQuotes) || other.shippingQuotes == shippingQuotes)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption)&&const DeepCollectionEquality().equals(other.paymentOptions, paymentOptions)&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.note, note) || other.note == note)&&(identical(other.checkoutResult, checkoutResult) || other.checkoutResult == checkoutResult)&&(identical(other.paymentTransaction, paymentTransaction) || other.paymentTransaction == paymentTransaction)&&(identical(other.paymentSession, paymentSession) || other.paymentSession == paymentSession)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.agreeToTerms, agreeToTerms) || other.agreeToTerms == agreeToTerms));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutState&&(identical(other.step, step) || other.step == step)&&const DeepCollectionEquality().equals(other.contacts, contacts)&&(identical(other.selectedContact, selectedContact) || other.selectedContact == selectedContact)&&const DeepCollectionEquality().equals(other.lines, lines)&&(identical(other.draft, draft) || other.draft == draft)&&(identical(other.offer, offer) || other.offer == offer)&&(identical(other.shippingQuotes, shippingQuotes) || other.shippingQuotes == shippingQuotes)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption)&&const DeepCollectionEquality().equals(other.paymentOptions, paymentOptions)&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.note, note) || other.note == note)&&(identical(other.checkoutResult, checkoutResult) || other.checkoutResult == checkoutResult)&&(identical(other.paymentTransaction, paymentTransaction) || other.paymentTransaction == paymentTransaction)&&(identical(other.paymentSession, paymentSession) || other.paymentSession == paymentSession)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.agreeToTerms, agreeToTerms) || other.agreeToTerms == agreeToTerms));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,step,const DeepCollectionEquality().hash(contacts),selectedContact,const DeepCollectionEquality().hash(lines),draft,shippingQuotes,transportOption,const DeepCollectionEquality().hash(paymentOptions),paymentOption,note,checkoutResult,paymentTransaction,paymentSession,isLoading,errorMessage,agreeToTerms);
+int get hashCode => Object.hash(runtimeType,step,const DeepCollectionEquality().hash(contacts),selectedContact,const DeepCollectionEquality().hash(lines),draft,offer,shippingQuotes,transportOption,const DeepCollectionEquality().hash(paymentOptions),paymentOption,note,checkoutResult,paymentTransaction,paymentSession,isLoading,errorMessage,agreeToTerms);
 
 @override
 String toString() {
-  return 'CheckoutState(step: $step, contacts: $contacts, selectedContact: $selectedContact, lines: $lines, draft: $draft, shippingQuotes: $shippingQuotes, transportOption: $transportOption, paymentOptions: $paymentOptions, paymentOption: $paymentOption, note: $note, checkoutResult: $checkoutResult, paymentTransaction: $paymentTransaction, paymentSession: $paymentSession, isLoading: $isLoading, errorMessage: $errorMessage, agreeToTerms: $agreeToTerms)';
+  return 'CheckoutState(step: $step, contacts: $contacts, selectedContact: $selectedContact, lines: $lines, draft: $draft, offer: $offer, shippingQuotes: $shippingQuotes, transportOption: $transportOption, paymentOptions: $paymentOptions, paymentOption: $paymentOption, note: $note, checkoutResult: $checkoutResult, paymentTransaction: $paymentTransaction, paymentSession: $paymentSession, isLoading: $isLoading, errorMessage: $errorMessage, agreeToTerms: $agreeToTerms)';
 }
 
 
@@ -56,7 +57,7 @@ abstract mixin class $CheckoutStateCopyWith<$Res>  {
   factory $CheckoutStateCopyWith(CheckoutState value, $Res Function(CheckoutState) _then) = _$CheckoutStateCopyWithImpl;
 @useResult
 $Res call({
- CheckoutStep step, List<Contact> contacts, Contact? selectedContact, List<PurchaseLine> lines, DraftOrder? draft, ShippingQuotes? shippingQuotes, String? transportOption, List<Option> paymentOptions, String? paymentOption, String? note, CheckoutResult? checkoutResult, Transaction? paymentTransaction, PaymentSession? paymentSession, bool isLoading, String? errorMessage, bool agreeToTerms
+ CheckoutStep step, List<Contact> contacts, Contact? selectedContact, List<PurchaseLine> lines, DraftOrder? draft, Offer? offer, ShippingQuotes? shippingQuotes, String? transportOption, List<Option> paymentOptions, String? paymentOption, String? note, CheckoutResult? checkoutResult, Transaction? paymentTransaction, PaymentSession? paymentSession, bool isLoading, String? errorMessage, bool agreeToTerms
 });
 
 
@@ -73,14 +74,15 @@ class _$CheckoutStateCopyWithImpl<$Res>
 
 /// Create a copy of CheckoutState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? contacts = null,Object? selectedContact = freezed,Object? lines = null,Object? draft = freezed,Object? shippingQuotes = freezed,Object? transportOption = freezed,Object? paymentOptions = null,Object? paymentOption = freezed,Object? note = freezed,Object? checkoutResult = freezed,Object? paymentTransaction = freezed,Object? paymentSession = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? agreeToTerms = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? contacts = null,Object? selectedContact = freezed,Object? lines = null,Object? draft = freezed,Object? offer = freezed,Object? shippingQuotes = freezed,Object? transportOption = freezed,Object? paymentOptions = null,Object? paymentOption = freezed,Object? note = freezed,Object? checkoutResult = freezed,Object? paymentTransaction = freezed,Object? paymentSession = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? agreeToTerms = null,}) {
   return _then(_self.copyWith(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as CheckoutStep,contacts: null == contacts ? _self.contacts : contacts // ignore: cast_nullable_to_non_nullable
 as List<Contact>,selectedContact: freezed == selectedContact ? _self.selectedContact : selectedContact // ignore: cast_nullable_to_non_nullable
 as Contact?,lines: null == lines ? _self.lines : lines // ignore: cast_nullable_to_non_nullable
 as List<PurchaseLine>,draft: freezed == draft ? _self.draft : draft // ignore: cast_nullable_to_non_nullable
-as DraftOrder?,shippingQuotes: freezed == shippingQuotes ? _self.shippingQuotes : shippingQuotes // ignore: cast_nullable_to_non_nullable
+as DraftOrder?,offer: freezed == offer ? _self.offer : offer // ignore: cast_nullable_to_non_nullable
+as Offer?,shippingQuotes: freezed == shippingQuotes ? _self.shippingQuotes : shippingQuotes // ignore: cast_nullable_to_non_nullable
 as ShippingQuotes?,transportOption: freezed == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
 as String?,paymentOptions: null == paymentOptions ? _self.paymentOptions : paymentOptions // ignore: cast_nullable_to_non_nullable
 as List<Option>,paymentOption: freezed == paymentOption ? _self.paymentOption : paymentOption // ignore: cast_nullable_to_non_nullable
@@ -176,10 +178,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CheckoutStep step,  List<Contact> contacts,  Contact? selectedContact,  List<PurchaseLine> lines,  DraftOrder? draft,  ShippingQuotes? shippingQuotes,  String? transportOption,  List<Option> paymentOptions,  String? paymentOption,  String? note,  CheckoutResult? checkoutResult,  Transaction? paymentTransaction,  PaymentSession? paymentSession,  bool isLoading,  String? errorMessage,  bool agreeToTerms)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CheckoutStep step,  List<Contact> contacts,  Contact? selectedContact,  List<PurchaseLine> lines,  DraftOrder? draft,  Offer? offer,  ShippingQuotes? shippingQuotes,  String? transportOption,  List<Option> paymentOptions,  String? paymentOption,  String? note,  CheckoutResult? checkoutResult,  Transaction? paymentTransaction,  PaymentSession? paymentSession,  bool isLoading,  String? errorMessage,  bool agreeToTerms)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CheckoutState() when $default != null:
-return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_that.draft,_that.shippingQuotes,_that.transportOption,_that.paymentOptions,_that.paymentOption,_that.note,_that.checkoutResult,_that.paymentTransaction,_that.paymentSession,_that.isLoading,_that.errorMessage,_that.agreeToTerms);case _:
+return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_that.draft,_that.offer,_that.shippingQuotes,_that.transportOption,_that.paymentOptions,_that.paymentOption,_that.note,_that.checkoutResult,_that.paymentTransaction,_that.paymentSession,_that.isLoading,_that.errorMessage,_that.agreeToTerms);case _:
   return orElse();
 
 }
@@ -197,10 +199,10 @@ return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CheckoutStep step,  List<Contact> contacts,  Contact? selectedContact,  List<PurchaseLine> lines,  DraftOrder? draft,  ShippingQuotes? shippingQuotes,  String? transportOption,  List<Option> paymentOptions,  String? paymentOption,  String? note,  CheckoutResult? checkoutResult,  Transaction? paymentTransaction,  PaymentSession? paymentSession,  bool isLoading,  String? errorMessage,  bool agreeToTerms)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CheckoutStep step,  List<Contact> contacts,  Contact? selectedContact,  List<PurchaseLine> lines,  DraftOrder? draft,  Offer? offer,  ShippingQuotes? shippingQuotes,  String? transportOption,  List<Option> paymentOptions,  String? paymentOption,  String? note,  CheckoutResult? checkoutResult,  Transaction? paymentTransaction,  PaymentSession? paymentSession,  bool isLoading,  String? errorMessage,  bool agreeToTerms)  $default,) {final _that = this;
 switch (_that) {
 case _CheckoutState():
-return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_that.draft,_that.shippingQuotes,_that.transportOption,_that.paymentOptions,_that.paymentOption,_that.note,_that.checkoutResult,_that.paymentTransaction,_that.paymentSession,_that.isLoading,_that.errorMessage,_that.agreeToTerms);case _:
+return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_that.draft,_that.offer,_that.shippingQuotes,_that.transportOption,_that.paymentOptions,_that.paymentOption,_that.note,_that.checkoutResult,_that.paymentTransaction,_that.paymentSession,_that.isLoading,_that.errorMessage,_that.agreeToTerms);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +219,10 @@ return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CheckoutStep step,  List<Contact> contacts,  Contact? selectedContact,  List<PurchaseLine> lines,  DraftOrder? draft,  ShippingQuotes? shippingQuotes,  String? transportOption,  List<Option> paymentOptions,  String? paymentOption,  String? note,  CheckoutResult? checkoutResult,  Transaction? paymentTransaction,  PaymentSession? paymentSession,  bool isLoading,  String? errorMessage,  bool agreeToTerms)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CheckoutStep step,  List<Contact> contacts,  Contact? selectedContact,  List<PurchaseLine> lines,  DraftOrder? draft,  Offer? offer,  ShippingQuotes? shippingQuotes,  String? transportOption,  List<Option> paymentOptions,  String? paymentOption,  String? note,  CheckoutResult? checkoutResult,  Transaction? paymentTransaction,  PaymentSession? paymentSession,  bool isLoading,  String? errorMessage,  bool agreeToTerms)?  $default,) {final _that = this;
 switch (_that) {
 case _CheckoutState() when $default != null:
-return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_that.draft,_that.shippingQuotes,_that.transportOption,_that.paymentOptions,_that.paymentOption,_that.note,_that.checkoutResult,_that.paymentTransaction,_that.paymentSession,_that.isLoading,_that.errorMessage,_that.agreeToTerms);case _:
+return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_that.draft,_that.offer,_that.shippingQuotes,_that.transportOption,_that.paymentOptions,_that.paymentOption,_that.note,_that.checkoutResult,_that.paymentTransaction,_that.paymentSession,_that.isLoading,_that.errorMessage,_that.agreeToTerms);case _:
   return null;
 
 }
@@ -232,7 +234,7 @@ return $default(_that.step,_that.contacts,_that.selectedContact,_that.lines,_tha
 
 
 class _CheckoutState extends CheckoutState {
-  const _CheckoutState({this.step = CheckoutStep.address, final  List<Contact> contacts = const [], this.selectedContact, final  List<PurchaseLine> lines = const [], this.draft, this.shippingQuotes, this.transportOption, final  List<Option> paymentOptions = const [], this.paymentOption, this.note, this.checkoutResult, this.paymentTransaction, this.paymentSession, this.isLoading = false, this.errorMessage, this.agreeToTerms = true}): _contacts = contacts,_lines = lines,_paymentOptions = paymentOptions,super._();
+  const _CheckoutState({this.step = CheckoutStep.address, final  List<Contact> contacts = const [], this.selectedContact, final  List<PurchaseLine> lines = const [], this.draft, this.offer, this.shippingQuotes, this.transportOption, final  List<Option> paymentOptions = const [], this.paymentOption, this.note, this.checkoutResult, this.paymentTransaction, this.paymentSession, this.isLoading = false, this.errorMessage, this.agreeToTerms = true}): _contacts = contacts,_lines = lines,_paymentOptions = paymentOptions,super._();
   
 
 @override@JsonKey() final  CheckoutStep step;
@@ -258,6 +260,8 @@ class _CheckoutState extends CheckoutState {
 /// chỉ thấy một danh sách rỗng nên nói nhầm thành "chưa có báo giá cho địa chỉ
 /// này".
 @override final  DraftOrder? draft;
+/// Thỏa thuận thương lượng giá đã được chấp nhận khi thanh toán qua Offer
+@override final  Offer? offer;
 @override final  ShippingQuotes? shippingQuotes;
 /// The carrier slug the buyer is buying, always one `POST /shipping-quotes`
 /// answered — never a label. Null until a quote has been asked for.
@@ -294,16 +298,16 @@ _$CheckoutStateCopyWith<_CheckoutState> get copyWith => __$CheckoutStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutState&&(identical(other.step, step) || other.step == step)&&const DeepCollectionEquality().equals(other._contacts, _contacts)&&(identical(other.selectedContact, selectedContact) || other.selectedContact == selectedContact)&&const DeepCollectionEquality().equals(other._lines, _lines)&&(identical(other.draft, draft) || other.draft == draft)&&(identical(other.shippingQuotes, shippingQuotes) || other.shippingQuotes == shippingQuotes)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption)&&const DeepCollectionEquality().equals(other._paymentOptions, _paymentOptions)&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.note, note) || other.note == note)&&(identical(other.checkoutResult, checkoutResult) || other.checkoutResult == checkoutResult)&&(identical(other.paymentTransaction, paymentTransaction) || other.paymentTransaction == paymentTransaction)&&(identical(other.paymentSession, paymentSession) || other.paymentSession == paymentSession)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.agreeToTerms, agreeToTerms) || other.agreeToTerms == agreeToTerms));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutState&&(identical(other.step, step) || other.step == step)&&const DeepCollectionEquality().equals(other._contacts, _contacts)&&(identical(other.selectedContact, selectedContact) || other.selectedContact == selectedContact)&&const DeepCollectionEquality().equals(other._lines, _lines)&&(identical(other.draft, draft) || other.draft == draft)&&(identical(other.offer, offer) || other.offer == offer)&&(identical(other.shippingQuotes, shippingQuotes) || other.shippingQuotes == shippingQuotes)&&(identical(other.transportOption, transportOption) || other.transportOption == transportOption)&&const DeepCollectionEquality().equals(other._paymentOptions, _paymentOptions)&&(identical(other.paymentOption, paymentOption) || other.paymentOption == paymentOption)&&(identical(other.note, note) || other.note == note)&&(identical(other.checkoutResult, checkoutResult) || other.checkoutResult == checkoutResult)&&(identical(other.paymentTransaction, paymentTransaction) || other.paymentTransaction == paymentTransaction)&&(identical(other.paymentSession, paymentSession) || other.paymentSession == paymentSession)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.agreeToTerms, agreeToTerms) || other.agreeToTerms == agreeToTerms));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,step,const DeepCollectionEquality().hash(_contacts),selectedContact,const DeepCollectionEquality().hash(_lines),draft,shippingQuotes,transportOption,const DeepCollectionEquality().hash(_paymentOptions),paymentOption,note,checkoutResult,paymentTransaction,paymentSession,isLoading,errorMessage,agreeToTerms);
+int get hashCode => Object.hash(runtimeType,step,const DeepCollectionEquality().hash(_contacts),selectedContact,const DeepCollectionEquality().hash(_lines),draft,offer,shippingQuotes,transportOption,const DeepCollectionEquality().hash(_paymentOptions),paymentOption,note,checkoutResult,paymentTransaction,paymentSession,isLoading,errorMessage,agreeToTerms);
 
 @override
 String toString() {
-  return 'CheckoutState(step: $step, contacts: $contacts, selectedContact: $selectedContact, lines: $lines, draft: $draft, shippingQuotes: $shippingQuotes, transportOption: $transportOption, paymentOptions: $paymentOptions, paymentOption: $paymentOption, note: $note, checkoutResult: $checkoutResult, paymentTransaction: $paymentTransaction, paymentSession: $paymentSession, isLoading: $isLoading, errorMessage: $errorMessage, agreeToTerms: $agreeToTerms)';
+  return 'CheckoutState(step: $step, contacts: $contacts, selectedContact: $selectedContact, lines: $lines, draft: $draft, offer: $offer, shippingQuotes: $shippingQuotes, transportOption: $transportOption, paymentOptions: $paymentOptions, paymentOption: $paymentOption, note: $note, checkoutResult: $checkoutResult, paymentTransaction: $paymentTransaction, paymentSession: $paymentSession, isLoading: $isLoading, errorMessage: $errorMessage, agreeToTerms: $agreeToTerms)';
 }
 
 
@@ -314,7 +318,7 @@ abstract mixin class _$CheckoutStateCopyWith<$Res> implements $CheckoutStateCopy
   factory _$CheckoutStateCopyWith(_CheckoutState value, $Res Function(_CheckoutState) _then) = __$CheckoutStateCopyWithImpl;
 @override @useResult
 $Res call({
- CheckoutStep step, List<Contact> contacts, Contact? selectedContact, List<PurchaseLine> lines, DraftOrder? draft, ShippingQuotes? shippingQuotes, String? transportOption, List<Option> paymentOptions, String? paymentOption, String? note, CheckoutResult? checkoutResult, Transaction? paymentTransaction, PaymentSession? paymentSession, bool isLoading, String? errorMessage, bool agreeToTerms
+ CheckoutStep step, List<Contact> contacts, Contact? selectedContact, List<PurchaseLine> lines, DraftOrder? draft, Offer? offer, ShippingQuotes? shippingQuotes, String? transportOption, List<Option> paymentOptions, String? paymentOption, String? note, CheckoutResult? checkoutResult, Transaction? paymentTransaction, PaymentSession? paymentSession, bool isLoading, String? errorMessage, bool agreeToTerms
 });
 
 
@@ -331,14 +335,15 @@ class __$CheckoutStateCopyWithImpl<$Res>
 
 /// Create a copy of CheckoutState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? step = null,Object? contacts = null,Object? selectedContact = freezed,Object? lines = null,Object? draft = freezed,Object? shippingQuotes = freezed,Object? transportOption = freezed,Object? paymentOptions = null,Object? paymentOption = freezed,Object? note = freezed,Object? checkoutResult = freezed,Object? paymentTransaction = freezed,Object? paymentSession = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? agreeToTerms = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? step = null,Object? contacts = null,Object? selectedContact = freezed,Object? lines = null,Object? draft = freezed,Object? offer = freezed,Object? shippingQuotes = freezed,Object? transportOption = freezed,Object? paymentOptions = null,Object? paymentOption = freezed,Object? note = freezed,Object? checkoutResult = freezed,Object? paymentTransaction = freezed,Object? paymentSession = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? agreeToTerms = null,}) {
   return _then(_CheckoutState(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as CheckoutStep,contacts: null == contacts ? _self._contacts : contacts // ignore: cast_nullable_to_non_nullable
 as List<Contact>,selectedContact: freezed == selectedContact ? _self.selectedContact : selectedContact // ignore: cast_nullable_to_non_nullable
 as Contact?,lines: null == lines ? _self._lines : lines // ignore: cast_nullable_to_non_nullable
 as List<PurchaseLine>,draft: freezed == draft ? _self.draft : draft // ignore: cast_nullable_to_non_nullable
-as DraftOrder?,shippingQuotes: freezed == shippingQuotes ? _self.shippingQuotes : shippingQuotes // ignore: cast_nullable_to_non_nullable
+as DraftOrder?,offer: freezed == offer ? _self.offer : offer // ignore: cast_nullable_to_non_nullable
+as Offer?,shippingQuotes: freezed == shippingQuotes ? _self.shippingQuotes : shippingQuotes // ignore: cast_nullable_to_non_nullable
 as ShippingQuotes?,transportOption: freezed == transportOption ? _self.transportOption : transportOption // ignore: cast_nullable_to_non_nullable
 as String?,paymentOptions: null == paymentOptions ? _self._paymentOptions : paymentOptions // ignore: cast_nullable_to_non_nullable
 as List<Option>,paymentOption: freezed == paymentOption ? _self.paymentOption : paymentOption // ignore: cast_nullable_to_non_nullable

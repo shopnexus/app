@@ -14,6 +14,8 @@ class PurchaseLine {
     required this.quantity,
     this.cartItemId,
     this.listing,
+    this.customUnitPrice,
+    this.customTotal,
   });
 
   final String listingId;
@@ -25,12 +27,18 @@ class PurchaseLine {
 
   final ListingDetail? listing;
 
+  /// Used when checking out a negotiated offer with an agreed custom price
+  final int? customUnitPrice;
+  final int? customTotal;
+
   PurchaseLine withListing(ListingDetail? resolved) => PurchaseLine(
     listingId: listingId,
     variantId: variantId,
     quantity: quantity,
     cartItemId: cartItemId,
     listing: resolved,
+    customUnitPrice: customUnitPrice,
+    customTotal: customTotal,
   );
 
   Variant? get variant {
@@ -42,9 +50,9 @@ class PurchaseLine {
     return null;
   }
 
-  int? get unitPrice => variant?.price;
+  int? get unitPrice => customUnitPrice ?? variant?.price;
 
-  int get lineTotal => (unitPrice ?? 0) * quantity;
+  int get lineTotal => customTotal ?? ((unitPrice ?? 0) * quantity);
 
   String? get name => listing?.name;
 

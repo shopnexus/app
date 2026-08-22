@@ -110,7 +110,10 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/checkout',
         name: 'checkout',
-        builder: (context, state) => const CheckoutScreen(),
+        builder: (context, state) {
+          final offerId = state.uri.queryParameters['offer_id'];
+          return CheckoutScreen(offerId: offerId);
+        },
         routes: [
           // Sổ địa chỉ dùng lại nguyên vẹn, chỉ ở chế độ chọn — checkout không
           // còn định nghĩa lần thứ hai "một địa chỉ trông thế nào".

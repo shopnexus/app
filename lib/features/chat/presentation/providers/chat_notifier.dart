@@ -31,10 +31,8 @@ class ChatListNotifier extends _$ChatListNotifier {
   }
 
   void _listen() {
-    ref.listen<AsyncValue<RealtimeEvent>>(realtimeEventsProvider, (_, next) {
-      final event = next.value;
-      if (event != null) _apply(event);
-    });
+    final sub = ref.watch(realtimeClientProvider).events.listen(_apply);
+    ref.onDispose(sub.cancel);
 
     // Delivery is at-most-once with no cursor, so a socket that came back has to
     // be assumed to have missed something.
@@ -209,10 +207,8 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
   }
 
   void _listen() {
-    ref.listen<AsyncValue<RealtimeEvent>>(realtimeEventsProvider, (_, next) {
-      final event = next.value;
-      if (event != null) _apply(event);
-    });
+    final sub = ref.watch(realtimeClientProvider).events.listen(_apply);
+    ref.onDispose(sub.cancel);
 
     final subscription = ref
         .watch(realtimeClientProvider)
@@ -314,7 +310,9 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
       // The thread is on screen, so a message arriving in it has been read.
       unawaited(_markRead());
     }
-    if (incoming.offerId != null) unawaited(_resolvePendingOffers());
+    if (incoming.offerId != null) {
+      unawaited(_fetchAndApplyOffer(incoming.offerId!));
+    }
   }
 
   /// A deletion carries a ref, not an emptied entity: the body is gone, so the
@@ -357,22 +355,16 @@ class ChatDetailNotifier extends _$ChatDetailNotifier {
   void _applyOffer(Offer offer) {
     final current = state.value;
     if (current == null) return;
-    final relevant =
-        current.offers.containsKey(offer.id) ||
-        current.messages.any((message) => message.offerId == offer.id);
-    if (!relevant) return;
     state = AsyncValue.data(
       current.copyWith(offers: {...current.offers, offer.id: offer}),
     );
   }
 
-  Future<void> _resolvePendingOffers() async {
-    final current = state.value;
-    if (current == null) return;
-    final offers = await _resolveOffers(current.messages, current.offers);
-    final latest = state.value;
-    if (latest == null || offers.length == latest.offers.length) return;
-    state = AsyncValue.data(latest.copyWith(offers: offers));
+  Future<void> _fetchAndApplyOffer(String offerId) async {
+    try {
+      final offer = await ref.read(chatRepositoryProvider).offer(offerId);
+      _applyOffer(offer);
+    } catch (_) {}
   }
 
   Future<void> _markRead() async {

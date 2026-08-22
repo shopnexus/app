@@ -111,20 +111,18 @@ class SellerDashboardScreen extends ConsumerWidget {
                     : null,
               ),
               const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Xin chào, ${profile.name.isNotEmpty ? profile.name : (profile.username ?? 'Người bán')}',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      fontFamily: 'Manrope',
-                      color: theme.colorScheme.onSurface,
-                    ),
+              Expanded(
+                child: Text(
+                  'Xin chào, ${profile.name.isNotEmpty ? profile.name : (profile.username ?? 'Người bán')}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontFamily: 'Manrope',
+                    color: theme.colorScheme.onSurface,
                   ),
-                ],
+                ),
               ),
             ],
           ),

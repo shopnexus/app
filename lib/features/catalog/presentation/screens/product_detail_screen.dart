@@ -1361,7 +1361,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ),
               const SizedBox(height: 12.0),
               SizedBox(
-                height: 260.0,
+                height: 320.0,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -1369,7 +1369,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   itemBuilder: (context, index) {
                     final product = filteredList[index];
                     return Container(
-                      width: 150.0,
+                      width: 160.0,
                       margin: const EdgeInsets.only(right: 12.0),
                       child: SharedProductCard(
                         product: ProductCardView(

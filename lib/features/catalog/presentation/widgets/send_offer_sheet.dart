@@ -10,6 +10,7 @@ import 'package:shopnexus_flutter_app/core/utils/error_handler.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
+import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 
 /// Opens a negotiation on a variant: `POST /offers`. Agreeing charges nothing —
@@ -208,6 +209,10 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
       if (!mounted) return;
       Navigator.pop(context);
 
+      // Invalidate chat providers to ensure newest offer and messages load immediately
+      ref.invalidate(chatDetailProvider(conversation.id));
+      ref.invalidate(chatListProvider);
+
       // Chuyển hướng trực tiếp sang màn hình chat detail của cuộc trò chuyện này
       router.go('/chat/${conversation.id}');
 
@@ -290,7 +295,7 @@ class _SendOfferSheetState extends ConsumerState<SendOfferSheet> {
     final label = variantLabel(widget.variant);
 
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,

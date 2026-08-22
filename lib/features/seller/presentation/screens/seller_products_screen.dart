@@ -432,17 +432,22 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      MoneyUtils.format(
-                        listing.price,
-                        currency: listing.currency,
-                      ),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
-                        fontSize: 15,
+                    Expanded(
+                      child: Text(
+                        MoneyUtils.format(
+                          listing.price,
+                          currency: listing.currency,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 8),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

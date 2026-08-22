@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/checkout_line.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/checkout_offer_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/checkout_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/checkout_result.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/offer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/option.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/payment_session_status.dart';
@@ -17,6 +19,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/contact.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/draft_order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/contact_address_type.dart';
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
+import 'package:shopnexus_flutter_app/features/chat/data/repositories/chat_repository.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/models/checkout_model.dart';
 import 'package:shopnexus_flutter_app/features/checkout/data/repositories/checkout_repository.dart';
 
@@ -54,6 +57,9 @@ abstract class CheckoutState with _$CheckoutState {
     /// chỉ thấy một danh sách rỗng nên nói nhầm thành "chưa có báo giá cho địa chỉ
     /// này".
     DraftOrder? draft,
+
+    /// Thỏa thuận thương lượng giá đã được chấp nhận khi thanh toán qua Offer
+    Offer? offer,
     ShippingQuotes? shippingQuotes,
 
     /// The carrier slug the buyer is buying, always one `POST /shipping-quotes`
@@ -101,6 +107,7 @@ abstract class CheckoutState with _$CheckoutState {
   /// The listing states its own currency and `CheckoutRequest.currency` has to
   /// match it, so it is read off the listing rather than off a user preference.
   String get currency {
+    if (offer != null) return offer!.currency;
     for (final line in lines) {
       final stated = line.currency;
       if (stated != null) return stated;
@@ -182,6 +189,43 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     await _loadPaymentOptions();
     await _openDraft();
     await quoteShipping();
+  }
+
+  /// Khởi tạo luồng thanh toán cho thương lượng đã được chấp nhận
+  Future<void> initializeOffer(String offerId) async {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+    state = const CheckoutState(isLoading: true);
+
+    try {
+      final chatRepo = ref.read(chatRepositoryProvider);
+      final offer = await chatRepo.offer(offerId);
+
+      final line = PurchaseLine(
+        listingId: offer.listingId,
+        variantId: offer.variantId,
+        quantity: offer.quantity,
+        customTotal: offer.total,
+        customUnitPrice: offer.total ~/ offer.quantity,
+      );
+
+      state = CheckoutState(
+        offer: offer,
+        lines: [line],
+        isLoading: true,
+      );
+
+      await _resolveListings();
+      await _loadAddresses();
+      await _loadPaymentOptions();
+      await quoteShipping();
+    } catch (e) {
+      if (!ref.mounted) return;
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: ErrorHandler.getErrorMessage(e),
+      );
+    }
   }
 
   /// Mở phiên mua cho tin đăng đang thanh toán, đóng băng giá của người bán.
@@ -343,12 +387,14 @@ class CheckoutNotifier extends _$CheckoutNotifier {
   /// than only when the buyer touches the list.
   Future<void> quoteShipping() async {
     if (!ref.mounted) return;
-    // Không có phiên mua thì không có gì để báo giá. Gửi đi vẫn chỉ nhận 400, và
-    // một lỗi im lặng ở đây đọc ra thành "địa chỉ này không giao được".
-    if (state.draft == null) {
+    final draft = state.draft;
+    final offer = state.offer;
+
+    // Không có phiên mua hoặc offer thì không có gì để báo giá.
+    if (draft == null && offer == null) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Không mở được phiên mua cho tin đăng này.',
+        errorMessage: 'Không tìm thấy thông tin đơn hàng để báo giá.',
       );
       return;
     }
@@ -359,19 +405,21 @@ class CheckoutNotifier extends _$CheckoutNotifier {
           .read(checkoutRepositoryProvider)
           .getShippingQuotes(
             ShippingQuotesRequest(
-              // Đúng một nguồn, và ở đây là draft: trang này có thể có nhiều dòng
-              // (hai màu của cùng một tin), mà `variant_id` chỉ báo giá được một.
-              draftId: state.draft!.id,
+              // Đúng một nguồn: draftId hoặc offerId
+              draftId: draft?.id,
+              offerId: offer?.id,
               // Bỏ trống thì server dùng địa chỉ giao mặc định của người gọi — thứ
               // cho phép trang tin đăng báo giá trước khi có form nào được điền.
               contactId: state.selectedContact?.id,
-              lines: [
-                for (final line in state.lines)
-                  CheckoutLine(
-                    variantId: line.variantId,
-                    quantity: line.quantity,
-                  ),
-              ],
+              lines: offer != null
+                  ? null
+                  : [
+                      for (final line in state.lines)
+                        CheckoutLine(
+                          variantId: line.variantId,
+                          quantity: line.quantity,
+                        ),
+                    ],
             ),
           );
 
@@ -413,29 +461,41 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
     try {
       final checkoutRepo = ref.read(checkoutRepositoryProvider);
+      final draft = state.draft;
+      final offer = state.offer;
 
-      // Phiên mua đã mở lúc vào trang — cùng cái đã đóng băng giá cho báo giá vận
-      // chuyển. Mở thêm một cái nữa ở đây là đóng băng giá lần hai và bỏ rơi cái
-      // người mua đang nhìn.
-      final draft = state.draft!;
-
-      // 2. Checkout draft: the money is what creates the order, so this is the
-      //    sale. `currency` has to be the listing's own.
-      final checkoutResult = await checkoutRepo.checkoutDraft(
-        draft.id,
-        CheckoutRequest(
-          contactId: state.selectedContact!.id,
-          currency: draft.currency,
-          lines: [
-            for (final line in state.lines)
-              CheckoutLine(variantId: line.variantId, quantity: line.quantity),
-          ],
-          note: (state.note?.trim().isNotEmpty == true)
-              ? state.note!.trim()
-              : null,
-          transportOption: state.transportOption!,
-        ),
-      );
+      final CheckoutResult checkoutResult;
+      if (offer != null) {
+        checkoutResult = await checkoutRepo.checkoutOffer(
+          offer.id,
+          CheckoutOfferRequest(
+            contactId: state.selectedContact!.id,
+            note: (state.note?.trim().isNotEmpty == true)
+                ? state.note!.trim()
+                : null,
+            transportOption: state.transportOption!,
+          ),
+        );
+      } else {
+        checkoutResult = await checkoutRepo.checkoutDraft(
+          draft!.id,
+          CheckoutRequest(
+            contactId: state.selectedContact!.id,
+            currency: draft.currency,
+            lines: [
+              for (final line in state.lines)
+                CheckoutLine(
+                  variantId: line.variantId,
+                  quantity: line.quantity,
+                ),
+            ],
+            note: (state.note?.trim().isNotEmpty == true)
+                ? state.note!.trim()
+                : null,
+            transportOption: state.transportOption!,
+          ),
+        );
+      }
 
       // 3. Tender the session. A failure here leaves a session nobody paid, so it
       //    is shown rather than swallowed — the buyer has an order to pay for and
@@ -490,11 +550,9 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     if (state.listingIds.length > 1) {
       return 'Mỗi đơn hàng chỉ thanh toán được sản phẩm của một tin đăng. Vui lòng tách đơn.';
     }
-    // Sau cùng, vì `placeOrder` đọc thẳng `state.draft!`: không có phiên mua thì
-    // không có giá nào được đóng băng, và đó là một câu từ chối chứ không phải một
-    // cú crash.
-    if (state.draft == null) {
-      return 'Không mở được phiên mua cho tin đăng này. Vui lòng thử lại.';
+    // Không có phiên mua hoặc offer thì không có giá nào được đóng băng
+    if (state.draft == null && state.offer == null) {
+      return 'Không tìm thấy thông tin phiên mua hoặc thỏa thuận giá. Vui lòng thử lại.';
     }
     return null;
   }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -474,8 +475,30 @@ class OrderDetailScreen extends ConsumerWidget {
                           height: 64,
                           color: imageBgColor,
                           child:
-                              line.imageUrl != null && line.imageUrl!.isNotEmpty
-                              ? Image.network(line.imageUrl!, fit: BoxFit.cover)
+                              line.imageUrl != null &&
+                                  line.imageUrl!.isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl: line.imageUrl!,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      Shimmer.fromColors(
+                                        baseColor: isDarkMode
+                                            ? Colors.grey[800]!
+                                            : Colors.grey[200]!,
+                                        highlightColor: isDarkMode
+                                            ? Colors.grey[700]!
+                                            : Colors.grey[100]!,
+                                        child: Container(
+                                          color: isDarkMode
+                                              ? AppColors.darkSurface
+                                              : Colors.white,
+                                        ),
+                                      ),
+                                  errorWidget: (context, url, error) => Icon(
+                                    Icons.image_not_supported_outlined,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                )
                               : Icon(
                                   Icons.image_rounded,
                                   color: theme.colorScheme.onSurfaceVariant,

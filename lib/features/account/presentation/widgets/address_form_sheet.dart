@@ -37,11 +37,34 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
   /// than by the validator.
   String? _areaError;
 
+  String _normalizePhoneE164(String input) {
+    String cleaned = input.replaceAll(RegExp(r'[\s\-\(\)\.]'), '');
+    if (cleaned.startsWith('+')) {
+      return cleaned;
+    }
+    if (cleaned.startsWith('84')) {
+      return '+$cleaned';
+    }
+    if (cleaned.startsWith('0')) {
+      return '+84${cleaned.substring(1)}';
+    }
+    return '+84$cleaned';
+  }
+
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.contact?.fullName);
-    _phoneController = TextEditingController(text: widget.contact?.phone);
+    final initialPhone = widget.contact?.phone;
+    String displayPhone = '';
+    if (initialPhone != null) {
+      if (initialPhone.startsWith('+84')) {
+        displayPhone = '0${initialPhone.substring(3)}';
+      } else {
+        displayPhone = initialPhone;
+      }
+    }
+    _phoneController = TextEditingController(text: displayPhone);
     _addressController = TextEditingController(text: widget.contact?.address);
     _detailController = TextEditingController(
       text: widget.contact?.addressDetail,
@@ -87,7 +110,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
     }
 
     final name = _nameController.text.trim();
-    final phone = _phoneController.text.trim();
+    final phone = _normalizePhoneE164(_phoneController.text.trim());
     final address = _addressController.text.trim();
     final detail = _detailController.text.trim();
 
@@ -223,7 +246,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                   ),
                 ),
                 validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'Please enter recipient name'
+                    ? 'Vui lòng nhập họ tên người nhận'
                     : null,
               ),
               const SizedBox(height: 16),
@@ -239,6 +262,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                 ),
                 decoration: InputDecoration(
                   labelText: 'Số điện thoại',
+                  hintText: 'Ví dụ: 0912345678',
                   labelStyle: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
@@ -258,9 +282,17 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                     ),
                   ),
                 ),
-                validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'Please enter phone number'
-                    : null,
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Vui lòng nhập số điện thoại';
+                  }
+                  final e164 = _normalizePhoneE164(val.trim());
+                  final phoneRegex = RegExp(r'^\+84[1-9]\d{7,10}$');
+                  if (!phoneRegex.hasMatch(e164)) {
+                    return 'Số điện thoại không hợp lệ (VD: 0912345678)';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 
@@ -352,7 +384,7 @@ class _AddressFormSheetState extends ConsumerState<AddressFormSheet> {
                   ),
                 ),
                 validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'Please enter address'
+                    ? 'Vui lòng nhập số nhà, tên đường'
                     : null,
               ),
               const SizedBox(height: 16),

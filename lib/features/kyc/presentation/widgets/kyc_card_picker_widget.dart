@@ -143,26 +143,22 @@ class KycCardPickerWidget extends StatelessWidget {
     } else {
       previewContent = SizedBox.expand(
         child: Padding(
-          padding: const EdgeInsets.only(
-            top: 20,
-            bottom: 10,
-            left: 24,
-            right: 24,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: isDarkMode
                       ? theme.colorScheme.surfaceContainerHighest
                       : const Color(0xFFF1F5F9),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 26, color: theme.colorScheme.primary),
+                child: Icon(icon, size: 24, color: theme.colorScheme.primary),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Text(
                 title,
                 style: TextStyle(
@@ -172,7 +168,7 @@ class KycCardPickerWidget extends StatelessWidget {
                   color: theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 description,
                 textAlign: TextAlign.center,
@@ -209,7 +205,7 @@ class KycCardPickerWidget extends StatelessWidget {
       child: InkWell(
         onTap: isUploading ? null : () => _showImageSourceDialog(context),
         child: Container(
-          height: 160,
+          height: 168,
           width: double.infinity,
           padding: const EdgeInsets.all(8),
           child: Stack(

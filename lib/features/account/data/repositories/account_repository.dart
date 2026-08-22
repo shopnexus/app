@@ -408,7 +408,9 @@ class AccountRepository {
                 id: detail.id,
                 categoryId: detail.category.id,
                 condition: detail.condition,
-                cover: detail.images.isNotEmpty ? detail.images.first : null,
+                cover: detail.images.isNotEmpty
+                    ? detail.images.first
+                    : (detail.variants.expand((v) => v.images).firstOrNull),
                 createdAt: detail.createdAt,
                 currency: detail.currency,
                 deletedAt: detail.deletedAt,

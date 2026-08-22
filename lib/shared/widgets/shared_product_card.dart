@@ -221,111 +221,103 @@ class SharedProductCard extends StatelessWidget {
             ),
             // Thông tin chi tiết sản phẩm
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10.0,
-                vertical: 6.0,
-              ),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  // Tên sản phẩm hiển thị trọn vẹn toàn bộ chiều rộng thẻ
+                  Text(
+                    product.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontFamily: 'Inter',
+                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13.5,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 6.0),
+
+                  // Giá tiền chiếm trọn hàng riêng để không bao giờ bị che
+                  Text(
+                    MoneyUtils.format(product.price),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontFamily: 'Inter',
+                      color: isDarkMode
+                          ? AppColors.darkPrimary
+                          : const Color(0xFF005049),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6.0),
+
+                  // Hàng hiển thị Tình trạng sản phẩm & Badge mua hàng (Thương lượng/Mua ngay)
+                  Wrap(
+                    spacing: 6.0,
+                    runSpacing: 4.0,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Expanded(
-                        child: Text(
-                          product.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontFamily: 'Inter',
-                            color: theme.colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
-                            height: 1.25,
+                      if (product.condition != null)
+                        ConditionBadge(
+                          condition: product.condition!,
+                          dense: true,
+                        ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: product.negotiable
+                              ? theme.colorScheme.primary.withAlpha(25)
+                              : (isDarkMode
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : const Color(0xFFF1F5F9)),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: product.negotiable
+                                ? theme.colorScheme.primary.withAlpha(80)
+                                : Colors.transparent,
+                            width: 0.8,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          // Cạnh giá, vì tình trạng hàng là một nửa của cái giá:
-                          // 2 triệu cho hàng mới và cho hàng có lỗi là hai đề
-                          // nghị khác nhau.
-                          if (product.condition != null) ...[
-                            ConditionBadge(
-                              condition: product.condition!,
-                              dense: true,
-                            ),
-                            const SizedBox(height: 3.0),
-                          ],
-                          Text(
-                            MoneyUtils.format(product.price),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontFamily: 'Inter',
-                              color: isDarkMode
-                                  ? AppColors.darkPrimary
-                                  : const Color(0xFF005049),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 3.0),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              product.negotiable
+                                  ? Icons.handshake_outlined
+                                  : Icons.flash_on_rounded,
+                              size: 10,
                               color: product.negotiable
-                                  ? theme.colorScheme.primary.withAlpha(25)
-                                  : (isDarkMode
-                                        ? theme
-                                              .colorScheme
-                                              .surfaceContainerHighest
-                                        : const Color(0xFFF1F5F9)),
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              product.negotiable ? 'Thương lượng' : 'Mua ngay',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
                                 color: product.negotiable
-                                    ? theme.colorScheme.primary.withAlpha(80)
-                                    : Colors.transparent,
-                                width: 0.8,
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  product.negotiable
-                                      ? Icons.handshake_outlined
-                                      : Icons.flash_on_rounded,
-                                  size: 10,
-                                  color: product.negotiable
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  product.negotiable
-                                      ? 'Thương lượng'
-                                      : 'Mua ngay',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: product.negotiable
-                                        ? theme.colorScheme.primary
-                                        : theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
                   if (showVendor) ...[
-                    const SizedBox(height: 6.0),
+                    const SizedBox(height: 8.0),
                     Container(
                       height: 1.0,
                       color: isDarkMode
@@ -336,8 +328,8 @@ class SharedProductCard extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          width: 18.0,
-                          height: 18.0,
+                          width: 16.0,
+                          height: 16.0,
                           decoration: BoxDecoration(
                             color: isDarkMode
                                 ? theme.colorScheme.surfaceContainerHighest
@@ -347,7 +339,7 @@ class SharedProductCard extends StatelessWidget {
                           child: Center(
                             child: Icon(
                               Icons.person_rounded,
-                              size: 11,
+                              size: 10,
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),

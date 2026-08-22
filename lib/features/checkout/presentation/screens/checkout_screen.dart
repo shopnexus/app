@@ -12,7 +12,9 @@ import 'package:shopnexus_flutter_app/features/checkout/presentation/screens/pay
 import 'package:shopnexus_flutter_app/shared/widgets/escrow_notice.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
-  const CheckoutScreen({super.key});
+  final String? offerId;
+
+  const CheckoutScreen({super.key, this.offerId});
 
   @override
   ConsumerState<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -32,6 +34,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     _noteController = TextEditingController(
       text: ref.read(checkoutProvider).note ?? '',
     );
+    final offerId = widget.offerId;
+    if (offerId != null && offerId.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(checkoutProvider.notifier).initializeOffer(offerId);
+      });
+    }
   }
 
   @override
@@ -195,70 +203,113 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ? AppColors.darkPrimary.withAlpha(40)
         : const Color(0xFFE2E3E0);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardBgColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: cardBorderColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(isDarkMode ? 40 : 6),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+    return InkWell(
+      onTap: () => _pickAddress(context, ref),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: cardBgColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: contact == null
+                ? (isDarkMode
+                      ? const Color(0xFFEF4444).withAlpha(100)
+                      : const Color(0xFFBA1A1A).withAlpha(80))
+                : cardBorderColor,
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.location_on_outlined,
-            color: theme.colorScheme.primary,
-            size: 22,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: contact == null
-                ? Text(
-                    'Chưa chọn địa chỉ nhận hàng',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: isDarkMode
-                          ? const Color(0xFFEF4444)
-                          : const Color(0xFFBA1A1A),
-                    ),
-                  )
-                : Text(
-                    '${contact.fullName} · ${contact.phone}\n${contact.address}',
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 13,
-                      height: 1.4,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-          ),
-          const SizedBox(width: 8),
-          TextButton(
-            onPressed: () => _pickAddress(context, ref),
-            style: TextButton.styleFrom(
-              foregroundColor: theme.colorScheme.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(isDarkMode ? 40 : 6),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-            child: const Text(
-              'Đổi',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.location_on_outlined,
+              color: contact == null
+                  ? (isDarkMode
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFFBA1A1A))
+                  : theme.colorScheme.primary,
+              size: 22,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: contact == null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Chưa có địa chỉ nhận hàng',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode
+                                ? const Color(0xFFEF4444)
+                                : const Color(0xFFBA1A1A),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Nhấn để chọn hoặc thêm địa chỉ mới',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      '${contact.fullName} · ${contact.phone}\n${contact.address}',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        height: 1.4,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () => _pickAddress(context, ref),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: contact == null
+                    ? theme.colorScheme.primary
+                    : (isDarkMode
+                          ? theme.colorScheme.surfaceContainerHighest
+                          : const Color(0xFFF1F5F9)),
+                foregroundColor: contact == null
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSurface,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                minimumSize: const Size(0, 36),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                contact == null ? '+ Thêm' : 'Đổi',
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -269,10 +320,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   /// hàng được tính theo địa chỉ.
   Future<void> _pickAddress(BuildContext context, WidgetRef ref) async {
     final picked = await context.push<Contact>('/checkout/select-address');
-    if (picked == null) return;
-    await ref
-        .read(checkoutProvider.notifier)
-        .reloadAddresses(selectId: picked.id);
+    if (picked != null) {
+      await ref
+          .read(checkoutProvider.notifier)
+          .reloadAddresses(selectId: picked.id);
+    } else {
+      await ref.read(checkoutProvider.notifier).reloadAddresses();
+    }
   }
 
   // --- 2. DELIVERY SPEED CARD ---

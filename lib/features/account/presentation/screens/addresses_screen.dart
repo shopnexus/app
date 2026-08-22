@@ -82,17 +82,14 @@ class AddressesScreen extends ConsumerWidget {
           ),
           onPressed: () => context.pop(),
         ),
-        actions: selectMode
-            ? const []
-            : [
-                IconButton(
-                  icon: Icon(
-                    Icons.more_vert_rounded,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  onPressed: () {},
-                ),
-              ],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_rounded),
+            tooltip: 'Thêm địa chỉ mới',
+            color: theme.colorScheme.primary,
+            onPressed: () => _showAddressFormSheet(context, ref),
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -104,7 +101,9 @@ class AddressesScreen extends ConsumerWidget {
             child: contactsAsync.when(
               data: (contacts) {
                 if (contacts.isEmpty) {
-                  return const _EmptyAddresses();
+                  return _EmptyAddresses(
+                    onAddAddress: () => _showAddressFormSheet(context, ref),
+                  );
                 }
                 return ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -120,7 +119,7 @@ class AddressesScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     // Add New Address Button at the bottom
                     SizedBox(
-                      height: 52,
+                      height: 50,
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () => _showAddressFormSheet(context, ref),
@@ -134,7 +133,7 @@ class AddressesScreen extends ConsumerWidget {
                         ),
                         icon: const Icon(Icons.add_rounded, size: 20),
                         label: const Text(
-                          'Add New Address',
+                          'Thêm địa chỉ mới',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.bold,
@@ -517,42 +516,11 @@ class AddressesScreen extends ConsumerWidget {
       return;
     }
     if (!context.mounted) return;
-
-    final controller = TextEditingController();
     final code = await showDialog<String>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Nhập mã xác thực'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Chúng tôi vừa gửi mã tới ${contact.phone}.'),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'Mã 6 số',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Để sau'),
-          ),
-          ElevatedButton(
-            onPressed: () =>
-                Navigator.pop(dialogContext, controller.text.trim()),
-            child: const Text('Xác thực'),
-          ),
-        ],
-      ),
+      builder: (dialogContext) =>
+          _PhoneVerificationDialog(phone: contact.phone),
     );
-    controller.dispose();
     if (code == null || code.isEmpty || !context.mounted) return;
 
     try {
@@ -648,7 +616,9 @@ class AddressesScreen extends ConsumerWidget {
 }
 
 class _EmptyAddresses extends StatelessWidget {
-  const _EmptyAddresses();
+  final VoidCallback onAddAddress;
+
+  const _EmptyAddresses({required this.onAddAddress});
 
   @override
   Widget build(BuildContext context) {
@@ -684,9 +654,155 @@ class _EmptyAddresses extends StatelessWidget {
                 fontFamily: 'Inter',
               ),
             ),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: onAddAddress,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                ),
+                icon: const Icon(Icons.add_rounded, size: 20),
+                label: const Text(
+                  'Thêm địa chỉ mới',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PhoneVerificationDialog extends StatefulWidget {
+  final String phone;
+
+  const _PhoneVerificationDialog({required this.phone});
+
+  @override
+  State<_PhoneVerificationDialog> createState() =>
+      _PhoneVerificationDialogState();
+}
+
+class _PhoneVerificationDialogState extends State<_PhoneVerificationDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return AlertDialog(
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
+      title: Text(
+        'Nhập mã xác thực',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Inter',
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Chúng tôi vừa gửi mã tới ${widget.phone}.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _controller,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 4,
+                color: theme.colorScheme.onSurface,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Mã 6 số',
+                counterText: '',
+                filled: true,
+                fillColor: isDarkMode
+                    ? theme.colorScheme.surfaceContainerHighest
+                    : const Color(0xFFF4F4F1),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary,
+                    width: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            'Để sau',
+            style: TextStyle(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: const Text(
+            'Xác thực',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Inter',
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

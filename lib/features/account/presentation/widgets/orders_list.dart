@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -920,11 +921,31 @@ class _Thumbnail extends StatelessWidget {
             ? theme.colorScheme.surfaceContainerHighest
             : const Color(0xFFF1F5F9),
         child: url != null && url!.isNotEmpty
-            ? Image.network(url!, fit: BoxFit.cover)
-            : Icon(
-                Icons.image_rounded,
-                size: 20,
-                color: theme.colorScheme.onSurfaceVariant,
+            ? CachedNetworkImage(
+                imageUrl: url!,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+                  highlightColor:
+                      isDark ? Colors.grey[700]! : Colors.grey[100]!,
+                  child: Container(
+                    color: isDark ? AppColors.darkSurface : Colors.white,
+                  ),
+                ),
+                errorWidget: (context, url, error) => Center(
+                  child: Icon(
+                    Icons.image_not_supported_outlined,
+                    size: 20,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              )
+            : Center(
+                child: Icon(
+                  Icons.image_rounded,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
       ),
     );

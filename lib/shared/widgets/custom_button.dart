@@ -13,7 +13,7 @@ class CustomButton extends StatelessWidget {
     this.onPressed,
     this.isLoading = false,
     this.isPrimary = true,
-    this.height = 48.0,
+    this.height = 50.0,
   });
 
   @override
@@ -38,7 +38,11 @@ class CustomButton extends StatelessWidget {
             disabledBackgroundColor: disabledColor,
             disabledForegroundColor: onPrimaryColor.withAlpha(179),
             elevation: 0,
-            shape: const StadiumBorder(),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+            alignment: Alignment.center,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           child: isLoading
               ? SizedBox(
@@ -51,10 +55,13 @@ class CustomButton extends StatelessWidget {
                 )
               : Text(
                   text,
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
+                    height: 1.2,
+                    leadingDistribution: TextLeadingDistribution.even,
                   ),
                 ),
         ),
@@ -69,7 +76,11 @@ class CustomButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             foregroundColor: secondaryColor,
             side: BorderSide(color: secondaryColor, width: 1.5),
-            shape: const StadiumBorder(),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+            alignment: Alignment.center,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           child: isLoading
               ? SizedBox(
@@ -82,10 +93,13 @@ class CustomButton extends StatelessWidget {
                 )
               : Text(
                   text,
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
+                    height: 1.2,
+                    leadingDistribution: TextLeadingDistribution.even,
                   ),
                 ),
         ),

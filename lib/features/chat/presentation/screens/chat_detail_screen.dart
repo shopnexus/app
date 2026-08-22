@@ -19,6 +19,7 @@ import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_of
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/chat_product_card.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/counter_offer_dialog.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/widgets/share_product_sheet.dart';
+import 'package:shopnexus_flutter_app/features/checkout/presentation/providers/checkout_provider.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/upload_preview.dart';
 
 /// One thread. Chat has one thread per pair of accounts, so there is no product
@@ -181,6 +182,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
           // Không mời báo cáo bên kia trên một thread hỗ trợ: bên kia là sàn.
           if (conversation != null && !conversation.isTicketThread)
             PopupMenuButton<void>(
+              tooltip: '',
               icon: const Icon(Icons.more_vert_rounded),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -299,44 +301,56 @@ class _Header extends StatelessWidget {
       );
     }
 
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 18,
-          backgroundColor: theme.colorScheme.surfaceContainerHighest,
-          backgroundImage: (avatarUrl != null && avatarUrl.isNotEmpty)
-              ? NetworkImage(avatarUrl)
-              : null,
-          child: (avatarUrl == null || avatarUrl.isEmpty)
-              ? Text(
-                  conversation.participantName.isNotEmpty
-                      ? conversation.participantName[0].toUpperCase()
-                      : '?',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              : null,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            conversation.participantName,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+    return InkWell(
+      onTap: () {
+        final counterpartyId = conversation.counterparty.id;
+        if (counterpartyId.isNotEmpty) {
+          context.push('/users/$counterpartyId');
+        }
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              backgroundImage: (avatarUrl != null && avatarUrl.isNotEmpty)
+                  ? NetworkImage(avatarUrl)
+                  : null,
+              child: (avatarUrl == null || avatarUrl.isEmpty)
+                  ? Text(
+                      conversation.participantName.isNotEmpty
+                          ? conversation.participantName[0].toUpperCase()
+                          : '?',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  : null,
             ),
-            overflow: TextOverflow.ellipsis,
-          ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                conversation.participantName,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
 
-class _Thread extends StatelessWidget {
+class _Thread extends ConsumerWidget {
   const _Thread({
     required this.state,
     required this.controller,
@@ -352,7 +366,7 @@ class _Thread extends StatelessWidget {
   final Future<bool> Function(String offerId) onCancelOffer;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (state.messages.isEmpty) {
       return const Center(child: Text('Hãy bắt đầu cuộc trò chuyện.'));
     }
@@ -389,7 +403,12 @@ class _Thread extends StatelessWidget {
                 onCancel: offer == null ? null : () => onCancelOffer(offer.id),
                 onCheckout: offer == null
                     ? null
-                    : () => context.push('/checkout?offer_id=${offer.id}'),
+                    : () {
+                        ref
+                            .read(checkoutProvider.notifier)
+                            .initializeOffer(offer.id);
+                        context.push('/checkout?offer_id=${offer.id}');
+                      },
                 // Trang tin là nơi `POST /offers` mở ra — một cuộc mặc cả đã
                 // đóng không nhận thêm hành động nào.
                 onRenegotiate: offer == null
