@@ -91,6 +91,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/identity_verification_
 import 'package:shopnexus_flutter_app/api/generated/model/items_id_cancellation_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_history_entry.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_history_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_location.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_queue_page.dart';
@@ -98,6 +100,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing_suggestion.dar
 import 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request_interactions_inner.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_listing_id_reviews_post201_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listings_listing_id_reviews_summary_get200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listings_shelves_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_suggestions_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/login_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/login_request.dart';
@@ -109,6 +113,8 @@ import 'package:shopnexus_flutter_app/api/generated/model/me_get200_response.dar
 import 'package:shopnexus_flutter_app/api/generated/model/me_profile_patch200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/message.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/message_page.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/message_quote.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/message_reply_ref.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/moderation_note_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/money_by_currency.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/notification.dart';
@@ -129,6 +135,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/option_list.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_address_snapshot.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_feedback.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/order_history_entry.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_item_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_page.dart';
@@ -136,6 +143,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order_ref.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_summary_day.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_id_get200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/orders_id_history_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_id_transport_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_order_id_feedback_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_order_id_feedback_post201_response.dart';
@@ -152,6 +160,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/profile.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/public_account.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/publish_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/put_tag_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/rating_bucket.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refresh_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_page.dart';
@@ -165,11 +174,15 @@ import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review_reply.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/review_summary.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review_vote_tally.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reviews_id_replies_post201_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/reviews_id_vote_put200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/save_option_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/send_message_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shelf.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shelf_browse.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shelf_subject.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quote.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/shipping_quotes_post200_response.dart';
@@ -552,6 +565,13 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'ListingDetail':
       return ListingDetail.fromJson(value as Map<String, dynamic>)
           as ReturnType;
+    case 'ListingHistoryCode':
+    case 'ListingHistoryEntry':
+      return ListingHistoryEntry.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ListingHistoryPage':
+      return ListingHistoryPage.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'ListingLocation':
       return ListingLocation.fromJson(value as Map<String, dynamic>)
           as ReturnType;
@@ -576,6 +596,16 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'ListingsListingIDReviewsPost201Response':
       return ListingsListingIDReviewsPost201Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ListingsListingIDReviewsSummaryGet200Response':
+      return ListingsListingIDReviewsSummaryGet200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ListingsShelvesGet200Response':
+      return ListingsShelvesGet200Response.fromJson(
             value as Map<String, dynamic>,
           )
           as ReturnType;
@@ -612,6 +642,11 @@ ReturnType deserialize<ReturnType, BaseType>(
       return Message.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'MessagePage':
       return MessagePage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'MessageQuote':
+      return MessageQuote.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'MessageReplyRef':
+      return MessageReplyRef.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'MessageType':
     case 'ModerationNoteRequest':
       return ModerationNoteRequest.fromJson(value as Map<String, dynamic>)
@@ -672,6 +707,9 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'OrderFeedback':
       return OrderFeedback.fromJson(value as Map<String, dynamic>)
           as ReturnType;
+    case 'OrderHistoryEntry':
+      return OrderHistoryEntry.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'OrderItem':
       return OrderItem.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'OrderItemPage':
@@ -689,6 +727,11 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'OrdersIdGet200Response':
       return OrdersIdGet200Response.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'OrdersIdHistoryGet200Response':
+      return OrdersIdHistoryGet200Response.fromJson(
+            value as Map<String, dynamic>,
+          )
           as ReturnType;
     case 'OrdersIdTransportGet200Response':
       return OrdersIdTransportGet200Response.fromJson(
@@ -749,6 +792,8 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'PutTagRequest':
       return PutTagRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;
+    case 'RatingBucket':
+      return RatingBucket.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'RefreshRequest':
       return RefreshRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;
@@ -783,6 +828,9 @@ ReturnType deserialize<ReturnType, BaseType>(
       return ReviewPage.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'ReviewReply':
       return ReviewReply.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ReviewSummary':
+      return ReviewSummary.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'ReviewVoteTally':
       return ReviewVoteTally.fromJson(value as Map<String, dynamic>)
           as ReturnType;
@@ -800,6 +848,13 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'SendMessageRequest':
       return SendMessageRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;
+    case 'Shelf':
+      return Shelf.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ShelfBrowse':
+      return ShelfBrowse.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ShelfReason':
+    case 'ShelfSubject':
+      return ShelfSubject.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'ShippingQuote':
       return ShippingQuote.fromJson(value as Map<String, dynamic>)
           as ReturnType;

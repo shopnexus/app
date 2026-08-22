@@ -18,10 +18,6 @@ UpdateListingRequest _$UpdateListingRequestFromJson(
         (v) => (v as List<dynamic>?)?.map((e) => e as String).toList(),
       ),
       categoryId: $checkedConvert('category_id', (v) => v as String?),
-      clearFeaturedVariantId: $checkedConvert(
-        'clear_featured_variant_id',
-        (v) => v as bool?,
-      ),
       condition: $checkedConvert(
         'condition',
         (v) => $enumDecodeNullable(_$ListingConditionEnumMap, v),
@@ -51,7 +47,6 @@ UpdateListingRequest _$UpdateListingRequestFromJson(
   },
   fieldKeyMap: const {
     'categoryId': 'category_id',
-    'clearFeaturedVariantId': 'clear_featured_variant_id',
     'featuredVariantId': 'featured_variant_id',
     'priceMode': 'price_mode',
   },
@@ -62,7 +57,6 @@ Map<String, dynamic> _$UpdateListingRequestToJson(
 ) => <String, dynamic>{
   'attachments': ?instance.attachments,
   'category_id': ?instance.categoryId,
-  'clear_featured_variant_id': ?instance.clearFeaturedVariantId,
   'condition': ?_$ListingConditionEnumMap[instance.condition],
   'description': ?instance.description,
   'featured_variant_id': ?instance.featuredVariantId,

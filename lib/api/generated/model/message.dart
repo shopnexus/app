@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:shopnexus_flutter_app/api/generated/model/message_quote.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/message_type.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
@@ -39,6 +40,8 @@ class Message {
     required this.id,
 
     required this.refs,
+
+    required this.replyTo,
 
     required this.senderId,
 
@@ -81,6 +84,10 @@ class Message {
   @JsonKey(name: r'refs', required: true, includeIfNull: false)
   final Map<String, Object> refs;
 
+  /// The message this one answers, resolved. Null on an ordinary message.
+  @JsonKey(name: r'reply_to', required: true, includeIfNull: true)
+  final MessageQuote? replyTo;
+
   /// Null on a system message, and null on a support reply seen by the requester — see `from_support`, which is how the two are told apart.
   @JsonKey(name: r'sender_id', required: true, includeIfNull: true)
   final String? senderId;
@@ -102,6 +109,7 @@ class Message {
           other.fromSupport == fromSupport &&
           other.id == id &&
           other.refs == refs &&
+          other.replyTo == replyTo &&
           other.senderId == senderId &&
           other.type == type;
 
@@ -117,6 +125,7 @@ class Message {
       fromSupport.hashCode +
       id.hashCode +
       refs.hashCode +
+      (replyTo == null ? 0 : replyTo.hashCode) +
       (senderId == null ? 0 : senderId.hashCode) +
       type.hashCode;
 

@@ -61,12 +61,12 @@ class NotificationsController extends _$NotificationsController {
     }
   }
 
-  /// Marks everything created at or before [upTo] read — the feed has no per-row
-  /// id, so a row is its own bound. Omit it to mark the whole feed.
-  Future<void> markRead({DateTime? upTo}) async {
+  /// Marks [ids] read, or everything created at or before [upTo], or — with
+  /// neither — the whole feed. Chỉ truyền một trong hai; route từ chối cả hai.
+  Future<void> markRead({List<String>? ids, DateTime? upTo}) async {
     await ref
         .read(accountRepositoryProvider)
-        .markNotificationsRead(before: upTo);
+        .markNotificationsRead(ids: ids, before: upTo);
     // `ref` sau một `await` cũng là dùng Ref: nếu màn đã đóng, invalidate ở đây
     // ném đúng lỗi "Ref ... after it has been disposed" — và cái đã đọc thì vẫn
     // đã đọc trên server, nên không mất gì khi bỏ qua.

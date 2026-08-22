@@ -18,9 +18,11 @@ import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.
 import 'package:shopnexus_flutter_app/api/generated/model/create_variant_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/error.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listing_history_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_interactions_post_request.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listings_shelves_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_suggestions_post200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/publish_listing_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/suggest_listing_request.dart';
@@ -229,6 +231,7 @@ class CatalogApi {
   /// * [categoryId]
   /// * [tag]
   /// * [sellerId]
+  /// * [similarTo] - \"More like this one\": rank by that listing's own stored embedding. The listing itself is excluded — its vector is its own nearest neighbour — and one that the embedding pass has not reached yet degrades to the newest of the catalogue rather than answering nothing.  Cheaper as well as more accurate than the text search it replaces. Spelling this as `q=<the listing's name>` ran the whole query-understanding stage, model call included, once per page view, to rediscover a vector that was already in the database — and ranked by the *words* of the title, which puts a phone case beside a phone.  It is a ranking, so it cannot share a request with another one: not with `q`, not with a `sort` other than `relevance`, and not with `mine` or `favorited`, which are sets the caller already chose.
   /// * [condition]
   /// * [minPrice]
   /// * [maxPrice]
@@ -261,6 +264,7 @@ class CatalogApi {
     String? categoryId,
     String? tag,
     String? sellerId,
+    String? similarTo,
     ListingCondition? condition,
     int? minPrice,
     int? maxPrice,
@@ -304,6 +308,7 @@ class CatalogApi {
       if (categoryId != null) r'category_id': categoryId,
       if (tag != null) r'tag': tag,
       if (sellerId != null) r'seller_id': sellerId,
+      if (similarTo != null) r'similar_to': similarTo,
       if (condition != null) r'condition': condition,
       if (minPrice != null) r'min_price': minPrice,
       if (maxPrice != null) r'max_price': maxPrice,
@@ -488,6 +493,98 @@ class CatalogApi {
     }
 
     return Response<AdminListingsIdApprovalPost200Response>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// What has happened to this listing
+  /// The listing&#39;s own trail, newest first: it being posted, every edit, every publication, and every decision staff made about it. &#x60;version&#x60; is the trail&#39;s counter for this listing — 1 is its creation — and it never repeats.  Two readers, one route: the seller who owns the listing, and staff. They are not answered the same rows. A moderator is &#x60;staff&#x60; to a seller and nothing more — &#x60;actor&#x60; is null and only staff read the account behind it — and the words moderators write for each other stay theirs: a takedown&#39;s full reason is answered to the seller only when the moderator chose to notify them (the same choice &#x60;takedown_reason&#x60; on the listing reflects), and an approval note never is.  An edit names the fields it touched rather than their values. The values are the listing, and a second copy of them in the trail is one that can drift from it.
+  ///
+  /// Parameters:
+  /// * [id] - The opaque id. History addresses the listing, never its public slug.
+  /// * [page] - 1-based page number.
+  /// * [limit]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [ListingHistoryPage] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<ListingHistoryPage>> listingsIdHistoryGet({
+    required String id,
+    int? page = 1,
+    int? limit = 20,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/listings/{id}/history'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      if (page != null) r'page': page,
+      if (limit != null) r'limit': limit,
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    ListingHistoryPage? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<ListingHistoryPage, ListingHistoryPage>(
+              rawData,
+              'ListingHistoryPage',
+              growable: true,
+            );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<ListingHistoryPage>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -1039,6 +1136,87 @@ class CatalogApi {
     }
 
     return Response<AdminListingsIdApprovalPost200Response>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// The home page, as shelves
+  /// Several short rows instead of one ranked page, each carrying the reason it is on the page: what you looked at last, one row per taste the account&#39;s behaviour points at, and what the marketplace as a whole is doing.  Composed here rather than by the client because the interesting half cannot be composed anywhere else. A personalised feed ranks against four **interest slots** — directions in embedding space, recomputed from what the account saved and clicked — and &#x60;sort&#x3D;recommended&#x60; *blends* them, so a reader gets one page and no way to tell which of their tastes produced which card. Each slot is a row here, named by the category nearest its vector, which is the only honest label a vector has. The slots themselves are not published and will not be.  Nothing is invented for this. A slot&#39;s row is the personalised feed handed one interest instead of four — the same retrieval, restricted — and the naming is the ranking &#x60;GET /categories?near&#x3D;&#x60; already answers with.  Titles are not sent. &#x60;reason&#x60; and &#x60;subject&#x60; are, and the sentence is the client&#39;s — every other enum on this API is localised there, and a title from the server would be the one string a second language could not translate.  A listing appears on at most one shelf: rows are built in the order they are returned and each excludes what the rows above it already showed, because \&quot;vì bạn đã xem\&quot; and \&quot;đang là xu hướng\&quot; showing the same twelve cards is one row wearing two headings. A row that comes back with fewer than three listings is dropped rather than rendered — a rail of two cards reads as a failed request. Both are why the response is a list of whatever the page turned out to have, not a fixed set a client can index into.  Anonymous is a shorter page, not an error: there is no account to have interests, so only the marketplace&#39;s own rows come back.
+  ///
+  /// Parameters:
+  /// * [limit] - Cards per shelf, not for the response. How many shelves there are is the server's answer rather than the client's request.
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [ListingsShelvesGet200Response] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<ListingsShelvesGet200Response>> listingsShelvesGet({
+    int? limit = 12,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/listings/shelves';
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      if (limit != null) r'limit': limit,
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    ListingsShelvesGet200Response? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ListingsShelvesGet200Response,
+              ListingsShelvesGet200Response
+            >(rawData, 'ListingsShelvesGet200Response', growable: true);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<ListingsShelvesGet200Response>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

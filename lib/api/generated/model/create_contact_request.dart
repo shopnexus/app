@@ -108,15 +108,19 @@ class CreateContactRequest {
   @JsonKey(name: r'postal_code', required: false, includeIfNull: false)
   final String? postalCode;
 
+  /// A province code from /administrative-areas. It and the ward code must name a real pair, or the request is 400.
   @JsonKey(name: r'province_code', required: true, includeIfNull: false)
   final String provinceCode;
 
+  /// Ignored: the name is resolved from the code against /administrative-areas, so two addresses with one code cannot disagree. Still required, so a client that has the name need not look it up to send a valid body.
   @JsonKey(name: r'province_name', required: true, includeIfNull: false)
   final String provinceName;
 
+  /// A ward code from /administrative-areas, under the province named above.
   @JsonKey(name: r'ward_code', required: true, includeIfNull: false)
   final String wardCode;
 
+  /// Ignored: the name is resolved from the code against /administrative-areas, so two addresses with one code cannot disagree. Still required, so a client that has the name need not look it up to send a valid body.
   @JsonKey(name: r'ward_name', required: true, includeIfNull: false)
   final String wardName;
 

@@ -87,3 +87,22 @@ class RaiseTicket extends _$RaiseTicket {
     }
   }
 }
+
+/// Ticket theo thread của nó, để một hàng trong hộp thư tự gọi được tên mình.
+///
+/// Bên kia của một thread hỗ trợ là cả sàn, nên tên đối phương không nói được gì:
+/// hàng ấy phải mang chủ đề của yêu cầu và trạng thái của nó. Một lượt đọc cho cả
+/// danh sách — ticket là một hàng ở module khác, còn cuộc trò chuyện chỉ mang id
+/// của nó.
+///
+/// Ticket chưa có `conversation_id` thì không vào map: nó chưa có thread nào để
+/// đặt tên cho.
+@riverpod
+Future<Map<String, Ticket>> ticketsByConversation(Ref ref) async {
+  final tickets = await ref.watch(ticketListProvider().future);
+  return {
+    for (final ticket in tickets)
+      if (ticket.conversationId != null && ticket.conversationId!.isNotEmpty)
+        ticket.conversationId!: ticket,
+  };
+}

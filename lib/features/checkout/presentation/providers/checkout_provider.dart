@@ -473,7 +473,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
   /// What stops this order, in the buyer's words, or null when nothing does.
   String? _refusal() {
     if (!state.agreeToTerms) {
-      return 'Vui lòng đồng ý với Điều khoản dịch vụ & Chính sách mua hàng trước khi thanh toán!';
+      return 'Vui lòng đồng ý với Điều khoản sử dụng & Chính sách bảo mật trước khi thanh toán!';
     }
     if (state.selectedContact == null) {
       return 'Vui lòng chọn địa chỉ nhận hàng';

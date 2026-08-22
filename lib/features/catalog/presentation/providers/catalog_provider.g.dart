@@ -519,3 +519,62 @@ abstract class _$RecentSearches extends $Notifier<List<String>> {
     element.handleValue(ref, created);
   }
 }
+
+/// Các kệ của trang chủ.
+///
+/// Đọc [authProvider] chứ không chỉ gọi một lần: kệ của một người là bốn hướng sở
+/// thích của *người đó*, nên đăng nhập hay đăng xuất là một trang chủ khác, không
+/// phải cùng một trang chủ với cái tên khác. Khách chưa đăng nhập nhận trang ngắn
+/// hơn — route trả về mấy hàng của cả sàn, không trả lỗi.
+
+@ProviderFor(homeShelves)
+const homeShelvesProvider = HomeShelvesProvider._();
+
+/// Các kệ của trang chủ.
+///
+/// Đọc [authProvider] chứ không chỉ gọi một lần: kệ của một người là bốn hướng sở
+/// thích của *người đó*, nên đăng nhập hay đăng xuất là một trang chủ khác, không
+/// phải cùng một trang chủ với cái tên khác. Khách chưa đăng nhập nhận trang ngắn
+/// hơn — route trả về mấy hàng của cả sàn, không trả lỗi.
+
+final class HomeShelvesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Shelf>>,
+          List<Shelf>,
+          FutureOr<List<Shelf>>
+        >
+    with $FutureModifier<List<Shelf>>, $FutureProvider<List<Shelf>> {
+  /// Các kệ của trang chủ.
+  ///
+  /// Đọc [authProvider] chứ không chỉ gọi một lần: kệ của một người là bốn hướng sở
+  /// thích của *người đó*, nên đăng nhập hay đăng xuất là một trang chủ khác, không
+  /// phải cùng một trang chủ với cái tên khác. Khách chưa đăng nhập nhận trang ngắn
+  /// hơn — route trả về mấy hàng của cả sàn, không trả lỗi.
+  const HomeShelvesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'homeShelvesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$homeShelvesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Shelf>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Shelf>> create(Ref ref) {
+    return homeShelves(ref);
+  }
+}
+
+String _$homeShelvesHash() => r'f285ca8ca15c0c904c9e3daf30761bc2fbe912f2';

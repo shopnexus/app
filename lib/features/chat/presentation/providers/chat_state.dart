@@ -14,22 +14,39 @@ abstract class ChatListState with _$ChatListState {
 
   const ChatListState._();
 
-  /// A ticket's thread is read in the help centre, so it never appears here —
-  /// `ticket_id` on the row is what tells the two apart.
-  List<Conversation> get inboxConversations => conversations
+  /// Cuộc trò chuyện mua bán: `ticket_id` trống. Hai tab của hộp thư chia nhau
+  /// đúng trên trường đó — không phải hai lượt đọc, cùng một danh sách.
+  List<Conversation> get tradeConversations => conversations
       .where((conversation) => !conversation.isTicketThread)
       .toList();
 
-  /// Filtering is local to what is already loaded — the inbox route has no search
-  /// parameter, so this narrows the page on screen rather than querying.
-  List<Conversation> get filteredConversations {
+  /// Thread của các yêu cầu hỗ trợ. Chúng đọc *ở đây*, không ở một màn riêng: một
+  /// ticket là một cuộc trò chuyện, và đưa người ta đi chỗ khác để trả lời nó là
+  /// một chuyến ra khỏi hộp thư rồi lại vào.
+  List<Conversation> get supportConversations => conversations
+      .where((conversation) => conversation.isTicketThread)
+      .toList();
+
+  /// Lọc trong những gì đã nạp — route hộp thư không có tham số tìm kiếm, nên đây
+  /// là thu hẹp trang đang trên màn chứ không phải một truy vấn.
+  ///
+  /// [titles] là chữ *thêm* để khớp cho mỗi cuộc trò chuyện, theo id: hàng hỗ trợ
+  /// được đặt tên bằng chủ đề của ticket chứ không bằng tên đối phương (bên kia là
+  /// cả sàn), nên tìm theo cái tên đang hiện thì phải tìm được chủ đề đó.
+  List<Conversation> filtered({
+    required bool support,
+    Map<String, String> titles = const {},
+  }) {
+    final source = support ? supportConversations : tradeConversations;
     final query = searchQuery.trim().toLowerCase();
-    final inbox = inboxConversations;
-    if (query.isEmpty) return inbox;
-    return inbox.where((conversation) {
+    if (query.isEmpty) return source;
+    return source.where((conversation) {
       final name = conversation.participantName.toLowerCase();
       final lastMessage = (conversation.lastMessageText ?? '').toLowerCase();
-      return name.contains(query) || lastMessage.contains(query);
+      final title = (titles[conversation.id] ?? '').toLowerCase();
+      return name.contains(query) ||
+          lastMessage.contains(query) ||
+          title.contains(query);
     }).toList();
   }
 }

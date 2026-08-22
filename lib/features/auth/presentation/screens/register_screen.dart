@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -359,13 +360,40 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                       }
                                     },
                             ),
+                            // Hai cái tên này giờ mở ra được. Bắt người ta đồng ý
+                            // với một văn bản không có đường nào đọc là xin một cái
+                            // tick chứ không phải xin sự đồng ý.
                             Expanded(
-                              child: Text(
-                                'Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 14,
-                                  color: labelColor,
+                              child: Text.rich(
+                                TextSpan(
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    color: labelColor,
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Tôi đồng ý với '),
+                                    TextSpan(
+                                      text: 'Điều khoản sử dụng',
+                                      style: TextStyle(
+                                        color: primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => context.push('/terms'),
+                                    ),
+                                    const TextSpan(text: ' và '),
+                                    TextSpan(
+                                      text: 'Chính sách bảo mật',
+                                      style: TextStyle(
+                                        color: primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () =>
+                                            context.push('/privacy'),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

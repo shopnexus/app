@@ -14,14 +14,18 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) =>
         $checkKeys(
           json,
           requiredKeys: const [
+            'body',
             'category',
             'created_at',
-            'payload',
+            'href',
+            'id',
+            'kind',
             'read_at',
             'title',
           ],
         );
         final val = Notification(
+          body: $checkedConvert('body', (v) => v as String),
           category: $checkedConvert(
             'category',
             (v) => $enumDecode(_$NotificationCategoryEnumMap, v),
@@ -30,12 +34,9 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) =>
             'created_at',
             (v) => DateTime.parse(v as String),
           ),
-          payload: $checkedConvert(
-            'payload',
-            (v) => (v as Map<String, dynamic>).map(
-              (k, e) => MapEntry(k, e as Object),
-            ),
-          ),
+          href: $checkedConvert('href', (v) => v as String),
+          id: $checkedConvert('id', (v) => v as String),
+          kind: $checkedConvert('kind', (v) => v as String),
           readAt: $checkedConvert(
             'read_at',
             (v) => v == null ? null : DateTime.parse(v as String),
@@ -49,9 +50,12 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$NotificationToJson(Notification instance) =>
     <String, dynamic>{
+      'body': instance.body,
       'category': _$NotificationCategoryEnumMap[instance.category]!,
       'created_at': instance.createdAt.toIso8601String(),
-      'payload': instance.payload,
+      'href': instance.href,
+      'id': instance.id,
+      'kind': instance.kind,
       'read_at': instance.readAt?.toIso8601String(),
       'title': instance.title,
     };

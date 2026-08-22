@@ -41,7 +41,7 @@ class Refund {
     required this.status,
   });
 
-  /// The buyer's evidence, topped up until the case closes. Theirs alone: this is the claim being made, not a shared file — the seller's answer lives on the `refund-dispute` ticket they open, so the two sides stay legible apart.
+  /// The buyer's evidence, topped up until the case closes. Theirs alone: this is the claim being made, not a shared file — the seller's answer lives on the `refund-dispute` ticket they open, so the two sides stay legible apart. Each resource appears once, in the order it was first submitted. Evidence is a set rather than a log of submissions, so a client may key a list on the resource id — and a photo count read off this array is the number of photos the case actually carries.
   @JsonKey(name: r'attachments', required: true, includeIfNull: false)
   final List<Resource> attachments;
 

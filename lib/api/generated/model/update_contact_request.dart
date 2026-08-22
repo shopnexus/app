@@ -120,12 +120,14 @@ class UpdateContactRequest {
   @JsonKey(name: r'province_code', required: false, includeIfNull: false)
   final String? provinceCode;
 
+  /// Ignored: the name is resolved from the code against /administrative-areas, so two addresses with one code cannot disagree.
   @JsonKey(name: r'province_name', required: false, includeIfNull: false)
   final String? provinceName;
 
   @JsonKey(name: r'ward_code', required: false, includeIfNull: false)
   final String? wardCode;
 
+  /// Ignored: the name is resolved from the code against /administrative-areas, so two addresses with one code cannot disagree.
   @JsonKey(name: r'ward_name', required: false, includeIfNull: false)
   final String? wardName;
 

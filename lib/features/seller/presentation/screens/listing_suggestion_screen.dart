@@ -17,6 +17,7 @@ import 'package:shopnexus_flutter_app/features/seller/data/models/listing_draft.
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/listing_suggestion_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_products_provider.dart';
 import 'package:shopnexus_flutter_app/features/kyc/presentation/providers/selling_gate_provider.dart';
+import 'package:shopnexus_flutter_app/features/seller/presentation/widgets/tag_picker_sheet.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/condition_badge.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/upload_preview.dart';
 import 'package:shopnexus_flutter_app/shared/widgets/video_preview.dart';
@@ -161,6 +162,8 @@ class _ListingSuggestionScreenState
                     const SizedBox(height: 16),
                   ],
                   _listingForm(state),
+                  const SizedBox(height: 24),
+                  _previewSection(state),
                 ],
               ],
             ),
@@ -513,6 +516,9 @@ class _ListingSuggestionScreenState
           maxLength: 200,
           style: TextStyle(color: theme.colorScheme.onSurface),
           decoration: _inputDecoration(hint: 'Ví dụ: iPhone 12 64GB xanh'),
+          // Thẻ xem trước cắt tên ở hai dòng, nên nó phải chạy theo từng chữ —
+          // biết tên bị cắt ở đâu *sau khi* đăng thì đã muộn.
+          onChanged: (_) => setState(() {}),
         ),
         const SizedBox(height: 12),
 
@@ -977,8 +983,8 @@ class _ListingSuggestionScreenState
           ),
         ),
         ActionChip(
-          avatar: const Icon(Icons.add, size: 16),
-          label: const Text('Thêm thẻ'),
+          avatar: const Icon(Icons.local_offer_outlined, size: 16),
+          label: Text(_tags.isEmpty ? 'Chọn thẻ' : 'Sửa thẻ'),
           onPressed: _addTag,
         ),
       ],
@@ -1124,11 +1130,17 @@ class _ListingSuggestionScreenState
         return;
       }
       if (quantity <= 0) {
-        _snack('Tồn kho phải ít nhất là 1 cho Phiên bản ${i + 1}.', error: true);
+        _snack(
+          'Tồn kho phải ít nhất là 1 cho Phiên bản ${i + 1}.',
+          error: true,
+        );
         return;
       }
       if (weight <= 0) {
-        _snack('Khối lượng phải lớn hơn 0g cho Phiên bản ${i + 1}.', error: true);
+        _snack(
+          'Khối lượng phải lớn hơn 0g cho Phiên bản ${i + 1}.',
+          error: true,
+        );
         return;
       }
 
@@ -1148,8 +1160,9 @@ class _ListingSuggestionScreenState
       }
 
       if (attrs.isEmpty) {
-        attrs['Phiên bản'] =
-            _variants.length == 1 ? 'Mặc định' : 'Phiên bản ${i + 1}';
+        attrs['Phiên bản'] = _variants.length == 1
+            ? 'Mặc định'
+            : 'Phiên bản ${i + 1}';
       }
 
       final attrKey = attrs.entries.map((e) => '${e.key}:${e.value}').toList()
@@ -1312,24 +1325,21 @@ class _ListingSuggestionScreenState
     );
   }
 
+  /// Bộ chọn thẻ, không còn là một ô trống.
+  ///
+  /// Gõ tay vẫn còn — route chỉ soi hình dạng slug — nhưng nó không còn là *cách
+  /// duy nhất*: người bán không thể biết sàn đang dùng `do-choi-go` hay
+  /// `do-choi-bang-go`, và một thẻ chỉ mình mình dùng là một thẻ không ai bấm.
+  /// Sheet hỏi `?q=` cho cái đang gõ và `?near=` cho những gì đã chọn (hoặc cho
+  /// danh mục, khi chưa chọn gì) — xem [TagPickerSheet].
   Future<void> _addTag() async {
-    // Said before the dialog opens, not after it is filled in: the route counts
-    // the tags and refuses the whole listing over ten, and typing an eleventh
-    // only to lose it at "Đăng bán" is the worst place to learn that.
-    if (_tags.length >= maxListingTags) {
-      _snack('Mỗi tin chỉ gắn được tối đa $maxListingTags thẻ.', error: true);
-      return;
-    }
-
-    final raw = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => _AddTagDialog(
-        cardColor: _cardColor,
-        inputDecoration: _inputDecoration,
-      ),
+    final picked = await TagPickerSheet.show(
+      context,
+      selected: _tags,
+      categoryId: _categoryId,
     );
-    if (!mounted || raw == null || raw.trim().isEmpty) return;
-    setState(() => _tags = listingTags([..._tags, raw.trim()]));
+    if (!mounted || picked == null) return;
+    setState(() => _tags = listingTags(picked));
   }
 
   Future<void> _addSpec() async {
@@ -1387,6 +1397,161 @@ class _ListingSuggestionScreenState
     });
   }
 
+  /// Thẻ sản phẩm, đúng như người mua sẽ thấy nó.
+  ///
+  /// Người bán đang điền một cái form dài, mà thứ quyết định có ai bấm vào tin
+  /// hay không lại là một cái thẻ nhỏ trong lưới: ảnh bìa, tên bị cắt ở hai dòng,
+  /// và một con giá. Không thấy nó lúc điền thì chỉ biết sau khi đăng — nên chỗ
+  /// này vẽ luôn, từ cùng dữ liệu form đang giữ.
+  ///
+  /// Giá lấy trên phiên bản *đầu*, vì đó là con số lưới hiển thị.
+  Widget _previewSection(ListingSuggestionState state) {
+    final theme = Theme.of(context);
+
+    final cover = state.photos.isEmpty ? null : state.photos.first;
+    final coverUrl = cover?.previewUrl;
+    final name = _nameController.text.trim();
+    final selectedCategory = state.categories
+        .where((c) => c.id == _categoryId)
+        .firstOrNull;
+    final categoryLabel = selectedCategory == null
+        ? 'Chưa chọn danh mục'
+        : _categoryLabel(selectedCategory, state.categories);
+    final price =
+        int.tryParse(_variants.first.priceController.text.trim()) ?? 0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel('Xem trước'),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: _cardColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _borderColor),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 4 / 3,
+                child: coverUrl == null
+                    ? ColoredBox(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.image_outlined,
+                                size: 36,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Ảnh bìa sẽ hiện ở đây',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : UploadPreview(bytes: cover?.bytes, url: coverUrl),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      categoryLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      name.isEmpty ? 'Tên sản phẩm của bạn' : name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: name.isEmpty
+                            ? theme.colorScheme.onSurfaceVariant
+                            : theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      price > 0
+                          ? MoneyUtils.format(price, currency: _currency)
+                          : 'Chưa có giá',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: price > 0
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        if (_condition != null) _previewChip(_condition!.label),
+                        _previewChip(
+                          _priceMode == PriceMode.fixed
+                              ? 'Giá cố định'
+                              : 'Cho phép thương lượng',
+                        ),
+                        _previewChip('${_variants.length} phiên bản'),
+                      ],
+                    ),
+                    if (_tags.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        _tags.take(5).map((tag) => '#$tag').join('  '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _previewChip(String label) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+
   Widget _buildCategorySelector(
     BuildContext context,
     ListingSuggestionState state,
@@ -1432,7 +1597,9 @@ class _ListingSuggestionScreenState
                   color: label != null
                       ? theme.colorScheme.onSurface
                       : theme.colorScheme.onSurfaceVariant,
-                  fontWeight: label != null ? FontWeight.w500 : FontWeight.normal,
+                  fontWeight: label != null
+                      ? FontWeight.w500
+                      : FontWeight.normal,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1744,76 +1911,6 @@ class _IdentityGate extends StatelessWidget {
   }
 }
 
-class _AddTagDialog extends StatefulWidget {
-  final Color cardColor;
-  final InputDecoration Function({required String hint}) inputDecoration;
-
-  const _AddTagDialog({
-    required this.cardColor,
-    required this.inputDecoration,
-  });
-
-  @override
-  State<_AddTagDialog> createState() => _AddTagDialogState();
-}
-
-class _AddTagDialogState extends State<_AddTagDialog> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return AlertDialog(
-      backgroundColor: widget.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Text(
-        'Thêm thẻ',
-        style: TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.bold,
-          color: theme.colorScheme.onSurface,
-        ),
-      ),
-      content: TextField(
-        controller: _controller,
-        autofocus: true,
-        style: TextStyle(color: theme.colorScheme.onSurface),
-        decoration: widget.inputDecoration(hint: 'handmade'),
-        onSubmitted: (value) => Navigator.pop(context, value.trim()),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(
-            'Hủy',
-            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context, _controller.text.trim()),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: theme.colorScheme.primary,
-            foregroundColor: theme.colorScheme.onPrimary,
-          ),
-          child: const Text('Thêm'),
-        ),
-      ],
-    );
-  }
-}
-
 class _AddSpecDialog extends StatefulWidget {
   final Color cardColor;
   final InputDecoration Function({required String hint}) inputDecoration;
@@ -1918,10 +2015,10 @@ class _VariantFormItem {
     String quantity = '',
     String weight = '',
     List<_AttributePair>? attributes,
-  })  : priceController = TextEditingController(text: price),
-        quantityController = TextEditingController(text: quantity),
-        weightController = TextEditingController(text: weight),
-        attributes = attributes ?? [_AttributePair()];
+  }) : priceController = TextEditingController(text: price),
+       quantityController = TextEditingController(text: quantity),
+       weightController = TextEditingController(text: weight),
+       attributes = attributes ?? [_AttributePair()];
 
   void dispose() {
     priceController.dispose();
@@ -1938,8 +2035,8 @@ class _AttributePair {
   final TextEditingController valueController;
 
   _AttributePair({String key = '', String value = ''})
-      : keyController = TextEditingController(text: key),
-        valueController = TextEditingController(text: value);
+    : keyController = TextEditingController(text: key),
+      valueController = TextEditingController(text: value);
 
   void dispose() {
     keyController.dispose();
@@ -1985,8 +2082,10 @@ class _CategorySearchBottomSheetState
     final filtered = widget.categories.where((cat) {
       if (query.isEmpty) return true;
       final nameMatch = cat.name.toLowerCase().contains(query);
-      final labelMatch =
-          widget.categoryLabel(cat).toLowerCase().contains(query);
+      final labelMatch = widget
+          .categoryLabel(cat)
+          .toLowerCase()
+          .contains(query);
       return nameMatch || labelMatch;
     }).toList();
 
@@ -2115,8 +2214,7 @@ class _CategorySearchBottomSheetState
                           const Divider(height: 1, indent: 16, endIndent: 16),
                       itemBuilder: (context, index) {
                         final cat = filtered[index];
-                        final isSelected =
-                            cat.id == widget.selectedCategoryId;
+                        final isSelected = cat.id == widget.selectedCategoryId;
                         final label = widget.categoryLabel(cat);
 
                         return ListTile(

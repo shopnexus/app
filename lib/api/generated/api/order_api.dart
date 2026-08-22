@@ -36,6 +36,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/order_item_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_id_get200_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/orders_id_history_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_id_transport_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_summary_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund_page.dart';
@@ -1452,7 +1453,7 @@ class OrderApi {
   }
 
   /// Open a price negotiation on a variant
-  /// The buyer opens it, from the listing page: a seller has nobody to propose to on their own listing, so they answer rather than start. One active negotiation per (buyer, variant); the terms are then revised in place rather than by stacking rows, and each revision posts a card into the pair&#39;s chat thread.  &#x60;total&#x60; may not exceed the variant&#39;s listed price for that &#x60;quantity&#x60;. Negotiation only moves the price down: the asking price is already an offer to sell at it, so terms above it are a proposal with no reason to exist — the buyer would simply buy.
+  /// The buyer opens it, from the listing page: a seller has nobody to propose to on their own listing, so they answer rather than start. One active negotiation per (buyer, variant); the terms are then revised in place rather than by stacking rows, and each revision posts a card into the pair&#39;s chat thread.  &#x60;total&#x60; has to be **strictly below** the variant&#39;s listed price for that &#x60;quantity&#x60;. Negotiation only moves the price down, and it has to actually move: the asking price is already an offer to sell at it, takeable by pressing buy, so terms at or above it are a proposal with no reason to exist. Landing exactly on the asking price is the case worth naming — it is refused, because it costs both sides two round trips (the other party accepts, then the buyer has thirty minutes to check out) to reach a price that was one press away.
   ///
   /// Parameters:
   /// * [createOfferRequest]
@@ -1968,6 +1969,87 @@ class OrderApi {
     }
 
     return Response<OrdersIdGet200Response>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// What has happened to this order
+  /// The order&#39;s trail, newest first: one entry per transition and one per carrier checkpoint. Unpaged — an order collects a dozen entries, and the route caps what it answers rather than taking a page. Readable by the two parties; anybody else gets the same 404 the order itself gives.
+  ///
+  /// Parameters:
+  /// * [id]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [OrdersIdHistoryGet200Response] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<OrdersIdHistoryGet200Response>> ordersIdHistoryGet({
+    required String id,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/orders/{id}/history'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      id.toString(),
+    );
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    OrdersIdHistoryGet200Response? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              OrdersIdHistoryGet200Response,
+              OrdersIdHistoryGet200Response
+            >(rawData, 'OrdersIdHistoryGet200Response', growable: true);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<OrdersIdHistoryGet200Response>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

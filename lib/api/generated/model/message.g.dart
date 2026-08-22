@@ -23,6 +23,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
         'from_support',
         'id',
         'refs',
+        'reply_to',
         'sender_id',
         'type',
       ],
@@ -60,6 +61,11 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
         (v) =>
             (v as Map<String, dynamic>).map((k, e) => MapEntry(k, e as Object)),
       ),
+      replyTo: $checkedConvert(
+        'reply_to',
+        (v) =>
+            v == null ? null : MessageQuote.fromJson(v as Map<String, dynamic>),
+      ),
       senderId: $checkedConvert('sender_id', (v) => v as String?),
       type: $checkedConvert(
         'type',
@@ -74,6 +80,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
     'deletedAt': 'deleted_at',
     'editedAt': 'edited_at',
     'fromSupport': 'from_support',
+    'replyTo': 'reply_to',
     'senderId': 'sender_id',
   },
 );
@@ -89,6 +96,7 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
   'from_support': instance.fromSupport,
   'id': instance.id,
   'refs': instance.refs,
+  'reply_to': instance.replyTo?.toJson(),
   'sender_id': instance.senderId,
   'type': _$MessageTypeEnumMap[instance.type]!,
 };

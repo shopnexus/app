@@ -5,21 +5,12 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/notification.dart'
     as wire;
 import 'package:shopnexus_flutter_app/api/generated/model/notification_category.dart';
+import 'package:shopnexus_flutter_app/core/routing/notification_href.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/notifications_provider.dart';
 
-/// A row's own view of itself. `payload` is free-form structured content, so
-/// reading it is the widget's job and none of it pretends to be a declared field.
 extension on wire.Notification {
   bool get isRead => readAt != null;
-
-  String? get body => (payload['content'] ?? payload['body'])?.toString();
-
-  String? get orderId => payload['order_id']?.toString();
-
-  String? get ticketId => payload['ticket_id']?.toString();
-
-  String? get redirectUrl => payload['redirect_url']?.toString();
 }
 
 class NotificationsScreen extends ConsumerStatefulWidget {
@@ -34,11 +25,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   Future<void> _markAllAsRead() =>
       ref.read(notificationsControllerProvider.notifier).markRead();
 
-  /// The route takes a bound, never an id, so a tap marks this row and everything
-  /// older — which is what "read" means in a feed ordered by time.
-  Future<void> _markReadUpTo(wire.Notification item) => ref
+  /// Đúng một dòng. Route nhận `ids`, nên chạm vào một thông báo không còn kéo
+  /// theo mọi thông báo cũ hơn nó như hồi chỉ có mốc thời gian.
+  Future<void> _markRead(wire.Notification item) => ref
       .read(notificationsControllerProvider.notifier)
-      .markRead(upTo: item.createdAt);
+      .markRead(ids: [item.id]);
 
   Future<void> _loadMore() async {
     try {
@@ -51,22 +42,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     }
   }
 
+  /// Đi tới chỗ dòng này mở ra, hoặc không đi đâu cả.
+  ///
+  /// `href` là câu trả lời của server cho "bấm vào đây thì ra gì" — không còn
+  /// phải mò trong payload để đoán ra `order_id` hay `ticket_id` nữa. Nó viết
+  /// theo router của website nên phải dịch: xem [appRouteForNotificationHref].
   void _navigateToTarget(BuildContext context, wire.Notification item) {
-    final redirectUrl = item.redirectUrl;
-    final orderId = item.orderId;
-    final ticketId = item.ticketId;
-
-    if (redirectUrl != null && redirectUrl.isNotEmpty) {
-      context.push(redirectUrl);
-    } else if (orderId != null && orderId.isNotEmpty) {
-      context.push('/account/order-detail/$orderId');
-    } else if (ticketId != null && ticketId.isNotEmpty) {
-      context.push('/account/help-center/$ticketId');
-    } else if (item.category == NotificationCategory.chat) {
-      context.push('/chat');
-    } else if (item.category == NotificationCategory.order) {
-      context.push('/account/orders');
-    }
+    final route = appRouteForNotificationHref(item.href);
+    if (route != null) context.push(route);
   }
 
   @override
@@ -202,6 +185,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ? AppColors.darkPrimary.withAlpha(30)
         : const Color(0xFFE1E3E1).withValues(alpha: 0.5);
     final body = item.body;
+    final hasTarget = appRouteForNotificationHref(item.href) != null;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -211,7 +195,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            if (isUnread) _markReadUpTo(item);
+            if (isUnread) _markRead(item);
             _navigateToTarget(context, item);
           },
           child: Container(
@@ -248,7 +232,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                               ),
                             ),
                           ),
-                          if (body != null) ...[
+                          // Server gửi chuỗi rỗng cho một sự việc không cần
+                          // câu đỡ, nên "có body" là "không rỗng".
+                          if (body.isNotEmpty) ...[
                             const SizedBox(height: 4),
                             Text(
                               body,
@@ -262,13 +248,28 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                             ),
                           ],
                           const SizedBox(height: 8),
-                          Text(
-                            _formatDate(item.createdAt),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontFamily: 'Inter',
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                _formatDate(item.createdAt),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                              // Dòng nào mở ra được thì nói trước: `href` rỗng
+                              // là chuyện thường của một sự việc không dẫn đi
+                              // đâu, và bấm vào đó chỉ nên đánh dấu đã đọc.
+                              if (hasTarget) ...[
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.chevron_right_rounded,
+                                  size: 16,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ],
+                            ],
                           ),
                         ],
                       ),

@@ -30,6 +30,7 @@ class ChatOfferCard extends StatelessWidget {
     this.onCancel,
     this.onCheckout,
     this.onRenegotiate,
+    this.onOpenListing,
   });
 
   /// Null while the offer is still being read — the card carried only an id.
@@ -49,6 +50,15 @@ class ChatOfferCard extends StatelessWidget {
   /// Re-opening a dead negotiation is a *new* offer, not an action on the old
   /// one, so it leads back to the listing page where `POST /offers` lives.
   final VoidCallback? onRenegotiate;
+
+  /// Mở trang tin đang được mặc cả.
+  ///
+  /// Cái thẻ nói giá của *một tin đăng cụ thể*, mà cả ảnh lẫn tên tin trước đây
+  /// đều không bấm được: người ta đang quyết có đồng ý một mức giá hay không mà
+  /// không có đường nào xem lại thứ mình mua ngoài việc thoát cuộc trò chuyện đi
+  /// tìm lại nó. Một hành động mở ra, không phải một hành động trên đề nghị, nên
+  /// nó tách khỏi [onRenegotiate] dù hai chỗ dẫn tới cùng một trang.
+  final VoidCallback? onOpenListing;
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +210,17 @@ class ChatOfferCard extends StatelessWidget {
   /// listings, so "what is this price for" cannot be inferred from context — it
   /// has to be on the card itself.
   Widget _buildListing(ThemeData theme, Offer offer) {
+    final row = _buildListingRow(theme, offer);
+    if (onOpenListing == null) return row;
+
+    return InkWell(
+      onTap: onOpenListing,
+      borderRadius: BorderRadius.circular(8),
+      child: row,
+    );
+  }
+
+  Widget _buildListingRow(ThemeData theme, Offer offer) {
     final cover = offer.listing.cover?.url;
 
     return Row(
@@ -261,6 +282,17 @@ class ChatOfferCard extends StatelessWidget {
             ],
           ),
         ),
+        // Chỉ hiện khi hàng này bấm được: một mũi chevron trên thứ không mở ra gì
+        // là một lời hứa suông.
+        if (onOpenListing != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 4, top: 2),
+            child: Icon(
+              Icons.chevron_right_rounded,
+              size: 18,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
       ],
     );
   }

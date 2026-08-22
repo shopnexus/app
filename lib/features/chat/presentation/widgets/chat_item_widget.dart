@@ -7,10 +7,25 @@ class ChatItemWidget extends StatelessWidget {
   final Conversation conversation;
   final VoidCallback onTap;
 
+  /// Tên hàng, khi tên đối phương không phải câu trả lời: thread hỗ trợ được đặt
+  /// tên bằng chủ đề của yêu cầu, vì bên kia là cả sàn.
+  final String? title;
+
+  /// Thread hỗ trợ: một cái huy hiệu thay cho ảnh đại diện, vì cả sàn không có
+  /// một cái mặt.
+  final bool isSupport;
+
+  /// Chữ ngắn đứng cạnh dòng tin cuối — trạng thái của yêu cầu, ở chỗ mà một
+  /// thread mua bán nói giá.
+  final String? badge;
+
   const ChatItemWidget({
     super.key,
     required this.conversation,
     required this.onTap,
+    this.title,
+    this.isSupport = false,
+    this.badge,
   });
 
   String _formatTime(DateTime? time) {
@@ -44,30 +59,40 @@ class ChatItemWidget extends StatelessWidget {
             // Avatar với chỉ báo online status
             Stack(
               children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  backgroundImage:
-                      conversation.participantAvatar != null &&
-                          conversation.participantAvatar!.isNotEmpty
-                      ? CachedNetworkImageProvider(
-                          conversation.participantAvatar!,
-                        )
-                      : null,
-                  child:
-                      conversation.participantAvatar == null ||
-                          conversation.participantAvatar!.isEmpty
-                      ? Text(
-                          conversation.participantName.isNotEmpty
-                              ? conversation.participantName[0].toUpperCase()
-                              : '?',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        )
-                      : null,
-                ),
+                if (isSupport)
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    child: Icon(
+                      Icons.support_agent_rounded,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  )
+                else
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    backgroundImage:
+                        conversation.participantAvatar != null &&
+                            conversation.participantAvatar!.isNotEmpty
+                        ? CachedNetworkImageProvider(
+                            conversation.participantAvatar!,
+                          )
+                        : null,
+                    child:
+                        conversation.participantAvatar == null ||
+                            conversation.participantAvatar!.isEmpty
+                        ? Text(
+                            conversation.participantName.isNotEmpty
+                                ? conversation.participantName[0].toUpperCase()
+                                : '?',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          )
+                        : null,
+                  ),
               ],
             ),
             const SizedBox(width: 12),
@@ -81,7 +106,7 @@ class ChatItemWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          conversation.participantName,
+                          title ?? conversation.participantName,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: hasUnread
                                 ? FontWeight.bold
@@ -124,6 +149,26 @@ class ChatItemWidget extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (badge != null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            badge!,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                       if (hasUnread) ...[
                         const SizedBox(width: 8),
                         Container(

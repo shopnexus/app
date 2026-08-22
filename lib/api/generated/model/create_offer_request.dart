@@ -34,6 +34,7 @@ class CreateOfferRequest {
   @JsonKey(name: r'reason', required: false, includeIfNull: false)
   final String? reason;
 
+  /// The whole proposal, not a unit price, and strictly below the variant's listed price times `quantity` — see the route description for why the boundary is exclusive.
   // minimum: 1
   @JsonKey(name: r'total', required: true, includeIfNull: false)
   final int total;

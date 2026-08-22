@@ -287,3 +287,74 @@ abstract class _$RaiseTicket extends $Notifier<AsyncValue<Ticket?>> {
     element.handleValue(ref, created);
   }
 }
+
+/// Ticket theo thread của nó, để một hàng trong hộp thư tự gọi được tên mình.
+///
+/// Bên kia của một thread hỗ trợ là cả sàn, nên tên đối phương không nói được gì:
+/// hàng ấy phải mang chủ đề của yêu cầu và trạng thái của nó. Một lượt đọc cho cả
+/// danh sách — ticket là một hàng ở module khác, còn cuộc trò chuyện chỉ mang id
+/// của nó.
+///
+/// Ticket chưa có `conversation_id` thì không vào map: nó chưa có thread nào để
+/// đặt tên cho.
+
+@ProviderFor(ticketsByConversation)
+const ticketsByConversationProvider = TicketsByConversationProvider._();
+
+/// Ticket theo thread của nó, để một hàng trong hộp thư tự gọi được tên mình.
+///
+/// Bên kia của một thread hỗ trợ là cả sàn, nên tên đối phương không nói được gì:
+/// hàng ấy phải mang chủ đề của yêu cầu và trạng thái của nó. Một lượt đọc cho cả
+/// danh sách — ticket là một hàng ở module khác, còn cuộc trò chuyện chỉ mang id
+/// của nó.
+///
+/// Ticket chưa có `conversation_id` thì không vào map: nó chưa có thread nào để
+/// đặt tên cho.
+
+final class TicketsByConversationProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, Ticket>>,
+          Map<String, Ticket>,
+          FutureOr<Map<String, Ticket>>
+        >
+    with
+        $FutureModifier<Map<String, Ticket>>,
+        $FutureProvider<Map<String, Ticket>> {
+  /// Ticket theo thread của nó, để một hàng trong hộp thư tự gọi được tên mình.
+  ///
+  /// Bên kia của một thread hỗ trợ là cả sàn, nên tên đối phương không nói được gì:
+  /// hàng ấy phải mang chủ đề của yêu cầu và trạng thái của nó. Một lượt đọc cho cả
+  /// danh sách — ticket là một hàng ở module khác, còn cuộc trò chuyện chỉ mang id
+  /// của nó.
+  ///
+  /// Ticket chưa có `conversation_id` thì không vào map: nó chưa có thread nào để
+  /// đặt tên cho.
+  const TicketsByConversationProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'ticketsByConversationProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$ticketsByConversationHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, Ticket>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, Ticket>> create(Ref ref) {
+    return ticketsByConversation(ref);
+  }
+}
+
+String _$ticketsByConversationHash() =>
+    r'5a0e793f4abb1dd48c1dfc0b89f65a6c8c162caa';

@@ -17,6 +17,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/create_upload_request.
 import 'package:shopnexus_flutter_app/api/generated/model/error.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/feedback_page.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listings_listing_id_reviews_post201_response.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/listings_listing_id_reviews_summary_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/open_ticket_request.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_order_id_feedback_get200_response.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/orders_order_id_feedback_post201_response.dart';
@@ -219,6 +220,7 @@ class TrustApi {
   /// Parameters:
   /// * [listingID]
   /// * [rating] - Restrict to one star rating.
+  /// * [media] - Only reviews that came with a photo or a video. How many those are is `with_media_count` on the summary, so the filter can be offered with its count rather than as a chip nobody can size.
   /// * [sort] - `helpful` reads the stored tally; see the note above about paging it.
   /// * [cursor] - Opaque cursor from the previous page's `next_cursor`. Omit for the first page.
   /// * [limit]
@@ -234,6 +236,7 @@ class TrustApi {
   Future<Response<ReviewPage>> listingsListingIDReviewsGet({
     required String listingID,
     int? rating,
+    bool? media,
     String? sort = 'newest',
     String? cursor,
     int? limit = 20,
@@ -253,12 +256,18 @@ class TrustApi {
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{...?headers},
-      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
       validateStatus: validateStatus,
     );
 
     final _queryParameters = <String, dynamic>{
       if (rating != null) r'rating': rating,
+      if (media != null) r'media': media,
       if (sort != null) r'sort': sort,
       if (cursor != null) r'cursor': cursor,
       if (limit != null) r'limit': limit,
@@ -398,6 +407,92 @@ class TrustApi {
     }
 
     return Response<ListingsListingIDReviewsPost201Response>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// A listing&#39;s rating distribution
+  /// Public. The average and the count are on the listing already — catalog caches them — and what only this answers is the shape behind them: how many reviews sit at each of the five stars, and how many came with a photo.  Those are one read of one listing&#39;s reviews here and five reads of the review list anywhere else, which is why the product page&#39;s star histogram used to be four numbers nobody sent.
+  ///
+  /// Parameters:
+  /// * [listingID]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [ListingsListingIDReviewsSummaryGet200Response] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<ListingsListingIDReviewsSummaryGet200Response>>
+  listingsListingIDReviewsSummaryGet({
+    required String listingID,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/listings/{listingID}/reviews/summary'.replaceAll(
+      '{'
+      r'listingID'
+      '}',
+      listingID.toString(),
+    );
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    ListingsListingIDReviewsSummaryGet200Response? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ListingsListingIDReviewsSummaryGet200Response,
+              ListingsListingIDReviewsSummaryGet200Response
+            >(
+              rawData,
+              'ListingsListingIDReviewsSummaryGet200Response',
+              growable: true,
+            );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<ListingsListingIDReviewsSummaryGet200Response>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -726,7 +821,12 @@ class TrustApi {
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{...?headers},
-      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
       validateStatus: validateStatus,
     );
 

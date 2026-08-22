@@ -271,14 +271,25 @@ class AccountRepository {
     return count?.unread ?? 0;
   }
 
-  /// Marks everything created at or before [before] read; omitting it marks the
-  /// whole feed. The route has no per-row id, so a single row is marked by its
-  /// own timestamp — not by "now", which used to swallow the whole feed on one
-  /// tap. Answers the unread count that is left.
-  Future<int> markNotificationsRead({DateTime? before}) async {
+  /// Marks [ids] read, or everything created at or before [before], or — with
+  /// neither — the whole feed. Answers the unread count that is left.
+  ///
+  /// Đúng một trong hai: route từ chối gửi cả `ids` lẫn `before` cùng lúc, vì đó
+  /// là một client vừa gửi cái mốc cũ kèm cú chạm mới. Một dòng bây giờ đánh dấu
+  /// được bằng chính id của nó — trước đây phải lấy `created_at` làm mốc, nên đọc
+  /// một dòng là đọc luôn mọi dòng cũ hơn nó.
+  Future<int> markNotificationsRead({
+    List<String>? ids,
+    DateTime? before,
+  }) async {
+    assert(
+      ids == null || before == null,
+      'ids và before loại nhau: route trả 400 khi nhận cả hai',
+    );
     final count = (await _api.notificationsReadPost(
       markNotificationsReadRequest: MarkNotificationsReadRequest(
-        before: before,
+        ids: ids,
+        before: ids == null ? before : null,
       ),
     )).data?.data;
     return count?.unread ?? 0;

@@ -23,6 +23,7 @@ const messageJson = r'''
   "attachments": [],
   "refs": {},
   "card": {},
+  "reply_to": null,
   "created_at": "2026-08-05T06:11:40.013526Z",
   "edited_at": null,
   "deleted_at": null
@@ -54,11 +55,14 @@ void main() {
     expect(message.refs, isEmpty);
   });
 
-  test('a message missing refs does not parse — which is why it is always sent', () {
-    final withoutRefs = decode(messageJson)..remove('refs');
+  test(
+    'a message missing refs does not parse — which is why it is always sent',
+    () {
+      final withoutRefs = decode(messageJson)..remove('refs');
 
-    expect(() => Message.fromJson(withoutRefs), throwsA(anything));
-  });
+      expect(() => Message.fromJson(withoutRefs), throwsA(anything));
+    },
+  );
 
   test('a live inbox row parses, nested message included', () {
     final row = decode(conversationJson)

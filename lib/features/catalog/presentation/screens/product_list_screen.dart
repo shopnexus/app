@@ -13,6 +13,7 @@ import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/ca
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/dismiss_undo_snackbar.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/listing_dismiss_sheet.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/location_filter_section.dart';
+import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/listing_shelf_rail.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/product_card.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/widgets/sort_options_sheet.dart';
 
@@ -139,6 +140,10 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           onRefresh: () async {
             ref.invalidate(categoriesProvider);
             ref.invalidate(catalogProductsProvider(homeFilters));
+            // Kéo để làm mới là câu "cho tôi trang chủ mới": kệ dựng từ hành vi
+            // vừa xong của người đọc, nên bỏ nó ngoài lượt làm mới là để lại
+            // đúng cái phần biết mình cũ nhất.
+            ref.invalidate(homeShelvesProvider);
             ref.invalidate(unreadNotificationsCountProvider);
           },
           color: theme.colorScheme.primary,
@@ -257,8 +262,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            onTap: () =>
-                                context.push('/search?autofocus=true'),
+                            onTap: () => context.push('/search?autofocus=true'),
                             child: Container(
                               height: 48.0,
                               padding: const EdgeInsets.symmetric(
@@ -365,12 +369,22 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                     ),
                   ),
 
+                // 4. Các kệ: mỗi hàng nói ra lý do nó có mặt.
+                //
+                // Chỉ trên trang chủ chưa lọc. Người đọc vừa đặt một bộ lọc là họ
+                // đang hỏi một câu cụ thể, và mấy hàng gợi ý chen vào giữa câu hỏi
+                // đó với câu trả lời chỉ là đẩy kết quả xuống dưới màn hình.
+                if (!isFiltered)
+                  const SliverToBoxAdapter(child: HomeShelvesSection()),
+
                 // 4. Tiêu đề mục
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
                     child: Text(
-                      isFiltered ? 'Kết quả lọc' : 'Dành cho bạn',
+                      // "Dành cho bạn" đã là chữ trên từng kệ ở trên; cái lưới
+                      // này trả lời câu khác — sàn đang có gì.
+                      isFiltered ? 'Kết quả lọc' : 'Khám phá thêm',
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontFamily: 'Manrope',
                         fontWeight: FontWeight.bold,

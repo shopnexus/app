@@ -7,6 +7,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart'
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/orders_tab.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_actions_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
@@ -26,77 +27,30 @@ import 'package:shopnexus_flutter_app/features/checkout/presentation/widgets/res
 /// bán) — còn câu hỏi thật là "cái gì đang chờ tôi", và nó vắt qua cả hai vai.
 /// Xem [WaitingSide].
 class OrdersList extends ConsumerStatefulWidget {
-  final int selectedTab;
+  final OrdersTab tab;
 
-  const OrdersList({super.key, this.selectedTab = 0});
+  const OrdersList({super.key, this.tab = OrdersTab.all});
 
   @override
   ConsumerState<OrdersList> createState() => _OrdersListState();
 }
 
 class _OrdersListState extends ConsumerState<OrdersList> {
-  /// Tab "Chờ xác nhận" trong [OrdersScreen].
-  static const _awaitingTab = 1;
-
-  /// Tab "Đã hủy" trong [OrdersScreen].
-  static const _cancelledTab = 5;
-
-  bool _matchesTab(
-    OrderView view,
-    int selectedTab,
-    Set<String> refundedOrderIds,
-  ) {
-    final isCancelled =
-        view.order.state == OrderState.cancelled ||
-        view.order.cancelledAt != null;
-
-    final isDelivered =
-        view.order.transport?.status == TransportStatus.delivered;
-
-    final isCompleted =
-        view.order.state == OrderState.completed ||
-        view.order.receivedAt != null ||
-        view.order.completedAt != null ||
-        isDelivered;
-
-    final hasRefund =
-        view.order.declineReason != null ||
-        view.order.transport?.status == TransportStatus.returned ||
-        refundedOrderIds.contains(view.order.id);
-
-    switch (selectedTab) {
-      case 1: // Chờ xác nhận
-        return view.order.state == OrderState.awaitingConfirmation &&
-            !isCancelled;
-      case 2: // Đang xử lý
-        return view.order.state == OrderState.open &&
-            !isCompleted &&
-            !hasRefund &&
-            !isCancelled;
-      case 3: // Hoàn thành
-        return isCompleted && !hasRefund && !isCancelled;
-      case 4: // Hoàn tiền
-        return hasRefund && !isCancelled;
-      case 5: // Đã hủy
-        return isCancelled;
-      case 0: // Tất cả
-      default:
-        return true;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final feed = ref.watch(ordersProvider);
     final unsettled = ref.watch(unsettledItemsProvider);
     final cancelledLines = ref.watch(cancelledItemsProvider);
     final me = ref.watch(profileProvider).value?.id;
+    // Chỉ để lấy *lý do* hoàn tiền cho cái dòng — `RefundSummary` trên đơn không
+    // mang câu đó. Việc "đơn này có vụ hoàn tiền nào không" thì đọc trên chính
+    // đơn (xem [OrdersTab.refunding]): danh sách này là một trang, nên nó không
+    // trả lời được câu ấy.
     final refundsAsync = ref.watch(refundListProvider);
     final buyerRefunds =
         refundsAsync.value?.where((r) => r.buyerId == me).toList() ??
         const <Refund>[];
     final buyerRefundMap = {for (final r in buyerRefunds) r.orderId: r};
-    final refundedOrderIds = buyerRefundMap.keys.toSet();
 
     return RefreshIndicator(
       color: Theme.of(context).colorScheme.primary,
@@ -116,7 +70,6 @@ class _OrdersListState extends ConsumerState<OrdersList> {
           unsettled.value ?? const [],
           cancelledLines.value ?? const [],
           me,
-          refundedOrderIds,
           buyerRefundMap,
         ),
         _ => const _OrdersShimmer(),
@@ -129,30 +82,22 @@ class _OrdersListState extends ConsumerState<OrdersList> {
     List<OrderLineView> unsettled,
     List<OrderLineView> cancelledLines,
     String? me,
-    Set<String> refundedOrderIds,
     Map<String, Refund> refundMap,
   ) {
     final matchingOrders = feed.orders
         .where(
           (view) =>
-              _matchesTab(view, widget.selectedTab, refundedOrderIds) &&
+              widget.tab.matchesOrder(view) &&
               (view.order.seller.id != me || view.order.buyer.id == me),
         )
         .toList();
 
-    // Dòng chưa thành đơn thuộc cả hai tab, và không phải vì tiện: nó chưa có
-    // `Order` nên không lọt qua `_matchesTab` được, mà việc nó mô tả — trả nốt
-    // tiền, hoặc chờ hệ thống tạo đơn — đúng là thứ người ta mở tab "Chờ xác
-    // nhận" để tìm. Bỏ nó khỏi đó thì tab ấy trống trong khi vẫn còn việc.
-    final showsUnsettled =
-        widget.selectedTab == 0 || widget.selectedTab == _awaitingTab;
+    // Dòng chưa thành đơn không lọt qua điều kiện nào của [OrdersTab] được — nó
+    // chưa có `Order`. Tab "Chờ thanh toán" là chỗ của nó, và "Tất cả" vẽ nó như
+    // mọi thứ khác.
+    final showsUnsettled = widget.tab.showsUnsettledLines;
 
-    // Cũng vì chưa có `Order` mà dòng bị hủy lúc chưa trả tiền không lọt qua
-    // `_matchesTab` được — nhưng "đã hủy" là đúng chỗ người ta đi tìm nó, nên
-    // nó được vẽ ở đó, và ở "Tất cả" như mọi thứ khác.
-    final showsCancelledLines =
-        widget.selectedTab == 0 || widget.selectedTab == _cancelledTab;
-    final visibleCancelledLines = showsCancelledLines
+    final visibleCancelledLines = widget.tab.showsCancelledLines
         ? cancelledLines
         : const <OrderLineView>[];
 
@@ -186,7 +131,7 @@ class _OrdersListState extends ConsumerState<OrdersList> {
           ),
           const SizedBox(height: 12),
         ],
-        if (widget.selectedTab == 0 && feed.hasMore)
+        if (widget.tab == OrdersTab.all && feed.hasMore)
           _LoadMoreButton(
             isLoading: feed.isLoadingMore,
             error: feed.loadMoreError,
@@ -297,17 +242,23 @@ class _OrderRow extends ConsumerWidget {
                               fontFamily: 'Inter',
                               fontSize: 12,
                               height: 1.4,
-                              fontWeight: (view.isAwaitingConfirmation ||
-                                      view.order.state == OrderState.cancelled ||
-                                      view.order.transport?.status == TransportStatus.failed)
+                              fontWeight:
+                                  (view.isAwaitingConfirmation ||
+                                      view.order.state ==
+                                          OrderState.cancelled ||
+                                      view.order.transport?.status ==
+                                          TransportStatus.failed)
                                   ? FontWeight.w600
                                   : FontWeight.normal,
-                              color: (view.order.state == OrderState.cancelled ||
-                                      view.order.transport?.status == TransportStatus.failed ||
-                                      view.order.transport?.status == TransportStatus.cancelled)
+                              color:
+                                  (view.order.state == OrderState.cancelled ||
+                                      view.order.transport?.status ==
+                                          TransportStatus.failed ||
+                                      view.order.transport?.status ==
+                                          TransportStatus.cancelled)
                                   ? (isDark
-                                      ? const Color(0xFFF87171)
-                                      : const Color(0xFFDC2626))
+                                        ? const Color(0xFFF87171)
+                                        : const Color(0xFFDC2626))
                                   : view.isAwaitingConfirmation
                                   ? theme.colorScheme.primary
                                   : theme.colorScheme.onSurfaceVariant,
@@ -610,6 +561,17 @@ class _OrderRow extends ConsumerWidget {
     // provider mà `_run` nạp, vì dòng vừa đổi trạng thái.
     ref.invalidate(ordersProvider);
     ref.invalidate(unsettledItemsProvider);
+    // Đánh giá cần đơn *hoàn tất*: xác nhận nhận hàng chỉ mở đồng hồ 72 giờ, và
+    // `POST /orders/{id}/feedback` từ chối suốt khoảng đó. Nói ra, để người mua
+    // không đi tìm nút "Đánh giá" ngay bây giờ.
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Đã xác nhận. Đơn hoàn tất sau 72 giờ, rồi bạn đánh giá được người bán.',
+        ),
+      ),
+    );
   }
 
   /// Một nút, một biểu mẫu hai phần. Đánh giá sản phẩm chỉ được hỏi khi đơn có

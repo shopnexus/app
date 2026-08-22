@@ -12,6 +12,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing_condition.dart
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shelf.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/tag.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
@@ -268,9 +269,7 @@ class CatalogRepository {
       final raw = _readCache(_hiveService.recentBox)[key];
       if (raw is! List) return [];
       return raw
-          .map(
-            (e) => Listing.fromJson(Map<String, dynamic>.from(e as Map)),
-          )
+          .map((e) => Listing.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
     } catch (_) {
       return [];
@@ -284,6 +283,21 @@ class CatalogRepository {
     if (stored is! Map) return <String, dynamic>{};
     return Map<String, dynamic>.from(stored);
   }
+
+  /// Trang chủ dưới dạng kệ: mỗi hàng mang theo *lý do* nó có mặt.
+  ///
+  /// Không gộp được vào [listings]. `sort=recommended` trộn cả bốn hướng sở thích
+  /// của một người vào một thứ hạng duy nhất, nên người đọc nhận một trang và
+  /// không có cách nào biết hướng nào sinh ra thẻ nào; route này đưa từng hướng ra
+  /// riêng một hàng, cùng hàng "tương tự cái vừa xem" và mấy hàng của cả sàn.
+  /// Bao nhiêu hàng là câu trả lời của server — [limit] chỉ nói số thẻ *mỗi* hàng.
+  ///
+  /// Không cache offline: một kệ dựng từ hành vi mới nhất của người đọc, nên bản
+  /// chép của lần trước là một lời nói sai về chính họ. Rỗng không phải lỗi —
+  /// khách chưa đăng nhập nhận trang ngắn hơn, và một sàn quá ít tin sống thì
+  /// không đủ thẻ cho hàng nào cả.
+  Future<List<Shelf>> shelves({int limit = 12}) async =>
+      (await _api.listingsShelvesGet(limit: limit)).data?.data ?? const [];
 
   /// Also records the listing in the "vừa xem" carousel. A failure to cache is
   /// swallowed: a broken Hive box must not take the product page down with it.

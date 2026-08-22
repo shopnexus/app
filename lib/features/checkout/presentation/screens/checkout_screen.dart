@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -28,7 +29,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   @override
   void initState() {
     super.initState();
-    _noteController = TextEditingController(text: ref.read(checkoutProvider).note ?? '');
+    _noteController = TextEditingController(
+      text: ref.read(checkoutProvider).note ?? '',
+    );
   }
 
   @override
@@ -287,8 +290,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         : const Color(0xFFE2E3E0);
 
     final shippingOptions = state.shippingOptions;
-    final displayedOptions =
-        shippingOptions.take(_visibleShippingCount).toList();
+    final displayedOptions = shippingOptions
+        .take(_visibleShippingCount)
+        .toList();
     final hasMore = shippingOptions.length > _visibleShippingCount;
     final remaining = shippingOptions.length - _visibleShippingCount;
     final canCollapse =
@@ -589,7 +593,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         _visiblePaymentCount += _expandStepCount;
                       });
                     },
-                    icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 18),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 18,
+                    ),
                     label: Text(
                       'Xem thêm ($remaining)',
                       style: const TextStyle(
@@ -731,8 +738,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               ),
               filled: true,
               fillColor: inputBgColor,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
@@ -1096,7 +1105,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                          'Vui lòng đồng ý với Điều khoản dịch vụ & Chính sách mua hàng trước khi thanh toán!',
+                          'Vui lòng đồng ý với Điều khoản sử dụng & Chính sách bảo mật trước khi thanh toán!',
                         ),
                         backgroundColor: Colors.orange,
                         duration: Duration(seconds: 2),
@@ -1180,20 +1189,27 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   ),
                   children: [
                     const TextSpan(text: 'Tôi đồng ý với '),
+                    // Mở ra được, không còn là chữ xanh trang trí: người mua đang
+                    // được hỏi có đồng ý với một văn bản, nên văn bản đó phải đọc
+                    // được ngay tại chỗ hỏi.
                     TextSpan(
-                      text: 'Điều khoản dịch vụ',
+                      text: 'Điều khoản sử dụng',
                       style: TextStyle(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => context.push('/terms'),
                     ),
                     const TextSpan(text: ' và '),
                     TextSpan(
-                      text: 'Chính sách mua hàng',
+                      text: 'Chính sách bảo mật',
                       style: TextStyle(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => context.push('/privacy'),
                     ),
                     const TextSpan(text: ' của ShopNexus.'),
                   ],

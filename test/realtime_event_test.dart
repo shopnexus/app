@@ -20,6 +20,7 @@ void main() {
           'attachments': <Map<String, dynamic>>[],
           'refs': <String, dynamic>{},
           'card': <String, dynamic>{},
+          'reply_to': null,
           'created_at': '2026-08-03T11:17:04Z',
           'edited_at': null,
           'deleted_at': null,
@@ -73,9 +74,12 @@ void main() {
         'code': 'account.notification_created',
         'at': '2026-08-03T11:17:04Z',
         'data': {
+          'id': 'ntf_fv2cpg50vkrfp',
+          'kind': 'order-delivered',
           'category': 'order',
           'title': 'Đơn hàng đã được giao',
-          'payload': {'order_id': 'ord_fv2cpg50vkrfp'},
+          'body': 'Đơn ord_fv2cpg50vkrfp đã tới nơi.',
+          'href': '/account/orders/ord_fv2cpg50vkrfp',
           'read_at': null,
           'created_at': '2026-08-03T11:17:04Z',
         },
@@ -84,6 +88,7 @@ void main() {
       expect(event, isA<NotificationCreatedEvent>());
       final notification = (event! as NotificationCreatedEvent).notification;
       expect(notification.title, 'Đơn hàng đã được giao');
+      expect(notification.href, '/account/orders/ord_fv2cpg50vkrfp');
       // Unread until it carries a read_at.
       expect(notification.readAt, isNull);
     });

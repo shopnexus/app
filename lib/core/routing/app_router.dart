@@ -5,6 +5,9 @@ import 'package:shopnexus_flutter_app/api/generated/model/listing_status.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/core/storage/hive_storage.dart';
 import 'package:shopnexus_flutter_app/core/constants/route_constants.dart';
+import 'package:shopnexus_flutter_app/features/legal/presentation/screens/about_screen.dart';
+import 'package:shopnexus_flutter_app/features/legal/presentation/screens/privacy_screen.dart';
+import 'package:shopnexus_flutter_app/features/legal/presentation/screens/terms_screen.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/screens/splash_screen.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/screens/register_screen.dart';
@@ -45,7 +48,6 @@ import 'package:shopnexus_flutter_app/features/chat/presentation/screens/chat_de
 import 'package:shopnexus_flutter_app/features/help_center/presentation/screens/help_center_screen.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_detail_screen.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/screens/refund_list_screen.dart';
-import 'package:shopnexus_flutter_app/features/ticket/presentation/screens/ticket_detail_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -82,6 +84,23 @@ GoRouter appRouter(Ref ref) {
         path: '/forgot-password',
         name: 'forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      // Mấy trang chữ: đọc được khi chưa đăng nhập, vì người ta đọc chúng để
+      // quyết định có đăng ký hay không. Cùng đường dẫn với bản web.
+      GoRoute(
+        path: '/terms',
+        name: 'terms',
+        builder: (context, state) => const TermsScreen(),
+      ),
+      GoRoute(
+        path: '/privacy',
+        name: 'privacy',
+        builder: (context, state) => const PrivacyScreen(),
+      ),
+      GoRoute(
+        path: '/about',
+        name: 'about',
+        builder: (context, state) => const AboutScreen(),
       ),
       GoRoute(
         path: '/cart',
@@ -227,7 +246,13 @@ GoRouter appRouter(Ref ref) {
           GoRoute(
             path: '/chat',
             name: 'chat',
-            builder: (context, state) => const ChatListScreen(),
+            // `?tab=support` là đường một yêu cầu vừa gửi dẫn tới khi thread của
+            // nó còn chưa sinh ra — xem [openTicketThread].
+            builder: (context, state) => ChatListScreen(
+              initialTab: ChatInboxTab.fromQuery(
+                state.uri.queryParameters['tab'],
+              ),
+            ),
             routes: [
               GoRoute(
                 path: ':id',
@@ -361,16 +386,6 @@ GoRouter appRouter(Ref ref) {
                 path: 'help-center',
                 name: 'buyer_help_center',
                 builder: (context, state) => const HelpCenterScreen(),
-                routes: [
-                  GoRoute(
-                    path: ':id',
-                    name: 'ticket_detail',
-                    builder: (context, state) {
-                      final id = state.pathParameters['id']!;
-                      return TicketDetailScreen(ticketId: id);
-                    },
-                  ),
-                ],
               ),
             ],
           ),

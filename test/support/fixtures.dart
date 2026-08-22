@@ -129,9 +129,12 @@ const orderJson = <String, dynamic>{
 /// the goods are only counted once the escrow is released.
 
 const notificationJson = <String, dynamic>{
+  'id': 'ntf_3m8kq1x7v9pd2',
+  'kind': 'order-placed',
   'category': 'order',
   'title': 'Order placed',
-  'payload': {'order_id': 'ord_2ybcv39246zn7'},
+  'body': 'Đơn ord_2ybcv39246zn7 · 250.000 ₫.',
+  'href': '/account/orders/ord_2ybcv39246zn7',
   'read_at': null,
   'created_at': '2026-08-05T02:47:38.213999Z',
 };

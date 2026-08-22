@@ -5,11 +5,13 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/ticket_thread.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/refund.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/orders_tab.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
@@ -27,22 +29,20 @@ class SellerOrdersScreen extends ConsumerWidget {
 
   const SellerOrdersScreen({super.key, this.initialTabIndex = 0});
 
-  static const _tabTitles = [
-    'Tất cả',
-    'Chờ xác nhận',
-    'Đang xử lý',
-    'Hoàn thành',
-    'Hoàn tiền',
-    'Đã hủy',
-  ];
+  /// Cùng [OrdersTab] mà màn đơn mua dùng, trừ "Chờ thanh toán" — xem
+  /// [OrdersTab.sellerTabs]. Một bộ điều kiện cho cả hai màn, vì cùng một đơn
+  /// không được nằm ở hai tab khác nhau tuỳ người đang xem.
+  static const _tabs = OrdersTab.sellerTabs;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return DefaultTabController(
-      length: _tabTitles.length,
-      initialIndex: initialTabIndex.clamp(0, _tabTitles.length - 1),
+      length: _tabs.length,
+      initialIndex: _tabs.indexOf(
+        OrdersTab.fromIndex(initialTabIndex, tabs: _tabs),
+      ),
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
@@ -89,83 +89,38 @@ class SellerOrdersScreen extends ConsumerWidget {
                   fontSize: 13,
                 ),
                 tabs: [
-                  for (final title in _tabTitles)
-                    Tab(height: 36, child: Text(title)),
+                  for (final tab in _tabs)
+                    Tab(height: 36, child: Text(tab.label)),
                 ],
               ),
             ),
           ),
         ),
         body: TabBarView(
-          children: [
-            for (var i = 0; i < _tabTitles.length; i++)
-              _SellerOrdersTabList(selectedTab: i),
-          ],
+          children: [for (final tab in _tabs) _SellerOrdersTabList(tab: tab)],
         ),
       ),
     );
   }
 }
 
-bool _matchesSellerTab(
-  OrderView view,
-  int selectedTab,
-  Set<String> refundedOrderIds,
-) {
-  final isCancelled =
-      view.order.state == OrderState.cancelled ||
-      view.order.cancelledAt != null;
-
-  final isDelivered = view.order.transport?.status == TransportStatus.delivered;
-
-  final isCompleted =
-      view.order.state == OrderState.completed ||
-      view.order.receivedAt != null ||
-      view.order.completedAt != null ||
-      isDelivered;
-
-  final hasRefund =
-      view.order.declineReason != null ||
-      view.order.transport?.status == TransportStatus.returned ||
-      refundedOrderIds.contains(view.order.id);
-
-  switch (selectedTab) {
-    case 1: // Chờ xác nhận
-      return view.order.state == OrderState.awaitingConfirmation &&
-          !isCancelled;
-    case 2: // Đang xử lý
-      return view.order.state == OrderState.open &&
-          !isCompleted &&
-          !hasRefund &&
-          !isCancelled;
-    case 3: // Hoàn thành
-      return isCompleted && !hasRefund && !isCancelled;
-    case 4: // Hoàn tiền
-      return hasRefund && !isCancelled;
-    case 5: // Đã hủy
-      return isCancelled;
-    case 0: // Tất cả
-    default:
-      return true;
-  }
-}
-
 class _SellerOrdersTabList extends ConsumerWidget {
-  final int selectedTab;
+  final OrdersTab tab;
 
-  const _SellerOrdersTabList({required this.selectedTab});
+  const _SellerOrdersTabList({required this.tab});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final ordersAsync = ref.watch(sellerAllOrdersProvider);
     final me = ref.watch(profileProvider).value?.id;
+    // Chỉ để lấy lý do hoàn tiền cho cái thẻ. "Đơn này có vụ hoàn tiền nào không"
+    // thì đọc trên chính đơn — xem [OrdersTab.refunding].
     final refundsAsync = ref.watch(refundListProvider);
     final sellerRefunds =
         refundsAsync.value?.where((r) => r.buyerId != me).toList() ??
         const <Refund>[];
     final sellerRefundMap = {for (final r in sellerRefunds) r.orderId: r};
-    final refundedOrderIds = sellerRefundMap.keys.toSet();
     final sellerOrdersState = ref.watch(sellerOrdersProvider);
     final notifier = ref.read(sellerOrdersProvider.notifier);
 
@@ -185,12 +140,7 @@ class _SellerOrdersTabList extends ConsumerWidget {
           err.toString(),
         ),
         data: (allOrders) {
-          final matchingOrders = allOrders
-              .where(
-                (view) =>
-                    _matchesSellerTab(view, selectedTab, refundedOrderIds),
-              )
-              .toList();
+          final matchingOrders = allOrders.where(tab.matchesOrder).toList();
 
           if (matchingOrders.isEmpty) {
             return _buildMessage(
@@ -523,7 +473,7 @@ Widget _buildOrderCard(
               const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => _reportIssue(context, order.id),
+                  onPressed: () => _reportIssue(context, ref, order.id),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: theme.colorScheme.onSurface,
                     side: BorderSide(color: theme.colorScheme.outline),
@@ -663,7 +613,11 @@ Future<void> _declineOrder(
 }
 
 /// Thread của ticket là nơi việc này tiếp diễn, nên màn hình đi theo nó.
-Future<void> _reportIssue(BuildContext context, String orderId) async {
+Future<void> _reportIssue(
+  BuildContext context,
+  WidgetRef ref,
+  String orderId,
+) async {
   final ticket = await RaiseTicketSheet.show(
     context,
     kind: TicketKind.orderIssue,
@@ -672,7 +626,7 @@ Future<void> _reportIssue(BuildContext context, String orderId) async {
     refLabel: orderId,
   );
   if (ticket == null || !context.mounted) return;
-  context.push('/account/help-center/${ticket.id}');
+  await openTicketThread(context, ref, ticket);
 }
 
 Future<void> _confirmCancel(

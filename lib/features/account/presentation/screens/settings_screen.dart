@@ -171,10 +171,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               child: Column(
                 children: [
-                  // "Điều khoản dịch vụ" và "Chính sách bảo mật" từng ở đây,
-                  // nhưng chạm vào chỉ hiện một SnackBar rồi biến mất — một ngõ
-                  // cụt giả vờ làm được việc. Chưa có trang thật để dẫn tới, nên
-                  // gỡ hẳn còn trung thực hơn là để chúng đứng đó.
+                  // Hai dòng này từng bị gỡ vì chạm vào chỉ hiện một SnackBar
+                  // rồi biến mất — một ngõ cụt giả vờ làm được việc. Giờ đã có
+                  // trang thật, cùng nội dung với bản web.
+                  _buildSettingRow(
+                    icon: Icons.gavel_rounded,
+                    label: 'Điều khoản sử dụng',
+                    onTap: () => context.push('/terms'),
+                  ),
+                  _buildSettingRow(
+                    icon: Icons.privacy_tip_outlined,
+                    label: 'Chính sách bảo mật',
+                    onTap: () => context.push('/privacy'),
+                  ),
                   _buildSettingRow(
                     icon: Icons.info_outline_rounded,
                     label: 'Về ShopNexus',
@@ -197,7 +206,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                       ],
                     ),
-                    onTap: () {},
+                    onTap: () => context.push('/about'),
                   ),
                 ],
               ),

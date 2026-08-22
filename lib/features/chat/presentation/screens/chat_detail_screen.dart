@@ -7,7 +7,9 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/core/upload/upload_media.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/ticket_thread.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/ticket_thread_banner.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 import 'package:shopnexus_flutter_app/features/chat/data/models/chat_model.dart';
 import 'package:shopnexus_flutter_app/features/chat/presentation/providers/chat_notifier.dart';
@@ -138,7 +140,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       refLabel: conversation.participantName,
     );
     if (ticket == null || !mounted) return;
-    context.push('/account/help-center/${ticket.id}');
+    await openTicketThread(context, ref, ticket);
   }
 
   @override
@@ -176,7 +178,8 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             ? const Text('Đang tải…')
             : _Header(conversation: conversation),
         actions: [
-          if (conversation != null)
+          // Không mời báo cáo bên kia trên một thread hỗ trợ: bên kia là sàn.
+          if (conversation != null && !conversation.isTicketThread)
             PopupMenuButton<void>(
               icon: const Icon(Icons.more_vert_rounded),
               shape: RoundedRectangleBorder(
@@ -230,6 +233,10 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         ),
         data: (state) => Column(
           children: [
+            // Việc gì đã được nêu ra, và staff quyết gì — thứ mà màn "Chi tiết
+            // yêu cầu" riêng từng giữ.
+            if (state.conversation?.ticketId case final ticketId?)
+              TicketThreadBanner(ticketId: ticketId),
             Expanded(
               child: _Thread(
                 state: state,
@@ -261,6 +268,36 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final avatarUrl = conversation.participantAvatar;
+
+    // Thread hỗ trợ: nhân viên trả lời với danh nghĩa cả sàn, nên cái tên trên
+    // đầu là của sàn — tên người đang trực không phải thứ người dùng nhắn cho.
+    if (conversation.isTicketThread) {
+      return Row(
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: Icon(
+              Icons.support_agent_rounded,
+              size: 20,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'ShopNexus Hỗ trợ',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+    }
 
     return Row(
       children: [
@@ -356,6 +393,12 @@ class _Thread extends StatelessWidget {
                 // Trang tin là nơi `POST /offers` mở ra — một cuộc mặc cả đã
                 // đóng không nhận thêm hành động nào.
                 onRenegotiate: offer == null
+                    ? null
+                    : () => context.push('/home/product/${offer.listingId}'),
+                // Cùng trang, khác câu hỏi: đây là "cho tôi xem lại cái này" chứ
+                // không phải "mở một cuộc mặc cả mới", nên nó có mặt ở mọi trạng
+                // thái của đề nghị.
+                onOpenListing: offer == null
                     ? null
                     : () => context.push('/home/product/${offer.listingId}'),
               ),

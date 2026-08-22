@@ -69,6 +69,9 @@ class ChatMessage {
         // chữ trước khi POST trả lời và trở thành thẻ.
         refs: refs,
         card: const {},
+        // Hàng lạc quan chưa bao giờ là câu trả lời cho tin khác: giao diện chỉ
+        // gửi thẳng, nên chỗ này luôn rỗng.
+        replyTo: null,
         createdAt: DateTime.now(),
         editedAt: null,
         deletedAt: null,

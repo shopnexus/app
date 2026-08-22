@@ -5,6 +5,7 @@ import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_status.dart';
 import 'package:shopnexus_flutter_app/features/ticket/data/models/ticket_kind_info.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/ticket_thread.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/features/help_center/presentation/providers/help_center_provider.dart';
 
@@ -698,9 +699,9 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
-              onPressed: () {
-                context.push('/account/help-center/${ticket.id}');
-              },
+              // Yêu cầu này đọc ở thread của nó, trong tab Hỗ trợ của hộp thư:
+              // một ticket là một cuộc trò chuyện, và nó không còn màn riêng.
+              onPressed: () => openTicketThread(context, ref, ticket),
               icon: Icon(
                 Icons.forum_outlined,
                 size: 16,
@@ -745,7 +746,7 @@ class _HelpCenterScreenState extends ConsumerState<HelpCenterScreen> {
     await ref.read(helpCenterProvider.notifier).refresh();
     if (!mounted) return;
     // This State's own context, which the mounted check above covers.
-    this.context.push('/account/help-center/${ticket.id}');
+    await openTicketThread(this.context, ref, ticket);
   }
 
   String _formatDate(DateTime at) {

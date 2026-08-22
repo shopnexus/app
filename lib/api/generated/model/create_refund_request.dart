@@ -19,7 +19,7 @@ class CreateRefundRequest {
   /// Returns a new [CreateRefundRequest] instance.
   CreateRefundRequest({this.attachments, required this.reason});
 
-  /// Evidence, and it can be topped up until the case closes.
+  /// Evidence, and it can be topped up until the case closes, to ten photos on the case in total. A resource named more than once is stored once: the same photo twice is one piece of evidence.
   @JsonKey(name: r'attachments', required: false, includeIfNull: false)
   final List<String>? attachments;
 

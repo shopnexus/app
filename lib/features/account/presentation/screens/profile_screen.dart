@@ -10,12 +10,11 @@ import 'package:shopnexus_flutter_app/features/account/data/models/account_model
 import 'package:shopnexus_flutter_app/features/account/data/repositories/account_repository.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/action_inbox_provider.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/order_state.dart';
-import 'package:shopnexus_flutter_app/api/generated/model/transport_status.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/orders_tab.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/providers/orders_provider.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/account_menu_tile.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/profile_completion_card.dart';
 import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
-import 'package:shopnexus_flutter_app/features/refund/presentation/providers/refund_provider.dart';
 import 'package:shopnexus_flutter_app/features/seller/presentation/providers/seller_earnings_provider.dart';
 
 /// Trang tài khoản: ba nhóm và một khối việc-cần-làm.
@@ -140,6 +139,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(context, profile),
+                // Ngay dưới đầu trang, vì đây là những cánh cửa đang đóng: thiếu
+                // địa chỉ thì không đặt hàng được, chưa định danh thì không bán
+                // được. Đủ hết thì thẻ tự biến mất.
+                const SizedBox(height: 4),
+                const ProfileCompletionCard(),
+                const SizedBox(height: 12),
                 Divider(
                   height: 1,
                   color: isDarkMode
@@ -249,65 +254,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final ordersFeed = ref.watch(ordersProvider).value;
     final orders = ordersFeed?.orders ?? [];
-    final me = ref.watch(profileProvider).value?.id;
-    final refundsAsync = ref.watch(refundListProvider);
-    final buyerRefunds =
-        refundsAsync.value?.where((r) => r.buyerId == me).toList() ?? const [];
-    final buyerRefundedOrderIds = buyerRefunds.map((r) => r.orderId).toSet();
 
-    int getCount(int tabIndex) {
-      return orders.where((v) {
-        final isCancelled =
-            v.order.state == OrderState.cancelled ||
-            v.order.cancelledAt != null;
-        final isDelivered =
-            v.order.transport?.status == TransportStatus.delivered;
-        final isCompleted =
-            v.order.state == OrderState.completed ||
-            v.order.receivedAt != null ||
-            v.order.completedAt != null ||
-            isDelivered;
-
-        final hasRefund =
-            v.order.declineReason != null ||
-            v.order.transport?.status == TransportStatus.returned ||
-            buyerRefundedOrderIds.contains(v.order.id);
-
-        switch (tabIndex) {
-          case 1: // Chờ xác nhận
-            return v.order.state == OrderState.awaitingConfirmation &&
-                !isCancelled;
-          case 2: // Đang xử lý
-            return v.order.state == OrderState.open &&
-                !isCompleted &&
-                !hasRefund &&
-                !isCancelled;
-          case 3: // Hoàn thành
-            return isCompleted && !hasRefund && !isCancelled;
-          case 4: // Hoàn tiền
-            return hasRefund && !isCancelled;
-          case 5: // Đã hủy
-            return isCancelled;
-          default:
-            return false;
-        }
-      }).length;
-    }
+    // Cùng một điều kiện mà màn Đơn hàng lọc bằng, không phải một bản chép của
+    // nó: con số trên phím tắt và số dòng sau khi bấm vào phải là một.
+    int getCount(OrdersTab tab) => orders.where(tab.matchesOrder).length;
 
     final statuses = [
       (
         icon: Icons.pending_actions_outlined,
-        label: 'Chờ xác nhận',
-        tabIndex: 1,
+        tab: OrdersTab.awaitingConfirmation,
       ),
-      (icon: Icons.local_shipping_outlined, label: 'Đang xử lý', tabIndex: 2),
-      (
-        icon: Icons.check_circle_outline_rounded,
-        label: 'Hoàn thành',
-        tabIndex: 3,
-      ),
-      (icon: Icons.assignment_return_outlined, label: 'Hoàn tiền', tabIndex: 4),
-      (icon: Icons.cancel_outlined, label: 'Đã hủy', tabIndex: 5),
+      (icon: Icons.local_shipping_outlined, tab: OrdersTab.processing),
+      (icon: Icons.check_circle_outline_rounded, tab: OrdersTab.completed),
+      (icon: Icons.assignment_return_outlined, tab: OrdersTab.refunding),
+      (icon: Icons.cancel_outlined, tab: OrdersTab.cancelled),
     ];
 
     return Container(
@@ -320,10 +280,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Expanded(
               child: Builder(
                 builder: (context) {
-                  final count = getCount(item.tabIndex);
+                  final count = getCount(item.tab);
                   return GestureDetector(
                     onTap: () =>
-                        context.push('/account/orders?tab=${item.tabIndex}'),
+                        context.push('/account/orders?tab=${item.tab.index}'),
                     behavior: HitTestBehavior.opaque,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -383,7 +343,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          item.label,
+                          item.tab.label,
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

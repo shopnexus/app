@@ -6,6 +6,9 @@ import 'package:shopnexus_flutter_app/features/account/presentation/widgets/tran
 import 'package:shopnexus_flutter_app/core/theme/app_colors.dart';
 import 'package:shopnexus_flutter_app/core/utils/money_utils.dart';
 import 'package:shopnexus_flutter_app/features/refund/presentation/widgets/request_refund_sheet.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/providers/account_provider.dart';
+import 'package:shopnexus_flutter_app/features/account/presentation/widgets/rate_invite_gate.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/ticket_thread.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/features/account/data/models/order_view.dart';
@@ -55,7 +58,7 @@ class OrderDetailScreen extends ConsumerWidget {
               Icons.more_horiz_rounded,
               color: theme.colorScheme.onSurface,
             ),
-            onSelected: (action) => _handleHelpAction(context, action),
+            onSelected: (action) => _handleHelpAction(context, ref, action),
             itemBuilder: (_) => const [
               PopupMenuItem(
                 value: _OrderHelpAction.reportIssue,
@@ -82,6 +85,13 @@ class OrderDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Lời mời đánh giá, nếu đây đúng là lúc mời được — nó không vẽ
+                // gì ra trang, xem [RateInviteGate].
+                RateInviteGate(
+                  view: view,
+                  me: ref.watch(profileProvider).value?.id,
+                ),
+
                 // 1. Status & ID Card
                 _buildStatusCard(context, view),
                 const SizedBox(height: 16),
@@ -192,8 +202,7 @@ class OrderDetailScreen extends ConsumerWidget {
         ),
       if (openRefund != null)
         OutlinedButton.icon(
-          onPressed: () =>
-              context.push('/account/refunds/${openRefund.id}'),
+          onPressed: () => context.push('/account/refunds/${openRefund.id}'),
           icon: const Icon(Icons.assignment_return_outlined, size: 20),
           label: const Text('Xem yêu cầu hoàn tiền'),
         )
@@ -239,6 +248,17 @@ class OrderDetailScreen extends ConsumerWidget {
     ref.invalidate(buyerOrderDetailProvider(orderId));
     ref.invalidate(ordersProvider);
     ref.invalidate(unsettledItemsProvider);
+    // Nói luôn lúc nào thì đánh giá được: đánh giá cần đơn *hoàn tất*, mà xác
+    // nhận nhận hàng chỉ mở đồng hồ 72 giờ. Không nói ra thì người mua đi tìm
+    // nút "Đánh giá" ngay và không thấy.
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Đã xác nhận. Đơn hoàn tất sau 72 giờ, rồi bạn đánh giá được người bán.',
+        ),
+      ),
+    );
   }
 
   Future<void> _requestRefund(BuildContext context, WidgetRef ref) async {
@@ -453,8 +473,8 @@ class OrderDetailScreen extends ConsumerWidget {
                           width: 64,
                           height: 64,
                           color: imageBgColor,
-                          child: line.imageUrl != null &&
-                                  line.imageUrl!.isNotEmpty
+                          child:
+                              line.imageUrl != null && line.imageUrl!.isNotEmpty
                               ? Image.network(line.imageUrl!, fit: BoxFit.cover)
                               : Icon(
                                   Icons.image_rounded,
@@ -717,6 +737,7 @@ class OrderDetailScreen extends ConsumerWidget {
   /// thanh dưới.
   Future<void> _handleHelpAction(
     BuildContext context,
+    WidgetRef ref,
     _OrderHelpAction action,
   ) async {
     switch (action) {
@@ -729,7 +750,7 @@ class OrderDetailScreen extends ConsumerWidget {
           refLabel: orderId,
         );
         if (ticket == null || !context.mounted) return;
-        context.push('/account/help-center/${ticket.id}');
+        await openTicketThread(context, ref, ticket);
     }
   }
 }

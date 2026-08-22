@@ -1,36 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopnexus_flutter_app/features/account/data/models/orders_tab.dart';
 import 'package:shopnexus_flutter_app/features/account/presentation/widgets/orders_list.dart';
 
-/// Màn hình Đơn hàng gồm 6 tab trạng thái:
-/// 0: Tất cả
-/// 1: Chờ xác nhận
-/// 2: Đang xử lý
-/// 3: Hoàn thành
-/// 4: Hoàn tiền
-/// 5: Đã hủy
+/// Màn hình Đơn hàng. Tab nào và tab ấy hỏi gì: xem [OrdersTab] — chỗ này chỉ vẽ
+/// chúng ra, để cái nhãn trên tab và cái điều kiện lọc phía sau không thể lệch
+/// nhau.
 class OrdersScreen extends ConsumerWidget {
+  /// Chỉ số tab từ liên kết sâu (`/account/orders?tab=2`).
   final int initialTabIndex;
 
   const OrdersScreen({super.key, this.initialTabIndex = 0});
 
-  static const _tabTitles = [
-    'Tất cả',
-    'Chờ xác nhận',
-    'Đang xử lý',
-    'Hoàn thành',
-    'Hoàn tiền',
-    'Đã hủy',
-  ];
+  static const _tabs = OrdersTab.buyerTabs;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return DefaultTabController(
-      length: _tabTitles.length,
-      initialIndex: initialTabIndex.clamp(0, _tabTitles.length - 1),
+      length: _tabs.length,
+      initialIndex: _tabs.indexOf(OrdersTab.fromIndex(initialTabIndex)),
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
@@ -77,18 +68,15 @@ class OrdersScreen extends ConsumerWidget {
                   fontSize: 13,
                 ),
                 tabs: [
-                  for (final title in _tabTitles)
-                    Tab(height: 36, child: Text(title)),
+                  for (final tab in _tabs)
+                    Tab(height: 36, child: Text(tab.label)),
                 ],
               ),
             ),
           ),
         ),
         body: TabBarView(
-          children: [
-            for (var i = 0; i < _tabTitles.length; i++)
-              OrdersList(selectedTab: i),
-          ],
+          children: [for (final tab in _tabs) OrdersList(tab: tab)],
         ),
       ),
     );

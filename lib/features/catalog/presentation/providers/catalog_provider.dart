@@ -7,7 +7,9 @@ import 'package:shopnexus_flutter_app/api/generated/model/category.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/listing_detail.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/review.dart';
+import 'package:shopnexus_flutter_app/api/generated/model/shelf.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/tag.dart';
+import 'package:shopnexus_flutter_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/repositories/catalog_repository.dart';
 
@@ -428,4 +430,16 @@ class RecentSearches extends _$RecentSearches {
     await ref.read(catalogRepositoryProvider).clearSearchHistory();
     ref.invalidateSelf();
   }
+}
+
+/// Các kệ của trang chủ.
+///
+/// Đọc [authProvider] chứ không chỉ gọi một lần: kệ của một người là bốn hướng sở
+/// thích của *người đó*, nên đăng nhập hay đăng xuất là một trang chủ khác, không
+/// phải cùng một trang chủ với cái tên khác. Khách chưa đăng nhập nhận trang ngắn
+/// hơn — route trả về mấy hàng của cả sàn, không trả lỗi.
+@riverpod
+Future<List<Shelf>> homeShelves(Ref ref) {
+  ref.watch(authProvider);
+  return ref.watch(catalogRepositoryProvider).shelves();
 }

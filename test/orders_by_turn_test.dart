@@ -99,14 +99,12 @@ void main() {
     return row;
   }
 
-  /// Mở tab theo nhãn của nó. Sáu tab nằm trong một `TabBar` cuộn ngang, nên
+  /// Mở tab theo nhãn của nó. Bảy tab nằm trong một `TabBar` cuộn ngang, nên
   /// nhãn xa phải được kéo tới trước khi chạm được.
   /// Tìm trong `TabBar`, không tìm cả cây: "Đã hủy" cũng là nhãn trạng thái trên
   /// chính cái thẻ đơn, nên `find.text` trần khớp hai chỗ.
-  Finder tab(String label) => find.descendant(
-    of: find.byType(TabBar),
-    matching: find.text(label),
-  );
+  Finder tab(String label) =>
+      find.descendant(of: find.byType(TabBar), matching: find.text(label));
 
   Future<void> openTab(WidgetTester tester, String label) async {
     await tester.ensureVisible(tab(label));
@@ -115,7 +113,7 @@ void main() {
   }
 
   group('một lượt đọc, vai người mua', () {
-    testWidgets('gửi role=buyer, đúng một lần cho cả sáu tab', (tester) async {
+    testWidgets('gửi role=buyer, đúng một lần cho cả bảy tab', (tester) async {
       final backend = serving([]);
       await tester.pumpWidget(app(backend: backend, me: buyerID));
       await tester.pumpAndSettle();
@@ -131,12 +129,13 @@ void main() {
       expect(find.text('Tôi bán'), findsNothing);
     });
 
-    testWidgets('sáu tab trạng thái, và tab đầu là Tất cả', (tester) async {
+    testWidgets('bảy tab, và tab đầu là Tất cả', (tester) async {
       await tester.pumpWidget(app(backend: serving([]), me: buyerID));
       await tester.pumpAndSettle();
 
       for (final title in const [
         'Tất cả',
+        'Chờ thanh toán',
         'Chờ xác nhận',
         'Đang xử lý',
         'Hoàn thành',
@@ -187,9 +186,14 @@ void main() {
       expect(find.textContaining('ShopNexus đang giữ'), findsNothing);
     });
 
-    testWidgets('kiện đã tới thì sang "Hoàn thành", kể cả chưa xác nhận', (
+    testWidgets('kiện đã tới mà chưa xác nhận thì vẫn ở "Đang xử lý"', (
       tester,
     ) async {
+      // Kiện hàng không quyết được đơn đã xong: `state` là kết cục, và một đơn
+      // `open` mà kiện ghi `delivered` là đơn *đang chờ đúng cú chạm này* — tiền
+      // của người bán vẫn nằm trong escrow tới lúc người mua bấm. Xếp nó vào
+      // "Hoàn thành" là nói với người mua rằng xong rồi, ngay chỗ họ vẫn còn
+      // việc phải làm.
       await tester.pumpWidget(
         app(
           backend: serving([
@@ -200,18 +204,24 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await openTab(tester, 'Hoàn thành');
+      await openTab(tester, 'Đang xử lý');
       expect(
         find.widgetWithText(ElevatedButton, 'Đã nhận hàng'),
         findsOneWidget,
       );
+
+      await openTab(tester, 'Hoàn thành');
+      expect(find.widgetWithText(ElevatedButton, 'Đã nhận hàng'), findsNothing);
     });
 
     testWidgets('đơn đã hủy chỉ nằm ở "Đã hủy", và không mời làm gì', (
       tester,
     ) async {
       await tester.pumpWidget(
-        app(backend: serving([order(state: 'cancelled')]), me: buyerID),
+        app(
+          backend: serving([order(state: 'cancelled')]),
+          me: buyerID,
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -274,7 +284,10 @@ void main() {
 
     testWidgets('đơn hoàn thành mời người mua đánh giá', (tester) async {
       await tester.pumpWidget(
-        app(backend: serving([order(state: 'completed')]), me: buyerID),
+        app(
+          backend: serving([order(state: 'completed')]),
+          me: buyerID,
+        ),
       );
       await tester.pumpAndSettle();
 

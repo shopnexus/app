@@ -37,7 +37,7 @@ class UpdateVariantRequest {
   @JsonKey(name: r'attributes', required: false, includeIfNull: false)
   final Map<String, Object>? attributes;
 
-  /// True moves the card's variant to this one. False is ignored: which variant is featured is cleared through `clear_featured_variant_id` on the listing, so there is one way to spell it.
+  /// True moves the card's variant to this one. False is ignored: exactly one variant is featured at all times, so the flag is moved rather than dropped.
   @JsonKey(name: r'is_featured', required: false, includeIfNull: false)
   final bool? isFeatured;
 

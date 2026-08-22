@@ -174,7 +174,12 @@ class AccountApi {
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{...?headers},
-      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'bearerAuth'},
+        ],
+        ...?extra,
+      },
       validateStatus: validateStatus,
     );
 
@@ -2573,8 +2578,8 @@ class AccountApi {
     );
   }
 
-  /// Mark notifications read up to a point in time
-  /// Takes a time bound rather than a list of ids. Marking individual rows by id would have to search every chunk of a time-partitioned table; a bound reads one range. Omit &#x60;before&#x60; to mark everything read.
+  /// Mark notifications read
+  /// Send &#x60;ids&#x60; to mark exactly those rows read, &#x60;before&#x60; to mark everything up to an instant, or an empty body to mark the whole feed. The two fields are refused together: \&quot;these three, and also everything from last Tuesday\&quot; is a client sending a stale bound beside a fresh click, not something a reader asked for.
   ///
   /// Parameters:
   /// * [markNotificationsReadRequest]

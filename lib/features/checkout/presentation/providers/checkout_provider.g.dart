@@ -77,7 +77,7 @@ final class CheckoutNotifierProvider
   }
 }
 
-String _$checkoutNotifierHash() => r'401c06a3b68a48306bdefcb90d4fac1e1d7f1fa0';
+String _$checkoutNotifierHash() => r'905b2f6dbcced667ecc67638c5a30c7a258ac77c';
 
 /// `keepAlive` là bắt buộc, không phải tối ưu.
 ///

@@ -53,6 +53,7 @@ void main() {
       attachments: const [],
       refs: const {},
       card: const {},
+      replyTo: null,
       createdAt: DateTime.utc(2026, 1, 2),
       editedAt: null,
       deletedAt: null,
@@ -60,7 +61,7 @@ void main() {
   }
 
   group('the inbox', () {
-    test('leaves a ticket thread out and keeps the ordinary ones', () {
+    test('chia hai tab trên ticket_id, không bỏ thread nào đi', () {
       final state = ChatListState(
         conversations: [
           conversation(id: 'cnv_1', counterparty: seller),
@@ -68,11 +69,13 @@ void main() {
         ],
       );
 
-      expect(state.inboxConversations.map((c) => c.id), ['cnv_1']);
-      expect(state.filteredConversations.map((c) => c.id), ['cnv_1']);
+      expect(state.tradeConversations.map((c) => c.id), ['cnv_1']);
+      expect(state.filtered(support: false).map((c) => c.id), ['cnv_1']);
+      // Và nó ở tab Hỗ trợ, chỗ nó được đọc.
+      expect(state.supportConversations.map((c) => c.id), ['cnv_2']);
     });
 
-    test('does not find a ticket thread by searching for the desk', () {
+    test('tìm trong tab Tin nhắn không đụng tới thread hỗ trợ', () {
       final state = ChatListState(
         conversations: [
           conversation(id: 'cnv_2', counterparty: desk, ticketId: 'tkt_1'),
@@ -80,7 +83,7 @@ void main() {
         searchQuery: 'hỗ trợ',
       );
 
-      expect(state.filteredConversations, isEmpty);
+      expect(state.filtered(support: false), isEmpty);
     });
 
     test('a realtime patch keeps the row a ticket thread', () {

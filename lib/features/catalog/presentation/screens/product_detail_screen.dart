@@ -10,6 +10,7 @@ import 'package:shopnexus_flutter_app/api/generated/model/reputation.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/resource.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/ticket_kind.dart';
 import 'package:shopnexus_flutter_app/api/generated/model/variant.dart';
+import 'package:shopnexus_flutter_app/features/ticket/presentation/ticket_thread.dart';
 import 'package:shopnexus_flutter_app/features/ticket/presentation/widgets/raise_ticket_sheet.dart';
 import 'package:shopnexus_flutter_app/features/catalog/data/models/catalog_model.dart';
 import 'package:shopnexus_flutter_app/features/catalog/presentation/providers/catalog_provider.dart';
@@ -1932,7 +1933,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       refLabel: detail.name,
     );
     if (ticket == null || !mounted) return;
-    context.push('/account/help-center/${ticket.id}');
+    await openTicketThread(context, ref, ticket);
   }
 
   /// Opens a negotiation on the selected variant. It needs one, because an offer
@@ -2205,7 +2206,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               Expanded(
                 child: chatListAsync.when(
                   data: (chatState) {
-                    final conversations = chatState.inboxConversations;
+                    final conversations = chatState.tradeConversations;
                     if (conversations.isEmpty) {
                       return const Center(
                         child: Text(

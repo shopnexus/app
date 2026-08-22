@@ -24,8 +24,6 @@ class UpdateListingRequest {
 
     this.categoryId,
 
-    this.clearFeaturedVariantId,
-
     this.condition,
 
     this.description,
@@ -46,14 +44,6 @@ class UpdateListingRequest {
 
   @JsonKey(name: r'category_id', required: false, includeIfNull: false)
   final String? categoryId;
-
-  /// Leaves the listing with no featured variant; the card then shows the cheapest one.
-  @JsonKey(
-    name: r'clear_featured_variant_id',
-    required: false,
-    includeIfNull: false,
-  )
-  final bool? clearFeaturedVariantId;
 
   @JsonKey(name: r'condition', required: false, includeIfNull: false)
   final ListingCondition? condition;
@@ -82,7 +72,6 @@ class UpdateListingRequest {
       other is UpdateListingRequest &&
           other.attachments == attachments &&
           other.categoryId == categoryId &&
-          other.clearFeaturedVariantId == clearFeaturedVariantId &&
           other.condition == condition &&
           other.description == description &&
           other.featuredVariantId == featuredVariantId &&
@@ -95,7 +84,6 @@ class UpdateListingRequest {
   int get hashCode =>
       attachments.hashCode +
       categoryId.hashCode +
-      clearFeaturedVariantId.hashCode +
       condition.hashCode +
       description.hashCode +
       featuredVariantId.hashCode +

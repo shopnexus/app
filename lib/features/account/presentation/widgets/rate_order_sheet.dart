@@ -20,6 +20,7 @@ class RateOrderSheet extends ConsumerStatefulWidget {
     required this.sellerName,
     this.listingId,
     this.listingName,
+    this.initialSellerRating = 0,
   });
 
   final String orderId;
@@ -30,12 +31,17 @@ class RateOrderSheet extends ConsumerStatefulWidget {
   final String? listingId;
   final String? listingName;
 
+  /// Số sao người mua đã chạm ở lời mời. Mang sang chứ không hỏi lại: họ vừa trả
+  /// lời đúng câu này một giây trước — xem [RateInviteSheet].
+  final int initialSellerRating;
+
   static Future<bool?> show(
     BuildContext context, {
     required String orderId,
     required String sellerName,
     String? listingId,
     String? listingName,
+    int initialSellerRating = 0,
   }) {
     return showModalBottomSheet<bool>(
       context: context,
@@ -46,6 +52,7 @@ class RateOrderSheet extends ConsumerStatefulWidget {
         sellerName: sellerName,
         listingId: listingId,
         listingName: listingName,
+        initialSellerRating: initialSellerRating,
       ),
     );
   }
@@ -64,7 +71,7 @@ class _RateOrderSheetState extends ConsumerState<RateOrderSheet> {
   /// không còn gì phải chờ.
   List<Resource> _photos = const [];
 
-  int _sellerRating = 0;
+  late int _sellerRating = widget.initialSellerRating;
   int _productRating = 0;
 
   @override
