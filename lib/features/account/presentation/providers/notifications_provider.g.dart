@@ -34,7 +34,7 @@ final class NotificationsControllerProvider
 }
 
 String _$notificationsControllerHash() =>
-    r'78d71a54bc05cd0a305dc7575034fc97eea1d7a3';
+    r'852eff30abc374a3179180986c6062815f379e07';
 
 abstract class _$NotificationsController
     extends $AsyncNotifier<NotificationFeed> {
@@ -89,4 +89,4 @@ final class UnreadNotificationsCountProvider
 }
 
 String _$unreadNotificationsCountHash() =>
-    r'8acc408c967694430e248ed34c6647eb897e4d20';
+    r'1e6b65d5e011b04cb6b364e35362b74bba0b9b5b';

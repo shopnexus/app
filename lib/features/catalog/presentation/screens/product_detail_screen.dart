@@ -667,28 +667,39 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           const SizedBox(height: 12.0),
 
           // Điểm đánh giá sao và số lượng đã bán
-          Row(
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 0,
+            runSpacing: 4.0,
             children: [
               if (detail.reviewCount > 0) ...[
                 Row(
-                  children: List.generate(5, (index) {
-                    final isFilled = index < detail.rating.floor();
-                    return Icon(
-                      isFilled ? Icons.star_rounded : Icons.star_border_rounded,
-                      color: accentStarColor,
-                      size: 16,
-                    );
-                  }),
-                ),
-                const SizedBox(width: 6.0),
-                Text(
-                  '${detail.rating} (${detail.reviewCount} đánh giá)',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(5, (index) {
+                        final isFilled = index < detail.rating.floor();
+                        return Icon(
+                          isFilled
+                              ? Icons.star_rounded
+                              : Icons.star_border_rounded,
+                          color: accentStarColor,
+                          size: 16,
+                        );
+                      }),
+                    ),
+                    const SizedBox(width: 6.0),
+                    Text(
+                      '${detail.rating} (${detail.reviewCount} đánh giá)',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -726,20 +737,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.favorite_rounded,
-                  size: 12,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 4.0),
-                Text(
-                  '${detail.favoriteCount}',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.favorite_rounded,
+                      size: 12,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4.0),
+                    Text(
+                      '${detail.favoriteCount}',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ],

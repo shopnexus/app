@@ -24,13 +24,14 @@ abstract class NotificationFeed with _$NotificationFeed {
 class NotificationsController extends _$NotificationsController {
   @override
   Future<NotificationFeed> build() async {
-    // `account.notification_created` carries the whole row, but the feed's own
-    // shape is this module's, so the arrival is the trigger and the read is
-    // REST's — one round trip against a socket that replays nothing.
-    ref.listen<AsyncValue<RealtimeEvent>>(realtimeEventsProvider, (_, next) {
-      if (next.value is NotificationCreatedEvent) ref.invalidateSelf();
+    final sub = ref.watch(realtimeClientProvider).events.listen((event) {
+      if (event is NotificationCreatedEvent) {
+        ref.invalidateSelf();
+      }
     });
-    final page = await ref.watch(accountRepositoryProvider).notifications();
+    ref.onDispose(sub.cancel);
+
+    final page = await ref.read(accountRepositoryProvider).notifications();
     return NotificationFeed(items: page.data, nextCursor: page.meta.nextCursor);
   }
 
@@ -77,8 +78,12 @@ class NotificationsController extends _$NotificationsController {
 
 @riverpod
 Future<int> unreadNotificationsCount(Ref ref) async {
-  ref.listen<AsyncValue<RealtimeEvent>>(realtimeEventsProvider, (_, next) {
-    if (next.value is NotificationCreatedEvent) ref.invalidateSelf();
+  final sub = ref.watch(realtimeClientProvider).events.listen((event) {
+    if (event is NotificationCreatedEvent) {
+      ref.invalidateSelf();
+    }
   });
-  return ref.watch(accountRepositoryProvider).getUnreadNotificationsCount();
+  ref.onDispose(sub.cancel);
+
+  return ref.read(accountRepositoryProvider).getUnreadNotificationsCount();
 }

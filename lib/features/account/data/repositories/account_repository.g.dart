@@ -26,7 +26,7 @@ final class AccountRepositoryProvider
         argument: null,
         retry: null,
         name: r'accountRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -54,4 +54,4 @@ final class AccountRepositoryProvider
   }
 }
 
-String _$accountRepositoryHash() => r'a34d89cf9008aaaa515710c814577ffc232563d0';
+String _$accountRepositoryHash() => r'c05b440691a57c10f7dc02907e480182deac3448';

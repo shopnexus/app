@@ -40,7 +40,7 @@ final class AccountApiProvider
         argument: null,
         retry: null,
         name: r'accountApiProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -67,7 +67,7 @@ final class AccountApiProvider
   }
 }
 
-String _$accountApiHash() => r'6a88a7694ec8c415b62e00a97e21b1b33dccc3e4';
+String _$accountApiHash() => r'a65caff1819ce07bc6dff4af157308821acb5c6e';
 
 @ProviderFor(catalogApi)
 const catalogApiProvider = CatalogApiProvider._();
@@ -81,7 +81,7 @@ final class CatalogApiProvider
         argument: null,
         retry: null,
         name: r'catalogApiProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -108,7 +108,7 @@ final class CatalogApiProvider
   }
 }
 
-String _$catalogApiHash() => r'32c800e9ff4823801461dfbfa53f6b653152fd36';
+String _$catalogApiHash() => r'8053425e4fa84b80aad730ece737d7f709f44e78';
 
 @ProviderFor(chatApi)
 const chatApiProvider = ChatApiProvider._();
@@ -122,7 +122,7 @@ final class ChatApiProvider
         argument: null,
         retry: null,
         name: r'chatApiProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -149,7 +149,7 @@ final class ChatApiProvider
   }
 }
 
-String _$chatApiHash() => r'5cb98140944bbcbc38f3578bdb75410a652054e5';
+String _$chatApiHash() => r'3afec20a063ca69689bda65ca568ef578da31219';
 
 /// The registry every module's pluggable choices are read through — the payment rails and
 /// the carriers. Its own group because the endpoint belongs to no single module.
@@ -171,7 +171,7 @@ final class CommonApiProvider
         argument: null,
         retry: null,
         name: r'commonApiProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -198,7 +198,7 @@ final class CommonApiProvider
   }
 }
 
-String _$commonApiHash() => r'8f21f95ff4166dee0d58a25f39550f1aaa5340b5';
+String _$commonApiHash() => r'99880e966d44d00d80b2c388ecb7d6a948328932';
 
 @ProviderFor(financeApi)
 const financeApiProvider = FinanceApiProvider._();
@@ -212,7 +212,7 @@ final class FinanceApiProvider
         argument: null,
         retry: null,
         name: r'financeApiProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -239,7 +239,7 @@ final class FinanceApiProvider
   }
 }
 
-String _$financeApiHash() => r'e93bbdc19c1651833c22a437f01c25d5bb7f510b';
+String _$financeApiHash() => r'add03c9b94da5f67588b1c1f4a02ac0a6d8aebe8';
 
 @ProviderFor(orderApi)
 const orderApiProvider = OrderApiProvider._();
@@ -253,7 +253,7 @@ final class OrderApiProvider
         argument: null,
         retry: null,
         name: r'orderApiProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -280,7 +280,7 @@ final class OrderApiProvider
   }
 }
 
-String _$orderApiHash() => r'a9ae52c081dba9da7eb0869186fee133b27b0cf8';
+String _$orderApiHash() => r'41fcb1797cfa64051c094fc781ce8ffc04bd7763';
 
 @ProviderFor(trustApi)
 const trustApiProvider = TrustApiProvider._();
@@ -294,7 +294,7 @@ final class TrustApiProvider
         argument: null,
         retry: null,
         name: r'trustApiProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -321,4 +321,4 @@ final class TrustApiProvider
   }
 }
 
-String _$trustApiHash() => r'ffbc21f0316988be634d78e61a82f23b3d2d3a28';
+String _$trustApiHash() => r'be49087b1cb955ba2c7823b3dea7c62fcb26cfa5';

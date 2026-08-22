@@ -455,7 +455,7 @@ class OrderPageResult {
   bool get hasMore => nextCursor != null && nextCursor!.isNotEmpty;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 AccountRepository accountRepository(Ref ref) => AccountRepository(
   ref.watch(accountApiServiceProvider),
   ref.watch(accountApiProvider),

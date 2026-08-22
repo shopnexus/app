@@ -18,25 +18,25 @@ part 'api_providers.g.dart';
 ///
 /// `AdminApi` has no provider — this app has no staff surface.
 
-@riverpod
+@Riverpod(keepAlive: true)
 AccountApi accountApi(Ref ref) => AccountApi(ref.watch(dioProvider));
 
-@riverpod
+@Riverpod(keepAlive: true)
 CatalogApi catalogApi(Ref ref) => CatalogApi(ref.watch(dioProvider));
 
-@riverpod
+@Riverpod(keepAlive: true)
 ChatApi chatApi(Ref ref) => ChatApi(ref.watch(dioProvider));
 
 /// The registry every module's pluggable choices are read through — the payment rails and
 /// the carriers. Its own group because the endpoint belongs to no single module.
-@riverpod
+@Riverpod(keepAlive: true)
 CommonApi commonApi(Ref ref) => CommonApi(ref.watch(dioProvider));
 
-@riverpod
+@Riverpod(keepAlive: true)
 FinanceApi financeApi(Ref ref) => FinanceApi(ref.watch(dioProvider));
 
-@riverpod
+@Riverpod(keepAlive: true)
 OrderApi orderApi(Ref ref) => OrderApi(ref.watch(dioProvider));
 
-@riverpod
+@Riverpod(keepAlive: true)
 TrustApi trustApi(Ref ref) => TrustApi(ref.watch(dioProvider));

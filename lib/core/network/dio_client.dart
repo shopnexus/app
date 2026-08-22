@@ -5,7 +5,7 @@ import 'package:shopnexus_flutter_app/core/network/api_interceptors.dart';
 
 part 'dio_client.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 Dio dio(Ref ref) {
   // Cấu hình cơ bản cho Dio
   final dio = Dio(

@@ -31,10 +31,6 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
-  /// Chat on one side, everything else on the other. The route can filter by
-  /// `category`, but the feed is one cursor walk, so the split is done here.
-  bool _showingChat = false;
-
   Future<void> _markAllAsRead() =>
       ref.read(notificationsControllerProvider.notifier).markRead();
 
@@ -76,7 +72,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
 
     final feedAsync = ref.watch(notificationsControllerProvider);
 
@@ -95,7 +90,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Thông báo',
+          'Thông báo hệ thống',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
@@ -118,93 +113,30 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            color: theme.colorScheme.surface,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                _buildTabButton(title: 'Tin nhắn', chat: true),
-                _buildTabButton(title: 'Hoạt động', chat: false),
-              ],
-            ),
-          ),
-          Divider(
-            height: 1,
-            thickness: 1,
-            color: isDarkMode
-                ? AppColors.darkPrimary.withAlpha(30)
-                : const Color(0xFFE1E3E1),
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              color: theme.colorScheme.primary,
-              onRefresh: () async {
-                ref.invalidate(notificationsControllerProvider);
-                await ref.read(notificationsControllerProvider.future);
-              },
-              child: feedAsync.when(
-                data: (feed) {
-                  final items = feed.items
-                      .where(
-                        (item) =>
-                            (item.category == NotificationCategory.chat) ==
-                            _showingChat,
-                      )
-                      .toList();
-                  if (items.isEmpty) return const _EmptyNotifications();
+      body: RefreshIndicator(
+        color: theme.colorScheme.primary,
+        onRefresh: () async {
+          ref.invalidate(notificationsControllerProvider);
+          await ref.read(notificationsControllerProvider.future);
+        },
+        child: feedAsync.when(
+          data: (feed) {
+            // Loại bỏ tin nhắn chat vì chat có phân hệ màn hình Chat riêng
+            final items = feed.items
+                .where((item) => item.category != NotificationCategory.chat)
+                .toList();
+            if (items.isEmpty) return const _EmptyNotifications();
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: items.length + (feed.nextCursor == null ? 0 : 1),
-                    itemBuilder: (context, index) => index == items.length
-                        ? _buildLoadMore(feed.loadingMore)
-                        : _buildNotificationCard(context, items[index]),
-                  );
-                },
-                loading: () => _buildShimmerList(),
-                error: (err, _) => _buildError(err),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabButton({required String title, required bool chat}) {
-    final theme = Theme.of(context);
-    final isSelected = _showingChat == chat;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _showingChat = chat),
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.only(top: 14, bottom: 12),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : Colors.transparent,
-                width: 3,
-              ),
-            ),
-          ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontFamily: 'Inter',
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: items.length + (feed.nextCursor == null ? 0 : 1),
+              itemBuilder: (context, index) => index == items.length
+                  ? _buildLoadMore(feed.loadingMore)
+                  : _buildNotificationCard(context, items[index]),
+            );
+          },
+          loading: () => _buildShimmerList(),
+          error: (err, _) => _buildError(err),
         ),
       ),
     );
